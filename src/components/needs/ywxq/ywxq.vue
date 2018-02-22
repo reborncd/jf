@@ -10,17 +10,18 @@
         display: block;
         margin: 5px auto;
     }
-    .el-form-item{
-        margin-bottom:10px;
+
+    .el-form-item {
+        margin-bottom: 10px;
     }
 </style>
 <style>
     .ywxq .el-table td, .ywxq .el-table th {
-        padding: 10px 0!important;
+        padding: 10px 0 !important;
     }
 </style>
 <template>
-    <div class="ywxq common-card-wrap" style="height: 100%;">
+    <div class="ywxq common-card-wrap" style="height: 100%;"  @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
@@ -60,79 +61,65 @@
                         </div>
                     </div>
                     <div class="table-list">
-                        <el-table :data="tableData" border style="width: 100%"
-                                  :height="table.tableHeight"
-                                  highlight-current-row
-                                  @row-click="handleCurrentChange">
-                            <el-table-column prop="aa" label="需求编号" width="200"></el-table-column>
-                            <el-table-column prop="aa" label="原需求编号" width="200"></el-table-column>
-                            <el-table-column prop="aa" label="申请日期"></el-table-column>
-                            <el-table-column prop="aa" label="计划投产日期"></el-table-column>
-                            <el-table-column prop="aa" label="产品功能"></el-table-column>
-                            <el-table-column prop="aa" label="需求来源"></el-table-column>
-                            <el-table-column prop="aa" label="涉及系统"></el-table-column>
-                            <el-table-column prop="aa" label="优先级"></el-table-column>
-                            <el-table-column prop="aa" label="状态"></el-table-column>
-                            <el-table-column prop="aa" label="bug清单"></el-table-column>
-                            <!--<el-table-column label="操作">-->
-                            <!--<template slot-scope="scope" class="action-wrap">-->
-                            <!--<el-button size="mini" @click="editRow(scope.row,scope)"  type="primary">确认</el-button>-->
-                            <!--<el-button size="mini" @click="deleteRow(scope.row,scope)"  type="danger">驳回</el-button>-->
-                            <!--</template>-->
-                            <!--</el-table-column>-->
-                        </el-table>
+                        <!--<el-table :data="tableData" border style="width: 100%"-->
+                        <!--:height="table.tableHeight"-->
+                        <!--highlight-current-row-->
+                        <!--@row-click="handleCurrentChange">-->
+                        <!--<el-table-column prop="aa" label="需求编号" width="200"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="原需求编号" width="200"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="申请日期"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="计划投产日期"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="产品功能"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="需求来源"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="优先级"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="状态"></el-table-column>-->
+                        <!--<el-table-column prop="aa" label="bug清单"></el-table-column>-->
+                        <!--&lt;!&ndash;<el-table-column label="操作">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<template slot-scope="scope" class="action-wrap">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<el-button size="mini" @click="editRow(scope.row,scope)"  type="primary">确认</el-button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<el-button size="mini" @click="deleteRow(scope.row,scope)"  type="danger">驳回</el-button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
+                        <!--</el-table>-->
                     </div>
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
-                            <i class="icon-more iconfont"></i>
+                            <i class="icon-more iconfont"  @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                             <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                <span v-for="item in tabs.consoleActionData">{{item.name}}</span>
+                                <span v-for="item in tabs.consoleActionData">{{item}}</span>
                             </div>
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
-                                <div class="console-tab-content">
-                                    <el-form label-width = "100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="12"><el-form-item label="需求编号">需求编号</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="申请人">申请人</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="需求名称">需求名称</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="需求来源">需求来源</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="申请日期">申请日期</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="计划投产日期">计划投产日期</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="优先级">优先级</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="重要程度">重要程度</el-form-item></el-col>
-                                            <el-col :span="24">
-                                                <el-form-item label="是否加急"><span>是</span><span style="margin-right: 20px;">原因</span></el-form-item>
-                                            </el-col>
-                                            <el-col :span="24"><el-form-item label="需求描述">需求描述</el-form-item></el-col>
-                                            <el-col :span="24"><el-form-item label="产品功能">产品功能</el-form-item></el-col>
-                                        </el-row>
-                                    </el-form>
-                                </div>
+                                <tabinfo :infodata="tabs.infodata"></tabinfo>
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
                                 <div class="console-tab-content">
-                                    <el-form label-width = "100px" label-position="left">
+                                    <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                            <el-col :span="8"><el-form-item label="状态">需求编号</el-form-item></el-col>
-                                            <el-col :span="12"><el-form-item label="发送人">申请人</el-form-item></el-col>
+                                            <el-col :span="8">
+                                                <el-form-item label="状态">需求编号</el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="发送人">申请人</el-form-item>
+                                            </el-col>
                                         </el-row>
                                     </el-form>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="拆分项目" name="project">
+                            <el-tab-pane label="拆分项目" name="chaifen">
                                 <div class="console-tab-content">
                                     a
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="全程跟踪" name="project">
+                            <el-tab-pane label="全程跟踪" name="genzong">
                                 <div class="console-tab-content">
-                                    a
+                                    <tablog :log = "tabs.log"></tablog>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="实时统计" name="project">
+                            <el-tab-pane label="实时统计" name="tongji">
                                 <div class="console-tab-content">
                                     a
                                 </div>
@@ -143,7 +130,7 @@
             </div>
         </el-card>
         <!--立项-->
-        <el-dialog title="新增" :visible="addneeds.addvisible || addneeds.changeInset" width="60%"
+        <el-dialog title="新增" :visible="addneeds.addvisible || addneeds.changeInset" width="70%"
                    append-to-body modal-append-to-body :before-close="closeAddDialog">
             <el-form label-width="100px">
                 <el-row :md="24" :gutter="20" v-if="addneeds.addvisible">
@@ -178,7 +165,8 @@
                             <el-select v-model="addneeds.addform.name" placeholder="请选择部门"
                                        style="width: 49%;float: left;margin-right: 2%;">
                             </el-select>
-                            <el-select v-model="addneeds.addform.name" placeholder="请选择人员" style="width: 49%;float: left;">
+                            <el-select v-model="addneeds.addform.name" placeholder="请选择人员"
+                                       style="width: 49%;float: left;">
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -250,7 +238,8 @@
                             <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择部门"
                                        style="width: 49%;float: left;margin-right: 2%;">
                             </el-select>
-                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择人员" style="width: 49%;float: left;">
+                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择人员"
+                                       style="width: 49%;float: left;">
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -304,12 +293,14 @@
                     </el-col>
                     <el-col :span="23" :md="23">
                         <el-form-item label="变更描述">
-                            <el-input type="textarea" v-model="addneeds.changeInsetform.name" placeholder="必填项"></el-input>
+                            <el-input type="textarea" v-model="addneeds.changeInsetform.name"
+                                      placeholder="必填项"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="23">
                         <el-form-item label="变更功能">
-                            <el-input type="textarea" v-model="addneeds.changeInsetform.name" placeholder="非必填项"></el-input>
+                            <el-input type="textarea" v-model="addneeds.changeInsetform.name"
+                                      placeholder="非必填项"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -327,18 +318,24 @@
 </template>
 
 <script>
+    import  tabinfo from  "./tab_info.vue";
+    import tablog from  "./tab_log.vue";
     export default {
+        components: {
+            "tabinfo": tabinfo,
+            "tablog": tablog
+        },
         data(){
             return {
                 addneeds: {
-                    addInsetvisible:true,
+                    addInsetvisible: true,
                     addvisible: false,
-                    changeInset:false,
+                    changeInset: false,
                     addform: {
                         name: ""
                     },
-                    changeInsetform:{
-                        name:""
+                    changeInsetform: {
+                        name: ""
                     }
                 },
                 table: {
@@ -407,14 +404,29 @@
                 totalPage: "1",
                 dateComp: {},
                 tabs: {
+                    log:"",
+                    infodata: "",
                     activeName: "info",
-                    consoleWrapperVisible: 1
+                    consoleWrapperVisible: 1,
+                    consoleActionData:["adas","sad"],
+                    consoleActionVisible: false,
                 },
-                consoleActionVisible: "",
             }
         },
         mounted(){
             this.calculate()
+            this.tabs.infodata = {
+                "name": 1
+            };
+            this.tabs.log = {
+                "status":"asdasdsa",
+                "role":"dsadas",
+                "data":[
+                    "asdas",
+                    "asdasd",
+                    "dasdas"
+                ]
+            }
         },
         methods: {
             calculate(){
@@ -450,8 +462,8 @@
                 }
             },
             closeAddDialog(){
-              this.addneeds.addvisible = false;
-              this.addneeds.changeInset = false
+                this.addneeds.addvisible = false;
+                this.addneeds.changeInset = false
             },
             setConsoleVisible(){
 

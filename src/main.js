@@ -6,7 +6,7 @@ import  "./static/css/iconfont.css"
 import App from './App.vue'
 import router from "./router.js";
 import axios from "axios";
-import echarts from  'echarts'
+// import echarts from  'echarts'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -85,7 +85,7 @@ Vue.prototype.$err = function (msg) {
 //----------------------------------------------------
 //使用echarts----------------------------------------------------
 //----------------------------------------------------
-Vue.prototype.$echarts = echarts;
+// Vue.prototype.$echarts = echarts;
 //----------------------------------------------------
 //蒙版
 //----------------------------------------------------

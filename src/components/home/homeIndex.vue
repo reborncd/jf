@@ -349,13 +349,10 @@
         components: {
             "date-plug": datePlug
         },
-        created(){
-
-        },
         mounted(){
             this.calculate();
             let dynamic_wrap = document.getElementById("dynamic");
-            let dynamic_chart = this.$echarts.init(dynamic_wrap);
+//            let dynamic_chart = this.$echarts.init(dynamic_wrap);
             // 指定图表的配置项和数据
             let option = {
                 tooltip: {
@@ -424,9 +421,9 @@
                 ]
             };
             // 使用刚指定的配置项和数据显示图表。
-            dynamic_chart.setOption(option);
-            let asset_wrap = document.getElementById("asset");
-            let asset_chart = this.$echarts.init(asset_wrap);
+//            dynamic_chart.setOption(option);
+//            let asset_wrap = document.getElementById("asset");
+//            let asset_chart = this.$echarts.init(asset_wrap);
 //            dynamic_chart.setOption(option);
 //this.setInterval()
         },

@@ -1,8 +1,10 @@
-let a ={
-    "code":200,
-    "timestamp":1517985065954,
-    "result":{
-        "rootMenu":[{
+export default {
+    "code": 200,
+    "timestamp": 1518314627630,
+    "result": {
+        "role": {"DEPT_ID": 37, "ROLE_ID": "eb2388f307d14481a57463e3dc1df49c", "ROLE_NAME": "测试角色名称"},
+        "menus": [51, 34, 1, 29, 48, 8, 50, 52, 49],
+        "rootMenu": [{
             "menu_id": 29,
             "menu_name": "首页",
             "menu_url": "/home/index",
@@ -13,16 +15,22 @@ let a ={
                 "menu_url": "/home/resetPassword",
                 "menu_fid": 29,
                 "childMenus": null,
-                "menu_order": 4
+                "menu_order": 4,
+                "menu_action": 1,
+                "menu_sign": null
             }, {
                 "menu_id": 34,
                 "menu_name": "用户中心",
                 "menu_url": "/home/userCenter",
                 "menu_fid": 29,
                 "childMenus": null,
-                "menu_order": 5
+                "menu_order": 5,
+                "menu_action": 1,
+                "menu_sign": 1
             }],
-            "menu_order": 1
+            "menu_order": 1,
+            "menu_action": 1,
+            "menu_sign": 1
         }, {
             "menu_id": 1,
             "menu_name": "需求管理",
@@ -34,72 +42,130 @@ let a ={
                 "menu_url": "/home/ywxq",
                 "menu_fid": 1,
                 "childMenus": null,
-                "menu_order": 1
+                "menu_order": 1,
+                "menu_action": 1,
+                "menu_sign": null
             }, {
                 "menu_id": 8,
                 "menu_name": "基础建设",
                 "menu_url": "/home/jcjs",
                 "menu_fid": 1,
                 "childMenus": [{
-                    "menu_id": 20,
-                    "menu_name": "申请基础建设任务",
+                    "menu_id": 52,
+                    "menu_name": "完成",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 12
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": 1
                 }, {
-                    "menu_id": 21,
-                    "menu_name": "变更基础建设任务",
+                    "menu_id": 51,
+                    "menu_name": "拆分任务",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 13
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": 1
                 }, {
-                    "menu_id": 22,
-                    "menu_name": "驳回基础建设任务",
+                    "menu_id": 50,
+                    "menu_name": "转接",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 14
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": 1
                 }, {
-                    "menu_id": 23,
-                    "menu_name": "拆分基础建设任务",
+                    "menu_id": 49,
+                    "menu_name": "挂起",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 15
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": 1
                 }, {
-                    "menu_id": 24,
-                    "menu_name": "开发基础建设任务",
+                    "menu_id": 48,
+                    "menu_name": "驳回",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 16
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": 1
                 }, {
-                    "menu_id": 25,
-                    "menu_name": "测试基础建设任务",
+                    "menu_id": 47,
+                    "menu_name": "分配",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 17
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": null
                 }, {
-                    "menu_id": 27,
-                    "menu_name": "验收基础建设任务",
+                    "menu_id": 46,
+                    "menu_name": "新建变更",
                     "menu_url": null,
                     "menu_fid": 8,
                     "childMenus": null,
-                    "menu_order": 19
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": null
+                }, {
+                    "menu_id": 45,
+                    "menu_name": "需求内变更",
+                    "menu_url": null,
+                    "menu_fid": 8,
+                    "childMenus": null,
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": null
+                }, {
+                    "menu_id": 44,
+                    "menu_name": "立项",
+                    "menu_url": null,
+                    "menu_fid": 8,
+                    "childMenus": null,
+                    "menu_order": 1,
+                    "menu_action": 0,
+                    "menu_sign": null
                 }],
-                "menu_order": 3
+                "menu_order": 3,
+                "menu_action": 1,
+                "menu_sign": 1
             }],
-            "menu_order": 2
+            "menu_order": 2,
+            "menu_action": 1,
+            "menu_sign": 1
         }, {
             "menu_id": 2,
             "menu_name": "上线管理",
             "menu_url": null,
             "menu_fid": null,
-            "childMenus": null,
-            "menu_order": 3
+            "childMenus": [{
+                "menu_id": 60,
+                "menu_name": "上线确认",
+                "menu_url": null,
+                "menu_fid": 2,
+                "childMenus": null,
+                "menu_order": 1,
+                "menu_action": 0,
+                "menu_sign": null
+            }, {
+                "menu_id": 59,
+                "menu_name": "上线申请",
+                "menu_url": null,
+                "menu_fid": 2,
+                "childMenus": null,
+                "menu_order": 1,
+                "menu_action": 0,
+                "menu_sign": null
+            }],
+            "menu_order": 3,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 3,
             "menu_name": "问题管理",
@@ -111,44 +177,58 @@ let a ={
                 "menu_url": "/home/errorlist",
                 "menu_fid": 3,
                 "childMenus": null,
-                "menu_order": 1
+                "menu_order": 1,
+                "menu_action": 1,
+                "menu_sign": null
             }, {
                 "menu_id": 42,
                 "menu_name": "BUG列表",
                 "menu_url": "/home/buglist",
                 "menu_fid": 3,
                 "childMenus": null,
-                "menu_order": 2
+                "menu_order": 2,
+                "menu_action": 1,
+                "menu_sign": null
             }],
-            "menu_order": 4
+            "menu_order": 4,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 4,
             "menu_name": "统计分析",
             "menu_url": null,
             "menu_fid": null,
             "childMenus": null,
-            "menu_order": 5
+            "menu_order": 5,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 5,
             "menu_name": "实时统计",
             "menu_url": null,
             "menu_fid": null,
             "childMenus": null,
-            "menu_order": 6
+            "menu_order": 6,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 6,
             "menu_name": "版本库",
             "menu_url": null,
             "menu_fid": null,
             "childMenus": null,
-            "menu_order": 7
+            "menu_order": 7,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 7,
             "menu_name": "资料库",
             "menu_url": null,
             "menu_fid": null,
             "childMenus": null,
-            "menu_order": 8
+            "menu_order": 8,
+            "menu_action": 1,
+            "menu_sign": null
         }, {
             "menu_id": 35,
             "menu_name": "权限管理",
@@ -160,26 +240,33 @@ let a ={
                 "menu_url": "/home/rolelist",
                 "menu_fid": 35,
                 "childMenus": null,
-                "menu_order": 1
+                "menu_order": 1,
+                "menu_action": 1,
+                "menu_sign": null
             }, {
                 "menu_id": 37,
                 "menu_name": "权限列表",
                 "menu_url": "/home/power",
                 "menu_fid": 35,
                 "childMenus": null,
-                "menu_order": 2
+                "menu_order": 2,
+                "menu_action": 1,
+                "menu_sign": null
             }, {
                 "menu_id": 38,
                 "menu_name": "角色管理",
                 "menu_url": "/home/rolemanage",
                 "menu_fid": 35,
                 "childMenus": null,
-                "menu_order": 3
+                "menu_order": 3,
+                "menu_action": 1,
+                "menu_sign": null
             }],
-            "menu_order": 9
-        }], "deptRoles"
-    :
-        [{
+            "menu_order": 9,
+            "menu_action": 1,
+            "menu_sign": null
+        }],
+        "deptRoles": [{
             "dept_id": 1,
             "dept_name": "事业部",
             "dept_fid": null,
@@ -209,7 +296,12 @@ let a ={
             "dept_name": "苟利国家生死以",
             "dept_fid": null,
             "depts": null,
-            "roles": [],
+            "roles": [{
+                "dept": null,
+                "menus": null,
+                "role_NAME": "测试角色名称",
+                "role_ID": "eb2388f307d14481a57463e3dc1df49c"
+            }, {"dept": null, "menus": null, "role_NAME": "测试角色名称二", "role_ID": "8f72307d9dbe4b2983a7a69789bf7c23"}],
             "users": null,
             "system_NAME": null,
             "system_ID": null,

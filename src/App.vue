@@ -47,6 +47,9 @@
 
           }
         },
+        mounted(){
+
+        },
         methods: {
 
         }

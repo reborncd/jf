@@ -292,14 +292,14 @@
                 selectValue: "与我相关",
                 dateComp: {},
                 tabs: {
-                    activeName: "info",
-                    consoleWrapperVisible: 0,
-                    consoleActionVisible: false,
+                    activeName: "info",//控制台的选中项
+                    consoleWrapperVisible: 0,//控制台的显示1/隐藏0
+                    consoleActionVisible: false,//控制台的操作显示/隐藏
                     consoleActionData: {
                         "jckf":["新建变更","需求内变更","撤回"]
                     },
-                    activeTableInfo:"",
-                    data_one:{
+                    activeTableInfo:"",//
+                    data_one:{//控制台的信息页展示内容
                         state_NAME:"",
                         base_NEET_ID:"",
                         importance_NAME:"",
@@ -517,8 +517,6 @@
             //操作台的事件
             consoleActionEvent(val,f){
                 this.tabs.consoleActionVisible = false;
-                console.log(val)
-                console.log(f)
                 if(f == "jckf"){
                     switch (val){
                         case "撤回":
@@ -532,7 +530,6 @@
                 this.confirm("确定进行撤回操作吗？",()=>{
                     let params = new URLSearchParams();
                     let info = this.tabs.activeTableInfo;
-                    console.log();
                     params.append("BASE_ID",info.base_NEET_ID);
                     params.append("STATE_ID",302);
                     this.$axios.post("base/check",params).then((res)=>{
@@ -544,7 +541,6 @@
                         }
                     })
                 })
-
             }
         }
     }

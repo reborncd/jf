@@ -106,7 +106,7 @@
 
 <script>
     export default {
-        created(){
+        mounted(){
             let params = new URLSearchParams();
             this.$axios.post('/user/userMessage', params).then((res) => {
                 let data = res.data;

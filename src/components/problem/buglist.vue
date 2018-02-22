@@ -318,7 +318,6 @@
                         <el-button type="danger" @click="subForm">确 定</el-button>
                     </div>
                 </div>
-
             </div>
         </el-card>
     </div>

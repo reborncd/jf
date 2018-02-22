@@ -151,6 +151,7 @@
 </template>
 
 <script>
+    import asd from  "../../数据.js"
     export default {
         data(){
             return {
@@ -159,7 +160,7 @@
                 role_name: "",//角色名称
                 role_dept: "",//选择的部门的ID
                 role_arr: "",//部门的数组
-                live_arr: "",
+                live_arr: "",//展示已有角色的数组
                 left: [],//左侧的所有数据
                 middle: [],//中间放的数组，包括选中的
                 leftSubData: [],//提交的左侧树形菜单
@@ -189,24 +190,22 @@
                 let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
                 let treeWrap = document.querySelectorAll(".tree-wrapper");
-                card_body.style.height = height - 36 - card_header_height  + "px";
+                card_body.style.height = height - 36 - card_header_height + "px";
                 for (let i of treeWrap) {
-                    i.style.height = height - 36 - card_header_height - 20 - 132 - 10 - 39 - 48-52 + "px";
+                    i.style.height = height - 36 - card_header_height - 20 - 132 - 10 - 39 - 48 - 52 + "px";
                 }
             },
             loadData(){
                 this.$maskin();
                 let params = new URLSearchParams();
                 let roleId = this.$route.query.id;
-                if(roleId){
-                    params.append("ROLE_ID",roleId)
+                if (roleId) {
+                    params.append("ROLE_ID", roleId)
                 }
                 this.$axios.post("role/queryRoleMenu", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         let arr = [];
-                        let leftarr = [];
-
                         for (let i of data.result.rootMenu) {
                             let fobj = {
                                 "label": i.menu_name,
@@ -214,27 +213,33 @@
                                 "children": [],
                                 "action": []
                             };
-                            if(i.menu_sign == 1){
-                                //当以编辑身份进来时，显示左侧的已选中数据
-                                console.log(i.menu_id)
-                                leftarr.push(i.menu_id);
+                            if (roleId) {
+                                //判断左侧选择的数据
+                                // （如果任何一个子项被选中就会带上上级menu_id，所以在此判断去除掉上级id的干扰，因为如果带上上级id则子项就会被全部选中）
+                                for (let j of data.result.menus) {
+                                    if (j == i.menu_id) {
+                                        let _index = data.result.menus.indexOf(i.menu_id);
+                                        data.result.menus.splice(_index, 1)
+                                    }
+                                }
                             }
                             this.leftAllLength++;
                             if (i.childMenus) {
+                                //如果当下有子菜单
                                 for (let j of i.childMenus) {
                                     let obj = {
                                         "label": j.menu_name,
                                         "fmenu_id": i.menu_id,
                                         "menu_id": j.menu_id,
-                                        "menu_sign":j.menu_sign,
+                                        "menu_sign": j.menu_sign,
                                         "childMenus": j.childMenus
                                     };
                                     if (j.menu_action != 0) {
-                                        //当前的字内容是代表页面，放入left的children做展示
+                                        //当前的子内容是代表页面，放入left的children做展示
                                         fobj.children.push(obj);
                                         this.leftAllLength++;
                                     } else {
-                                        //当前的字内容是代表操作，放入left中作为middle的展示内容
+                                        //当前的子内容是代表操作，放入left中作为middle的展示内容
                                         fobj.action.push(obj)
                                     }
                                 }
@@ -243,30 +248,51 @@
                         }
                         this.left = arr;
                         //当前是编辑操作，将选中的值放入this.middle中
-                        if(roleId){
-                            console.log(this.left)
-                            let rightarr = [];
-                            let middleObj = {
-                                "arr":[],
-                                "keys":[]
-                            };
-                            for(let i of this.left){
-                                if(this.action && this.children){
-                                    //middle应该显示操作
-
-                                }
-                            }
-                        }
-                        //加载说书部门
-                        this.role_arr = data.result.deptRoles;
-                        this.$maskoff();
-                        if(roleId){
-                            //当前是编辑
+                        if (roleId) {
+                            //加载所属部门
+                            this.role_arr = data.result.deptRoles;
+                            //当前是编辑回显选择部门操作
                             this.role_dept = data.result.role.DEPT_ID;
                             this.deptChange();
                             this.role_name = data.result.role.ROLE_NAME;
-                            this.$refs.lefttree.setCheckedKeys(leftarr);
+                            //加载左侧被选中
+                            this.$refs.lefttree.setCheckedKeys(data.result.menus);
+                            //加载右侧回显数据
+                            //我都不知道该怎么写注释，有疑问请联系我
+                            let middlearr = [];
+                            for (let i of this.left) {
+                                let loop_arr = [];
+                                let middleobj = {
+                                    "arr": [],
+                                    "keys": []
+                                };
+                                if (i.children.length) {
+                                    loop_arr = i.children
+                                } else {
+                                    loop_arr = i.action
+                                }
+                                for (let j of loop_arr) {
+                                    if (j.childMenus) {
+                                        for (let m of j.childMenus) {
+                                            let obj = {
+                                                "label": m.menu_name,
+                                                "menu_id": m.menu_id,
+                                                "fmenu_id": j.menu_id,
+                                            }
+                                            if (m.menu_sign) {
+                                                middleobj.keys.push(m.menu_id)
+                                            }
+                                            middleobj.arr.push(obj)
+                                        }
+                                    }
+                                    if (j.menu_sign) {
+                                        middlearr[j.menu_id] = middleobj
+                                    }
+                                }
+                            }
+                            this.middle = middlearr;
                         }
+                        this.$maskoff();
                     }
                 })
             },
@@ -283,7 +309,7 @@
                 this.leftActiveData = val;//选中时记录下当前选中的左侧
                 this.middleData = [];//清空右侧
                 this.$refs.middletree.setCheckedKeys([]);//清空右侧选择的数据
-                //点击事件当点击父级时也会触发，会出现父级没有页面和父级有页面情况，如果没有页面
+                //点击事件当点击父级时也会触发，会出现父级没有页面和父级有页面情况
                 let fobj = {
                     "arr": [],
                     "keys": []
@@ -320,7 +346,6 @@
                 }
                 //设置middle的临时展示数据
                 this.middleData = this.middle[val.menu_id].arr;
-                console.log(this.middle)
             },
             leftchange(val, status){
                 //左侧选中事件

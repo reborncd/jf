@@ -233,6 +233,7 @@
 
 <script>
     import "../../static/css/card.css";
+    import  caidan from  "../../caidan"
     export default {
         data(){
             return {
@@ -248,22 +249,20 @@
                 userName: "",//用户名
             }
         },
-        created(){
-
-        },
         mounted(){
+            this.calculate();
             window.onresize = () => {
                 this.calculate();
                 this.$refs.routerView.calculate();
             };
             this.loadData();
-
         },
         methods: {
             loadData(){
                 let params = new URLSearchParams();
-                this.$axios.post("/user/main", params).then((res) => {
-                    let data = res.data;
+//                this.$axios.post("/user/main", params).then((res) => {
+//                    let data = res.data;
+                    let data = caidan
                     if (data.code == 200) {
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
@@ -294,7 +293,7 @@
                             }
                         }
                     }
-                })
+//                })
             },
             calculate(){
                 let height = window.innerHeight;
