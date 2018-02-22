@@ -1,0 +1,331 @@
+<style scoped>
+    #mask {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.0);
+        z-index: 100;
+    }
+
+    #loading {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 40px;
+        margin: auto;
+        color: #ff6700;
+    }
+
+    .header {
+        display: flex;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 50px;
+        z-index: 2;
+    }
+
+    /*logo*/
+    .header .company {
+        width: 224px;
+        height: 50px;
+        text-align: center;
+        background: #db5450;
+    }
+
+    .header .company img {
+        display: inline-block;
+        margin: 14px 0;
+    }
+
+    /*菜单*/
+    .nav {
+        flex: 1;
+        height: 50px;
+        padding: 0 17px;
+        background: #404d5d;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    .nav ul {
+        padding-top: 15px;
+    }
+
+    .nav ul li {
+        float: left;
+        color: white;
+        padding: 0 15px;
+        line-height: 35px;
+        background: #677484;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .nav ul li:hover {
+        color: #e7615e;
+        background: white;
+    }
+
+    .nav ul li.active {
+        color: #e7615e;
+        background: white;
+    }
+
+    /*个人用户*/
+    .nav .el-dropdown-link {
+        color: white;
+    }
+
+    .nav .logout {
+        color: white;
+        margin-left: 10px;
+    }
+
+    .nav .user {
+        line-height: 50px;
+    }
+
+    .nav .user img {
+        float: left;
+        margin: 10px 8px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+    }
+
+    /*左侧菜单*/
+    .mainl {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 224px;
+        height: 100%;
+        padding: 50px 0;
+        background: #778494;
+        z-index: 1;
+    }
+
+    .mainl .state {
+        color: white;
+        line-height: 40px;
+        border-bottom: 1px solid #9caab7;
+        margin-left: 15px;
+    }
+
+    .mainl .aside-wrap li {
+        padding-left: 15px;
+        color: white;
+        cursor: pointer;
+        line-height: 40px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .mainl .aside-wrap li.active{
+        background: #939da7;
+    }
+    .mainl .aside-wrap li i {
+        margin-right: 30px;
+    }
+
+    .mainl .aside-wrap li:hover {
+        background: #939da7;
+    }
+
+    .mainl .aside-wrap li:hover {
+        background: #939da7;
+    }
+
+    /*主题内容*/
+    .mainr {
+        position: fixed;
+        left: 224px;
+        top: 50px;
+        overflow-y: auto;
+        padding: 17px 224px 17px 17px;
+        z-index: 1;
+        width: 100%;
+        height: 586px;
+    }
+
+    .mainr::-webkit-scrollbar {
+        width: 0;
+    }
+
+    .mainr::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+    }
+</style>
+<style>
+    .el-dialog__body{
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .el-dialog{
+       margin: 100px auto 0!important;
+    }
+</style>
+<template>
+    <div class="">
+        <div class="header clear">
+            <div class="company">
+                <img src="../../static/image/home_logo.png" alt="">
+            </div>
+            <div class="nav">
+                <ul class="clear fl">
+                    <li v-for="(item,index) in mainMenu"
+                        :class="menuActive == item.menu_id?'active':''"
+                        @click="changeMainMenu(item)">
+                        {{item.menu_name}}
+                    </li>
+                </ul>
+                <div class="fr user">
+                    <el-dropdown @command="handleCommand">
+                        <span class="el-dropdown-link">
+                            <img src="../../static/image/user_logo.jpg" alt="" width="30" height="30">
+                            {{userName}}
+                            <i class="el-icon-arrow-down el-icon--right"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="work">工作汇报</el-dropdown-item>
+                            <el-dropdown-item command="userInfo">个人资料</el-dropdown-item>
+                            <el-dropdown-item command="resetPassword" @click="resetPassword">修改密码</el-dropdown-item>
+                            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    <i class="logout el-input__icon iconfont icon-guanji"></i>
+                </div>
+            </div>
+        </div>
+        <div class="mainl">
+            <div class="state">{{activeTitle}}</div>
+            <ul class="aside-wrap">
+                <li v-for="item in subMenu" @click="subMenuAction(item)" :class="subActive == item.menu_id?'active':''">
+                    <i class="el-input__icon  el-icon-tickets"></i>{{item.menu_name}}
+                </li>
+            </ul>
+        </div>
+        <div class="mainr" :style="content">
+            <router-view ref="routerView"></router-view>
+        </div>
+        <div id="mask">
+            <i class="el-icon-loading" id="loading"></i>
+        </div>
+    </div>
+</template>
+
+<script>
+    import "../../static/css/card.css";
+    export default {
+        data(){
+            return {
+                content: {
+                    width: "",
+                    height: ""
+                },
+                mainMenu: [],//主要大功能菜单
+                subMenu: [],//大功能菜单下的小菜单
+                menuActive: "",//大导航的当前活动项
+                activeTitle: "",//左侧菜单抬头，只做展示
+                subActive: "",//左侧菜单的当前活动项
+                userName: "",//用户名
+            }
+        },
+        created(){
+
+        },
+        mounted(){
+            window.onresize = () => {
+                this.calculate();
+                this.$refs.routerView.calculate();
+            };
+            this.loadData();
+
+        },
+        methods: {
+            loadData(){
+                let params = new URLSearchParams();
+                this.$axios.post("/user/main", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        this.userName = data.result.user.user_NAME;
+                        this.mainMenu = data.result.menus;
+                        let nowPath = this.$router.currentRoute.path;//当前的路径
+                        for(let i of data.result.menus){//根据当前路径判断标题的active
+                            if(i.menu_url){//大菜单有相应页面且和当前路径相等
+                                if(i.menu_url == nowPath){
+                                    this.subActive = "";//清空左侧active
+                                }else{
+                                    for(let j of i.childMenus){
+                                        if (j.menu_url == nowPath){
+                                            this.subActive = j.menu_id;//设置左侧active
+                                        }
+                                    }
+                                }
+                                this.subMenu = i.childMenus;
+                                this.menuActive = i.menu_id;//设置大标题的active;
+                                this.activeTitle = i.menu_name;//设置左侧的名称;
+                            }else if(!i.menu_url && i.childMenus){//大菜单没有相应页面调用的是子菜单的页面
+                                for(let j of i.childMenus){
+                                    if (j.menu_url == nowPath){
+                                        this.subMenu = i.childMenus;
+                                        this.menuActive = i.menu_id;//设置大标题的active;
+                                        this.activeTitle = i.menu_name;//设置左侧的名称;
+                                        this.subActive = j.menu_id;//设置左侧active
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            },
+            calculate(){
+                let height = window.innerHeight;
+                this.content = {
+                    'height': `${height - 50}px`
+                };
+            },
+            //顶部菜单点击事件
+            changeMainMenu(val){
+                this.menuActive = val.menu_id;
+                this.subMenu = val.childMenus;
+                this.activeTitle = val.menu_name;
+                if(!val.menu_url){
+                    this.$go(val.childMenus[0]['menu_url']);
+                    this.subActive = val.childMenus[0]['menu_id']
+                }else{
+                    this.$go(val.menu_url);
+                    this.subActive = ""
+                }
+            },
+            //左侧菜单点击事件
+            subMenuAction(val){
+                this.$go(val.menu_url);
+                this.subActive = val.menu_id;
+            },
+            handleCommand(type){
+
+            },
+            resetPassword(){
+                this.$go("/resetPassword");
+            }
+        }
+    }
+</script>

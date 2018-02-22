@@ -1,0 +1,113 @@
+import Vue from "vue";
+import Router from "vue-router";
+
+Vue.use(Router);
+let option = {
+    mode: 'history',
+    routes: [
+        {
+            path: '/',
+            redirect: '/login'
+        }, {
+            path: '/login',
+            component: resolve => require(['./components/account/login.vue'], resolve)
+        }, {
+            path: '/register',
+            component: resolve => require(['./components/account/register.vue'], resolve)
+        }, {
+            path: '/backpassword',
+            component: resolve => require(['./components/account/backPassword.vue'], resolve)
+        }, {
+            path: '/add',
+            component: resolve => require(['./components/add.vue'], resolve)
+        },{
+            path: '/home',
+            component: resolve => require(['./components/home/home.vue'], resolve),
+            children: [
+                {
+                    path: '/',
+                    redirect: 'index'
+                },
+                {
+                    path: 'resetPassword',
+                    component: resolve => require(['./components/account/resetPassword.vue'], resolve)
+                }, {
+                    path: 'userCenter',
+                    component: resolve => require(['./components/account/userCenter.vue'], resolve)
+                }, {
+                    path: 'index',
+                    component: resolve => require(['./components/home/homeIndex.vue'], resolve)
+                },{
+                    path: 'workreport',
+                    component: resolve => require(['./components/needs/workreport.vue'], resolve)
+                },{
+                    path: 'addrole',
+                    component: resolve => require(['./components/power/editrole.vue'], resolve),
+                },{
+                    path: 'editrole',
+                    component: resolve => require(['./components/power/editrole.vue'], resolve),
+                },{
+                    path: 'rolemanage',
+                    component: resolve => require(['./components/power/rolemanage.vue'], resolve)
+                },{
+                    path: 'rolelist',
+                    component: resolve => require(['./components/power/rolelist.vue'], resolve)
+                },{
+                    path: 'power',
+                    component: resolve => require(['./components/power/power.vue'], resolve)
+                },{
+                    path: 'deptlist',
+                    component: resolve => require(['./components/power/deptlist.vue'], resolve)
+                },{
+                    path: 'log',
+                    component: resolve => require(['./components/account/log.vue'], resolve)
+                },{
+                    path: 'ywxq',
+                    component: resolve => require(['./components/needs/ywxq/ywxq.vue'], resolve)
+                },{
+                    path: 'jcjs',
+                    component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)
+                },{
+                    path: 'errorlist',
+                    component: resolve => require(['./components/problem/errorlist.vue'], resolve)
+                },{
+                    path: 'buglist',
+                    component: resolve => require(['./components/problem/buglist.vue'], resolve)
+                },{
+                    path: "online",
+                    component: resolve => require(['./components/online/online.vue'], resolve)
+                },{
+                    path: "flow",
+                    component: resolve => require(['./components/flow/flow.vue'], resolve)
+                }
+            ]
+        }
+    ]
+};
+let router = new Router(option);
+// router.beforeEach((to, from, next) => {
+//     console.log(to)
+//     console.log(from)
+//     console.log(next)
+//     let type = localStorage.getItem("TYPE");
+//     let token = localStorage.getItem("token");
+    // if (token) {
+    //     switch (type) {
+    //         case "REMEMBER":
+    //             next();
+    //             break;
+    //         case "AUTO":
+    //             next({'path': "/home"});
+    //             break;
+    //         case "":
+    //             next();
+    //             break;
+    //         default:
+    //             next();
+    //             break;
+    //     }
+    // } else {
+    //     next()
+    // }
+// });
+export default router;
