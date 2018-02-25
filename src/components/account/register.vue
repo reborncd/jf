@@ -170,9 +170,8 @@
                 this.$axios.post("/user/add", params).then( (res)=>{
                     let data = res.data;
                     if (data.code == 200) {
-                        this.alert("注册成功",()=>{
+                        this.$success("注册成功！");
                             this.$go("/login")
-                        })
                     } else {
                         this.$warn(data.message);
                     }

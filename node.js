@@ -9,7 +9,6 @@ app.all('*', function(req, res, next) {
     next();
 });
 app.use(express.static(__dirname+'/dist/'))
-console.log(__dirname+'./dist/')
 app.get("/login",function (req,res) {
     res.sendFile(__dirname+'/dist/index.html')
 });

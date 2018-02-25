@@ -61,27 +61,27 @@
                         </div>
                     </div>
                     <div class="table-list">
-                        <!--<el-table :data="tableData" border style="width: 100%"-->
-                        <!--:height="table.tableHeight"-->
-                        <!--highlight-current-row-->
-                        <!--@row-click="handleCurrentChange">-->
-                        <!--<el-table-column prop="aa" label="需求编号" width="200"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="原需求编号" width="200"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="申请日期"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="计划投产日期"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="产品功能"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="需求来源"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="优先级"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="状态"></el-table-column>-->
-                        <!--<el-table-column prop="aa" label="bug清单"></el-table-column>-->
-                        <!--&lt;!&ndash;<el-table-column label="操作">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<template slot-scope="scope" class="action-wrap">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<el-button size="mini" @click="editRow(scope.row,scope)"  type="primary">确认</el-button>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<el-button size="mini" @click="deleteRow(scope.row,scope)"  type="danger">驳回</el-button>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</template>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
-                        <!--</el-table>-->
+                        <el-table :data="table.tableData" border style="width: 100%"
+                        :height="table.tableHeight"
+                        highlight-current-row
+                        @row-click="handleCurrentChange">
+                        <el-table-column prop="aa" label="需求编号" width="200"></el-table-column>
+                        <el-table-column prop="aa" label="原需求编号" width="200"></el-table-column>
+                        <el-table-column prop="aa" label="申请日期"></el-table-column>
+                        <el-table-column prop="aa" label="计划投产日期"></el-table-column>
+                        <el-table-column prop="aa" label="产品功能"></el-table-column>
+                        <el-table-column prop="aa" label="需求来源"></el-table-column>
+                        <el-table-column prop="aa" label="涉及系统"></el-table-column>
+                        <el-table-column prop="aa" label="优先级"></el-table-column>
+                        <el-table-column prop="aa" label="状态"></el-table-column>
+                        <el-table-column prop="aa" label="bug清单"></el-table-column>
+                        <!--<el-table-column label="操作">-->
+                        <!--<template slot-scope="scope" class="action-wrap">-->
+                        <!--<el-button size="mini" @click="editRow(scope.row,scope)"  type="primary">确认</el-button>-->
+                        <!--<el-button size="mini" @click="deleteRow(scope.row,scope)"  type="danger">驳回</el-button>-->
+                        <!--</template>-->
+                        <!--</el-table-column>-->
+                        </el-table>
                     </div>
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                         <div class="console-action-wrapper">
@@ -394,11 +394,6 @@
                     }
                 ],
                 selectValue: "与我相关",
-                tableData: [{
-                    a: '2016-05-03',
-                    aa: '假如这是一段',
-
-                }],
                 totalDate: "1",
                 nowPage: "1",
                 totalPage: "1",
@@ -414,7 +409,7 @@
             }
         },
         mounted(){
-            this.calculate()
+            this.calculate();
             this.tabs.infodata = {
                 "name": 1
             };
@@ -447,7 +442,7 @@
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
                 //0代表没有控制台
                 if (type == 0) {
-                    this.table.tableHeight = height - 34 - actionHeight - 20 - 20;
+                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
                 } else {
                     this.table.tableHeight = height * 0.3;
                 }

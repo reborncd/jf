@@ -61,3 +61,6 @@ table.el-table__header th {
 .el-pagination.is-background .el-pager li:hover {
     color: #d85450;
 }
+tr,td{
+    cursor: pointer;
+}

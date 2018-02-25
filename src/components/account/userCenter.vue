@@ -51,19 +51,19 @@
                     <el-button @click.prevent="changePhone">修改手机号码</el-button>
                 </el-form-item>
                 <el-form-item label="所属部门">
-                    <el-input v-model="form.department.dept_name" :disabled="form.departmentAble"></el-input>
+                    <el-input v-model="form.dept" :disabled="form.departmentAble"></el-input>
                 </el-form-item>
                 <el-form-item label="个人职务">
-                    <el-input v-model="form.department.dept_name" :disabled="form.departmentAble"></el-input>
+                    <el-input v-model="form.zhiwu" :disabled="form.departmentAble"></el-input>
                 </el-form-item>
                 <el-form-item label="开发语言">
-                    <el-input v-model="form.department.dept_name" :disabled="form.departmentAble"></el-input>
+                    <el-input v-model="form.lan" :disabled="form.departmentAble"></el-input>
                 </el-form-item>
                 <el-form-item label="在职时间">
-                    <el-input v-model="form.department.dept_name" :disabled="form.departmentAble"></el-input>
+                    <el-input v-model="form.intime" :disabled="form.departmentAble"></el-input>
                 </el-form-item>
-                <el-form-item label="直属上级" class="two">
-
+                <el-form-item label="直属上级">
+                    <el-input v-model="form.boss" :disabled="form.departmentAble"></el-input>
                 </el-form-item>
 
                 <!--<el-form-item label="所属部门">-->
@@ -110,13 +110,17 @@
             let params = new URLSearchParams();
             this.$axios.post('/user/userMessage', params).then((res) => {
                 let data = res.data;
-                if (data.result == 1) {
-                    this.form.name = data.user.user_NAME;
-                    this.form.account = data.user.user_ACCOUNT;
-                    this.form.phone = data.user.user_PHONE;
-                    this.form.department = data.user.dept ? data.user.dept : "";
-                    this.form.roles = data.user.roles.length > 0 ? data.user.roles : "";
-                    this.form.roles_value = data.user.roles[0].role_NAME
+                if (data.code == 200) {
+                    let boss_dept = data.result.F_DEPT_NAME?data.result.F_DEPT_NAME:"";
+                    let boss_name = data.result.F_USER_NAME?data.result.F_USER_NAME:""
+                    this.form.name = data.result.USER_NAME;//姓名
+                    this.form.account = data.result.USER_ACCOUNT;//账号
+                    this.form.phone = data.result.USER_PHONE;//
+                    this.form.dept = data.result.DEPT_NAME ? data.result.DEPT_NAME : "";
+                    this.form.zhiwu = data.result.ROLE_NAME?data.result.ROLE_NAME:"";
+                    this.form.lan = data.result.LANGUAGE_NAME?data.result.LANGUAGE_NAME:"";
+                    this.form.intime = data.result.Days+"天";
+                    this.form.boss = `${boss_dept}——${boss_name}`;
                 }
             })
         },
@@ -128,8 +132,11 @@
                     account: '',
                     name: '',
                     phone: '',
-                    department: '',
-                    roles: '',
+                    dept: '',
+                    zhiwu: '',
+                    lan: '',
+                    intime: '',
+                    boss: '',
                     departmentAble: true,
                     positionAble: false,
                     roles_value: ""

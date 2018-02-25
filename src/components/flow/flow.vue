@@ -76,7 +76,6 @@
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
-                              @dragleave="dragleaveEvent"
                               @dragover="dragoverEvent"
                         >{{item.name}}</span>
                             <i :style='{opacity:index+1 == flow.length?0:1}'

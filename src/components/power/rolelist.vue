@@ -472,7 +472,7 @@
                     this.$maskin(1);
                     let arr = [];
                     for (let i of this.tempTableData) {
-                        if (JSON.stringify(i).indexOf(this.keyword) > 0) {
+                        if (JSON.stringify(i).indexOf(this.keyword) >= 0) {
                             arr.push(i);
                         }
                     }

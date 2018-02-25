@@ -9,6 +9,7 @@
 <script>
 export default {
     data(){
+        let params = new URLSearchParams();
         return {
 
         }

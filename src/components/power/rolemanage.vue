@@ -89,13 +89,12 @@
 </template>
 
 <script>
-    import axios from  "axios"
     export default {
         data(){
             return {
                 search: "",
                 tableData: [],
-                tableHeight: "",
+                tableHeight: "auto",
                 treeData: [],
                 leftTreeData: []
             }

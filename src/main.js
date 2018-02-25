@@ -16,6 +16,9 @@ Vue.config.productionTip = false;
 Vue.prototype.$go = function (route) {
     this.$router.push({'path': route})
 };
+Vue.prototype.$back = function (route) {
+    this.$router.go(-1)
+};
 
 //验证token返回登录----------------------------------------------------
 Vue.prototype.$goLogin = function () {
@@ -53,6 +56,16 @@ Vue.prototype.confirm = function (msg, success, cancel) {
         success()
     }).catch(() => {
         cancel?cancel():""
+    });
+};
+Vue.prototype.prompt = function (title,msg,success,cancel) {
+    this.$prompt(msg, title, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+    }).then(({ value }) => {
+      success({ value })
+    }).catch(() => {
+        cancel()
     });
 };
 //数组去重
@@ -126,7 +139,7 @@ Vue.prototype.$format = (time) => {
 //----------------------------------------------------
 let token = "99a435577a5042bc95b2e8ad6d5b8f73";
 let instance = axios.create({
-    baseURL: 'http://172.16.2.32:8989/JiFu_Project',
+    baseURL: 'http://172.16.1.140:8989/JiFu_Project',
     headers: {
         'content-type': 'application/x-www-form-urlencoded',
     }
@@ -205,8 +218,11 @@ Vue.prototype.$needsStatus =  (status)=>{
         case 314:
             result = "已变更需求";
             break;
+        case 317:
+            result = "被技术管理部驳回";
+            break;
     }
-}
+};
 new Vue({
     el: '#app',
     router,

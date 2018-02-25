@@ -83,7 +83,7 @@
         <el-dialog title="新增部门" :visible="dialogOption.dialog_dep_visible" center
                    label-position="left"
                    :append-to-body="dialogOption.appendToBody" :lock-scroll="dialogOption.lockScroll"
-                   :show-close="dialogOption.showClose" width="30%" :modal-append-to-body="dialogOption.modal"
+                   :show-close="dialogOption.showClose" width="50%" :modal-append-to-body="dialogOption.modal"
         >
             <el-form label-width="100px">
                 <el-form-item label="上级部门">
@@ -326,7 +326,7 @@
                 }else{
                     let arr = [];
                     for(let i of this.originTableData){
-                        if(JSON.stringify(i).indexOf(this.keyword)>0){
+                        if(JSON.stringify(i).indexOf(this.keyword)>=0){
                             arr.push(i)
                         }
                     }

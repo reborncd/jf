@@ -151,7 +151,6 @@
 </template>
 
 <script>
-    import asd from  "../../数据.js"
     export default {
         data(){
             return {
@@ -205,6 +204,8 @@
                 this.$axios.post("role/queryRoleMenu", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        //加载所属部门
+                        this.role_arr = data.result.deptRoles;
                         let arr = [];
                         for (let i of data.result.rootMenu) {
                             let fobj = {
@@ -249,8 +250,6 @@
                         this.left = arr;
                         //当前是编辑操作，将选中的值放入this.middle中
                         if (roleId) {
-                            //加载所属部门
-                            this.role_arr = data.result.deptRoles;
                             //当前是编辑回显选择部门操作
                             this.role_dept = data.result.role.DEPT_ID;
                             this.deptChange();
@@ -461,7 +460,7 @@
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功！");
-                        this.$go(-1)
+                        this.$back()
                     }
                 })
             }

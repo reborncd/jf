@@ -101,7 +101,7 @@ export default {
             })
         },
         back(){
-
+            this.$go("/home/index")
         }
     }
 }

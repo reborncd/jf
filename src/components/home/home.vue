@@ -93,6 +93,7 @@
     .nav .logout {
         color: white;
         margin-left: 10px;
+        cursor: pointer;
     }
 
     .nav .user {
@@ -175,7 +176,7 @@
 </style>
 <style>
     .el-dialog__body{
-        max-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
     }
     .el-dialog{
@@ -197,8 +198,8 @@
                     </li>
                 </ul>
                 <div class="fr user">
-                    <el-dropdown @command="handleCommand">
-                        <span class="el-dropdown-link">
+                    <el-dropdown @command="handleCommand" trigger="click">
+                        <span class="el-dropdown-link" style="cursor: pointer">
                             <img src="../../static/image/user_logo.jpg" alt="" width="30" height="30">
                             {{userName}}
                             <i class="el-icon-arrow-down el-icon--right"></i>
@@ -206,11 +207,11 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item command="work">工作汇报</el-dropdown-item>
                             <el-dropdown-item command="userInfo">个人资料</el-dropdown-item>
-                            <el-dropdown-item command="resetPassword" @click="resetPassword">修改密码</el-dropdown-item>
+                            <el-dropdown-item command="resetPassword">修改密码</el-dropdown-item>
                             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
-                    <i class="logout el-input__icon iconfont icon-guanji"></i>
+                    <i class="logout el-input__icon iconfont icon-guanji" @click="logout"></i>
                 </div>
             </div>
         </div>
@@ -233,7 +234,6 @@
 
 <script>
     import "../../static/css/card.css";
-    import  caidan from  "../../caidan"
     export default {
         data(){
             return {
@@ -260,9 +260,8 @@
         methods: {
             loadData(){
                 let params = new URLSearchParams();
-//                this.$axios.post("/user/main", params).then((res) => {
-//                    let data = res.data;
-                    let data = caidan
+                this.$axios.post("/user/main", params).then((res) => {
+                    let data = res.data;
                     if (data.code == 200) {
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
@@ -293,7 +292,7 @@
                             }
                         }
                     }
-//                })
+                })
             },
             calculate(){
                 let height = window.innerHeight;
@@ -320,10 +319,33 @@
                 this.subActive = val.menu_id;
             },
             handleCommand(type){
-
+                console.log(type)
+                switch (type){
+                    case "resetPassword":
+                        this.$go("/home/resetPassword");
+                        break;
+                    case "logout":
+                        this.logout();
+                        break;
+                }
             },
             resetPassword(){
                 this.$go("/resetPassword");
+            },
+            logout(){
+                this.confirm("确定退出登录？",()=>{
+                    let params = new URLSearchParams();
+                    this.$axios.post("/user/logout",params).then((res)=>{
+                        let data = res.data;
+                        if(data.code == 200){
+                            this.$success("退出成功");
+                            let account = localStorage.getItem("ACCOUNT");
+                            localStorage.clear();
+                            localStorage.setItem("ACCOUNT",account);
+                            this.$router.replace("/login")
+                        }
+                    })
+                })
             }
         }
     }
