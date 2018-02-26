@@ -139,7 +139,7 @@ Vue.prototype.$format = (time) => {
 //----------------------------------------------------
 let token = "99a435577a5042bc95b2e8ad6d5b8f73";
 let instance = axios.create({
-    baseURL: 'http://172.16.1.140:8989/JiFu_Project',
+    baseURL: 'http://172.16.2.25:8989/JiFu_Project',
     headers: {
         'content-type': 'application/x-www-form-urlencoded',
     }
@@ -149,7 +149,7 @@ instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
     if(localStorage.getItem("token")){
         let token = localStorage.getItem("token");
-        // config.data+="&token="+"a94869b6746f4ba8bd6c773f8e74f55d";
+        // config.data+="&token="+"1234";
         config.data+=`&token=${token}`;
     }
     return config;

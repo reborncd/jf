@@ -212,7 +212,7 @@
                             </el-tab-pane>
                             <el-tab-pane label="全程跟踪" name="log">
                                 <div class="console-tab-content">
-                                    <el-form label-width="180px" label-position="left">
+                                    <el-form label-width="60px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="10" :sm="10">
                                                 <el-form-item label="状态：">
@@ -572,26 +572,30 @@
                 this.clearAddData();
                 this.$maskin();
                 let params = new URLSearchParams();
+                //base/queryBaseByUser
                 this.$axios.post("/base/queryAll", params).then((res) => {
                     let data = res.data;
-                    if (data.code == 200) {
-                        let arr = [];
-                        for (let i of data.result) {
-                            if (i.start_DATE) {
-                                let start = this.$format(i.start_DATE);
-                                i.start_DATE = `${start.year}-${start.mouth}-${start.day}`;
-                            }
-                            if (i.end_DATE) {
-                                let end = this.$format(i.end_DATE);
-                                i.end_DATE = `${end.year}-${end.mouth}-${end.day}`;
-                            }
-                            arr.push(i)
-                        }
-                        this.$set(this.table, "tableData", arr);
-                        this.$set(this.table, "tableOriginData", arr);
-                        this.$maskoff();
-                    }
+                    this.setTableData(data);
                 })
+            },
+            setTableData(data){
+                if (data.code == 200) {
+                    let arr = [];
+                    for (let i of data.result) {
+                        if (i.start_DATE) {
+                            let start = this.$format(i.start_DATE);
+                            i.start_DATE = `${start.year}-${start.mouth}-${start.day}`;
+                        }
+                        if (i.end_DATE) {
+                            let end = this.$format(i.end_DATE);
+                            i.end_DATE = `${end.year}-${end.mouth}-${end.day}`;
+                        }
+                        arr.push(i)
+                    }
+                    this.$set(this.table, "tableData", arr);
+                    this.$set(this.table, "tableOriginData", arr);
+                    this.$maskoff();
+                }
             },
             //新建弹窗
             newneeds(){
@@ -866,6 +870,7 @@
                     params.append("names",nameArr);
                     params.append("ids",idArr);
                     params.append("BASE_ID",info.base_NEET_ID);
+                    params.append("OLD_STATE",info.state_ID);
                     // OPER 操作(confirm:确认  reject:驳回)
 //                    params.append("OPER","confirm");
                     this.$axios.post("/base/checkBase",params).then((res)=>{
