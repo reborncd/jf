@@ -13,8 +13,8 @@ Vue.config.productionTip = false;
 //----------------------------------------------------
 //路由跳转
 //----------------------------------------------------
-Vue.prototype.$go = function (route) {
-    this.$router.push({'path': route})
+Vue.prototype.$go = function (route,params) {
+    this.$router.push({'path': route,"query":params})
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)

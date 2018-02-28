@@ -11,7 +11,7 @@
                     :value="item.menu_id">
             </el-option>
         </el-select>
-        <el-input v-model="input" placeholder="请输入页面名称"></el-input>
+        <el-input v-model="input" placeholder="请输入页面名称或者操作名称"></el-input>
         <el-input v-model="url" placeholder="请输入路由"></el-input>
         <el-radio v-model="radio" label="0">操作</el-radio>
         <el-radio v-model="radio" label="1">页面</el-radio>

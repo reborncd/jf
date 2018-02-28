@@ -132,12 +132,6 @@
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
-                            <i class="icon-more iconfont"
-                               @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
-                            <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                <span v-for="item in tabs.consoleActionData.jckf"
-                                      @click="consoleActionEvent(item,'jckf')">{{item}}</span>
-                            </div>
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
@@ -193,6 +187,15 @@
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
                                 <div class="console-tab-content">
+                                    <div class="console-action-wrapper">
+                                        <i class="icon-more iconfont"
+                                           @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
+                                        <div class="console-action fr" v-if="tabs.consoleActionVisible">
+                                            <span v-for="item in tabs.consoleActionData.jcjs"
+                                                  @click="consoleActionEvent(item.name,'jcjs')">{{item.name}}
+                                            </span>
+                                        </div>
+                                    </div>
                                     <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="8">
@@ -372,7 +375,8 @@
                     <li v-for="item in assign.searchData" v-if="item.users.length>0">
                         <span class="deptTitle">{{item.dept_name}}</span>
                         <el-checkbox-group v-model="assign.checkList">
-                            <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                            <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
+                                         class="check-item">
                                 {{_item.user_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
@@ -380,7 +384,8 @@
                 </ul>
                 <div v-if="assign.leftSearch">
                     <el-checkbox-group v-model="assign.checkList">
-                        <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
+                        <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                                     class="check-item">
                             {{item.user_NAME}}
                         </el-checkbox>
                     </el-checkbox-group>
@@ -388,7 +393,8 @@
             </div>
             <div class="assign-wrapper" v-if="assign.right">
                 <el-checkbox-group v-model="assign.checkList">
-                    <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
+                    <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                                 class="check-item">
                         {{item.user_NAME}}
                     </el-checkbox>
                 </el-checkbox-group>
@@ -398,6 +404,41 @@
                 <el-button type="primary" @click="subAssign" size="mini">提交</el-button>
             </div>
         </el-dialog>
+        <!--拆分任务-->
+        <el-dialog title="拆分任务" :visible="split.splitvisible" width="80%"
+                   append-to-body modal-append-to-body :before-close="closeAddDialog">
+
+            <el-dialog title="拆分任务" :visible="split.splitaddvisible" width="40%"
+                       append-to-body modal-append-to-body :before-close="split_splitaddvisible">
+                <el-form label-width="100px">
+                    <el-form-item label="系统名">
+                        <el-col :span="12">
+                            <el-select v-model="split.choosesysyem" placeholder="请选择">
+                                <el-option
+                                        v-for="item in split.systemarr"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-input v-model="split.person" placeholder="请输入版本号"></el-input>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item label="人员">
+                        <el-select v-model="split.person" placeholder="请选择人员" style="width: 100%">
+                            <el-option
+                                    v-for="item in split.personlist"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </el-dialog>
+        <!--新建拆分-->
+
     </div>
 </template>
 
@@ -438,6 +479,18 @@
                     leftSearch: false,
                     rightlistdata: [],
                     searchData: []
+                },
+                split: {
+                    splitvisible: true,
+                    splitaddvisible: true,
+                    choosesysyem: "",
+                    version: "",
+                    systemarr: [{
+                        label: "1",
+                        value: "2"
+                    }],
+                    person: "",
+                    personlist: []
                 },
                 table: {
                     tableData: [],
@@ -489,7 +542,7 @@
                     consoleWrapperVisible: false,//控制台的显示
                     consoleActionVisible: false,//控制台的操作显示/隐藏
                     consoleActionData: {
-                        "jckf": ["新建变更", "需求内变更", "撤回", "分配任务","驳回"]
+                        "jcjs": []
                     },
                     activeTableInfo: "",//当前选中的信息表格
                     data_one: {//控制台的信息页展示内容
@@ -505,10 +558,10 @@
                         jiaji: "",
                         start_DATE: "",
                         end_DATE: "",
-                        reject:""
+                        reject: ""
                     },
-                    "state_NAME": "",//状态
-                    "user_NAME": "",//负责人
+                    state_NAME: "",//状态
+                    user_NAME: "",//负责人
                     genzong: ""
                 },
             }
@@ -570,11 +623,24 @@
                 this.calculate();
                 this.tabs.consoleWrapperVisible = false;
                 this.clearAddData();
+                let menu_id = this.$route.query.id;
+                if (!menu_id) {
+                    this.$go("/home");
+                    return;
+                }
+                ;
+                let store = localStorage.getItem("POWER");
+                for (let i of (new Function("return" + store))()) {
+                    if (i.id == menu_id) {
+                        this.$set(this.tabs.consoleActionData, "jcjs", i.actGroup);
+                        break;
+                    }
+                }
                 this.$maskin();
                 let params = new URLSearchParams();
-                //base/queryBaseByUser
+                //base/queryBaseByUserw
                 this.$axios.post("/base/queryAll", params).then((res) => {
-                    let data = res.data;
+                    let data = res.data
                     this.setTableData(data);
                 })
             },
@@ -592,7 +658,7 @@
                         }
                         arr.push(i)
                     }
-                    this.$set(this.table, "tableData", arr);
+                    this.$set(this.table, "tableData", arr.concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr));
                     this.$set(this.table, "tableOriginData", arr);
                     this.$maskoff();
                 }
@@ -607,7 +673,6 @@
                         let deptArr = [];
                         for (let i of data.result.depts) {
                             deptArr.push(i);
-
                         }
                         this.addneeds.addform.code = data.result.BASE_NEET_ID;
                         this.$set(this.addneeds.addform, "fromdeptArr", deptArr);
@@ -685,6 +750,10 @@
             closeAddDialog(){
                 this.addneeds.addvisible = false;
                 this.assign.assignvisible = false;
+                this.split.splitvisible = false;
+            },
+            split_splitaddvisible(){
+                this.split.splitaddvisible = false
             },
             handleClick(){
 
@@ -694,6 +763,7 @@
             },
             //点击表格列表展示控制台
             handleCurrentChange(val){
+                console.log(val)
                 this.$maskin();
                 this.tabs.activeTableInfo = val;
                 if (!this.tabs.consoleWrapperVisible) {
@@ -718,7 +788,7 @@
                             this.tabs.data_one.product_FUNCTION = data.result.base.product_FUNCTION;
                             this.tabs.data_one.rriority_NAME = data.result.base.rriority_NAME;
                             this.tabs.data_one.urgent = data.result.base.urgent;
-                            this.tabs.data_one.reject_RESON = data.result.base.reject_RESON?data.result.base.reject_RESON:false;
+                            this.tabs.data_one.reject_RESON = data.result.base.reject_RESON ? data.result.base.reject_RESON : false;
                             if (!data.result.base.dept_NAME || !data.result.base.user_NAME) {
                                 this.tabs.data_one.user_NAME = "";
                             } else {
@@ -745,7 +815,7 @@
             //操作台的事件
             consoleActionEvent(val, f){
                 this.tabs.consoleActionVisible = false;
-                if (f == "jckf") {
+                if (f == "jcjs") {
                     switch (val) {
                         case "撤回":
                             this.back();
@@ -753,11 +823,14 @@
                         case "新建变更":
                             this.newchange();
                             break;
-                        case "分配任务":
+                        case "分配":
                             this.getAssign();
                             break;
                         case "驳回":
                             this.rejected();
+                            break;
+                        case "拆分任务":
+                            this.tabs.activeName = "split";
                             break;
                     }
 
@@ -767,7 +840,7 @@
             //基础开发的撤回操作---------------
             back(){
                 let info = this.tabs.activeTableInfo;
-                if(info.state_ID !== 303){
+                if (info.state_ID !== 303) {
                     this.$warn("只有待技术管理部审核或被驳回状态才能进行分配操作");
                     return;
                 }
@@ -793,7 +866,7 @@
             //分配任务-----------
             getAssign(){
                 let info = this.tabs.activeTableInfo;
-                if(info.state_ID != 303 && info.state_ID != 304){
+                if (info.state_ID != 303 && info.state_ID != 304) {
                     this.$warn("只有待技术管理部审核或被技术经理驳回状态才能进行分配操作");
                     return;
                 }
@@ -801,8 +874,8 @@
                 this.assign.checkList = [];
                 this.assign.assignvisible = true;
                 let params = new URLSearchParams();
-                if(info.state_ID == 304){
-                    params.append("TASK_ID",info.base_NEET_ID);
+                if (info.state_ID == 304) {
+                    params.append("TASK_ID", info.base_NEET_ID);
                 }
                 this.$axios.post("/base/queryUserByDemand", params).then((res) => {
                     let data = res.data;
@@ -851,31 +924,31 @@
                 }
             },
             subAssign(){
-                let result  = this.assign.checkList;
-                if(result.length == 0){
+                let result = this.assign.checkList;
+                if (result.length == 0) {
                     this.$warn("当前没有选择任何人员");
-                }else{
+                } else {
                     let temp = [];
                     let idArr = [];
                     let nameArr = [];
-                    for(let i of result){
+                    for (let i of result) {
                         temp.push(i.split("-"))
                     }
-                    for(let i of temp){
+                    for (let i of temp) {
                         idArr.push(i[0]);
                         nameArr.push(i[1]);
                     }
                     let info = this.tabs.activeTableInfo;
                     let params = new URLSearchParams();
-                    params.append("names",nameArr);
-                    params.append("ids",idArr);
-                    params.append("BASE_ID",info.base_NEET_ID);
-                    params.append("OLD_STATE",info.state_ID);
+                    params.append("names", nameArr);
+                    params.append("ids", idArr);
+                    params.append("BASE_ID", info.base_NEET_ID);
+                    params.append("OLD_STATE", info.state_ID);
                     // OPER 操作(confirm:确认  reject:驳回)
 //                    params.append("OPER","confirm");
-                    this.$axios.post("/base/checkBase",params).then((res)=>{
+                    this.$axios.post("/base/checkBase", params).then((res) => {
                         let data = res.data;
-                        if(data.code == 200){
+                        if (data.code == 200) {
                             this.assign.assignvisible = false;
                             this.$success("操作成功");
                             this.loadData();
@@ -886,27 +959,31 @@
             },
             rejected(){
                 let info = this.tabs.activeTableInfo;
-                if(info.state_ID !=303 && info.state_ID !=305){
+                if (info.state_ID != 303 && info.state_ID != 305) {
                     this.$warn("当期状态无法进行驳回操作！");
                     return;
                 }
-                this.prompt("确定进行驳回操作？","请填写驳回理由",(val)=>{
-                    if(val.value == ""){
+                this.prompt("确定进行驳回操作？", "请填写驳回理由", (val) => {
+                    if (val.value == "") {
                         this.$warn("请填写驳回理由");
                         return;
                     }
                     let params = new URLSearchParams();
-                    params.append("BASE_ID",info.base_NEET_ID);
-                    params.append("RESON",val.value);
-                    params.append("OLD_STATE",info.state_ID);
-                    this.$axios.post("/base/baseReject",params).then((res)=>{
+                    params.append("BASE_ID", info.base_NEET_ID);
+                    params.append("RESON", val.value);
+                    params.append("OLD_STATE", info.state_ID);
+                    this.$axios.post("/base/baseReject", params).then((res) => {
                         let data = res.data;
-                        if(data.code == 200){
+                        if (data.code == 200) {
                             this.$success("操作成功！");
                             this.loadData();
                         }
                     })
                 })
+            },
+            //拆分任务
+            splitTask(){
+                alert(1)
             }
         }
     }

@@ -113,9 +113,9 @@
                     <h5 class="option-title"><i></i><span>权限配置</span></h5>
                     <div class="clear">
                         <div class="tree-wrapper lefttreewarp">
-                            <el-checkbox v-model="leftcheckAll" @change="leftcheckAllEvent">全选</el-checkbox>
+                            <el-checkbox v-model="leftCheckAll" @change="leftcheckAllEvent">全选</el-checkbox>
                             <el-tree
-                                    :data="left"
+                                    :data="leftData"
                                     show-checkbox
                                     default-expand-all
                                     node-key="menu_id"
@@ -123,20 +123,20 @@
                                     highlight-current
                                     :expand-on-click-node="expand"
                                     @node-click="leftclick"
-                                    @check-change ="leftchange">
+                                    @check-change="leftchange">
                             </el-tree>
                         </div>
                         <div class="tree-wrapper middletreewarp">
-                            <el-checkbox v-model="middlecheckAll" @change="middlecheckAllEvent">全选</el-checkbox>
+                            <el-checkbox v-model="rightCheckAll" @change="middlecheckAllEvent">全选</el-checkbox>
                             <el-tree
-                                    :data="middleData"
+                                    :data="rightData"
                                     show-checkbox
                                     default-expand-all
                                     node-key="menu_id"
-                                    ref="middletree"
+                                    ref="righttree"
                                     highlight-current
                                     @node-click="middleclick"
-                                    @check-change ="middlechange">
+                                    @check-change="middlechange">
                             </el-tree>
                         </div>
                     </div>
@@ -160,13 +160,12 @@
                 role_dept: "",//选择的部门的ID
                 role_arr: "",//部门的数组
                 live_arr: "",//展示已有角色的数组
-                left: [],//左侧的所有数据
-                middle: [],//中间放的数组，包括选中的
-                leftSubData: [],//提交的左侧树形菜单
-                leftAllLength: 0,//左侧菜单的总共长度
-                middleData: [],//中间的数据，存放选中的操作
-                leftcheckAll: false,//左边全选状态
-                middlecheckAll: false,//中间全选状态
+                leftData: [],//左侧数据
+                leftSaveData: [],//左侧存储的数据
+                rightData: [],//右边数据
+                rightSaveData: [],//中间存储的数据
+                leftCheckAll: false,//左边全选状态
+                rightCheckAll: false,//中间全选状态
                 expand: false,///树形左侧点中禁用展开操作
                 leftActiveData: "",//树形左侧点中的数据
             }
@@ -204,97 +203,114 @@
                 this.$axios.post("role/queryRoleMenu", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        //设置下拉框
                         //加载所属部门
                         this.role_arr = data.result.deptRoles;
-                        let arr = [];
+                        //设置left数据
+                        let left = [];
                         for (let i of data.result.rootMenu) {
                             let fobj = {
                                 "label": i.menu_name,
-                                "menu_id": i.menu_id,
-                                "children": [],//放置子页面
-                                "action": []//放置右边操作
+                                "children": [],
+                                "action": [],
+                                "menu_id": i.menu_id
                             };
-                            if (roleId) {
-                                //判断左侧选择的数据
-                                // （如果任何一个子项被选中就会带上上级menu_id，所以在此判断去除掉上级id的干扰，且要判断当前父级ID下没有子菜单防止误删）
-                                for (let j of data.result.menus) {
-                                    if (j == i.menu_id && i.childMenus && i.childMenus[0].menu_action == 1) {
-                                        let _index = data.result.menus.indexOf(i.menu_id);
-                                        data.result.menus.splice(_index, 1)
-                                    }
-                                }
-                            }
-                            this.leftAllLength++;
                             if (i.childMenus) {
-                                //如果当下有子菜单
                                 for (let j of i.childMenus) {
-                                    let cobj = {
+                                    let obj = {
                                         "label": j.menu_name,
-                                        "fmenu_id": i.menu_id,
                                         "menu_id": j.menu_id,
-                                        "menu_sign": j.menu_sign,
-                                        "action": j.childMenus
+                                        "menu_fid": j.menu_fid,
+                                        "action": []
                                     };
-                                    if (j.menu_action != 0) {
-                                        //当前的子内容是代表页面，放入left的children做展示
-                                        fobj.children.push(cobj);
-                                        this.leftAllLength++;
+                                    if (j.childMenus) {
+                                        for (let m of j.childMenus) {
+                                            let _obj = {
+                                                "label": m.menu_name,
+                                                "menu_id": m.menu_id,
+                                                "menu_fid": m.menu_fid
+                                            };
+                                            obj.action.push(_obj)
+                                        }
+                                    }
+                                    if (j.menu_action == 1) {
+                                        //当前是页面
+                                        fobj.children.push(obj)
                                     } else {
-                                        //当前的子内容是代表操作，放入left中作为middle的展示内容
-                                        fobj.action.push(cobj)
+                                        //当前是操作
+                                        fobj.action.push(obj)
                                     }
                                 }
                             }
-                            arr.push(fobj)
+                            left.push(fobj)
                         }
-                        this.left = arr;
-                        //当前是编辑操作，将选中的值放入this.middle中
-                        if (roleId) {
+                        this.leftData = left;
+                        //回显操作
+                        let roleId = this.$route.query.id;
+                        if(roleId){
+                            //部门的回显
                             //当前是编辑回显选择部门操作
                             this.role_dept = data.result.role.DEPT_ID;
                             this.deptChange();
                             this.role_name = data.result.role.ROLE_NAME;
-                            //加载左侧被选中
-                            this.$refs.lefttree.setCheckedKeys(res.data.result.menus);
-                            //加载右侧回显数据
-                            let middlearr = [];
-                            for (let i of this.left) {
-                                let loop_arr = [];
-                                let middleobj = {
-                                    "arr": [],
-                                    "keys": []
-                                };
-                                if (i.children.length) {
-                                    loop_arr = i.children
-                                } else {
-                                    loop_arr = i.action
+                            //
+                            let arr = [];
+                            let menus = data.result.menus;
+                            for(let i= 0;i<left.length;i++){
+                                if(left[i].children.length){
+                                    //设置菜单数组
+                                    if(menus.indexOf(left[i].menu_id)>=0){
+                                        menus.splice(menus.indexOf(left[i].menu_id),1,"a");
+                                    }
+                                    //添加右侧选中数据
+                                    for(let j of left[i].children){
+                                        let obj = {
+                                            "data":[],
+                                            "key":[]
+                                        };
+                                        //当前是选中的二级页面
+                                       if(j.action.length){
+                                          obj.data = j.action;
+                                          for(let n of j.action){
+                                              if(menus.indexOf(n.menu_id)>=0){
+                                                  obj.key.push(n.menu_id)
+                                              }
+                                          }
+                                       }
+                                       this.$set(this.rightSaveData,j.menu_id,obj);
+                                        //
+                                    }
                                 }
-                                for (let j of loop_arr) {
-                                    if (j.childMenus) {
-                                        for (let m of j.childMenus) {
-                                            let obj = {
-                                                "label": m.menu_name,
-                                                "menu_id": m.menu_id,
-                                                "fmenu_id": j.menu_id,
-                                            };
-                                            if (m.menu_sign) {
-                                                middleobj.keys.push(m.menu_id)
-                                            }
-                                            middleobj.arr.push(obj)
+                                if(roleId && left[i].action.length){
+                                    let obj = {
+                                        "data":[],
+                                        "key":[]
+                                    };
+                                    obj.data = left[i].action;
+                                    for(let n of left[i].action){
+                                        if(menus.indexOf(n.menu_id)>=0){
+                                            obj.key.push(n.menu_id)
                                         }
                                     }
-                                    if (j.menu_sign) {
-                                        middlearr[j.menu_id] = middleobj
-                                    }
+                                    this.$set(this.rightSaveData,left[i].menu_id,obj)
                                 }
                             }
-                            this.middle = middlearr;
+                            for(let i of menus){
+                                if(i!="a" && i){
+                                    arr.push(i)
+                                }
+                            }
+                            //左侧的回显功能
+                            this.$refs.lefttree.setCheckedKeys(arr);
+                            this.leftSaveData = arr;
                         }
                         this.$maskoff();
                     }
                 })
             },
             deptChange(){
+                this.$set(this, "live_arr", []);
+                this.a = "";
                 for (let i of this.role_arr) {
                     if (i.dept_id == this.role_dept) {
                         this.$set(this, "live_arr", i.roles)
@@ -302,124 +318,104 @@
                 }
             },
             leftclick(val){
-                //左侧点击事件
-                this.middlecheckAll = false;//置空全选
-                this.leftActiveData = val;//选中时记录下当前选中的左侧
-                this.middleData = [];//清空右侧
-                this.$refs.middletree.setCheckedKeys([]);//清空右侧选择的数据
-                //点击事件当点击父级时也会触发，会出现父级没有页面和父级有页面情况
-                let fobj = {
-                    "actionData": [],
-                    "keys": []
-                };
-                if (val.fmenu_id) {
-                    //当前点击的是二级页面
-                    val.action && (()=>{
-                        for (let i of val.action) {
-                            let action_obj = {
-                                "label": i.menu_name,
-                                "menu_id": i.menu_id,
-                                "fmenu_id": val.menu_id
-                            };
-                            fobj.actionData.push(action_obj)
-                        }
-                    })();
-                } else if (val.action) {
-                    //当前是父级菜单且没有子页面
-                    for (let i of val.action) {
-                        let action_obj = {
-                            "label": i.label,
-                            "menu_id": i.menu_id,
-                            "fmenu_id": val.menu_id
-                        };
-                        fobj.actionData.push(action_obj)
-                    }
-                }
-                //共有的操作
-                if (!this.middle[val.menu_id]) {
-                    //如果之前没有点击过此项，将其添加进入middle中，key为自己的id，
-                    this.$set(this.middle, val.menu_id, fobj);
+                this.leftActiveData = val;
+                //清空上一个点击数据
+                this.rightData = val.action.length ? val.action : [];
+                //进行数据存储
+                if (!this.rightSaveData[val.menu_id]) {
+                    //如果之前没有点击过
+                    let obj = {
+                        "data": val.action.length ? val.action : [],
+                        "key": []
+                    };
+                    this.$set(this.rightSaveData, val.menu_id, obj);
                 } else {
-                    //之前已经点则做回显,取回之前记录的点击key并设置
-                    let c = this.middle[val.menu_id].keys;
-                    this.$refs.middletree.setCheckedKeys(c);
+                    //之前点击过，回显点击的数据
+                    this.$refs.righttree.setCheckedKeys(this.rightSaveData[val.menu_id].key);
                 }
-                //设置middle的临时展示数据
-                this.middleData = this.middle[val.menu_id].actionData;
+                //设置右边全选
+                if (val.action.length) {
+                    val.action.length ==
+                    this.rightSaveData[val.menu_id].key.length ?
+                        this.rightCheckAll = true : this.rightCheckAll = false
+                } else {
+                    this.rightCheckAll = false
+                }
             },
             leftchange(val, status){
-                //左侧选中事件
-                if(val.fmenu_id){
-                    if (!status && this.middle[val.menu_id]) {
+                if(val.menu_fid || val.action.length){
+                    //当前是二级页面
+                    if (!status && this.rightSaveData[val.menu_id]) {
                         //取消了当前的权限
-                        this.$set(this.middle[val.menu_id], "keys", []);//从数组中去除
-                        this.$refs.middletree.setCheckedKeys([]);//右侧设置为空
+                        this.$set(this.rightSaveData[val.menu_id], "key", []);//从数组中去除
+                        this.$refs.righttree.setCheckedKeys([]);//右侧设置为空
                     }
-                    this.leftSubData = this.$refs.lefttree.getCheckedKeys();
-                    //设置左侧菜单全选与否
-                    this.leftAllLength == this.leftSubData.length ? this.leftcheckAll = true : this.leftcheckAll = false
-
                 }
+                let leftLength = this.leftData.length;
+                this.leftSaveData = this.$refs.lefttree.getCheckedKeys();
+                for (let i of this.leftData) {
+                    leftLength += i.children.length;
+                }
+                this.leftSaveData.length == leftLength ? this.leftCheckAll = true : this.leftCheckAll = false;
             },
-            leftcheckAllEvent(){
-                if (this.leftcheckAll) {
-                    //当前要进行全选操作
-                    let arr = [];
-                    for (let i of this.left) {
-                        arr.push(i.menu_id);
-                        for (let j of i.children) {
-                            arr.push(j.menu_id)
+            leftcheckAllEvent(val, status){
+                if (this.leftCheckAll) {
+                    //当前是全选
+                    let idArr = [];
+                    for (let i of this.leftData) {
+                        idArr.push(i.menu_id);
+                        if (i.children.length) {
+                            for (let j of i.children) {
+                                idArr.push(j.menu_id)
+                            }
                         }
                     }
-                    this.leftSubData = arr;
-                    this.$refs.lefttree.setCheckedKeys(arr);
+                    this.$refs.lefttree.setCheckedKeys(idArr);
+                    this.leftSaveData = idArr
                 } else {
-                    //非全选
-                    this.leftSubData = [];
                     this.$refs.lefttree.setCheckedKeys([]);
+                    this.leftSaveData = []
                 }
             },
             middleclick(){
 
             },
             middlechange(val, status){
-                //每次点击都获取一遍右边的选中项并设置到key中
-                let c = this.$refs.middletree.getCheckedKeys();
-                this.$set(this.middle[val.fmenu_id], "keys", c);
-                //全选按钮的选中与否
-                if (this.leftActiveData.action) {
-                    c.length == this.leftActiveData.action.length ?
-                        this.middlecheckAll = true : this.middlecheckAll = false;
-                } else {
-                    c.length == this.leftActiveData.childMenus.length ?
-                        this.middlecheckAll = true : this.middlecheckAll = false;
+                if (this.leftSaveData.indexOf(val.menu_fid) < 0) {
+                    //当前点击需激活左侧
+                    this.leftSaveData.push(val.menu_fid);
+                    this.$refs.lefttree.setCheckedKeys(this.leftSaveData)
                 }
-
-                //如果点击的时候左边未被先选中则需要选中左边，同理要先拉取一遍已选中的数据
-                let lc = this.$refs.lefttree.getCheckedKeys();
-                //如果之前没选中过，则添加进去
-                if (lc.indexOf(val.fmenu_id) < 0) {
-                    lc.push(val.fmenu_id);
+                let lastArr = this.$refs.righttree.getCheckedKeys();
+                this.$set(this.rightSaveData[val.menu_fid], "key", lastArr);
+                if(lastArr.length == 0){
+                    let leftData = this.$refs.lefttree.getCheckedKeys();
+                    if(leftData.indexOf(val.menu_id)>=0){
+                        this.leftSaveData.splice(leftData.indexOf(val.menu_id),1);
+                    }
+                    this.$refs.lefttree.setCheckedKeys(this.leftSaveData);
                 }
-                //设置左侧选中的数据
-                this.$refs.lefttree.setCheckedKeys(lc);
+                let rightLength = this.rightSaveData[val.menu_fid].key.length;
+                rightLength == this.leftActiveData.action.length ? this.rightCheckAll = true : this.rightCheckAll = false;
             },
             middlecheckAllEvent(){
-                if (this.middlecheckAll) {
-                    //当前是选中状态
-                    if (this.leftActiveData) {
-                        let forEachArr = this.leftActiveData.action ? this.leftActiveData.action : this.leftActiveData.childMenus;
-                        let arr = [];
-                        for (let i of forEachArr) {
-                            arr.push(i.menu_id);
-                        }
-                        this.$refs.middletree.setCheckedKeys(arr);//设置所有选中状态
-                    }
-                } else {
-                    //当前是取消全选状态
-                    this.$refs.middletree.setCheckedKeys([]);
+                //当没选中时或者当前无内容可选
+                if (!this.leftActiveData || !this.leftActiveData.action.length) {
+                    this.rightCheckAll = false;
+                    return;
                 }
-
+                if (this.rightCheckAll) {
+                    //当前是全选
+                    let idArr = [];
+                    for (let i of this.leftActiveData.action) {
+                        idArr.push(i.menu_id);
+                    }
+                    this.$refs.righttree.setCheckedKeys(idArr);
+                    this.$set(this.rightSaveData[this.leftActiveData.menu_id], "key", idArr)
+                } else {
+                    this.$refs.righttree.setCheckedKeys([]);
+                    this.$set(this.rightSaveData[this.leftActiveData.menu_id], "key", [])
+                }
             },
             submit(){
                 let ROLE_NAME = this.role_name;
@@ -432,44 +428,58 @@
                     this.$warn("请选择所属部门");
                     return;
                 }
-                let middle = [];
-                for (let i of this.middle) {
-                    if (i) {
-                        for (let j of i.keys) {
-                            middle.push(j)
-                        }
+                //设置提交的选中菜单数组
+                let left = this.$refs.lefttree.getCheckedKeys();
+                let right = this.rightSaveData;
+                for(let i of this.leftData){
+                    if(i.children.length && left.indexOf(i.menu_id)>=0){
+                        let index = left.indexOf(i.menu_id);
+                         left.splice(index,1)
                     }
                 }
-                let left = [];
-                for (let i of this.left) {
-                    for (let j of this.leftSubData) {
-                        if (j == i.menu_id) {
-                            left.push(j)
-                        } else {
-                            for (let l of i.children) {
-                                if (j == l.menu_id) {
-                                    left.push(l.fmenu_id);
-                                    left.push(l.menu_id);
-                                }
-                            }
-                        }
-                    }
-                }
-                let m = this.$unique(middle);
+//                let leftArr = [];//放置除了父级ID的选中的左边集合
+//                for (let i of this.leftData) {
+//                    if(i.children.length){
+//                        for (let j of i.children) {
+//                            for (let n of left) {
+//                                if (n == j.menu_id) {
+//                                    leftArr.push(j.menu_id)
+//                                    leftArr.push(j.menu_fid)
+//                                }
+//                            }
+//                        }
+//                    }else {
+//                       for (let n of left) {
+//                           if (n == i.menu_id) {
+//                               leftArr.push(i.menu_id);
+//                           }
+//                       }
+//                   }
+//                }
+                //左侧提交的数据的处理
                 let l = this.$unique(left);
-                this.$maskin();
+                //右侧提交数据的处理
+                let rightArr = [];
+                for (let i of right) {
+                    if (i) {
+                        rightArr = rightArr.concat(i.key)
+                    }
+                }
+                let r = this.$unique(rightArr);
+                let menus = this.$unique(l.concat(r));
+                //
+//                this.$maskin();
                 let roleId = this.$route.query.id;
-                let params= new URLSearchParams();
-                //roleId存在表示编辑否则是新增
-                if(roleId){
+                let params = new URLSearchParams();
+//                //roleId存在表示编辑否则是新增
+                params.append("menus", menus);
+                if (roleId) {
                     params.append("role_ID", roleId);
-                    params.append("menus", m.concat(l));
-                }else{
+                } else {
                     params.append("ROLE_NAME", ROLE_NAME);
                     params.append("DEPT_ID", DEPT_ID);
-                    params.append("menus", m.concat(l));
                 }
-                this.$axios.post(roleId?"/role/editRole":"/role/addRole", params).then((res) => {
+                this.$axios.post(roleId ? "/role/editRole" : "/role/addRole", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功！");

@@ -56,14 +56,6 @@
 <template>
     <div class="rolelist common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <p class="card-title por">
-                    <span class="back fl clear" @click="bugVisible = !bugVisible" v-if="bugVisible">
-                        <i class="el-icon-arrow-left"></i>
-                        <i class="b">返回</i></span>
-                    {{!bugVisible?'提交故障':'BUG提交单'}}
-                </p>
-            </div>
             <div class="text item">
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
@@ -112,7 +104,7 @@
                     </div>
                     <div class="table-list">
                         <el-table :data="table.tableData" border style="width: 100%"
-                                  :max-height="table.tableHeight" highlight-current-row
+                                  :height="table.tableHeight" highlight-current-row
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="aa" label="需求编号"></el-table-column>
                             <el-table-column prop="aa" label="预计上线日期" width="110"></el-table-column>
@@ -126,9 +118,9 @@
                             <el-table-column prop="aa" label="更新时间"></el-table-column>
                             <el-table-column label="操作" width="130">
                                 <template slot-scope="scope" class="action-wrap">
-                                    <el-button @click="editRow(scope.row,scope)" size="small" type="primary">查看
+                                    <el-button @click="editRow(scope.row,scope)" size="small" type="primary">操作
                                     </el-button>
-                                    <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除
+                                    <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">操作
                                     </el-button>
                                 </template>
                             </el-table-column>
@@ -137,516 +129,521 @@
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
-                            <i class="icon-more iconfont"></i>
-                            <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                <span v-for="item in tabs.consoleActionData">{{item.name}}</span>
-                            </div>
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
-                                <!--上线申请-->
-                                <div class="console-tab-content" v-if="suibianxie">
-                                    <el-form ref="form" :model="form" label-width="100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求编号">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求名称">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求来源">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="计划投产日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="优先级">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="重要程度">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="是否加急">
-                                                    <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
-                                                    <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
-                                                    <el-input
-                                                            type="textarea"
-                                                            :rows="2"
-                                                            placeholder="请输入内容"
-                                                            v-model="textarea">
-                                                    </el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="需求描述">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="产品功能">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
-                                </div>
-                                <!--上线申请-->
-                                <!--事业部-->
-                                <div v-if="suibianxie" class="console-tab-content">
-                                    <el-form ref="form" :model="form" label-width="100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="涉及系统">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线类型">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线模块">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线内容">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求编号">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求名称">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求来源">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="计划投产日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="优先级">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="重要程度">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="开发负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="项目负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="产品负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="测试负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="影响时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="是否停交易">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="是否加急">
-                                                    <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
-                                                    <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
-                                                    <el-input
-                                                            type="textarea"
-                                                            :rows="2"
-                                                            placeholder="请输入内容"
-                                                            v-model="textarea"
-                                                            disabled
-                                                    >
-                                                    </el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="需求描述">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="产品功能">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="操作手册">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
-                                </div>
-                                <!--事业部-->
-                                <!--质量管理部-->
-                                <div v-if="suibianxie" class="console-tab-content">
-                                    <el-form ref="form" :model="form" label-width="100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="涉及系统">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
+                                    <!--上线申请-->
+                                    <div v-if="suibianxie" class="console-tab-content" >
+                                        <el-form ref="form" :model="form" label-width="100px" label-position="left">
+                                            <el-row :gutter="20">
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求编号">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求名称">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求来源">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="计划投产日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="优先级">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="重要程度">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="是否加急">
+                                                        <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
+                                                        <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
+                                                        <el-input
+                                                                type="textarea"
+                                                                :rows="2"
+                                                                placeholder="请输入内容"
+                                                                v-model="textarea">
+                                                        </el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="需求描述">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="产品功能">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </div>
+                                    <!--上线申请-->
+                                    <!--事业部-->
+                                    <div v-if="suibianxie" class="console-tab-content">
+                                        <el-form ref="form" :model="form" label-width="100px" label-position="left">
+                                            <el-row :gutter="20">
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="涉及系统">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线类型">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线模块">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线内容">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求编号">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求名称">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求来源">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="计划投产日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="优先级">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="重要程度">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="开发负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="项目负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="产品负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="测试负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="影响时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="是否停交易">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="是否加急">
+                                                        <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
+                                                        <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
+                                                        <el-input
+                                                                type="textarea"
+                                                                :rows="2"
+                                                                placeholder="请输入内容"
+                                                                v-model="textarea"
+                                                                disabled
+                                                        >
+                                                        </el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="需求描述">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="产品功能">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="操作手册">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </div>
+                                    <!--事业部-->
+                                    <!--质量管理部-->
+                                    <div v-if="suibianxie" class="console-tab-content">
+                                        <el-form ref="form" :model="form" label-width="100px" label-position="left">
+                                            <el-row :gutter="20">
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="涉及系统">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
 
 
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线类型">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="是否加急">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线模块">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线内容">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求编号">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求名称">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求来源">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="计划投产日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="优先级">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="重要程度">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求描述">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="产品功能">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="开发负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="项目负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="产品负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="测试负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="影响时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="是否停交易">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="需求描述">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="产品功能">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="操作手册">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
-                                </div>
-                                <!--质量管理部-->
-                                <!--运维部-->
-                                <div v-if="suibianxie" class="console-tab-content">
-                                    <el-form ref="form" :model="form" label-width="100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="涉及系统">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线类型">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="是否加急">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线模块">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线内容">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求编号">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求名称">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求来源">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="计划投产日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="优先级">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="重要程度">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求描述">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="产品功能">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="开发负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="项目负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="产品负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="测试负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="影响时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="是否停交易">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="需求描述">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="产品功能">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="操作手册">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </div>
+                                    <!--质量管理部-->
+                                    <!--运维部-->
+                                    <div v-if="suibianxie" class="console-tab-content">
+                                        <el-form ref="form" :model="form" label-width="100px" label-position="left">
+                                            <el-row :gutter="20">
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="涉及系统">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
 
 
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线类型">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="是否加急">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线模块">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="上线内容">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求编号">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求名称">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求来源">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="申请日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="计划投产日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="优先级">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="重要程度">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="需求描述">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="产品功能">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="开发负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="项目负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="产品负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="测试负责人">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线日期">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="预计上线时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="影响时间">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="是否停交易">
-                                                    102101654561321654131032
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="是否加急">
-                                                    <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
-                                                    <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
-                                                    <el-input
-                                                            type="textarea"
-                                                            :rows="2"
-                                                            placeholder="请输入内容"
-                                                            v-model="textarea"
-                                                            disabled
-                                                    >
-                                                    </el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="需求描述">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="产品功能">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" :sm="24">
-                                                <el-form-item label="操作手册">
-                                                    BUG编号BUG编号BUG编号BUG编号
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
-                                </div>
-                                <!--运维部-->
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线类型">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="是否加急">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线模块">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="上线内容">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求编号">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求名称">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求来源">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="申请日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="计划投产日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="优先级">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="重要程度">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="需求描述">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="产品功能">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="开发负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="项目负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="产品负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="测试负责人">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线日期">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="预计上线时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="影响时间">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" :sm="8">
+                                                    <el-form-item label="是否停交易">
+                                                        102101654561321654131032
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="是否加急">
+                                                        <el-radio disabled v-model="radio1" label="禁用">备选项</el-radio>
+                                                        <el-radio disabled v-model="radio1" label="选中且禁用">备选项</el-radio>
+                                                        <el-input
+                                                                type="textarea"
+                                                                :rows="2"
+                                                                placeholder="请输入内容"
+                                                                v-model="textarea"
+                                                                disabled
+                                                        >
+                                                        </el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="需求描述">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="产品功能">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="24" :sm="24">
+                                                    <el-form-item label="操作手册">
+                                                        BUG编号BUG编号BUG编号BUG编号
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </div>
+                                    <!--运维部-->
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
+                                <div class="console-action-wrapper">
+                                    <i class="icon-more iconfont"
+                                       @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
+                                    <div class="console-action fr" v-if="tabs.consoleActionVisible">
+                                            <span v-for="item in tabs.consoleActionData.onlineact"
+                                                  @click="consoleActionEvent(item.name,'onlineact')">{{item.name}}
+                                            </span>
+                                    </div>
+                                </div>
                                 <!--上线申请-->
                                 <div class="console-tab-content" v-if="asd">
                                     <el-form :model="form" label-width="100px" label-position="left">
@@ -824,17 +821,9 @@
                 table: {
                     tableData: [{
                         a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
+                        aa: '这是内容',
                     }],
+                    tableOriginData: [],
                     tableHeight: "",
                 },
                 keyword: "",
@@ -901,12 +890,18 @@
                 },
                 tabs: {
                     activeName: 'info',
-                    consoleActionData: [
-                        {"name": "aa"},
-                        {"name": "aa"}
-                    ],
+                    consoleActionData: {
+                        "onlineact": [{
+                            "name":"操作"
+                        },{
+                            "name":"操作",
+                        },{
+                            "name":"操作",
+                        }]
+                    },
                     consoleActionVisible: false,
-                    consoleWrapperVisible: true
+                    consoleWrapperVisible: false,
+
                 }
             }
         },
@@ -916,24 +911,24 @@
         methods: {
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
-                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
+//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                card_body.style.height = height - card_header_height - 36 + "px";
+                card_body.style.height = height - 36 + "px";
                 //表格高度
-                this.calculateTableHeight(this.tabs.consoleWrapperVisible ? 1 : 0);
+                this.calculateTableHeight(this.tabs.consoleWrapperVisible);
                 //tab高度
                 if (this.tabs.consoleWrapperVisible) {
                     this.calculateTabsHeight();
                 }
+                //控制台的内容区域高度
             },
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
-                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
-                //40为padding高度,33为th高度，20位margin-top高度.最后为误差控制，随便写；
-                //0代表没有控制台
-                if (type == 0) {
-                    this.table.tableHeight = height - actionHeight - card_header_height - 20 - 33 - 40 - 5;
+                //true代表没有控制台
+                if (!type) {
+                    //----------------------------------------------body的上下padding--table的margin-top
+                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
                 } else {
                     this.table.tableHeight = height * 0.3;
                 }
@@ -943,19 +938,24 @@
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
                 let allTabContent = document.querySelectorAll(".console-tab-content");
                 for (let i of allTabContent) {
-                    //---------------el-card__body的可用内容高(增加一个范围容差)---------顶部操作栏的高---------表格部分的高------tab的头和margin的高---
-                    i.style.height = (parseInt(card_body.style.height) - 40 - 5) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) + "px";
+                    //---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高----------操作台border
+                    i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
                 }
             },
-            searchKeyword(e){
-                if (e.keyCode == 13) {
-
+            setConsoleVisible(){
+                this.tabs.consoleWrapperVisible = false;
+                this.calculateTableHeight(false)
+            },
+            handleCurrentChange(val){
+                this.tabs.activeTableInfo = val;
+                if (!this.tabs.consoleWrapperVisible) {
+                    this.tabs.consoleWrapperVisible = true;
+                    setTimeout(() => {
+                        this.calculate()
+                    }, 0);
                 }
             },
             handleSizeChange(val){
-                console.log(val)
-            },
-            handleCurrentChange(val){
                 console.log(val)
             },
             subForm(){
@@ -967,20 +967,6 @@
             handleClick(tab, event) {
                 console.log(tab, event);
             },
-            handleCurrentChange(val){
-                console.log(val);
-                if (!this.tabs.consoleWrapperVisible) {
-                    this.tabs.consoleWrapperVisible = true;
-                    this.calculateTableHeight(1);
-                    setTimeout(() => {
-                        this.calculateTabsHeight();
-                    }, 0)
-                }
-            },
-            setConsoleVisible(){
-                this.tabs.consoleWrapperVisible = false;
-                this.calculateTableHeight(0)
-            }
         }
     }
 </script>

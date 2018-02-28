@@ -47,14 +47,15 @@
 </style>
 
 <template>
-    <div class="rolelist common-card-wrap" style="height: 100%;">
+    <div class="rolelist common-card-wrap" style="height: 100%;"
+         @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
         <el-card class="box-card">
             <div slot="header" class="clearfix">
                 <p class="card-title por">
                     <span class="back fl clear" @click="bugVisible = !bugVisible" v-if="bugVisible">
                         <i class="el-icon-arrow-left"></i>
                         <i class="b">返回</i></span>
-                    {{!bugVisible?'提交故障':'BUG提交单'}}
+                    {{!bugVisible?'提交BUG':'BUG提交单'}}
                 </p>
             </div>
             <div class="text item">
@@ -97,7 +98,8 @@
                     </div>
                     <div class="table-list">
                         <el-table :data="table.tableData" border style="width: 100%"
-                                  :max-height="table.tableHeight" highlight-current-row
+                                  :height="table.tableHeight"
+                                  highlight-current-row
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="aa" label="编号"></el-table-column>
                             <el-table-column prop="aa" label="提交日期" width="110"></el-table-column>
@@ -108,21 +110,17 @@
                             <el-table-column prop="aa" label="优先级"></el-table-column>
                             <el-table-column prop="aa" label="状态"></el-table-column>
                             <el-table-column prop="aa" label="更新时间"></el-table-column>
-                            <el-table-column label="操作" width="160">
-                                <template slot-scope="scope" class="action-wrap">
-                                    <el-button @click="editRow(scope.row,scope)" size="small" type="primary">查看</el-button>
-                                    <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除</el-button>
-                                </template>
-                            </el-table-column>
+                            <!--<el-table-column label="操作" width="160">-->
+                                <!--<template slot-scope="scope" class="action-wrap">-->
+                                    <!--<el-button @click="editRow(scope.row,scope)" size="small" type="primary">查看</el-button>-->
+                                    <!--<el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除</el-button>-->
+                                <!--</template>-->
+                            <!--</el-table-column>-->
                         </el-table>
                     </div>
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
-                            <i class="icon-more iconfont"></i>
-                            <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                <span v-for="item in tabs.consoleActionData">{{item.name}}</span>
-                            </div>
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
@@ -217,6 +215,15 @@
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
                                 <div class="console-tab-content">
+                                    <div class="console-action-wrapper">
+                                        <i class="icon-more iconfont"
+                                           @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
+                                        <div class="console-action fr" v-if="tabs.consoleActionVisible">
+                                            <span v-for="item in tabs.consoleActionData.bugact"
+                                                  @click="consoleActionEvent(item.name,'bugact')">{{item.name}}
+                                            </span>
+                                        </div>
+                                    </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="12" :sm="12">
@@ -331,17 +338,9 @@
                 table: {
                     tableData: [{
                         a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
-                    }, {
-                        a: '2016-05-03',
-                        aa: '假如这是一段很长的字',
+                        aa: '这是内容',
                     }],
+                    tableOriginData: [],
                     tableHeight: "",
                 },
                 keyword: "",
@@ -408,12 +407,18 @@
                 },
                 tabs: {
                     activeName: 'info',
-                    consoleActionData: [
-                        {"name": "aa"},
-                        {"name": "aa"}
-                    ],
+                    consoleActionData: {
+                        "bugact": [{
+                            "name":"操作"
+                        },{
+                            "name":"操作",
+                        },{
+                            "name":"操作",
+                        }]
+                    },
                     consoleActionVisible: false,
-                    consoleWrapperVisible: true
+                    consoleWrapperVisible: false,
+
                 }
             }
         },
@@ -423,11 +428,11 @@
         methods: {
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
-                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
+//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                card_body.style.height = height - card_header_height - 36 + "px";
+                card_body.style.height = height - 36 -48 + "px";//此处需减去卡片头部
                 //表格高度
-                this.calculateTableHeight(this.tabs.consoleWrapperVisible ? 1 : 0);
+                this.calculateTableHeight(this.tabs.consoleWrapperVisible);
                 //tab高度
                 if (this.tabs.consoleWrapperVisible) {
                     this.calculateTabsHeight();
@@ -437,11 +442,10 @@
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
-                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
-                //40为padding高度,33为th高度，20位margin-top高度.最后为误差控制，随便写；
-                //0代表没有控制台
-                if (type == 0) {
-                    this.table.tableHeight = height - actionHeight - card_header_height - 20 - 33 - 40 - 5;
+                //true代表没有控制台
+                if (!type) {
+                    //-----------------------body的上下padding--table的margin-top-卡片头部
+                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20 - 48 -2;
                 } else {
                     this.table.tableHeight = height * 0.3;
                 }
@@ -451,20 +455,21 @@
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
                 let allTabContent = document.querySelectorAll(".console-tab-content");
                 for (let i of allTabContent) {
-                    //---------------el-card__body的可用内容高(增加一个范围容差)---------顶部操作栏的高---------表格部分的高------tab的头和margin的高---
-                    i.style.height = (parseInt(card_body.style.height) - 40 - 5) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) + "px";
-                }
-            },
-            searchKeyword(e){
-                if (e.keyCode == 13) {
-
+                    //---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高----------操作台border-卡片头部
+                    i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
                 }
             },
             handleSizeChange(val){
                 console.log(val)
             },
             handleCurrentChange(val){
-                console.log(val)
+                this.tabs.activeTableInfo = val;
+                if (!this.tabs.consoleWrapperVisible) {
+                    this.tabs.consoleWrapperVisible = true;
+                    setTimeout(() => {
+                        this.calculate()
+                    }, 0);
+                }
             },
             subForm(){
 
@@ -475,19 +480,13 @@
             handleClick(tab, event) {
                 console.log(tab, event);
             },
-            handleCurrentChange(val){
-                console.log(val);
-                if (!this.tabs.consoleWrapperVisible) {
-                    this.tabs.consoleWrapperVisible = true;
-                    this.calculateTableHeight(1);
-                    setTimeout(() => {
-                        this.calculateTabsHeight();
-                    }, 0)
-                }
-            },
             setConsoleVisible(){
                 this.tabs.consoleWrapperVisible = false;
-                this.calculateTableHeight(0)
+                this.calculateTableHeight(false)
+            },
+            //操作台的事件
+            consoleActionEvent(val, f){
+
             }
         }
     }

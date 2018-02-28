@@ -109,54 +109,54 @@
                     name: /^[\u4e00-\u9fa5]{0,}$/,
                     email:/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/,
                 };
-                if (this.account == "") {
-                    this.$warn("请输入用户名");
-                    return;
-                }
-                if (this.password == "") {
-                    this.$warn("请输密码");
-                    return;
-                }
-                if (this.name == "") {
-                    this.$warn("请输入姓名");
-                    return;
-                }
-                if (this.phone == "") {
-                    this.$warn("请输入手机号码");
-                    return;
-                }
-                if (this.sex == "") {
-                    this.$warn("请选择性别");
-                    return;
-                }
-                if (this.phone == "") {
-                    this.$warn("请输入邮箱");
-                    return;
-                }
-                if (this.phone == "") {
-                    this.$warn("请输入入职日期");
-                    return;
-                }
-                if (!reg.account.test(this.account)) {
-                    this.$warn("用户名格式只支持字母和数字");
-                    return;
-                }
-                if (!reg.password.test(this.password)) {
-                    this.$warn("密码格式只支持数字和字母");
-                    return;
-                }
-                if (!reg.name.test(this.name)) {
-                    this.$warn("姓名格式不正确");
-                    return;
-                }
-                if (!reg.phone.test(this.phone)) {
-                    this.$warn("手机号码格式错误");
-                    return;
-                }
-                if (!reg.email.test(this.email)) {
-                    this.$warn("邮箱格式错误");
-                    return;
-                }
+//                if (this.account == "") {
+//                    this.$warn("请输入用户名");
+//                    return;
+//                }
+//                if (this.password == "") {
+//                    this.$warn("请输密码");
+//                    return;
+//                }
+//                if (this.name == "") {
+//                    this.$warn("请输入姓名");
+//                    return;
+//                }
+//                if (this.phone == "") {
+//                    this.$warn("请输入手机号码");
+//                    return;
+//                }
+//                if (this.sex == "") {
+//                    this.$warn("请选择性别");
+//                    return;
+//                }
+//                if (this.phone == "") {
+//                    this.$warn("请输入邮箱");
+//                    return;
+//                }
+//                if (this.phone == "") {
+//                    this.$warn("请输入入职日期");
+//                    return;
+//                }
+//                if (!reg.account.test(this.account)) {
+//                    this.$warn("用户名格式只支持字母和数字");
+//                    return;
+//                }
+//                if (!reg.password.test(this.password)) {
+//                    this.$warn("密码格式只支持数字和字母");
+//                    return;
+//                }
+//                if (!reg.name.test(this.name)) {
+//                    this.$warn("姓名格式不正确");
+//                    return;
+//                }
+//                if (!reg.phone.test(this.phone)) {
+//                    this.$warn("手机号码格式错误");
+//                    return;
+//                }
+//                if (!reg.email.test(this.email)) {
+//                    this.$warn("邮箱格式错误");
+//                    return;
+//                }
                 let dateFormat = this.$format(this.date);
                 let date_upload = dateFormat.year+"-"+dateFormat.mouth+"-"+dateFormat.day;
                 let params = new URLSearchParams();

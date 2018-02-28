@@ -137,9 +137,11 @@
         -ms-user-select: none;
         user-select: none;
     }
-    .mainl .aside-wrap li.active{
+
+    .mainl .aside-wrap li.active {
         background: #939da7;
     }
+
     .mainl .aside-wrap li i {
         margin-right: 30px;
     }
@@ -175,12 +177,13 @@
     }
 </style>
 <style>
-    .el-dialog__body{
+    .el-dialog__body {
         max-height: 400px;
         overflow-y: auto;
     }
-    .el-dialog{
-       margin: 100px auto 0!important;
+
+    .el-dialog {
+        margin: 100px auto 0 !important;
     }
 </style>
 <template>
@@ -263,26 +266,54 @@
                 this.$axios.post("/user/main", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        //添加权限按钮
+                        let action = [];
+                        for (let i of data.result.menus) {
+                            if (i.childMenus && i.childMenus.length) {
+                                if (i.childMenus[0].menu_action == 1) {
+                                    for (let j of i.childMenus) {
+                                        let fobj = {"name": j.menu_name, "id": j.menu_id, "actGroup": []};
+                                        if (j.childMenus) {
+                                            for (let n of j.childMenus) {
+                                                let obj = {"name": n.menu_name};
+                                                fobj.actGroup.push(obj);
+                                            }
+                                            action.push(fobj)
+                                        }
+                                    }
+                                } else {
+                                    if (i.childMenus) {
+                                        let fobj = {"name": i.menu_name, "id": i.menu_id, "actGroup": []};
+                                        for (let n of i.childMenus) {
+                                            let obj = {"name": n.menu_name};
+                                            fobj.actGroup.push(obj)
+                                        }
+                                        action.push(fobj)
+                                    }
+                                }
+                            }
+                        }
+                        localStorage.setItem("POWER", JSON.stringify(action));
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
                         let nowPath = this.$router.currentRoute.path;//当前的路径
-                        for(let i of data.result.menus){//根据当前路径判断标题的active
-                            if(i.menu_url){//大菜单有相应页面且和当前路径相等
-                                if(i.menu_url == nowPath){
+                        for (let i of data.result.menus) {//根据当前路径判断标题的active
+                            console.log(i)
+                            if (i.menu_url) {//大菜单有相应页面且和当前路径相等
+                                if (i.menu_url == nowPath) {
                                     this.subActive = "";//清空左侧active
-                                }else{
-                                    for(let j of i.childMenus){
-                                        if (j.menu_url == nowPath){
+                                } else {
+                                    for (let j of i.childMenus) {
+                                        if (j.menu_url == nowPath) {
                                             this.subActive = j.menu_id;//设置左侧active
                                         }
                                     }
                                 }
-                                this.subMenu = i.childMenus;
                                 this.menuActive = i.menu_id;//设置大标题的active;
                                 this.activeTitle = i.menu_name;//设置左侧的名称;
-                            }else if(!i.menu_url && i.childMenus){//大菜单没有相应页面调用的是子菜单的页面
-                                for(let j of i.childMenus){
-                                    if (j.menu_url == nowPath){
+                            } else if (!i.menu_url && i.childMenus) {//大菜单没有相应页面调用的是子菜单的页面
+                                for (let j of i.childMenus) {
+                                    if (j.menu_url == nowPath) {
                                         this.subMenu = i.childMenus;
                                         this.menuActive = i.menu_id;//设置大标题的active;
                                         this.activeTitle = i.menu_name;//设置左侧的名称;
@@ -302,25 +333,26 @@
             },
             //顶部菜单点击事件
             changeMainMenu(val){
+                console.log(val)
+                this.subMenu = [];
                 this.menuActive = val.menu_id;
-                this.subMenu = val.childMenus;
                 this.activeTitle = val.menu_name;
-                if(!val.menu_url){
+                if (!val.menu_url) {
                     this.$go(val.childMenus[0]['menu_url']);
                     this.subActive = val.childMenus[0]['menu_id']
-                }else{
+                    this.subMenu = val.childMenus;
+                } else {
                     this.$go(val.menu_url);
                     this.subActive = ""
                 }
             },
             //左侧菜单点击事件
             subMenuAction(val){
-                this.$go(val.menu_url);
+                this.$go(val.menu_url, {"id": val.menu_id});
                 this.subActive = val.menu_id;
             },
             handleCommand(type){
-                console.log(type)
-                switch (type){
+                switch (type) {
                     case "resetPassword":
                         this.$go("/home/resetPassword");
                         break;
@@ -333,15 +365,15 @@
                 this.$go("/resetPassword");
             },
             logout(){
-                this.confirm("确定退出登录？",()=>{
+                this.confirm("确定退出登录？", () => {
                     let params = new URLSearchParams();
-                    this.$axios.post("/user/logout",params).then((res)=>{
+                    this.$axios.post("/user/logout", params).then((res) => {
                         let data = res.data;
-                        if(data.code == 200){
+                        if (data.code == 200) {
                             this.$success("退出成功");
                             let account = localStorage.getItem("ACCOUNT");
                             localStorage.clear();
-                            localStorage.setItem("ACCOUNT",account);
+                            localStorage.setItem("ACCOUNT", account);
                             this.$router.replace("/login")
                         }
                     })

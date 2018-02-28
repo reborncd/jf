@@ -77,7 +77,8 @@
                                             编辑
                                         </el-button>
                                     </router-link>
-                                    <el-button @click="deleteRow(scope.row,scope)" size="small">删除</el-button>
+                                    <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除
+                                    </el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -101,46 +102,7 @@
         },
         mounted(){
             this.calculate();
-            let params = new URLSearchParams();
-            this.$maskin();
-            this.$axios.post("/role/queryRoleMenu", params).then((res) => {
-                let data = res.data;
-                if (data.code == 200) {
-                   /* [{
-                        label: '一级 1',
-                        children: [{
-                            label: '二级 1-1',
-                            children: [{
-                                label: '三级 1-1-1'
-                            }]
-                        }]
-                    }] */
-                    let arr = [];
-                    for (let i of data.result.deptRoles) {
-                        if (!i.dept_fid) {
-                            let obj = {
-                                "label": i.dept_name,
-                                "id": i.dept_id,
-                                "children": [],
-                                "roles": i.roles,
-                            };
-                            for (let j of data.result.deptRoles) {
-                                if (j.dept_fid && (j.dept_fid == i.dept_id)) {
-                                    let childerenObj = {
-                                        "label": j.dept_name,
-                                        "id": j.dept_id,
-                                        "roles": j.roles,
-                                    };
-                                    obj.children.push(childerenObj)
-                                }
-                            }
-                            arr.push(obj)
-                        }
-                    }
-                    this.treeData = arr;
-                    this.$maskoff()
-                }
-            })
+            this.loadData()
         },
         methods: {
             calculate(){
@@ -153,6 +115,49 @@
                 leftTree.style.height = (height - 34) - card_header_height - 20 - 28 - 15 + "px";
                 this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 15;
             },
+            loadData(){
+                this.tableData =[]
+                let params = new URLSearchParams();
+                this.$maskin();
+                this.$axios.post("/role/queryRoleMenu", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        /* [{
+                         label: '一级 1',
+                         children: [{
+                         label: '二级 1-1',
+                         children: [{
+                         label: '三级 1-1-1'
+                         }]
+                         }]
+                         }] */
+                        let arr = [];
+                        for (let i of data.result.deptRoles) {
+                            if (!i.dept_fid) {
+                                let obj = {
+                                    "label": i.dept_name,
+                                    "id": i.dept_id,
+                                    "children": [],
+                                    "roles": i.roles,
+                                };
+                                for (let j of data.result.deptRoles) {
+                                    if (j.dept_fid && (j.dept_fid == i.dept_id)) {
+                                        let childerenObj = {
+                                            "label": j.dept_name,
+                                            "id": j.dept_id,
+                                            "roles": j.roles,
+                                        };
+                                        obj.children.push(childerenObj)
+                                    }
+                                }
+                                arr.push(obj)
+                            }
+                        }
+                        this.treeData = arr;
+                        this.$maskoff()
+                    }
+                })
+            },
             leftTreeClick(val){
                 this.tableData = val.roles
             },
@@ -160,8 +165,21 @@
 
             },
             deleteRow(el, scope){
-                let index = scope.$index;
-                this.tableData.splice(index, 1);
+                console.log(el)
+                console.log(scope)
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append("ROLE_ID", el.role_ID)
+                this.confirm("确定删除该角色？", () => {
+                    this.$axios.post("/role/deleteRole", params).then((res) => {
+                        let data = res.data;
+                        if (data.code == 200) {
+                            this.$success("操作成功！");
+                            this.$maskoff();
+                            this.loadData()
+                        }
+                    })
+                })
             }
         }
     }
