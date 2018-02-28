@@ -191,24 +191,36 @@
                                         <i class="icon-more iconfont"
                                            @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                                         <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                            <span v-for="item in tabs.consoleActionData.jcjs"
-                                                  @click="consoleActionEvent(item.name,'jcjs')">{{item.name}}
+                                            <span v-for="item in tabs.consoleActionData"
+                                                  @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
                                         </div>
                                     </div>
-                                    <el-form label-width="100px" label-position="left">
-                                        <el-row :gutter="20">
-                                            <el-col :span="8">
-                                                <el-form-item label="状态">需求编号</el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="发送人">申请人</el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
+                                    <div v-if="split.splitvisible">
+                                        <el-form label-width="100px" label-position="left">
+                                            <el-row :gutter="20">
+                                                <el-col :span="8">
+                                                    <el-form-item label="状态">需求编号</el-form-item>
+                                                </el-col>
+                                                <el-col :span="12">
+                                                    <el-form-item label="发送人">申请人</el-form-item>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="拆分项目" name="split">
+                                <div class="console-tab-content">
+                                    a
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="开发任务" name="codetask" v-if="tabs.codetask">
+                                <div class="console-tab-content">
+                                    a
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="测试任务" name="testtask" v-if="tabs.testtask">
                                 <div class="console-tab-content">
                                     a
                                 </div>
@@ -405,40 +417,36 @@
             </div>
         </el-dialog>
         <!--拆分任务-->
-        <el-dialog title="拆分任务" :visible="split.splitvisible" width="80%"
-                   append-to-body modal-append-to-body :before-close="closeAddDialog">
 
-            <el-dialog title="拆分任务" :visible="split.splitaddvisible" width="40%"
-                       append-to-body modal-append-to-body :before-close="split_splitaddvisible">
-                <el-form label-width="100px">
-                    <el-form-item label="系统名">
-                        <el-col :span="12">
-                            <el-select v-model="split.choosesysyem" placeholder="请选择">
-                                <el-option
-                                        v-for="item in split.systemarr"
-                                        :label="item.label"
-                                        :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-input v-model="split.person" placeholder="请输入版本号"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="人员">
-                        <el-select v-model="split.person" placeholder="请选择人员" style="width: 100%">
-                            <el-option
-                                    v-for="item in split.personlist"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-            </el-dialog>
-        </el-dialog>
-        <!--新建拆分-->
-
+        <!--<div>-->
+        <!--<el-form label-width="100px">-->
+        <!--<el-form-item label="系统名">-->
+        <!--<el-col :span="12">-->
+        <!--<el-select v-model="split.choosesysyem" placeholder="请选择">-->
+        <!--<el-option-->
+        <!--v-for="item in split.systemarr"-->
+        <!--:label="item.label"-->
+        <!--:value="item.value">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-col>-->
+        <!--<el-col :span="12">-->
+        <!--<el-input v-model="split.person"-->
+        <!--placeholder="请输入版本号"></el-input>-->
+        <!--</el-col>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="人员">-->
+        <!--<el-select v-model="split.person" placeholder="请选择人员"-->
+        <!--style="width: 100%">-->
+        <!--<el-option-->
+        <!--v-for="item in split.personlist"-->
+        <!--:label="item.label"-->
+        <!--:value="item.value">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-form-item>-->
+        <!--</el-form>-->
+        <!--</div>-->
     </div>
 </template>
 
@@ -538,12 +546,13 @@
                 selectValue: "与我相关",
                 dateComp: {},
                 tabs: {
+                    codetask: false,//开发的栏目判断（开始任务）
+                    testtask: false,//测试的栏目判断（开始任务）
                     activeName: "info",//控制台的选中项
                     consoleWrapperVisible: false,//控制台的显示
                     consoleActionVisible: false,//控制台的操作显示/隐藏
-                    consoleActionData: {
-                        "jcjs": []
-                    },
+                    consoleActionData: [],
+
                     activeTableInfo: "",//当前选中的信息表格
                     data_one: {//控制台的信息页展示内容
                         state_NAME: "",
@@ -623,19 +632,7 @@
                 this.calculate();
                 this.tabs.consoleWrapperVisible = false;
                 this.clearAddData();
-                let menu_id = this.$route.query.id;
-                if (!menu_id) {
-                    this.$go("/home");
-                    return;
-                }
-                ;
-                let store = localStorage.getItem("POWER");
-                for (let i of (new Function("return" + store))()) {
-                    if (i.id == menu_id) {
-                        this.$set(this.tabs.consoleActionData, "jcjs", i.actGroup);
-                        break;
-                    }
-                }
+                this.setActionBtn();
                 this.$maskin();
                 let params = new URLSearchParams();
                 //base/queryBaseByUserw
@@ -643,6 +640,40 @@
                     let data = res.data
                     this.setTableData(data);
                 })
+            },
+            //加载权限操作
+            setActionBtn(){
+                let store = localStorage.getItem("POWER");
+                let power = (new Function("return" + store))();
+                let activeRoute = localStorage.getItem("ACTIVEMENU");
+//                console.log(power);
+//                console.log(activeRoute);
+//                console.log(this.$route)
+                if (this.$route.name == activeRoute) {
+                    let arr = [];
+                    let roleArr_temp = [];
+                    for (let i of power) {
+                        if (i.menu_fname == activeRoute) {
+                            if(i.act.split("-")[0] != "开始"){
+                                arr.push({"name": i.act.split("-")[0], "role": i.act.split("-")[1]});
+                            }
+                            roleArr_temp.push(i.act.split("-")[1])
+                        }
+                    }
+                    let roleArr = this.$unique(roleArr_temp);
+//                    console.log(arr)
+//                    console.log(roleArr)
+                    this.$set(this.tabs, "consoleActionData", arr);
+                    //初始化操作
+                    this.tabs.codetask = false;//开发的栏目判断（开始任务）
+                    this.tabs.testtask = false;//测试的栏目判断（开始任务）
+                    if (roleArr.indexOf("开发") >= 0) {
+                        this.tabs.codetask = true;
+                    }
+                    if (roleArr.indexOf("测试") >= 0) {
+                        this.tabs.testtask = true;
+                    }
+                }
             },
             setTableData(data){
                 if (data.code == 200) {
@@ -658,7 +689,7 @@
                         }
                         arr.push(i)
                     }
-                    this.$set(this.table, "tableData", arr.concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr).concat(arr));
+                    this.$set(this.table, "tableData", arr);
                     this.$set(this.table, "tableOriginData", arr);
                     this.$maskoff();
                 }
@@ -815,8 +846,7 @@
             //操作台的事件
             consoleActionEvent(val, f){
                 this.tabs.consoleActionVisible = false;
-                if (f == "jcjs") {
-                    switch (val) {
+                    switch (val.name) {
                         case "撤回":
                             this.back();
                             break;
@@ -830,11 +860,12 @@
                             this.rejected();
                             break;
                         case "拆分任务":
-                            this.tabs.activeName = "split";
+                            this.splitTask();
+                            break;
+                        case "开始":
+                            this.tabs.activeName = "codetask";
                             break;
                     }
-
-                }
             },
             //操作台的事件---------------------------
             //基础开发的撤回操作---------------
@@ -983,7 +1014,16 @@
             },
             //拆分任务
             splitTask(){
-                alert(1)
+                let info = this.tabs.activeTableInfo;
+                console.log(info)
+                let params = new URLSearchParams();
+                params.append("BASE_ID",info.base_NEET_ID);
+                this.$axios.post("",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+
+                    }
+                })
             }
         }
     }

@@ -268,37 +268,29 @@
                     if (data.code == 200) {
                         //添加权限按钮
                         let action = [];
-                        for (let i of data.result.menus) {
-                            if (i.childMenus && i.childMenus.length) {
-                                if (i.childMenus[0].menu_action == 1) {
-                                    for (let j of i.childMenus) {
-                                        let fobj = {"name": j.menu_name, "id": j.menu_id, "actGroup": []};
-                                        if (j.childMenus) {
-                                            for (let n of j.childMenus) {
-                                                let obj = {"name": n.menu_name};
-                                                fobj.actGroup.push(obj);
+                        for(let i of data.result.menus){
+                            if(i.childMenus && i.childMenus.length){
+                                for(let j of i.childMenus){
+                                    if(j.menu_action == 0){
+                                        //当前是操作,将操作添加到数组中
+                                        let obj = {"menu_fid":j.menu_fid,"act":j.menu_name,"menu_fname":i.menu_name};
+                                        action.push(obj)
+                                    }else{
+                                        j.childMenus && (()=>{
+                                            for(let _i of j.childMenus){
+                                                let obj = {"menu_fid":_i.menu_fid,"act":_i.menu_name,"menu_fname":j.menu_name};
+                                                action.push(obj)
                                             }
-                                            action.push(fobj)
-                                        }
-                                    }
-                                } else {
-                                    if (i.childMenus) {
-                                        let fobj = {"name": i.menu_name, "id": i.menu_id, "actGroup": []};
-                                        for (let n of i.childMenus) {
-                                            let obj = {"name": n.menu_name};
-                                            fobj.actGroup.push(obj)
-                                        }
-                                        action.push(fobj)
+                                        })()
                                     }
                                 }
                             }
                         }
-                        localStorage.setItem("POWER", JSON.stringify(action));
+                        localStorage.setItem("POWER",JSON.stringify(action));
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
                         let nowPath = this.$router.currentRoute.path;//当前的路径
                         for (let i of data.result.menus) {//根据当前路径判断标题的active
-                            console.log(i)
                             if (i.menu_url) {//大菜单有相应页面且和当前路径相等
                                 if (i.menu_url == nowPath) {
                                     this.subActive = "";//清空左侧active
@@ -339,7 +331,7 @@
                 this.activeTitle = val.menu_name;
                 if (!val.menu_url) {
                     this.$go(val.childMenus[0]['menu_url']);
-                    this.subActive = val.childMenus[0]['menu_id']
+                    this.subActive = val.childMenus[0]['menu_id'];
                     this.subMenu = val.childMenus;
                 } else {
                     this.$go(val.menu_url);
@@ -348,6 +340,7 @@
             },
             //左侧菜单点击事件
             subMenuAction(val){
+                console.log(val)
                 this.$go(val.menu_url, {"id": val.menu_id});
                 this.subActive = val.menu_id;
             },

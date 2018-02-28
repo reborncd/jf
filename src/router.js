@@ -63,18 +63,23 @@ let option = {
                     component: resolve => require(['./components/account/log.vue'], resolve)
                 },{
                     path: 'ywxq',
+                    name:"业务需求",
                     component: resolve => require(['./components/needs/ywxq/ywxq.vue'], resolve)
                 },{
                     path: 'jcjs',
+                    name:"基础建设",
                     component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)
                 },{
                     path: 'errorlist',
+                    name:"故障列表",
                     component: resolve => require(['./components/problem/errorlist.vue'], resolve)
                 },{
                     path: 'buglist',
+                    name:"BUG列表",
                     component: resolve => require(['./components/problem/buglist.vue'], resolve)
                 },{
                     path: "online",
+                    name:"上限管理",
                     component: resolve => require(['./components/online/online.vue'], resolve)
                 },{
                     path: "flow",
@@ -85,9 +90,12 @@ let option = {
     ]
 };
 let router = new Router(option);
-// router.beforeEach((to, from, next) => {
-//     console.log(to)
-//     console.log(from)
+router.beforeEach((to, from, next) => {
+    localStorage.setItem("ACTIVEMENU","");
+    if(to.name){
+        localStorage.setItem("ACTIVEMENU",to.name);
+    }
+    next()
 //     console.log(next)
 //     let type = localStorage.getItem("TYPE");
 //     let token = localStorage.getItem("token");
@@ -109,5 +117,5 @@ let router = new Router(option);
     // } else {
     //     next()
     // }
-// });
+});
 export default router;
