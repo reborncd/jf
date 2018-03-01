@@ -38,10 +38,10 @@
         color: dodgerblue;
     }
 
-    .assign-wrapper {
-        height: 300px;
-        overflow-y: auto;
-    }
+    /*.assign-wrapper {*/
+    /*height: 300px;*/
+    /*overflow-y: auto;*/
+    /*}*/
 
     .assign-wrapper li {
         margin-bottom: 6px;
@@ -76,7 +76,7 @@
             <div class="text item">
                 <div class="content">
                     <div class="action clear">
-                        <el-button type="danger" size="mini" @click="newneeds">立项</el-button>
+                        <el-button type="danger" size="mini" @click="newneeds" v-if="tabs.addProject">立项</el-button>
                         <el-select v-model="selectValue" clearable size="mini">
                             <el-option
                                     v-for="item in options"
@@ -133,7 +133,7 @@
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
                         </div>
-                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
+                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabsClick">
                             <el-tab-pane label="详情页" name="info">
                                 <div class="console-tab-content">
                                     <el-form label-width="100px" label-position="left">
@@ -183,6 +183,20 @@
                                             </el-col>
                                         </el-row>
                                     </el-form>
+                                    <!--判断当前是否被拆分过任务-->
+                                    <div class="table-list" v-if="split.hasSplitTaskData.length >0">
+                                        <h2 style="line-height: 40px;font-size: 15px">已拆分任务详情：</h2>
+                                        <el-table :data="split.hasSplitTaskData" border style="width: 100%">
+                                            <el-table-column prop="user_NAME" label="人员"></el-table-column>
+                                            <el-table-column prop="system_NAME" label="系统名"></el-table-column>
+                                            <el-table-column prop="base_INFO_ID" label="任务编码"></el-table-column>
+                                            <el-table-column prop="end_DATE" :formatter="splitDataFormatter" label="完成日期"></el-table-column>
+                                            <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
+                                            <el-table-column prop="facility_NAME" label="难易度"></el-table-column>
+                                            <el-table-column prop="required_TIME" label="预计用时（小时）"></el-table-column>
+                                            <el-table-column prop="actual_TIME" label="实际用时（小时）"></el-table-column>
+                                        </el-table>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
@@ -196,28 +210,113 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <el-form label-width="100px" label-position="left">
+                                        <el-row :gutter="20">
+                                            <el-col :span="8">
+                                                <el-form-item label="状态">需求编号</el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="发送人">申请人</el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                    </el-form>
                                     <div v-if="split.splitvisible">
                                         <el-form label-width="100px" label-position="left">
-                                            <el-row :gutter="20">
-                                                <el-col :span="8">
-                                                    <el-form-item label="状态">需求编号</el-form-item>
+                                            <el-row :gutter="20" v-for="(item,index) in split.systemAll">
+                                                <el-col :span="10">
+                                                    <el-form-item label="涉及系统">
+                                                        <el-select v-model="item.name" placeholder="请选择">
+                                                            <el-option v-for="item in split.systemarr"
+                                                                       :label="item.SYSTEM_NAME"
+                                                                       :value="item.SYSTEM_NAME"></el-option>
+                                                        </el-select>
+                                                    </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="发送人">申请人</el-form-item>
+                                                <el-col :span="8">
+                                                    <el-input v-model="item.version"
+                                                              placeholder="请输入版本号（格式如下：v1.0）"></el-input>
+                                                </el-col>
+                                                <el-col :span="2">
+                                                    <i :class="index == 0 && split.systemAll.length == 1?'el-icon-plus':index == split.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
+                                                       @click="systemEvent(index,$event)"
+                                                       style="line-height: 40px;height: 40px;text-align: center;
+                                                font-size: 20px;cursor: pointer;font-weight: bold">
+                                                    </i></el-col>
+                                            </el-row>
+                                            <el-row :gutter="20">
+                                                <el-col :span="10">
+                                                    <el-form-item label="预计开始日期">
+                                                        <el-date-picker type="date" placeholder="选择日期"
+                                                                        v-model="split.startdate"
+                                                                        style="width: 100%;"></el-date-picker>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="10">
+                                                    <el-form-item label="预计结束日期">
+                                                        <el-date-picker type="date" placeholder="选择日期"
+                                                                        v-model="split.enddate"
+                                                                        style="width: 100%;"></el-date-picker>
+                                                    </el-form-item>
                                                 </el-col>
                                             </el-row>
                                         </el-form>
+                                        <div style="margin: 10px 0" class="clear">
+                                            <el-button style="float: right;" type="primary" @click="addsplitperson"
+                                                       size="mini">新增人员
+                                            </el-button>
+                                        </div>
+                                        <div class="table-list">
+                                            <el-table :data="split.tableData" border style="width: 100%">
+                                                <el-table-column prop="USER_NAME" label="人员"></el-table-column>
+                                                <el-table-column prop="SYSTEM_NAME" label="系统名"></el-table-column>
+                                                <el-table-column prop="BASE_INFO_ID" label="任务编码"></el-table-column>
+                                                <el-table-column prop="end_data_format" label="完成日期"></el-table-column>
+                                                <el-table-column prop="RESPONSIBLE_MODULE"
+                                                                 label="负责模块"></el-table-column>
+                                                <el-table-column prop="FACILITY_NAME" label="难易度"></el-table-column>
+                                                <el-table-column prop="REQUIRED_TIME" label="预计用时"></el-table-column>
+                                                <el-table-column label="操作">
+                                                    <template slot-scope="scope">
+                                                        <el-button size="mini" type="danger" @click="splitDelete(scope.$index, scope.row)">删除</el-button>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                        <div class="clear">
+                                            <el-button style="float: none;margin: 10px auto;display: block" type="primary"
+                                                       @click="splitSubmit">
+                                                提交
+                                            </el-button>
+                                        </div>
                                     </div>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="拆分项目" name="split">
+                            <el-tab-pane label="拆分任务详情" name="split">
                                 <div class="console-tab-content">
                                     a
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="开发任务" name="codetask" v-if="tabs.codetask">
                                 <div class="console-tab-content">
-                                    a
+                                    <div class="table-list" v-if="split.codetask.length >0">
+                                        <h2 style="line-height: 40px;font-size: 15px">已拆分任务详情：</h2>
+                                        <el-table :data="split.codetask" border style="width: 100%">
+                                            <el-table-column prop="user_NAME" label="人员"></el-table-column>
+                                            <el-table-column prop="system_NAME" label="系统名"></el-table-column>
+                                            <el-table-column prop="base_INFO_ID" label="任务编码"></el-table-column>
+                                            <el-table-column prop="end_DATE" :formatter="splitDataFormatter" label="完成日期"></el-table-column>
+                                            <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
+                                            <el-table-column prop="facility_NAME" label="难易度"></el-table-column>
+                                            <el-table-column prop="required_TIME" label="预计用时（小时）"></el-table-column>
+                                            <el-table-column prop="actual_TIME" label="实际用时（小时）"></el-table-column>
+                                            <el-table-column label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button size="mini" type="primary" @click="splitCodeStart(scope.$index, scope.row)">开始</el-button>
+                                                    <el-button size="mini" type="danger" @click="splitCodeFinish(scope.$index, scope.row)">完成</el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="测试任务" name="testtask" v-if="tabs.testtask">
@@ -256,6 +355,7 @@
                         </el-tabs>
                     </div>
                     <!--控制台部分-->
+
                 </div>
             </div>
         </el-card>
@@ -417,36 +517,55 @@
             </div>
         </el-dialog>
         <!--拆分任务-->
+        <el-dialog title="新增拆分任务人员" :visible="split.splitaddvisible" width="60%"
+                   append-to-body modal-append-to-body :before-close="closeAddDialog">
+            <el-form label-width="100px">
+                <el-form-item label="任务编码">
+                    <el-input v-model="split.taskcode" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="系统名">
+                    <el-col :span="12">
+                        <el-radio v-model="split.splitradio" label="1">测试任务</el-radio>
+                        <el-radio v-model="split.splitradio" label="2">开发任务</el-radio>
+                        <el-select v-model="split.choosesysyem" placeholder="请选择" v-if="split.splitradio == 2">
+                            <el-option v-for="item in split.systemAll" :label="item.name+item.version"
+                                       clearable :value="item.name+item.version"></el-option>
+                        </el-select>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="人员">
+                    <el-select v-model="split.person" placeholder="请选择人员"
+                               style="width: 100%">
+                        <el-option v-for="item in split.personlist" :label="item.user_NAME"
+                                   :value="item.user_ID+'-'+item.user_NAME"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="完成日期">
+                    <el-date-picker type="date" placeholder="选择日期" v-model="split.finishdate"
+                                    style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="负责模块">
+                    <el-input v-model="split.model" placeholder="请输入负责模块"></el-input>
+                </el-form-item>
+                <el-form-item label="难易度">
+                    <el-select v-model="split.levelchoosen" placeholder="请选择难易度"
+                               style="width: 100%">
+                        <el-option v-for="item in split.level" :label="item.FACILITY_NAME"
+                                   :value="item.FACILITY_ID+'-'+item.FACILITY_NAME"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="预计用时">
+                    <el-col :span="24">
+                        <el-input v-model="split.usetime" placeholder="请输入预计用时（小时）"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="split.splitaddvisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="splitSub" size="mini">确定</el-button>
+            </div>
+        </el-dialog>
 
-        <!--<div>-->
-        <!--<el-form label-width="100px">-->
-        <!--<el-form-item label="系统名">-->
-        <!--<el-col :span="12">-->
-        <!--<el-select v-model="split.choosesysyem" placeholder="请选择">-->
-        <!--<el-option-->
-        <!--v-for="item in split.systemarr"-->
-        <!--:label="item.label"-->
-        <!--:value="item.value">-->
-        <!--</el-option>-->
-        <!--</el-select>-->
-        <!--</el-col>-->
-        <!--<el-col :span="12">-->
-        <!--<el-input v-model="split.person"-->
-        <!--placeholder="请输入版本号"></el-input>-->
-        <!--</el-col>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="人员">-->
-        <!--<el-select v-model="split.person" placeholder="请选择人员"-->
-        <!--style="width: 100%">-->
-        <!--<el-option-->
-        <!--v-for="item in split.personlist"-->
-        <!--:label="item.label"-->
-        <!--:value="item.value">-->
-        <!--</el-option>-->
-        <!--</el-select>-->
-        <!--</el-form-item>-->
-        <!--</el-form>-->
-        <!--</div>-->
     </div>
 </template>
 
@@ -489,16 +608,31 @@
                     searchData: []
                 },
                 split: {
-                    splitvisible: true,
-                    splitaddvisible: true,
-                    choosesysyem: "",
-                    version: "",
-                    systemarr: [{
-                        label: "1",
-                        value: "2"
-                    }],
-                    person: "",
-                    personlist: []
+                    hasSplitTaskData:[],//被拆分过的任务的所有数据
+                    codetask:[],//开发的任务
+                    testtask:[],//测试的任务
+                    systemAll: [{
+                        "name": "", "version": ""
+                    }],//所有选择的系统集合
+                    splitradio:"",//拆分任务类型（1为测试任务，2为开发任务）
+                    splitvisible: false,
+                    splitaddvisible: false,//新增人员的显示框
+                    choosesysyem: "",//选择的系统值
+                    systemarr: [],//所填写过的的系统数组,
+                    levelchoosen: "",//难易度选择的值,
+                    level: [],//难易度数组
+                    version: "",//版本号
+                    startdate: "",//预计开始日期
+                    enddate: "",//预计结束日期
+                    finishdate: "",//完成日期
+                    tableData: [],//拆分任务的表数据
+                    model: "",//负责模块
+                    taskcode: "",//任务编码
+                    personlist: [],//课选择人员的人员数组
+                    person: "",//选择的人员
+                    usertime: "",//预计用时
+                    names: [],//放置姓名的数组
+                    ids: []//放置id的数组
                 },
                 table: {
                     tableData: [],
@@ -546,13 +680,15 @@
                 selectValue: "与我相关",
                 dateComp: {},
                 tabs: {
+                    addProject: false,//立项权限判断
                     codetask: false,//开发的栏目判断（开始任务）
                     testtask: false,//测试的栏目判断（开始任务）
                     activeName: "info",//控制台的选中项
                     consoleWrapperVisible: false,//控制台的显示
                     consoleActionVisible: false,//控制台的操作显示/隐藏
                     consoleActionData: [],
-
+                    codeActionData:[],//开发人员的操作权限
+                    testActionData:[],//测试人员的操作权限
                     activeTableInfo: "",//当前选中的信息表格
                     data_one: {//控制台的信息页展示内容
                         state_NAME: "",
@@ -591,6 +727,9 @@
             this.loadData();
         },
         methods: {
+            submitUpload(){
+                this.$refs.upload.submit()
+            },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -630,12 +769,13 @@
             },
             loadData(){
                 this.calculate();
+
+                this.tabs.activeName  = "info";
                 this.tabs.consoleWrapperVisible = false;
                 this.clearAddData();
                 this.setActionBtn();
                 this.$maskin();
                 let params = new URLSearchParams();
-                //base/queryBaseByUserw
                 this.$axios.post("/base/queryAll", params).then((res) => {
                     let data = res.data
                     this.setTableData(data);
@@ -646,23 +786,29 @@
                 let store = localStorage.getItem("POWER");
                 let power = (new Function("return" + store))();
                 let activeRoute = localStorage.getItem("ACTIVEMENU");
-//                console.log(power);
-//                console.log(activeRoute);
-//                console.log(this.$route)
                 if (this.$route.name == activeRoute) {
                     let arr = [];
                     let roleArr_temp = [];
                     for (let i of power) {
                         if (i.menu_fname == activeRoute) {
-                            if(i.act.split("-")[0] != "开始"){
+                            if (i.act.split("-")[0] != "开始" && i.act.split("-")[0] != "完成") {
                                 arr.push({"name": i.act.split("-")[0], "role": i.act.split("-")[1]});
+                            } else{
+                                //判断是测试的操作还是开发的操作
+                                let type = i.act.split("-")[1];
+                                if(type == "开发"){
+                                    this.tabs.codeActionData.push(i.act.split("-")[0])
+                                }else if(type == "测试"){
+                                    this.tabs.testActionData.push(i.act.split("-")[0])
+                                }
                             }
-                            roleArr_temp.push(i.act.split("-")[1])
+                            if (i.act.split("-")[0].indexOf("立项") >= 0) {
+                                this.tabs.addProject = true;
+                            }
                         }
+                        roleArr_temp.push(i.act.split("-")[1])
                     }
                     let roleArr = this.$unique(roleArr_temp);
-//                    console.log(arr)
-//                    console.log(roleArr)
                     this.$set(this.tabs, "consoleActionData", arr);
                     //初始化操作
                     this.tabs.codetask = false;//开发的栏目判断（开始任务）
@@ -781,20 +927,23 @@
             closeAddDialog(){
                 this.addneeds.addvisible = false;
                 this.assign.assignvisible = false;
-                this.split.splitvisible = false;
+                this.split.splitaddvisible = false;
             },
             split_splitaddvisible(){
                 this.split.splitaddvisible = false
             },
-            handleClick(){
+            handleClick(val,e){
+                if(val.label == "开发任务"){
 
+                }
             },
             handleSizeChange(val){
 
             },
             //点击表格列表展示控制台
             handleCurrentChange(val){
-                console.log(val)
+                this.split.splitvisible = false;
+                this.tabs.activeName = "info"
                 this.$maskin();
                 this.tabs.activeTableInfo = val;
                 if (!this.tabs.consoleWrapperVisible) {
@@ -838,36 +987,48 @@
                             this.tabs.state_NAME = data.result.base.state_NAME;
                             this.tabs.user_NAME = data.result.base.apply_NAME;
                             this.$set(this.tabs, "genzong", data.result.records);
+                            //判断当前任务是否被拆分过
+                            data.result.allInfos.length >0?
+                                this.$set(this.split,"hasSplitTaskData",data.result.allInfos):this.$set(this.split,"hasSplitTaskData",[]);
+                            //是否有开发任务
+                            data.result.codeInfos.length >0?
+                                this.$set(this.split,"codetask",data.result.codeInfos):this.$set(this.split,"codetask",[]);
+                            //是否有测试任务
+                            data.result.testInfos.length >0?
+                                this.$set(this.split,"testtask",data.result.testInfos):this.$set(this.split,"testtask",[]);
                             this.$maskoff();
                         }
                     })
                 }
             },
             //操作台的事件
-            consoleActionEvent(val, f){
+            consoleActionEvent(val){
                 this.tabs.consoleActionVisible = false;
-                    switch (val.name) {
-                        case "撤回":
-                            this.back();
-                            break;
-                        case "新建变更":
-                            this.newchange();
-                            break;
-                        case "分配":
-                            this.getAssign();
-                            break;
-                        case "驳回":
-                            this.rejected();
-                            break;
-                        case "拆分任务":
-                            this.splitTask();
-                            break;
-                        case "开始":
-                            this.tabs.activeName = "codetask";
-                            break;
-                    }
+                switch (val.name) {
+                    case "撤回":
+                        this.back();
+                        break;
+                    case "新建变更":
+                        this.newchange();
+                        break;
+                    case "分配任务":
+                        this.getAssign();
+                        break;
+                    case "驳回":
+                        this.rejected();
+                        break;
+                    case "拆分任务":
+                        this.splitTask();
+                        break;
+                    case "开始":
+                        this.tabs.activeName = "codetask";
+                        break;
+                }
             },
             //操作台的事件---------------------------
+            //选项卡点击事件
+            tabsClick(val){
+            },
             //基础开发的撤回操作---------------
             back(){
                 let info = this.tabs.activeTableInfo;
@@ -1015,15 +1176,168 @@
             //拆分任务
             splitTask(){
                 let info = this.tabs.activeTableInfo;
-                console.log(info)
                 let params = new URLSearchParams();
-                params.append("BASE_ID",info.base_NEET_ID);
-                this.$axios.post("",params).then((res)=>{
+                params.append("BASE_ID", info.base_NEET_ID);
+                this.$axios.post("/base/baseInfoCheck", params).then((res) => {
                     let data = res.data;
-                    if(data.code == 200){
+                    if (data.code == 200) {
 
+                        this.split.splitvisible = true;
+                        this.$set(this.split, "level", data.result.facility);//设置难易度集合
+                        this.$set(this.split, "systemarr", data.result.system);//设置系统集合
+                        this.$set(this.split, "personlist", data.result.dept.users);//设置人员集合
                     }
                 })
+            },
+            //拆分任务时间过滤器
+            splitDataFormatter(row,col){
+                let date = this.$format(row.end_DATE);
+                return `${date.year}-${date.mouth}-${date.day}`
+            },
+            //新增涉及系统
+            systemEvent(index, e){
+                let className = e.target.className;
+                if (className == "el-icon-plus") {
+                    //当期是新增操作
+                    if (this.split.systemAll[index].name == "") {
+                        this.$warn("请选择系统");
+                        return;
+                    }
+                    if (this.split.systemAll[index].version == "") {
+                        this.$warn("请填写版本号");
+                        return;
+                    }
+                    if (this.split.systemAll[index].version.indexOf("v")<0) {
+                        this.$warn("版本号格式有误");
+                        return;
+                    }
+                    this.split.systemAll.push({"name": "", "version": ""})
+                } else {
+                    //当前是删除操作
+                    this.split.systemAll.splice(index, 1)
+                }
+            },
+            //查分任务新增人员弹窗
+            addsplitperson(){
+                let systemChooseArr = this.split.systemAll
+                if (systemChooseArr.length != 1) {
+                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
+                        this.split.systemAll.pop()
+                    }
+                } else {
+                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
+                        this.$warn("请先选择系统并填写完整信息");
+                        return
+                    }
+                }
+                let params = new URLSearchParams();
+                this.$axios.post("/base/BaseInfoID", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        this.split.splitaddvisible = true;
+                        this.split.taskcode = data.result;
+                    }
+                })
+            },
+            //拆分任务新增人员操作
+            splitSub(){
+                if(this.split.splitradio != 1){
+                    //1为测试任务，不需要选择系统名
+                    if(!this.split.choosesysyem){
+                        this.$warn("请选择系统名");
+                        return;
+                    }
+                }
+                if(!this.split.person){
+                    this.$warn("请选择分配人员");
+                    return;
+                }
+                if(!this.split.finishdate){
+                    this.$warn("请选择完成日期");
+                    return;
+                }
+                if(!this.split.model){
+                    this.$warn("请填写负责模块");
+                    return;
+                }
+                if(!this.split.levelchoosen){
+                    this.$warn("请选择难易度");
+                    return;
+                }
+                if(!this.split.usetime){
+                    this.$warn("请填写用时");
+                    return;
+                }
+                let end_data = this.$format(new Date(this.split.finishdate));
+                let obj = {
+                    BASE_INFO_ID: this.split.taskcode,
+                    USER_NAME: this.split.person.split("-")[1],
+                    SYSTEM_NAME: this.split.choosesysyem,
+                    RESPONSIBLE_MODULE: this.split.model,
+                    FACILITY_ID: this.split.levelchoosen.split("-")[0],
+                    FACILITY_NAME: this.split.levelchoosen.split("-")[1],
+                    END_DATE: this.split.finishdate,
+                    end_data_format: `${end_data.year}-${end_data.mouth}-${end_data.day}`,
+                    REQUIRED_TIME: this.split.usetime
+                };
+                this.split.ids.push(this.split.person.split("-")[0]);
+                this.split.names.push(this.split.person.split("-")[1]);
+                this.split.tableData.push(obj);
+                this.split.splitaddvisible = false;
+                this.clearSplitAddPerson()
+            },
+            //拆分任务删除人员操作
+            splitDelete(index){
+                this.split.tableData.splice(index,1);
+                this.split.names.splice(index,1);
+                this.split.ids.splice(index,1)
+            },
+            clearSplitAddPerson(){
+                this.split.choosesysyem = "";//清空选择的系统值
+                this.split.levelchoosen = "";//清空难易度选择的值
+                this.split.finishdate = "";//清空完成日期
+                this.split.usertime = "";//清空预计用时
+                this.split.model = "";//清空负责模块
+                this.split.taskcode = "";//清空任务编码
+                this.split.person = "";//清空选择的人员
+                this.split.usertime = ""//清空预计用时
+            },
+            //提交拆分任务结果
+            splitSubmit(){
+                let endTime = this.split.enddate;//预计结束日期
+                let startTime = this.split.startdate;//预计开始日期
+                if(!startTime){
+                    this.$warn("请选择预计开始日期");
+                    return;
+                }
+                if(!endTime){
+                    this.$warn("请选择预计结束日期");
+                    return;
+                }
+                if(this.split.tableData.length == 0){
+                    this.$warn("请选择分配人员");
+                    return;
+                }
+                this.$maskin();
+                let params = new URLSearchParams();
+                let info = this.tabs.activeTableInfo;
+                let BASE_ID = info.base_NEET_ID;//需求ID
+                let OLD_STATE = info.state_ID;//当前状态码
+                params.append("BASE_ID",BASE_ID)
+                params.append("OLD_STATE",OLD_STATE)
+                params.append("endTime",endTime)
+                params.append("startTime",startTime)
+                params.append("names",this.split.names)
+                params.append("ids",this.split.ids)
+                params.append("bics",JSON.stringify(this.split.tableData));
+                this.$axios.post("/base/addInfos",params).then((res)=>{
+                    let data =res.data;
+                    if(data.code == 200){
+                        this.tabs.splitvisible = false;
+                        this.loadData();
+                        this.$maskoff()
+                    }
+                });
             }
         }
     }
