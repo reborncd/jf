@@ -144,6 +144,7 @@ let instance = axios.create({
         'content-type': 'application/x-www-form-urlencoded',
     }
 });
+instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
