@@ -177,13 +177,21 @@
     }
 </style>
 <style>
+    /*.el-dialog__wrapper .el-dialog{*/
+        /*width: 60%;*/
+        /*position: fixed;*/
+        /*left: 50%;*/
+        /*top: 50%;*/
+        /*transform: translate(-50%,-50%);*/
+        /*margin: 0!important;*/
+    /*}*/
     .el-dialog__body {
-        max-height: 400px;
+        max-height: 370px;
         overflow-y: auto;
     }
 
     .el-dialog {
-        margin: 100px auto 0 !important;
+        margin: 70px auto 0 !important;
     }
 </style>
 <template>
@@ -208,7 +216,7 @@
                             <i class="el-icon-arrow-down el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="work">工作汇报</el-dropdown-item>
+                            <el-dropdown-item command="work" >工作汇报</el-dropdown-item>
                             <el-dropdown-item command="userInfo">个人资料</el-dropdown-item>
                             <el-dropdown-item command="resetPassword">修改密码</el-dropdown-item>
                             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
@@ -238,6 +246,9 @@
 <script>
     import "../../static/css/card.css";
     export default {
+        created(){
+            this.calculate();
+        },
         data(){
             return {
                 content: {
@@ -253,7 +264,6 @@
             }
         },
         mounted(){
-            this.calculate();
             window.onresize = () => {
                 this.calculate();
                 this.$refs.routerView.calculate();
@@ -325,7 +335,6 @@
             },
             //顶部菜单点击事件
             changeMainMenu(val){
-                console.log(val)
                 this.subMenu = [];
                 this.menuActive = val.menu_id;
                 this.activeTitle = val.menu_name;
@@ -340,8 +349,7 @@
             },
             //左侧菜单点击事件
             subMenuAction(val){
-                console.log(val)
-                this.$go(val.menu_url, {"id": val.menu_id});
+                this.$go(val.menu_url);
                 this.subActive = val.menu_id;
             },
             handleCommand(type){

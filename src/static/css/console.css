@@ -23,10 +23,10 @@
 }
 .console-action-wrapper .console-action {
     position: absolute;
-    right: 9px;
-    top: 46px;
+    right: 0;
+    top: 32px;
     width: 100px;
-    max-height: 150px;
+    /*max-height: 150px;*/
     overflow-y: auto;
     text-align: center;
     color: black;

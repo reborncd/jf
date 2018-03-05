@@ -48,15 +48,18 @@ let option = {
                     component: resolve => require(['./components/power/editrole.vue'], resolve),
                 },{
                     path: 'rolemanage',
+                    name:"角色管理",
                     component: resolve => require(['./components/power/rolemanage.vue'], resolve)
                 },{
                     path: 'rolelist',
+                    name:"人员配置",
                     component: resolve => require(['./components/power/rolelist.vue'], resolve)
                 },{
                     path: 'power',
                     component: resolve => require(['./components/power/power.vue'], resolve)
                 },{
                     path: 'deptlist',
+                    name:"部门编辑",
                     component: resolve => require(['./components/power/deptlist.vue'], resolve)
                 },{
                     path: 'log',
@@ -79,18 +82,23 @@ let option = {
                     component: resolve => require(['./components/problem/buglist.vue'], resolve)
                 },{
                     path: "online",
-                    name:"上限管理",
+                    name:"上线管理",
                     component: resolve => require(['./components/online/online.vue'], resolve)
                 },{
                     path: "flow",
                     component: resolve => require(['./components/flow/flow.vue'], resolve)
-                },{
-                    path: "version",
-                    name:"版本库",
-                    component: resolve => require(['./components/version/version.vue'], resolve)
                 }
+                // ,{
+                //     path: "version",
+                //     name:"版本库",
+                //     component: resolve => require(['./components/version/version.vue'], resolve)
+                // }
             ]
+        }, {
+            path: '/test',
+            component: resolve => require(['./components/test.vue'], resolve)
         }
+
     ]
 };
 let router = new Router(option);
@@ -99,7 +107,7 @@ router.beforeEach((to, from, next) => {
     if(to.name){
         localStorage.setItem("ACTIVEMENU",to.name);
     }
-    next()
+    next();
 //     console.log(next)
 //     let type = localStorage.getItem("TYPE");
 //     let token = localStorage.getItem("token");

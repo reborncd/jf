@@ -139,7 +139,7 @@ Vue.prototype.$format = (time) => {
 //----------------------------------------------------
 let token = "99a435577a5042bc95b2e8ad6d5b8f73";
 let instance = axios.create({
-    baseURL: 'http://172.16.2.25:8989/JiFu_Project',
+    baseURL: 'http://172.16.2.58:8989/JiFu_Project',
     headers: {
         'content-type': 'application/x-www-form-urlencoded',
     }

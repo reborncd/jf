@@ -72,7 +72,7 @@
                                     <el-button @click="editRow(scope.row,scope)" size="small" type="primary">
                                         编辑
                                     </el-button>
-                                    <!--<el-button @click="deleteRow(scope.row,scope)" size="small">删除</el-button>-->
+                                    <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -82,8 +82,9 @@
         </el-card>
         <el-dialog title="新增部门" :visible="dialogOption.dialog_dep_visible" center
                    label-position="left"
-                   :append-to-body="dialogOption.appendToBody" :lock-scroll="dialogOption.lockScroll"
-                   :show-close="dialogOption.showClose" width="50%" :modal-append-to-body="dialogOption.modal"
+                   width="50%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog"
         >
             <el-form label-width="100px">
                 <el-form-item label="上级部门">
@@ -106,8 +107,9 @@
         </el-dialog>
         <el-dialog title="编辑涉及系统" :visible="dialogOption.dialog_system_visible" center
                    label-position="left"
-                   :append-to-body="dialogOption.appendToBody" :lock-scroll="dialogOption.lockScroll"
-                   :show-close="dialogOption.showClose" width="30%" :modal-append-to-body="dialogOption.modal"
+                   width="30%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog"
         >
             <el-form label-width="100px">
                 <el-form-item label="所选部门">
@@ -234,6 +236,10 @@
                 leftTree.style.height = (height - 34) - card_header_height - 20 - 28 - 15 + "px";
                 this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 15;
             },
+            closeDialog(){
+              this.dialogOption.dialog_system_visible = false;
+              this.dialogOption.dialog_dep_visible = false;
+            },
             leftTreeClick(val){
                 this.tableData = val.depts;
             },
@@ -289,7 +295,6 @@
                     if (data.code == 200) {
                         this.$set(this.dialogData.deptData, "roleDept", data.result)
                     }
-//
                 })
             },
 //            deptChangeEvent(value){
@@ -319,6 +324,21 @@
                         this.$success("新增成功！");
                     }
                 })
+            },
+            //删除部门
+            deleteRow(row,index){
+                console.log(row)
+                this.confirm("确认删除此部门吗？此操作将不可恢复！",()=>{
+                    let params = new URLSearchParams();
+                    params.append("dept_id",row.id);
+                    this.$axios.post("/role/deleteDept",params).then((res)=>{
+                        let data = res.data;
+                        if(data.code ==200){
+                            this.$success("操作成功！");
+                            this.loadData()
+                        }
+                    })
+                });
             },
             search(){
                 if(this.keyword == ""){

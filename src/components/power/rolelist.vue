@@ -121,9 +121,9 @@
             </div>
         </el-card>
         <el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center
-                   label-position="left" :lock-scroll="dialogOption.lockScroll" :show-close="dialogOption.showClose"
-                   width="40%"
-                   :append-to-body="!dialogOption.appendToBody" :modal-append-to-body="!dialogOption.modal"
+                   label-position="left"
+                   width="40%" append-to-body modal-append-to-body
+                   :before-close="closeDialog"
         >
             <el-form label-width="80px">
                 <el-form-item label="用户名">
@@ -188,7 +188,6 @@
     </div>
 
 </template>
-
 <script>
     export default {
         data(){
@@ -305,7 +304,9 @@
                 leftTree.style.height = (height - 36) - card_header_height - 20 - 28 - 15 + "px";
                 this.tableHeight = (height - 36) - card_header_height - 20 - 28 - 15;
             },
-
+            closeDialog(){
+              this.dialogOption.dialog_person_visible = false;
+            },
             editRow(el, scope, type){
                 if (type == "edit") {
                     this.dialogOption.dialogTitle = "编辑配置";
