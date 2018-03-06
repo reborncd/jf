@@ -73,6 +73,10 @@ let option = {
                     name:"基础建设",
                     component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)
                 },{
+                    path: 'rcrw',
+                    name:"日常任务",
+                    component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)
+                },{
                     path: 'errorlist',
                     name:"故障列表",
                     component: resolve => require(['./components/problem/errorlist.vue'], resolve)

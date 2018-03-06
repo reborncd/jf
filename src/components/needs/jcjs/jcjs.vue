@@ -121,7 +121,7 @@
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight"
                                   highlight-current-row
-                                  @row-click="handleCurrentChange">
+                                  @current-change="handleCurrentChange">
                             <el-table-column prop="base_NEET_ID" label="需求编号" width="200"></el-table-column>
                             <el-table-column prop="start_DATE" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" label="预计完成日期" width="120"></el-table-column>
@@ -145,7 +145,7 @@
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
                         </div>
-                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabsClick">
+                        <el-tabs v-model="tabs.activeName" type="card">
                             <el-tab-pane label="详情页" name="info">
                                 <div class="console-tab-content">
                                     <el-form label-width="100px" label-position="left">
@@ -154,6 +154,9 @@
                                                 <el-form-item label="状态" style="color: red">
                                                     {{tabs.data_one.state_NAME}}
                                                 </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12" v-if="tabs.data_one.oldcode">
+                                                <el-form-item label="原需求编号">{{tabs.data_one.oldcode}}</el-form-item>
                                             </el-col>
                                             <el-col :span="12">
                                                 <el-form-item label="需求编号">{{tabs.data_one.base_NEET_ID}}</el-form-item>
@@ -186,13 +189,17 @@
                                                     <span style="color: red!important;">{{tabs.data_one.urgent}}</span>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24">
-                                                <el-form-item label="需求描述">{{tabs.data_one.neel_DESCRIPTION}}
-                                                </el-form-item>
+                                            <el-col :span="24" v-if="tabs.data_one.oldproduct">
+                                                <el-form-item label="原产品功能">{{tabs.data_one.oldproduct}}</el-form-item>
                                             </el-col>
                                             <el-col :span="24">
-                                                <el-form-item label="产品功能">{{tabs.data_one.product_FUNCTION}}
-                                                </el-form-item>
+                                                <el-form-item label="产品功能">{{tabs.data_one.product_FUNCTION}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.data_one.olddescribe">
+                                                <el-form-item label="原产品功能">{{tabs.data_one.olddescribe}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24">
+                                                <el-form-item label="需求描述">{{tabs.data_one.neel_DESCRIPTION}}</el-form-item>
                                             </el-col>
                                             <el-col :span="24" v-if="tabs.data_one.reject_RESON" style="color: red">
                                                 <el-form-item label="驳回原因">{{tabs.data_one.reject_RESON}}</el-form-item>
@@ -405,7 +412,7 @@
                                                             <div style="text-align: center">
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 308 tabs.testActionData.indexOf('开始')>=0"
+                                                                           v-if="scope.row.state_ID == 308 && tabs.testActionData.indexOf('开始')>=0"
                                                                            @click="testTaskStart(scope.$index, scope.row)">
                                                                     开始
                                                                 </el-button>
@@ -505,7 +512,7 @@
                                             </el-col>
                                             <el-col :span="24" :sm="24">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
-                                                    {{index+1}}. <span>{{item.record_START | date}}</span>{{item.record_DESC}}
+                                                    <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
                                                 </p>
                                             </el-col>
                                         </el-row>
@@ -528,18 +535,11 @@
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-row :md="24" :gutter="20">
-                    <!--<el-col :span="24" :md="24" >-->
-                    <!--<el-form-item label="涉及系统">-->
-                    <!--<el-select v-model="addneeds.addform.sjxt" placeholder="请选择涉及系统" clearable-->
-                    <!--style="width: 100%;">-->
-                    <!--<el-option v-for="item in options" :label="item.label" :value="item.value"></el-option>-->
-                    <!--</el-select>-->
-                    <!--</el-form-item>-->
-                    <!--</el-col>-->
                     <!--原需求编号-->
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldcode">
-                        <el-form-item label="原需求编号" style="color: #FF6600">
-                            <el-input v-model="addneeds.addform.oldcode" disabled></el-input>
+                        <el-form-item label="原需求编号">
+                            <span style="color: #FF6600;cursor: pointer">{{addneeds.addform.oldcode}}</span>
+                            <!--<el-input v-model="addneeds.addform.oldcode" disabled></el-input>-->
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
@@ -559,7 +559,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求来源">
-                            <el-select v-model="addneeds.addform.fromdeptId" clearable placeholder="请选择需求来源"
+                            <el-select v-model="addneeds.addform.fromdeptId" clearable placeholder="请选择部门"
                                        style="width: 49%;float: left;margin-right: 2%;" @change="fromdeptchange">
                                 <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
                                            :value="item.dept_id"></el-option>
@@ -618,7 +618,8 @@
                     <!--原产品功能-->
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldgongneng">
                         <el-form-item label="原产品功能">
-                            <el-input v-model="addneeds.addform.oldgongneng"></el-input>
+                            {{addneeds.addform.oldgongneng}}
+                            <!--<el-input v-model="addneeds.addform.oldgongneng" disabled></el-input>-->
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
@@ -629,7 +630,8 @@
                     <!--原需求描述-->
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldneedsname">
                         <el-form-item label="原需求描述">
-                            <el-input type="textarea" v-model="addneeds.addform.oldneedsname"></el-input>
+                            {{addneeds.addform.oldneedsname}}
+                            <!--<el-input type="textarea" v-model="addneeds.addform.oldneedsname" disabled></el-input>-->
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
@@ -780,7 +782,7 @@
                     </el-table-column>
                     <el-table-column prop="user_NAME" label="人员" width="150"></el-table-column>
                     <el-table-column prop="system_NAME" label="系统名"></el-table-column>
-                    <el-table-column prop="base_INFO_ID" label="任务编码" width="180"></el-table-column>
+                    <el-table-column prop="base_INFO_ID" label="任务编码" width="190"></el-table-column>
                     <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
                                      label="完成日期"></el-table-column>
                     <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
@@ -1068,7 +1070,8 @@
                     activeName: "info",//控制台的选中项
                     consoleWrapperVisible: false,//控制台的显示
                     consoleActionVisible: false,//控制台的操作显示/隐藏
-                    consoleActionData: [],
+                    originActionData:[],//原所有操作
+                    consoleActionData: [],//所有操作
                     codeActionData: [],//开发人员的操作权限
                     testActionData: [],//测试人员的操作权限
                     rejectType: "",//驳回操作的特殊判断，“jl 为技术经理的驳回，gl 为管理部的驳回”
@@ -1093,6 +1096,9 @@
                         code_end: "",//开发结束时间
                         test_start: "",//测试开始时间
                         test_end: "",//测试结束时间
+                        oldcode:"",//原需求编号
+                        oldproduct:"",//原产品功能
+                        olddescribe:"",//原需求描述
                     },
                     state_NAME: "",//状态
                     user_NAME: "",//负责人
@@ -1139,18 +1145,19 @@
                     bugid_code: "",//开发人员转接的bugid
                     allBugs: [],//所有的bug信息
                     allBUGvisible: false,//BUG清单的展示
-                }
+                },
+
             }
         },
         filters: {
             date: function (time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = d.getMonth() + 1;
+                let month = d.getMonth() + 1<10?'0' + d.getMonth() : '' + d.getMonth();
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-                let hour = d.getHours();
-                let minutes = d.getMinutes();
-                let seconds = d.getSeconds();
+                let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
+                let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+                let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
                 return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
             },
         },
@@ -1228,9 +1235,10 @@
                     let arr = [];
                     let roleArr_temp = [];
                     for (let i of power) {
+//                        console.log(i)
                         if (i.menu_fname == activeRoute) {
                             //针对相同操作但是不同权限
-                            if (i.act.split("-")[0] != "开始" && i.act.split("-")[0] != "完成") {
+                            if (i.act.split("-")[0] != "开始" && i.act.split("-")[0] != "完成" && i.act.split("-")[0] != "立项") {
                                 arr.push({"name": i.act.split("-")[0], "role": i.act.split("-")[1]});
                             } else {
                                 //判断是测试的操作还是开发的操作
@@ -1255,7 +1263,7 @@
                                 this.tabs.codeActionData.push("转接");
                             }
                         }
-                        roleArr_temp.push(i.act.split("-")[1])
+                        roleArr_temp.push(i.act.split("-")[1]);
                     }
                     let roleArr = this.$unique(roleArr_temp);
                     this.$set(this.tabs, "consoleActionData", arr);
@@ -1332,6 +1340,7 @@
             },
             //提交新增
             subaddForm(){
+                let url = "";
                 let params = new URLSearchParams();
                 params.append("BASE_NEET_ID", this.addneeds.addform.code);	//需求编码
                 params.append("NEEL_NAME", this.addneeds.addform.name);	//需求名称
@@ -1346,19 +1355,22 @@
                 if (this.addneeds.addform.jiaji) {
                     params.append("URGENT", this.addneeds.addform.jiajireason);//加急描述
                 }
-                this.$axios.post("/base/saveBaseConstruct", params).then((res) => {
+                if(this.addneeds.addType = "change"){
+                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
+                    url = "/base/newUpdate"
+                }else if (this.addneeds.addType = "add"){
+                    url = "/base/saveBaseConstruct"
+                }
+                this.$axios.post(url,params).then((res)=>{
                     let data = res.data;
-                    if (data.code == 200) {
+                    if(data.code == 200){
                         this.$success("操作成功！");
-                        //清空新建变更数据
-                        this.addneeds.oldcode = "";
-                        this.addneeds.oldgongneng = "";
-                        this.addneeds.oldneedsname = "";
+                        //清空新增的数据
                         this.addneeds.addvisible = false;
                         this.clearAddData();
                         this.loadData();
                     }
-                });
+                })
             },
             //清除新增立项的表单
             clearAddData(){
@@ -1453,7 +1465,7 @@
                             let end = this.$format(data.result.base.end_DATE);
                             this.tabs.data_one.end_DATE = `${end.year}-${end.mouth}-${end.day}`;
                         }
-                        //是否有任务完成待验收
+                        //判断是否有完成时间，有则展示
                         if (data.result.base.code_START_DATETIME
                             && data.result.base.code_END_DATETIME
                             && data.result.base.test_END_DATETIME
@@ -1493,7 +1505,7 @@
                     }
                 })
             },
-            //操作台的事件
+            //操作台的事件判断-------------------------
             consoleActionEvent(val){
                 this.tabs.consoleActionVisible = false;
                 switch (val.name) {
@@ -1502,6 +1514,9 @@
                         break;
                     case "新建变更":
                         this.newchange();
+                        break;
+                    case "需求内变更":
+                        this.changeinset();
                         break;
                     case "分配任务":
                         this.getAssign();
@@ -1518,15 +1533,15 @@
                 }
             },
             //操作台的事件---------------------------
-            //选项卡点击事件
-            tabsClick(val){
-            },
             //验收操作
             acceptance(){
+                let info = this.tabs.activeTableInfo;
+                if(info.state_ID == 311){
+                    this.$warn("该需求已验收！");
+                    return;
+                }
                 this.$maskin();
                 let params = new URLSearchParams();
-                let info = this.tabs.activeTableInfo;
-                console.log(info.base_NEET_ID);
                 params.append("BASE_NEEL_ID", info.base_NEET_ID);
                 this.$axios.post("/base/baseAccept", params).then((res) => {
                     let data = res.data;
@@ -1537,7 +1552,7 @@
                     }
                 })
             },
-            //基础开发的撤回操作---------------
+            //基础开发的撤回操作
             back(){
                 let info = this.tabs.activeTableInfo;
                 if (info.state_ID !== 303) {
@@ -1557,15 +1572,58 @@
                     })
                 })
             },
-            //新建变更---------------
+            //新建变更
             newchange(){
+                this.$maskin();
                 this.addneeds.addType = "change";//当前是新建变更
+                let params = new URLSearchParams();
+                params.append("BASE_NELL_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/checkBaseUpdate",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        let base = data.result.base;
+                        this.addneeds.addform.oldcode = base.base_NEET_ID;//原需求编号
+                        this.addneeds.addform.code = data.result.BASE_NEET_ID;//需求编号
+                        this.addneeds.addform.fromdeptArr = data.result.depts;//部门数组
+                        this.addneeds.addform.levelArr = data.result.priority;//优先级
+                        this.addneeds.addform.zhongyaochegnduArr = data.result.importance;//重要程度
+                        this.addneeds.addform.gongneng = "";
+                        this.addneeds.addform.oldgongneng = base.product_FUNCTION;//原需求功能
+                        this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                        this.addneeds.addvisible = true;
+                        this.$maskoff();
+//                        this.addneeds.addform.needsname = "";
+//                        this.addneeds.addform.name = base.neel_NAME;
+//                        this.addneeds.addform.sxname = base.apply_NAME;//申请人
+//                        this.addneeds.addform.fromdeptId = parseInt(base.dept_ID);//选择的部门ID
+//                        for(let i of data.result.depts){
+//                            if(i.dept_id == base.dept_ID){
+//                                this.addneeds.addform.fromdeptroleArr = i.users;//设置当前部门的人员
+//                            }
+//                        }
+//                        this.addneeds.addform.fromdeptroleId = base.user_ID;//选择的人员ID
+//                        this.addneeds.addform.shenqingdate = base.start_DATE;
+//                        this.addneeds.addform.jihuadate = base.end_DATE;
+//                        this.addneeds.addform.level = base.rriority;//选择的优先级
+//                        this.addneeds.addform.zhongyaochegndu = base.importance;//选择的重要程度
+//                        this.addneeds.addform.jiaji = base.urgent?'1':'0';//是否加急
+//                        this.addneeds.addform.jiajireason = base.urgent;//加急原因
+                    }
+                })
             },
-            //新建需求内变更---------------
+            //需求内变更
             changeinset(){
                 this.addneeds.addType = "changeinset";//当前是新建变更
+                let params = new URLSearchParams();
+                params.append("BASE_NELL_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/checkBaseUpdate",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+
+                    }
+                })
             },
-            //分配任务-----------
+            //分配任务
             getAssign(){
                 let info = this.tabs.activeTableInfo;
                 if (info.state_ID != 303 && info.state_ID != 304) {

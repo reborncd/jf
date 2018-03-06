@@ -51,7 +51,8 @@
 		position: relative;
 		padding: 0 30px 0 0!important;
 	}
-	.el-form-item__label{
+	
+	.el-form-item__label {
 		width: 120px !important;
 	}
 </style>
@@ -63,11 +64,11 @@
 					<div class="action clear">
 						<!--<el-button type="danger" size="mini" @click="newneeds">立项</el-button>-->
 						<el-select v-model="selectValueUs" @change="selectStatUs(selectValueUs)" clearable size="mini">
-							<el-option v-for="(item, index) in optionsUs"  :label="item.key" :value="item.value">
+							<el-option v-for="(item, index) in optionsUs" :label="item.key" :value="item.value">
 							</el-option>
 						</el-select>
 						<el-select v-model="selectValueOn" @change="selectStatOn(selectValueOn)" clearable size="mini">
-							<el-option v-for="(item, index) in optionsOn"  :label="item.key" :value="item.value">
+							<el-option v-for="(item, index) in optionsOn" :label="item.key" :value="item.value">
 							</el-option>
 						</el-select>
 						<div class="fr">
@@ -116,7 +117,7 @@
 								<div class="console-tab-content">
 									<el-form label-width="100px" label-position="left">
 										<el-row :gutter="20">
-											
+
 											<el-col :span="12">
 												<el-form-item v-if="state.id==9" label="上线类型">{{tabs.data_one.goliveProject.cOLIVE_TYPE_NAME}}</el-form-item>
 											</el-col>
@@ -126,7 +127,7 @@
 											<el-col :span="12">
 												<el-form-item v-if="state.id==9" label="上线内容">{{tabs.data_one.goliveProject.gOLIVE_CONTENT}}</el-form-item>
 											</el-col>
-											
+
 											<el-col :span="12">
 												<el-form-item label="需求编号">{{tabs.data_one.DemandTechnology.tECHNOLOGY_NEEL_ID}}</el-form-item>
 											</el-col>
@@ -192,19 +193,17 @@
 									</el-form>
 								</div>
 							</el-tab-pane>
-							
+
 							<el-tab-pane label="操作台" name="console">
 								<div class="console-tab-content">
 									<div class="console-action-wrapper">
-                                        <i class="icon-more iconfont"
-                                           @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
-                                        <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                            <span v-for="item in tabs.consoleActionData"
-                                                  @click="consoleActionEvent(item)">{{item.name}}
+										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
+										<div class="console-action fr" v-if="tabs.consoleActionVisible">
+											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
-                                        </div>
-                                    </div>
-                                    
+										</div>
+									</div>
+
 									<el-form label-width="140px" v-if="!state.id || state.id==1">
 										<el-col :span="24">
 											<el-form-item label="状态">{{state.name}}
@@ -214,104 +213,103 @@
 											<el-col :span="12" :md="12">
 												<el-form-item label="上线类型">
 													<el-select v-model="consoleForm.onlineType">
-							                           <el-option v-for="(item, index) in onlineTypes"  :label="item.key" :value="item.value">
-							                           </el-option>
-						                            </el-select>
+														<el-option v-for="(item, index) in onlineTypes" :label="item.key" :value="item.value">
+														</el-option>
+													</el-select>
 												</el-form-item>
 											</el-col>
 											<el-col :span="12" :md="12" v-if="consoleForm.onlineType!=0">
 												<el-form-item label="是否加急">
 													<el-select v-model="consoleForm.ifUrgent">
-							                           <el-option v-for="(item, index) in ifUrgents"  :label="item.key" :value="item.value">
-							                           </el-option>
-						                            </el-select>
+														<el-option v-for="(item, index) in ifUrgents" :label="item.key" :value="item.value">
+														</el-option>
+													</el-select>
 												</el-form-item>
 											</el-col>
-											
-											<el-col  style="padding: 0;" v-for="(content, index) in onlineForm.onlineContent">
-											<el-col :span="12" >
-												<el-form-item label="涉及系统">
-													<el-select v-model="content.SYSTEM_ID" @change="systeMv(index,$event)">
-							                           <el-option v-for="(item, index) in aboutSystems"   :label="item.key" :value="item.value">
-							                           </el-option>
-						                            </el-select>
+
+											<el-col style="padding: 0;" v-for="(content, index) in onlineForm.onlineContent">
+												<el-col :span="12">
+													<el-form-item label="涉及系统">
+														<el-select v-model="content.SYSTEM_ID" @change="systeMv(index,$event)">
+															<el-option v-for="(item, index) in aboutSystems" :label="item.key" :value="item.value">
+															</el-option>
+														</el-select>
+													</el-form-item>
+												</el-col>
+												<el-col :span="12">
+													<el-form-item label="上线系统">
+														<el-select v-model="content.GOLIVE_SYSTEM">
+															<el-option v-for="(item, index) in onlineSystems" :label="item.key" :value="item.value">
+															</el-option>
+														</el-select>
+													</el-form-item>
+												</el-col>
+												<el-col :span="12">
+													<el-form-item label="上线模块">
+														<el-input v-model="content.GOLIVE_MODULE"></el-input>
+													</el-form-item>
+												</el-col>
+												<el-col :span="10">
+													<el-form-item label="上线内容">
+														<el-input v-model="content.GOLIVE_CONTENT"></el-input>
+													</el-form-item>
+												</el-col>
+												<el-col :span="2">
+													<i :class="index == 0 && onlineForm.onlineContent.length == 1?'el-icon-plus':index == onlineForm.onlineContent.length-1?'el-icon-plus':'el-icon-minus'" style="line-height: 40px;height: 40px;text-align: center;
+                                                font-size: 20px;cursor: pointer;font-weight: bold" @click="systemEvent(index,$event)">
+                                            </i></el-col>
+											</el-col>
+
+											<el-col :span="12">
+												<el-form-item label="项目负责人">
+													<el-input v-model="consoleForm.projectLeader"></el-input>
 												</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item  label="上线系统">
-                                                   <el-select v-model="content.GOLIVE_SYSTEM">
-							                           <el-option v-for="(item, index) in onlineSystems"   :label="item.key" :value="item.value">
-							                           </el-option>
-						                            </el-select>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12" >
-											<el-form-item label="上线模块">
-							                    <el-input v-model="content.GOLIVE_MODULE"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="10" >
-											<el-form-item label="上线内容">
-							                    <el-input v-model="content.GOLIVE_CONTENT"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="2">
-                                                    <i :class="index == 0 && onlineForm.onlineContent.length == 1?'el-icon-plus':index == onlineForm.onlineContent.length-1?'el-icon-plus':'el-icon-minus'"
-                                                       style="line-height: 40px;height: 40px;text-align: center;
-                                                font-size: 20px;cursor: pointer;font-weight: bold" @click="systemEvent(index,$event)">
-                                            </i></el-col>
-                                            </el-col>
-                                            
-                                            <el-col :span="12" >
-											<el-form-item label="项目负责人">
-							                    <el-input v-model="consoleForm.projectLeader"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="12" >
-											<el-form-item label="开发负责人">
-							                    <el-input v-model="consoleForm.developmentLeader"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="12" >
-											<el-form-item label="测试负责人">
-							                    <el-input v-model="consoleForm.testLeader"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="12" >
-											<el-form-item label="产品负责人">
-							                    <el-input v-model="consoleForm.productManager"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="12" >
-											<el-form-item label="预计上线日期">
-							                    <el-date-picker type="date"  placeholder="选择日期" v-model="consoleForm.expectDate" style="width: 100%;"></el-date-picker>
-						                    </el-form-item>
-						                     </el-col>
-						                     <el-col :span="12" >
-						                    <el-form-item label="预计上线时间">
-							                    <el-input v-model="consoleForm.expectTime"></el-input>
-						                    </el-form-item>
-						                     </el-col>
-						                     <el-col :span="12" >
-						                    <el-form-item  label="是否停交易">
-                                                   <el-select v-model="consoleForm.ifStop">
-							                           <el-option v-for="(item, index) in ifStops"   :label="item.key" :value="item.value">
-							                           </el-option>
-						                            </el-select>
-                                                </el-form-item>
-						                     </el-col>
-						                     <el-col :span="12" >
-						                    <el-form-item label="影响时间（分钟）">
-							                    <el-input v-model="consoleForm.effectTime"></el-input>
-						                    </el-form-item>
-						                    </el-col>
-						                    <el-col :span="24" :md="24">
-                                             <el-form-item label="附件说明">
-                                             <el-input type="textarea" v-model="consoleForm.illustrate"></el-input>
-                                             </el-form-item>
-                                            </el-col>
+												<el-form-item label="开发负责人">
+													<el-input v-model="consoleForm.developmentLeader"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="测试负责人">
+													<el-input v-model="consoleForm.testLeader"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="产品负责人">
+													<el-input v-model="consoleForm.productManager"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="预计上线日期">
+													<el-date-picker type="date" placeholder="选择日期" v-model="consoleForm.expectDate" style="width: 100%;"></el-date-picker>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="预计上线时间">
+													<el-input v-model="consoleForm.expectTime"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="是否停交易">
+													<el-select v-model="consoleForm.ifStop">
+														<el-option v-for="(item, index) in ifUrgents" :label="item.key" :value="item.value">
+														</el-option>
+													</el-select>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="影响时间（分钟）">
+													<el-input v-model="consoleForm.effectTime"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="24" :md="24">
+												<el-form-item label="附件说明">
+													<el-input type="textarea" v-model="consoleForm.illustrate"></el-input>
+												</el-form-item>
+											</el-col>
 										</el-row>
-										
+
 									</el-form>
 
 									<el-form label-width="60px" label-position="left" v-if="state.id==9">
@@ -371,7 +369,7 @@
 			<el-form label-width="100px">
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12">
-						<el-form-item label="发布负责人" >
+						<el-form-item label="发布负责人">
 							<el-input v-model="onlineSure.addform.fbfzr"></el-input>
 						</el-form-item>
 					</el-col>
@@ -379,36 +377,42 @@
 						<el-form-item label="上线结果" style="height: 42px">
 							<el-row :span="24">
 								<el-col :span="24" :md="24">
-									<el-radio v-model="addneeds.addform.sxjg" label="5" >成功</el-radio>
-									<el-radio v-model="addneeds.addform.sxjg" label="6">失败</el-radio>
-									<el-radio v-model="addneeds.addform.sxjg" label="10">回滚</el-radio>
+									<el-radio v-model="onlineSure.addform.sxjg" label="5">成功</el-radio>
+									<el-radio v-model="onlineSure.addform.sxjg" label="6">失败</el-radio>
+									<el-radio v-model="onlineSure.addform.sxjg" label="10">回滚</el-radio>
 								</el-col>
 							</el-row>
 						</el-form-item>
 					</el-col>
+					<el-col :span="12" v-if="onlineSure.addform.sxjg==10">
+						<el-form-item label="回滚系统">
+							<el-select v-model="onlineSure.addform.hgxt">
+								<el-option v-for="(item, index) in onlineSystems" :label="item.key" :value="item.value">
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
 					<el-col :span="12" :md="12">
 						<el-form-item label="操作日期">
-                    <el-date-picker type="date" placeholder="操作日期" v-model="addneeds.addform.czrq"
-                                    style="width: 100%;"></el-date-picker>
-                </el-form-item>
+							<el-date-picker type="date" placeholder="操作日期" v-model="onlineSure.addform.czrq" style="width: 100%;"></el-date-picker>
+						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
 						<el-form-item label="操作时间">
-							<el-input  v-model="addneeds.addform.czsj"></el-input>
+							<el-input v-model="onlineSure.addform.czsj"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="24" :md="24" v-if="addneeds.addform.sxjg!=5">
-						<el-form-item >
-							<el-input type="textarea"  v-model="addneeds.addform.czsj"></el-input>
+					<el-col :span="24" :md="24" v-if="onlineSure.addform.sxjg!=5">
+						<el-form-item>
+							<el-input type="textarea" v-model="onlineSure.addform.smk"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary"  size="mini">确 定</el-button>
+				<el-button type="primary" @click="agreeSure" size="middle">确 定</el-button>
 			</div>
 		</el-dialog>
-	
 
 	</div>
 </template>
@@ -417,69 +421,53 @@
 	export default {
 		data() {
 			return {
-				mainId:'',
+				mainId: '',
 				onlineForm: {
 					onlineContent: [{
-                    "SYSTEM_ID":'',
-                    "GOLIVE_SYSTEM":'',
-                    "GOLIVE_MODULE":'',
-                    "GOLIVE_CONTENT":''
-                 }]
+						"SYSTEM_ID": '',
+						"GOLIVE_SYSTEM": '',
+						"GOLIVE_MODULE": '',
+						"GOLIVE_CONTENT": ''
+					}]
 				},
-				onlineSystems:[],
-				aboutSystems:[],
-				ifUrgents:[{"key":'是','value':'1'},{"key":'否','value':'0'}],
-				ifStops:[{"key":'是','value':'1'},{"key":'否','value':'0'}],
-				onlineTypes:[],
-				consoleForm:{
-					onlineType:"",
-					ifUrgent:"",
-					projectLeader:'',
-					developmentLeader:'',
-					testLeader:'',
-                    productManager:'',
-                    expectDate:'',
-                    expectTime:'',
-                    ifStop:'',
-                    effectTime:'',
-                    illustrate:''
+				onlineSystems: [],
+				aboutSystems: [],
+				ifUrgents: [{
+					"key": '是',
+					'value': '1'
+				}, {
+					"key": '否',
+					'value': '0'
+				}],
+				onlineTypes: [],
+				consoleForm: {
+					onlineType: "",
+					ifUrgent: "",
+					projectLeader: '',
+					developmentLeader: '',
+					testLeader: '',
+					productManager: '',
+					expectDate: '',
+					expectTime: '',
+					ifStop: '',
+					effectTime: '',
+					illustrate: ''
 				},
-				golivetype:[],
-				systemlist:[],
-				systemv:[],
-				onlineSure:{
-					addvisible: true,
+				golivetype: [],
+				systemlist: [],
+				systemv: [],
+				onlineSure: {
+					addvisible: false,
 					addform: {
+						"sxxqId": "", //上线需求id
 						"fbfzr": "", //发布负责人
-						"sxjg": "5",  //上线结果
-						"czrq": "",  //操作日期
-						"czsj": "",  //操作时间
-						"smk": ""   //说明框
+						"sxjg": "5", //上线结果
+						"hgxt": "", //回滚版本
+						"czrq": "", //操作日期
+						"czsj": "", //操作时间
+						"smk": "" //说明框
 					}
-				
-				},
-				addneeds: {
-					addvisible: true,
-					addform: {
-						"sjxt": "", //涉及系统
-						"code": "", //需求编号
-						"name": "", //需求名称
-						"sxname": "", //申请人
-						"fromdeptId": "", //选择的需求来源部门ID
-						"fromdeptArr": "", //部门数组
-						"fromdeptroleId": "", //选择的需求来源人
-						"fromdeptroleArr": "", //择的需求来源人数组
-						"zhongyaochegndu": "", //重要程度
-						"zhongyaochegnduArr": "", //重要程度数组
-						"level": "", //优先级
-						"levelArr": "", //优先级数组
-						"shenqingdate": "", //申请日期
-						"jihuadate": "", //计划投产日期
-						"jiaji": "", //是否加急
-						"jiajireason": "", //加急的原因
-						"gongneng": "", //产品功能
-						"needsname": "" //需求描述
-					}
+
 				},
 				table: {
 					tableData: [],
@@ -520,45 +508,39 @@
 					user_NAME: "", //负责人
 					genzong: ""
 				},
-			consoleRight:{
-				level:1 //权限等级    1是质量管理部
-			},
-			state:{
-				id:'',
-				name:''
+				consoleRight: {
+					level: 1 //权限等级    1是质量管理部
+				},
+				state: {
+					id: '',
+					name: ''
+				}
 			}
-			}
-		},
-		filters: {
-			date: function(time) {
-				let d = new Date(time);
-				let year = d.getFullYear();
-				let month = d.getMonth() + 1;
-				let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-				let hour = d.getHours();
-				let minutes = d.getMinutes();
-				let seconds = d.getSeconds();
-				return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
-			},
 		},
 		mounted() {
 			this.getSelectUs(); //第一个筛选框
 			this.loadData();
-//			this.consoleAction();
+			//			this.consoleAction();
 		},
 		methods: {
-			consoleAction(id){
-	            this.tabs.consoleActionData=[]
-				if(!id || id==1){
-					this.tabs.consoleActionData.push({"name":'提交'})
-				}else{
-					this.tabs.consoleActionData.push({"name":'通过'})
-					this.tabs.consoleActionData.push({"name":'驳回'})
+			consoleAction(id) {
+				this.tabs.consoleActionData = []
+				if(!id || id == 1) {
+					this.tabs.consoleActionData.push({
+						"name": '提交'
+					})
+				} else {
+					this.tabs.consoleActionData.push({
+						"name": '通过'
+					})
+					this.tabs.consoleActionData.push({
+						"name": '驳回'
+					})
 				}
-				
-			},//权限控制
-			submitConsole(){
-				let formArr=JSON.stringify(this.onlineForm.onlineContent);
+
+			}, //权限控制
+			submitConsole() {
+				let formArr = JSON.stringify(this.onlineForm.onlineContent);
 				let params = new URLSearchParams();
 				params.append("NEEL_ID", this.mainId); //id
 				params.append("COLIVE_ID", this.consoleForm.onlineType); //上线类型
@@ -566,11 +548,11 @@
 				params.append("OPEN_LEADER", this.consoleForm.developmentLeader); //开发负责人
 				params.append("TEST_LEADER", this.consoleForm.testLeader); //测试负责人
 				params.append("PRODUCT_LEADER", this.consoleForm.productManager); //产品负责人
-				params.append("DESIRED_START_DATETIMES",this.consoleForm.expectDate); //预计上线日期
+				params.append("DESIRED_START_DATETIMES", this.consoleForm.expectDate); //预计上线日期
 				params.append("DESIRED_END_DATETIME", this.consoleForm.expectTime); //预计上线时间
 				params.append("TRADE", this.consoleForm.ifStop); //是否停交易
 				params.append("INFLUENCE_MM", this.consoleForm.effectTime); //影响时间
-				params.append("bics", formArr);//点击加号
+				params.append("bics", formArr); //点击加号
 				params.append("ILLUSTRATE", this.consoleForm.illustrate); //附件说明
 				if(this.consoleForm.ifUrgent) {
 					params.append("URGENT", this.consoleForm.ifUrgent); //是否加急
@@ -578,27 +560,32 @@
 				this.$axios.post("/golive/addgoliveproject", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-					this.$success(data.message);
-					this.tabs.consoleWrapperVisible = false;
-				    this.calculateTableHeight(false)
-					this.clearAddData();
-				    this.loadData();
-					}else{
+						this.$success(data.message);
+						this.tabs.consoleWrapperVisible = false;
+						this.calculateTableHeight(false)
+						this.clearAddData();
+						this.loadData();
+					} else {
 						this.$warn(data.message);
 					}
 				});
-			
+
 			},
-         //新增涉及系统
-            systemEvent(index, e){
-                let className = e.target.className;
-                if (className == "el-icon-plus") {
-                    this.onlineForm.onlineContent.push({"SYSTEM_ID":'',"GOLIVE_SYSTEM":'',"GOLIVE_MODULE":'',"GOLIVE_CONTENT":''})
-                } else {
-                    //当前是删除操作
-                    this.onlineForm.onlineContent.splice(index, 1)
-                }
-            },
+			//新增涉及系统
+			systemEvent(index, e) {
+				let className = e.target.className;
+				if(className == "el-icon-plus") {
+					this.onlineForm.onlineContent.push({
+						"SYSTEM_ID": '',
+						"GOLIVE_SYSTEM": '',
+						"GOLIVE_MODULE": '',
+						"GOLIVE_CONTENT": ''
+					})
+				} else {
+					//当前是删除操作
+					this.onlineForm.onlineContent.splice(index, 1)
+				}
+			},
 			getSelectUs() {
 				let params = new URLSearchParams();
 				this.$axios.post("/golive/stategolive", params).then((res) => {
@@ -626,7 +613,7 @@
 				this.loadData();
 			},
 			loadData() {
-//          	this.$maskin();
+				//          	this.$maskin();
 				this.calculate();
 				this.tabs.consoleWrapperVisible = false;
 				this.clearAddData();
@@ -647,58 +634,78 @@
 				this.$set(this.table, "tableOriginData", data);
 				this.$maskoff();
 			},
-            //通过
-            agreeRow(val,arg,e){
-            	e.cancelBubble=true;
-            	let params = new URLSearchParams();
+			//通过
+			agreeRow(val, arg, e) {
+				e.cancelBubble = true;
+				let params = new URLSearchParams();
 				params.append('COLIVE_ID', val.cOLIVE_ID);
 				params.append('GOLIVE_ID', val.gOLIVE_ID);
 				this.$axios.post("/golive/upgoliveneel", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-					this.$success(data.message);
-				    this.loadData();
-					}else{
+						this.$success(data.message);
+						this.loadData();
+					} else {
 						this.$warn(data.message);
 					}
 				})
-            },
-            unagreeRow(val,arg,e){
-            	e.cancelBubble=true;
-            	let params = new URLSearchParams();
+			},
+			unagreeRow(val, arg, e) {
+				e.cancelBubble = true;
+				let params = new URLSearchParams();
 				params.append('COLIVE_ID', val.cOLIVE_ID);
 				params.append('GOLIVE_ID', val.gOLIVE_ID);
 				this.$axios.post("/golive/upgoliveState", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-					this.$success(data.message);
-				    this.loadData();
-					}else{
+						this.$success(data.message);
+						this.loadData();
+					} else {
 						this.$warn(data.message);
 					}
 				})
-            },
-             ensureRow(val,arg,e){
-            	e.cancelBubble=true;
-            	
-//          	let params = new URLSearchParams();
-//				params.append('COLIVE_ID', val.cOLIVE_ID);
-//				params.append('GOLIVE_ID', val.gOLIVE_ID);
-//				this.$axios.post("/golive/goliveyse", params).then((res) => {
-//					let data = res.data;
-//					if(data.code == 200) {
-//					this.$success(data.message);
-//				    this.loadData();
-//					}else{
-//						this.$warn(data.message);
-//					}
-//				})
-            },
+			},
+			ensureRow(val, arg, e) {
+				e.cancelBubble = true;
+				this.onlineSure.addvisible = true;
+				this.onlineSure.addform.sxxqId = val.gOLIVE_ID;
+				this.systeMv2(val);
+			},
+			//最终通过
+			agreeSure() {
+				let params = new URLSearchParams();
+				params.append('GOLIVE_ID', this.onlineSure.addform.sxxqId);
+				params.append('RELEASE_HEAD', this.onlineSure.addform.fbfzr);
+				params.append('STATE', this.onlineSure.addform.sxjg);
+				params.append('DESIRED_START_DATETIMES', this.onlineSure.addform.czrq);
+				params.append('DESIRED_END_DATETIME', this.onlineSure.addform.czsj);
+				params.append('CZSM', this.onlineSure.addform.smk);
+				params.append('SYSTEM', this.onlineSure.addform.hgxt);
+				this.$axios.post("/golive/goliveyse", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.$success(data.message);
+						this.loadData();
+					} else {
+						this.$warn(data.message);
+					}
+				})
+			},
 			//清除新增的表单
 			clearAddData() {
-//				for(let i in this.addneeds.addform) {
-//					this.addneeds.addform[i] = "";
-//				}
+				//				for(let i in this.addneeds.addform) {
+				//					this.addneeds.addform[i] = "";
+				//				}
+			},
+			//清空通过表单
+			clearOnline() {
+				for(let name in this.onlineSure.addform) {
+					if(name == 'sxjg') {
+						this.onlineSure.addform[name] = "5"
+					} else {
+						this.onlineSure.addform[name] = ""
+					}
+				}
 			},
 			//搜索关键字
 			searchKeyword() {
@@ -717,14 +724,15 @@
 				this.$maskoff();
 			},
 			closeAddDialog() {
-				this.addneeds.addvisible = false;
+				this.clearOnline();
+				this.onlineSure.addvisible = false;
 			},
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				//              this.$maskin();
 				this.tabs.activeTableInfo = val;
-				this.state.id=val.sTATE;
-				this.state.name=val.sTATE_NAME;
+				this.state.id = val.sTATE;
+				this.state.name = val.sTATE_NAME;
 				this.consoleAction(val.sTATE)
 				if(!this.tabs.consoleWrapperVisible) {
 					this.tabs.consoleWrapperVisible = true;
@@ -734,7 +742,7 @@
 				}
 				if(val.nELL) {
 					let params = new URLSearchParams();
-					this.mainId=val.nELL;
+					this.mainId = val.nELL;
 					params.append("NEEL_ID", val.nELL);
 					params.append("GOLIVE_ID", val.gOLIVE_ID);
 					this.$axios.post("/golive/goliveneel", params).then((res) => {
@@ -744,57 +752,81 @@
 						this.$maskoff();
 					})
 				}
-			this.goliveType()
-			this.systemList()
-			
+				this.goliveType()
+				this.systemList()
+
 			},
-			goliveType(){
-			let params = new URLSearchParams()
-			this.$axios.post("/golive/golivetype", params).then((res) => {
-				let data=res.data.data;
-				for(let i of data){
-					this.onlineTypes.push({"key":i.cOLIVE_TYPE_NAME,"value":i.cOLIVE_TYPE_ID})
-				}
-			})
+			goliveType() {
+				let params = new URLSearchParams()
+				this.$axios.post("/golive/golivetype", params).then((res) => {
+					let data = res.data.data;
+					for(let i of data) {
+						this.onlineTypes.push({
+							"key": i.cOLIVE_TYPE_NAME,
+							"value": i.cOLIVE_TYPE_ID
+						})
+					}
+				})
 			},
-			systemList(){
-		    let params = new URLSearchParams()
-			this.$axios.post("/golive/systemlist", params).then((res) => {
-				let data=res.data.data;
-				for(let i of data){
-					this.aboutSystems.push({"key":i.sYSTEM_NAME,"value":i.sYSTEM_ID})
-				}
-			})
+			systemList() {
+				let params = new URLSearchParams()
+				this.$axios.post("/golive/systemlist", params).then((res) => {
+					let data = res.data.data;
+					for(let i of data) {
+						this.aboutSystems.push({
+							"key": i.sYSTEM_NAME,
+							"value": i.sYSTEM_ID
+						})
+					}
+				})
 			},
-			systeMv(index,value){
-			let params = new URLSearchParams()
-			params.append('NEEL',this.mainId)
-			params.append('SYSTEM_ID',value)
-            this.onlineForm.onlineContent[index].GOLIVE_SYSTEM=''
-            this.onlineSystems=[]
-			this.$axios.post("/golive/systemv", params).then((res) => {
-				let data=res.data.data;
-				for(let i of data){
-					this.onlineSystems.push({"key":i.sYSTEM,"value":i.sYSTEM})
-				}
-			})
+			systeMv(index, value) {
+				let params = new URLSearchParams()
+				params.append('NEEL', this.mainId)
+				params.append('SYSTEM_ID', value)
+				this.onlineForm.onlineContent[index].GOLIVE_SYSTEM = ''
+				this.onlineSystems = []
+				this.$axios.post("/golive/systemv", params).then((res) => {
+					let data = res.data.data;
+					for(let i of data) {
+						this.onlineSystems.push({
+							"key": i.sYSTEM,
+							"value": i.sYSTEM
+						})
+					}
+				})
+			},
+			systeMv2(value) {
+				this.onlineSure.addform.hgxt = "";
+				let params = new URLSearchParams()
+				params.append('NEEL', value.nELL)
+				params.append('SYSTEM_ID', value.sYSTEM_ID)
+				this.$axios.post("/golive/systemv", params).then((res) => {
+					let data = res.data.data;
+					for(let i of data) {
+						this.onlineSystems.push({
+							"key": i.sYSTEM,
+							"value": i.sYSTEM
+						})
+					}
+				})
 			},
 			//操作台的事件
 			consoleActionEvent(val) {
 				this.tabs.consoleActionVisible = false;
-					switch(val.name) {
-						case "提交":
-							this.submitConsole();
-							break;
-						case "驳回":
-							this.rejected();
-							break;
-						case "通过":
-                            this.consoleAgree();
-							break;
-					}
+				switch(val.name) {
+					case "提交":
+						this.submitConsole();
+						break;
+					case "驳回":
+						this.rejected();
+						break;
+					case "通过":
+						this.consoleAgree();
+						break;
+				}
 			},
-			
+
 			rejected() {
 				let info = this.tabs.activeTableInfo;
 				if(info.state_ID != 303 && info.state_ID != 305) {
