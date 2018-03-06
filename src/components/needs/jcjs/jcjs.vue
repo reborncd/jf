@@ -341,11 +341,11 @@
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
                                                     <el-button size="mini" type="primary"
-                                                               v-if="!scope.row.start_DATE"
+                                                               v-if="!scope.row.start_DATE && tabs.codeActionData.indexOf('开始')>=0"
                                                                @click="splitCodeStart(scope.$index, scope.row)">开始
                                                     </el-button>
                                                     <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID != 319 && scope.row.start_DATE"
+                                                               v-if="scope.row.state_ID != 319 && scope.row.start_DATE && tabs.codeActionData.indexOf('完成')>=0"
                                                                @click="splitCodeFinish(scope.$index, scope.row)">完成
                                                     </el-button>
                                                     <span v-if="scope.row.state_ID == 319"
@@ -405,7 +405,7 @@
                                                             <div style="text-align: center">
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 308"
+                                                                           v-if="scope.row.state_ID == 308 tabs.testActionData.indexOf('开始')>=0"
                                                                            @click="testTaskStart(scope.$index, scope.row)">
                                                                     开始
                                                                 </el-button>
@@ -416,7 +416,7 @@
                                                                 </el-button>
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 309"
+                                                                           v-if="scope.row.state_ID == 309 && tabs.testActionData.indexOf('完成')>=0"
                                                                            @click="splitTestFinish(scope.$index, scope.row)">
                                                                     完成
                                                                 </el-button>
@@ -876,7 +876,7 @@
                         <template slot-scope="scope">
                             <div style="text-align: center">
                                 <el-button size="mini" type="primary" style="display: inline-block;float: none"
-                                           v-if="scope.row.bug_STATE !=1"
+                                           v-if="scope.row.bug_STATE !=1 && tabs.codeActionData.indexOf('完成')>=0"
                                            @click="codeBUGAction(scope.$index, scope.row,'完成')">完成
                                 </el-button>
                                 <el-button size="mini" type="danger" style="display: inline-block;float: none"
