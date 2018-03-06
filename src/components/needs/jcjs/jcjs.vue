@@ -880,8 +880,8 @@
                                            @click="codeBUGAction(scope.$index, scope.row,'完成')">完成
                                 </el-button>
                                 <el-button size="mini" type="danger" style="display: inline-block;float: none"
-                                           v-if="scope.row.bug_STATE !=1"
-                                           @click="codeBUGAction(scope.$index, scope.row,'转接')">接转
+                                           v-if="scope.row.bug_STATE !=1 && tabs.codeActionData.indexOf('转接')>=0"
+                                           @click="codeBUGAction(scope.$index, scope.row,'转接')">转接
                                 </el-button>
                                 <span v-if="scope.row.bug_STATE ==1" style="color: green">已完成</span>
                             </div>
@@ -1250,6 +1250,9 @@
                             //判断是否有立项权限
                             if (i.act.split("-")[0].indexOf("立项") >= 0) {
                                 this.tabs.addProject = true;
+                            }
+                            if(i.act == "转接-开发"){
+                                this.tabs.codeActionData.push("转接");
                             }
                         }
                         roleArr_temp.push(i.act.split("-")[1])
