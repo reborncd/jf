@@ -155,8 +155,11 @@
                                                     {{tabs.data_one.state_NAME}}
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="12" v-if="tabs.data_one.oldcode">
+                                            <el-col :span="12" v-if="tabs.data_one.oldcode" style="color: #ffa005">
                                                 <el-form-item label="原需求编号">{{tabs.data_one.oldcode}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="12" v-if="tabs.data_one.newcode" style="color: #ffa005">
+                                                <el-form-item label="新需求编号">{{tabs.data_one.newcode}}</el-form-item>
                                             </el-col>
                                             <el-col :span="12">
                                                 <el-form-item label="需求编号">{{tabs.data_one.base_NEET_ID}}</el-form-item>
@@ -189,14 +192,20 @@
                                                     <span style="color: red!important;">{{tabs.data_one.urgent}}</span>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" v-if="tabs.data_one.oldproduct">
+                                            <el-col :span="24" v-if="tabs.data_one.newproduct" style="color: #ffa005">
+                                                <el-form-item label="原产品功能">{{tabs.data_one.newproduct}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.data_one.oldproduct" style="color: #ffa005">
                                                 <el-form-item label="原产品功能">{{tabs.data_one.oldproduct}}</el-form-item>
                                             </el-col>
                                             <el-col :span="24">
                                                 <el-form-item label="产品功能">{{tabs.data_one.product_FUNCTION}}</el-form-item>
                                             </el-col>
-                                            <el-col :span="24" v-if="tabs.data_one.olddescribe">
-                                                <el-form-item label="原产品功能">{{tabs.data_one.olddescribe}}</el-form-item>
+                                            <el-col :span="24" v-if="tabs.data_one.newdescribe" style="color: #ffa005">
+                                                <el-form-item label="新产品描述">{{tabs.data_one.newdescribe}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.data_one.olddescribe" style="color: #ffa005">
+                                                <el-form-item label="原产品描述">{{tabs.data_one.olddescribe}}</el-form-item>
                                             </el-col>
                                             <el-col :span="24">
                                                 <el-form-item label="需求描述">{{tabs.data_one.neel_DESCRIPTION}}</el-form-item>
@@ -204,7 +213,7 @@
                                             <el-col :span="24" v-if="tabs.data_one.reject_RESON" style="color: red">
                                                 <el-form-item label="驳回原因">{{tabs.data_one.reject_RESON}}</el-form-item>
                                             </el-col>
-                                            <el-col :span="24" v-if="testTask.allBugs">
+                                            <el-col :span="24" v-if="testTask.allBugs.length">
                                                 <el-form-item label="BUG清单" style="color:red">
                                                     <span @click="testTask.allBUGvisible = true"
                                                           style="cursor: pointer">请点击查看</span></el-form-item>
@@ -1099,6 +1108,9 @@
                         oldcode:"",//原需求编号
                         oldproduct:"",//原产品功能
                         olddescribe:"",//原需求描述
+                        newcode:"",//需求编号
+                        newproduct:"",//需求功能
+                        newdescribe:"",//需求描述
                     },
                     state_NAME: "",//状态
                     user_NAME: "",//负责人
@@ -1439,45 +1451,84 @@
                     let data = res.data;
                     if (data.code == 200) {
                         //以下是设置展示数据
-                        this.tabs.data_one.state_NAME = data.result.base.state_NAME;
-                        this.tabs.data_one.apply_NAME = data.result.base.apply_NAME;
-                        this.tabs.data_one.base_NEET_ID = data.result.base.base_NEET_ID;
-                        this.tabs.data_one.importance_NAME = data.result.base.importance_NAME;
-                        this.tabs.data_one.neel_DESCRIPTION = data.result.base.neel_DESCRIPTION;
-                        this.tabs.data_one.neel_NAME = data.result.base.neel_NAME;
-                        this.tabs.data_one.product_FUNCTION = data.result.base.product_FUNCTION;
-                        this.tabs.data_one.rriority_NAME = data.result.base.rriority_NAME;
-                        this.tabs.data_one.urgent = data.result.base.urgent;
+                        let base = data.result.base;
+                        //初始化其他的数据
+                        this.tabs.data_one.oldcode = "";//原需求ID
+                        this.tabs.data_one.oldproduct = "";//原产品功能
+                        this.tabs.data_one.olddescribe = "";//原需求描述
+                        this.tabs.data_one.newcode = "";//新需求ID
+                        this.tabs.data_one.newproduct = "";//新产品功能
+                        this.tabs.data_one.newdescribe = "";//新需求描述
+//                        if(!base.base_NEET_FID && !base.base_NEW_ID){
+                            //当前是正产的页面信息（默认展示）
+                            this.tabs.data_one.base_NEET_ID = base.base_NEET_ID;//需求ID
+                            this.tabs.data_one.product_FUNCTION = base.product_FUNCTION;//需求功能
+                            this.tabs.data_one.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
+//                        }
+                        if(base.base_NEW_ID){
+                            //当前是变更前的数据当前要展示新需求ID描述的等
+                            this.tabs.data_one.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.data_one.newproduct = base.product_NEW_FUNCTION;//新产品功能
+                            this.tabs.data_one.newdescribe = base.neel_NEW_DESCRIPTION;//新需求描述
+                        }
+                        if(base.base_NEET_FID){
+                            //当期是新建的变更要展示原需求编号ID等
+                            //当前是变更前的数据当前要展示新需求ID描述的等
+                            this.tabs.data_one.oldcode = base.base_NEET_FID;//新需求ID
+                            this.tabs.data_one.oldproduct = base.product_OLD_FUNCTION;//新产品功能
+                            this.tabs.data_one.olddescribe = base.neel_OLD_DESCRIPTION;//新需求描述
+                        }
+//                        if(data.result.base.base_NEW_ID){
+//                            //加载原需求和原产品功能和描述
+//                            this.tabs.data_one.oldcode = base.base_NEET_ID;//原需求ID
+//                            this.tabs.data_one.base_NEET_ID = base.base_NEW_ID;//新需求ID
+//                            this.tabs.data_one.oldproduct = base.product_FUNCTION;//原产品功能
+//                            this.tabs.data_one.olddescribe = base.neel_DESCRIPTION;//原需求描述
+//                            this.tabs.data_one.product_FUNCTION = base.product_NEW_FUNCTION;//新需求功能
+//                            this.tabs.data_one.neel_DESCRIPTION = base.neel_NEW_DESCRIPTION;//新需求描述
+//                        }else{
+//                            //正常情况下的需求信息加载
+//                            this.tabs.data_one.base_NEET_ID = base.base_NEET_ID;//需求ID
+//                            this.tabs.data_one.product_FUNCTION = base.product_FUNCTION;//需求功能
+//                            this.tabs.data_one.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
+//                        }
+                        this.tabs.data_one.state_NAME = base.state_NAME;
+                        this.tabs.data_one.apply_NAME = base.apply_NAME;
+                        this.tabs.data_one.importance_NAME = base.importance_NAME;
+                        this.tabs.data_one.neel_NAME = base.neel_NAME;
+                        this.tabs.data_one.rriority_NAME = base.rriority_NAME;
+                        this.tabs.data_one.urgent = base.urgent;
+
                         //判断是否有驳回理由
                         this.tabs.data_one.reject_RESON =
-                            data.result.base.reject_RESON ? data.result.base.reject_RESON : false;
-                        if (!data.result.base.dept_NAME || !data.result.base.user_NAME) {
+                            base.reject_RESON ? base.reject_RESON : false;
+                        if (!base.dept_NAME || !base.user_NAME) {
                             this.tabs.data_one.user_NAME = "";
                         } else {
-                            this.tabs.data_one.user_NAME = data.result.base.dept_NAME + "  ——  " + data.result.base.user_NAME;
+                            this.tabs.data_one.user_NAME = base.dept_NAME + "  ——  " + base.user_NAME;
                         }
-                        this.tabs.data_one.jiaji = data.result.base.urgent ? '是' : '否';
+                        this.tabs.data_one.jiaji = base.urgent ? '是' : '否';
                         if (data.result.base.start_DATE) {
-                            let start = this.$format(data.result.base.start_DATE);
+                            let start = this.$format(base.start_DATE);
                             this.tabs.data_one.start_DATE = `${start.year}-${start.mouth}-${start.day}`;
                         }
                         if (data.result.base.end_DATE) {
-                            let end = this.$format(data.result.base.end_DATE);
+                            let end = this.$format(base.end_DATE);
                             this.tabs.data_one.end_DATE = `${end.year}-${end.mouth}-${end.day}`;
                         }
                         //判断是否有完成时间，有则展示
-                        if (data.result.base.code_START_DATETIME
-                            && data.result.base.code_END_DATETIME
-                            && data.result.base.test_END_DATETIME
-                            && data.result.base.test_START_DATETIME) {
-                            this.tabs.data_one.code_start = data.result.base.code_START_DATETIME;
-                            this.tabs.data_one.code_end = data.result.base.code_END_DATETIME;
-                            this.tabs.data_one.test_start = data.result.base.test_START_DATETIME;
-                            this.tabs.data_one.test_end = data.result.base.test_END_DATETIME;
+                        if (base.code_START_DATETIME
+                            && base.code_END_DATETIME
+                            && base.test_END_DATETIME
+                            && base.test_START_DATETIME) {
+                            this.tabs.data_one.code_start = base.code_START_DATETIME;
+                            this.tabs.data_one.code_end = base.code_END_DATETIME;
+                            this.tabs.data_one.test_start = base.test_START_DATETIME;
+                            this.tabs.data_one.test_end = base.test_END_DATETIME;
                         }
                         //设置全程跟踪数据
-                        this.tabs.state_NAME = data.result.base.state_NAME;
-                        this.tabs.user_NAME = data.result.base.apply_NAME;
+                        this.tabs.state_NAME = base.state_NAME;
+                        this.tabs.user_NAME = base.apply_NAME;
                         this.$set(this.tabs, "genzong", data.result.records);
                         //判断当前任务是否被拆分过
                         data.result.systemDepts.length > 0 ?
@@ -1500,7 +1551,9 @@
                             this.$set(this.testTask, "typeArr", []);
                         data.result.TYPE_NAME ? this.testTask.typevalue = data.result.TYPE_NAME : data.result.type_name = "";
                         //展示所有的bug清单
-                        this.$set(this.testTask, "allBugs", data.result.bugs);
+                        if(data.result.bugs.length){
+                            this.$set(this.testTask, "allBugs", data.result.bugs);
+                        }
                         this.$maskoff();
                     }
                 })
