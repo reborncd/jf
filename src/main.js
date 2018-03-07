@@ -232,4 +232,4 @@ new Vue({
     render: function (c) {
         return c(App)
     },
-})
+});
