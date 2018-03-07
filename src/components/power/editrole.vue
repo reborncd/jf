@@ -437,25 +437,6 @@
                          left.splice(index,1)
                     }
                 }
-//                let leftArr = [];//放置除了父级ID的选中的左边集合
-//                for (let i of this.leftData) {
-//                    if(i.children.length){
-//                        for (let j of i.children) {
-//                            for (let n of left) {
-//                                if (n == j.menu_id) {
-//                                    leftArr.push(j.menu_id)
-//                                    leftArr.push(j.menu_fid)
-//                                }
-//                            }
-//                        }
-//                    }else {
-//                       for (let n of left) {
-//                           if (n == i.menu_id) {
-//                               leftArr.push(i.menu_id);
-//                           }
-//                       }
-//                   }
-//                }
                 //左侧提交的数据的处理
                 let l = this.$unique(left);
                 //右侧提交数据的处理
@@ -469,6 +450,11 @@
                 let menus = this.$unique(l.concat(r));
                 //
 //                this.$maskin();
+                console.log(menus.length)
+                if(!menus.length){
+                    this.$warn("请至少选择一个权限！");
+                    return;
+                }
                 let roleId = this.$route.query.id;
                 let params = new URLSearchParams();
 //                //roleId存在表示编辑否则是新增

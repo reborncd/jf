@@ -44,6 +44,15 @@
         vertical-align: middle;
         /*margin-left:10px;*/
     }
+    .col-div{
+        position: relative;
+    }
+    .infoDiv{
+        position: absolute;
+        top: 1px;
+        left: 10px;
+
+    }
 </style>
 
 <template>
@@ -101,6 +110,7 @@
                                   :height="table.tableHeight"
                                   highlight-current-row
                                   @row-click="handleCurrentChange">
+                                  <el-table-column prop="type" label="类型"></el-table-column>
                             <el-table-column prop="id" label="编号"></el-table-column>
                             <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
                             <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
@@ -109,7 +119,7 @@
                             <el-table-column prop="description" label="描述"></el-table-column>
                             <el-table-column prop="priperty" label="优先级"></el-table-column>
                             <el-table-column prop="status" label="状态"></el-table-column>
-                            <el-table-column prop="update_TIME" label="更新时间"></el-table-column>                            
+                            <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
                         </el-table>
                     </div>
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
@@ -119,7 +129,7 @@
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
                                 <div class="console-tab-content">
-                                    <el-form ref="form" :model="form" label-width="80px" label-position="left">                                        
+                                    <el-form ref="form" :model="form" label-width="80px" label-position="left">
                                         <el-row :gutter="20" >
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="BUG编号">
@@ -160,44 +170,49 @@
                                         <el-row :gutter="20">
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="状态">
-                                                    <el-form-item label="213131"></el-form-item>
+                                                    <el-form-item label="">{{operate.status}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="发送人">
-                                                    <el-form-item label="213131"></el-form-item>
+                                                    <el-form-item label="">{{operate.sender}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="成因">
-                                                    <el-input v-model="form.name"></el-input>
+                                                    <el-input v-model="operate.reason">{{operate.reason}}</el-input>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="影响范围">
-                                                    <el-input v-model="form.name"></el-input>
+                                                    <el-input v-model="operate.effectScope"></el-input>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" :sm="12">
-                                                <el-form-item label="涉及系统">
-                                                    <el-select v-model="form.region" placeholder="请选择活动区域" clearable>
-                                                        <el-option label="区域一" value="shanghai"></el-option>
-                                                        <el-option label="区域二" value="beijing"></el-option>
-                                                    </el-select>
+                                                <el-form-item  label="涉及系统">
+                                                	<el-form-item label="">{{operate.system}}</el-form-item>                                                    
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="12" :sm="12">
-                                                <el-form-item label="子系统">
-                                                    <el-select v-model="form.region" placeholder="请选择活动区域" clearable>
-                                                        <el-option label="区域一" value="shanghai"></el-option>
-                                                        <el-option label="区域二" value="beijing"></el-option>
+                                            <el-col :span="24" :sm="24" >
+                                                <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
+                                                    <el-select v-model="item.csty" placeholder="子系统" clearable>
+                                                        <el-option
+                                                        	v-for="_item in operate.subSystem"
+						                                    :label="_item.SYSTEM_NAME"
+						                             		:value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
+                                                        	></el-option>
                                                     </el-select>
-                                                    <i class="el-icon-circle-plus-outline add"></i>
+                                                    <i :class="index == 0 && operate.systemAll.length ==1?'el-icon-plus':index == operate.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
+                                                       @click="addsubStystem(index,$event)"
+                                                       style="line-height: 40px;height: 40px;text-align: center;
+                                                font-size: 20px;cursor: pointer;font-weight: bold">
+                                                    </i>
+                                                   
                                                 </el-form-item>
-                                            </el-col>
+                                                </el-col>
                                             <el-col :span="24" :sm="24">
                                                 <el-form-item label="解决方案">
-                                                    <el-input type="textarea" v-model="form.desc"></el-input>
+                                                    <el-input type="textarea" v-model="operate.solution"></el-input>
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
@@ -210,15 +225,24 @@
                                         <el-row :gutter="20">
                                             <el-col :span="8" :sm="8">
                                                 <el-form-item label="待技术管理部审核：">
-                                                    <el-form-item label="213131"></el-form-item>
+                                                    <el-form-item label="">{{way.status}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="8" :sm="8">
                                                 <el-form-item label="发送人：" label-width="100px">
-                                                    <el-form-item label="213131"></el-form-item>
+                                                    <el-form-item label="">{{way.sender}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" :sm="24">信息</el-col>
+                                            <el-col class="col-div" :span="24" :sm="24">
+                                                <div class="infoDiv" v-for="(item,key) in way.information">
+                                                    <p>
+                                                        {{key+1}}、
+                                                        <span>{{item.record_START}}</span>
+                                                        <em>{{item.record_DESC}}</em>
+                                                    </p>
+
+                                                </div>
+                                            </el-col>
                                         </el-row>
                                     </el-form>
                                 </div>
@@ -247,7 +271,7 @@
                                 <el-select v-model="popup.priperty2" placeholder="故障等级" clearable>
                                     <el-option
                                     	v-for="item in popup.priperty"
-	                                    :label="item.value"
+	                                    :label="item.name"
 	                                    :value="item.value"
                                     	></el-option>
                                 </el-select>
@@ -279,23 +303,38 @@
             return {
                 bugVisible:false,
                 table: {
-                    tableData: [{
-                        a: '2016-05-03',
-                        aa: '这是内容',
-                    }],
+                    tableData: [],
                     tableOriginData: [],
                     tableHeight: "",
                 },
+                  operate:{
+                    id:'',
+                    status:'',//状态
+                    solution:'',//解决方案
+                    sender:'',//发送人
+                    reason:'',//成因
+                    effectScope:'',//影响范围
+                    systemTxt:'', //涉及系统
+                    subStystemValue:[],//子系统
+                    system:'',//涉及系统
+                    subSystem:[],//子系统
+                    systemAll:[{"fsty":"","csty":""}]
+                  },
+              way:{
+                status:'',
+                sender:'',
+                information:''
+              },
                 keyword: "",
                 options: [
                     {
                         "key": "与我相关",
                         "value": "1"
-                    }, 
-{
+                    },
+					{
                         "key": "全部",
                         "value": "2"
-                    }, 
+                    },
                     {
                         "key": "订制中",
                         "value": "3"
@@ -303,15 +342,15 @@
                     {
                         "key": "制定方案",
                         "value": "4"
-                    }, 
+                    },
                     {
                         "key": "方案选择",
                         "value": "5"
-                    }, 
+                    },
                     {
                         "key": "追踪信息",
                         "value": "6"
-                    }, 
+                    },
                     {
                         "key": "已完成",
                         "value": "7"
@@ -345,7 +384,7 @@
                             start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
                             picker.$emit('pick', [start, end]);
                         }
-                    }, 
+                    },
                     {
                         text: '最近三个月',
                         onClick(picker) {
@@ -361,7 +400,9 @@
                     activeName: 'info',
                     consoleActionData: {
                         "bugact": [{
-                            "name":"操作"
+                            "name":"驳回"
+                        },{
+                            "name":"确认",
                         }]
                     },
                     form:{
@@ -374,19 +415,22 @@
                     consoleWrapperVisible: false,
                 },
                 popup:{
-                	priperty2:'',                	
+                	priperty2:'',
                 	title:'',
                 	priperty:[
                     {
-                        "value": "101"
-                    }, 
-                    {
-                        "value": "102"
+                      'name':'紧急',
+                      "value": "101"
                     },
                     {
-                        "value": "103"
+                      'name':'中等',
+                      "value": "102"
+                    },
+                    {
+                      'name':'一般',
+                      "value": "103"
                     }
-                ],
+                  ],
                 	description:'',
                 	createUser:''
                 }
@@ -431,12 +475,12 @@
                 }
             },
             handleSizeChange(val){
-                console.log(val)
+            	
             },
             loadData(){
             	let params = new URLSearchParams();
-                this.$axios.post("/fault/query?", params).then((res) => {
-                    let data = res.data             
+                this.$axios.post("/fault/query?type=2", params).then((res) => {
+                    let data = res.data
                     this.setTableData(data)
                 })
             },
@@ -444,19 +488,7 @@
             	 if (data.code == 200) {
                     let arr = [];
                     for (let i of data.result) {
-                    	if(i.type==2){
-                    		console.log(i);
-                    		 if (i.create_TIME) {
-		                        let create = this.$format(i.create_TIME);
-		                        i.create_TIME = `${create.year}-${create.mouth}-${create.day}`;
-	                        }
-	                        if (i.update_TIME) {
-		                        let create = this.$format(i.create_TIME);
-		                        i.update_TIME = `${create.year}-${create.mouth}-${create.day}`;
-	                        }
-                        arr.push(i)
-                    	}
-                       
+                        	arr.push(i)
                     }
                     this.$set(this.table, "tableData", arr);
                     this.$set(this.table, "tableOriginData", arr);
@@ -472,27 +504,70 @@
                     }, 0);
                 }
                 if(val.id){
-                	console.log(val.id);
                 	let params = new URLSearchParams();
                     params.append("id", val.id);
-                    this.$axios.post("/fault/get?", params).then((res) => {
+                    this.$axios.post("/fault/get", params).then((res) => {
                         let data = res.data;
                         if (data.code == 200) {
                             //以下是设置展示数据
-                            this.tabs.form.id = data.result.id;
-                            this.tabs.form.title = data.result.title;
-                           	this.tabs.form.createUser = data.result.create_USER;
-                            this.tabs.form.description = data.result.description
+                            this.tabs.form.id = data.result.fault.id;
+                            this.tabs.form.title = data.result.fault.title;
+                           	this.tabs.form.createUser = data.result.fault.create_USER;
+                            this.tabs.form.description = data.result.fault.description
+                          switch(data.result.fault.status){
+                            case 1:
+                              this.operate.status='审核中'
+                              this.way.status='审核中'
+                              break;
+                            case 2:
+                              this.operate.status='已完成'
+                              this.way.status='已完成'
+                              break;
+                            case 3:
+                              this.operate.status='已作废'
+                              this.way.status='已作废'
+                              break;
+                            case 4:
+                              this.operate.status='已驳回'
+                              this.way.status='已驳回'
+                              break;
+                            case 5:
+                              this.operate.status='已关联'
+                              this.way.status='已关联'
+                              break;
+                          }
+                          this.operate.sender=data.result.fault.create_USER;
+                          this.way.sender=data.result.fault.create_USER;
+                          let arr=[];
+                          if(data.result.process.result.length>0){
+                            for(let i of data.result.process.result){
+                              if(i.record_START){
+                                let start=this.$format(i.record_START);
+                                i.record_START= `${start.year}-${start.mouth}-${start.day}`;
+                              }
+                              arr.push(i);
+                            }
+                            this.$set(this.way, "information", arr);
+                          }
+                          else{
+                            arr=[];
+                            this.$set(this.way, "information", arr);
+                          }
+//                       	 操作台子系统显示
+                          let subSystems=[];
+                          for(let i of data.result.systems.result){
+                          	if(!i.SYSTEM_FID){
+                          		this.operate.system=i.SYSTEM_NAME
+                          	}
+                          	else{
+                          		subSystems.push(i);
+                          	}
+                          }
+                          this.$set(this.operate, "subSystem", subSystems);
                         }
                     })
                 }
                 return false;
-            },
-            deleteRow(val,data,ev){ 
-            	this.confirm('确定进行删除操作？',() =>{
-            		
-            	});
-            	return false;
             },
             subForm(){
 //					提交bug表单
@@ -508,41 +583,118 @@
 						this.$warn("请填写提交人");
 						return;
 					}
-					let params = new URLSearchParams();	                
-	                params.append("description", this.popup.description);//BUG说明	               	                
-	                params.append("title",this.popup.title);//标题      
-	                params.append('createUser',this.popup.createUser);//提交人	
-	                params.append("type",2);//类型      
-	                params.append("priperty",this.popup.priperty2);	//故障等级
-	                console.log(this.popup.priperty2);
-	                return
-	                this.$axios.post("/fault/submit", params).then((res) => {
-	                    let data = res.data;
-	                    if (data.code == 200) {
-	                        this.$success("操作成功！");
-	                        this.errorVisible=false;
-	                        this.clearAddData();
-	                        this.loadData();
-	                    }
-	                    else{
-	                    	this.wran(data.message);
-	                    }
-	                });
+		            let params = new URLSearchParams();
+		          params.append("description", this.popup.description);//BUG说明
+		          params.append("title",this.popup.title);//标题
+		          params.append('createUser',this.popup.createUser);//提交人
+		          params.append("type",2);//类型
+		          params.append("priperty",this.popup.priperty2);	//故障等级
+	              this.$axios.post("/fault/submit", params).then((res) => {
+	                let data = res.data;
+	                if (data.code == 200) {
+	                  this.$success("操作成功！");
+	                  this.errorVisible=false;
+	                  this.clearAddData();
+	                  this.loadData();
+	                }
+	                else{
+	                  this.wran(data.message);
+	                }
+	              });
             },
-            cancelForm(){
-
+//           控制台切换
+            handleClick(tab, event){
+            	
             },
-            handleClick(tab, event) {
-                console.log(tab, event);
+			//添加系统
+            addsubStystem(index,e){
+            	let type = e.target.className
+            	if(type == "el-icon-plus"){
+	            	if(!this.operate.systemAll[index].csty){
+	            		this.$warn("请先选择子系统");
+	            		return
+	            	}
+            		this.operate.systemAll.push({"fsty":"","csty":""});
+            	}else{
+            		this.operate.systemAll.splice(index,1)
+            	}
             },
             setConsoleVisible(){
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false)
             },
-            //操作台的事件
+            //驳回 确认操作
             consoleActionEvent(val, f){
-
-            }
+            	if(val=='确认'){
+            		
+          		if(!this.operate.reason){
+          			this.$warn("请填写成因")
+          			return
+          		}
+          		if(!this.operate.effectScope){
+          			this.$warn("请填写影响范围")
+          			return
+          		}
+                let nameArr=[]
+                let idArr=[]
+                for(let i of this.operate.systemAll){
+                  let idTxt=i.csty.split(",")[0];//子系统id                  
+                  if(idArr.indexOf(idTxt)==-1){
+                  	idArr.push(i.csty.split(",")[0])
+                    nameArr.push(i.csty.split(",")[1])                         
+                  }
+                  else{
+                    this.$warn('请选择不同的子系统')
+                    return
+                  }
+//                nameArr=nameArr.join(',')
+//                idArr=idArr.join(',')
+                }
+                if(idArr[0]==''){
+                  this.$warn('请选择子系统')
+                  return
+                }
+                if(!this.operate.solution){
+                  this.$warn("请填写解决方案")
+                  return
+                }
+            		let params = new URLSearchParams();
+            		params.append("id", this.tabs.form.id);	//id
+	                params.append("reason", this.operate.reason);	//成因
+	                params.append("effectScope", this.operate.effectScope);	//影响范围
+	                params.append("solution", this.operate.solution);//解决方案
+	                params.append("systemTypeId", idArr);//子系统id
+	                params.append("systemType", nameArr);//子系统名称
+	                params.append("type", 2);//子系统id
+            		this.$axios.post("/fault/audit", params).then((res) => {
+            			if(res.status==200){
+            				this.$success("操作成功！");
+	                        this.errorVisible=false;
+	                        this.loadData();
+            			}
+            			else{
+            				this.$warn(message);
+            			}
+            		})
+            	}
+            	if(val=='驳回'){
+            		let params = new URLSearchParams();
+	                params.append("id", this.tabs.form.id);
+	                this.$axios.post("/fault/reject", params).then((res) => {
+            			if(res.status==200){
+            				this.$success("操作成功！");
+	                        this.errorVisible=false;
+	                        this.clearAddData();
+	                        this.loadData();
+            			}
+            			else{
+            				this.warn(data.message);
+            			}
+            		})
+            	}
+            	
+                this.tabs.consoleActionVisible = false   
+           },  
         }
     }
 </script>

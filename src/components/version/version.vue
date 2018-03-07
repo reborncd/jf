@@ -67,7 +67,7 @@
 	width: 100px;
 	float: left;
 	height: 60px;
-	background: url(../../static/image/circular-icon.png) 0 center no-repeat;
+	/*background: url(../../static/image/circular-icon.png) 0 center no-repeat;*/
 	background-size: 16px 16px;
 	position: relative;
 
@@ -137,7 +137,7 @@
                     	 <div class="console-action-wrapper"style="position: relative;">
                             <i class="el-icon-close close" @click="tabs.consoleWrapperVisible=false"></i>
                         </div>
-                        <el-table class='detail-table' :data="table.tableDetail" border style="width: 100%,margin-top:20px"
+                        <el-table class='detail-table' :data="table.tableDetail" border style="width: 100%;margin-top:20px"
                                   :height="table.tableHeight" highlight-current-row >
                             <el-table-column prop="system_NAME" label="涉及名称"></el-table-column>
                             <el-table-column prop="system_FNAME" label="子系统" width="110"></el-table-column>

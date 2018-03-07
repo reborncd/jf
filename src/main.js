@@ -138,7 +138,8 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    baseURL: 'http://172.16.2.58:8989/JiFu_Project',
+    // baseURL: 'http://172.16.2.58:8989/JiFu_Project',
+    baseURL:"http://172.16.1.200:8080/JiFu_Project",
     headers: {
         'content-type': 'application/x-www-form-urlencoded',
     }
