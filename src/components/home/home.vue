@@ -266,7 +266,9 @@
         mounted(){
             window.onresize = () => {
                 this.calculate();
-                this.$refs.routerView.calculate();
+                if(this.$refs.routerView.calculate){
+                    this.$refs.routerView.calculate();
+                }
             };
             this.loadData();
         },
@@ -297,6 +299,7 @@
                             }
                         }
                         localStorage.setItem("POWER",JSON.stringify(action));
+                        localStorage.setItem("ROLE",data.result.user.role.role_NAME);
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
                         let nowPath = this.$router.currentRoute.path;//当前的路径

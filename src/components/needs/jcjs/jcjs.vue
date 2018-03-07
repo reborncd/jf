@@ -80,7 +80,7 @@
             <div class="text item">
                 <div class="content">
                     <div class="action clear">
-                        <el-button type="danger" size="mini" @click="newneeds" v-if="tabs.addProject">立项</el-button>
+                        <el-button type="danger" size="mini" @click="newneeds" v-if="tabs.addProject">新增</el-button>
                         <el-select v-model="selectValue" clearable size="mini">
                             <el-option
                                     v-for="item in options"
@@ -100,6 +100,8 @@
                                         align="right"
                                         size="mini"
                                         :picker-options="dateComp"
+                                        @keyup.13="searchByDate($event)"
+                                        @change="searchByDate"
                                 >
                                 </el-date-picker>
                             </div>
@@ -111,6 +113,7 @@
                                         size="mini"
                                         clearable
                                         @keyup.13="searchKeyword($event)"
+                                        @change="searchKeyword"
                                 >
                                 </el-input>
                             </div>
@@ -121,7 +124,8 @@
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight"
                                   highlight-current-row
-                                  @current-change="handleCurrentChange">
+                                  ref="jcjs_table"
+                                  @row-click="handleCurrentChange">
                             <el-table-column prop="base_NEET_ID" label="需求编号" width="200"></el-table-column>
                             <el-table-column prop="start_DATE" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" label="预计完成日期" width="120"></el-table-column>
@@ -155,11 +159,15 @@
                                                     {{tabs.data_one.state_NAME}}
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="12" v-if="tabs.data_one.oldcode" style="color: #ffa005">
-                                                <el-form-item label="原需求编号">{{tabs.data_one.oldcode}}</el-form-item>
+                                            <el-col :span="12" v-if="tabs.data_one.oldcode">
+                                                <el-form-item label="原需求编号">
+                                                    <span @click="goNeedList($event,tabs.data_one.oldcode,'old')" style="color: #ffa005;cursor: pointer;">{{tabs.data_one.oldcode}}</span>
+                                                </el-form-item>
                                             </el-col>
-                                            <el-col :span="12" v-if="tabs.data_one.newcode" style="color: #ffa005">
-                                                <el-form-item label="新需求编号">{{tabs.data_one.newcode}}</el-form-item>
+                                            <el-col :span="12" v-if="tabs.data_one.newcode">
+                                                <el-form-item label="新需求编号" >
+                                                   <span @click="goNeedList($event,tabs.data_one.newcode,'new')" style="color: #ffa005;cursor: pointer;">{{tabs.data_one.newcode}}</span>
+                                                </el-form-item>
                                             </el-col>
                                             <el-col :span="12">
                                                 <el-form-item label="需求编号">{{tabs.data_one.base_NEET_ID}}</el-form-item>
@@ -193,7 +201,7 @@
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="24" v-if="tabs.data_one.newproduct" style="color: #ffa005">
-                                                <el-form-item label="原产品功能">{{tabs.data_one.newproduct}}</el-form-item>
+                                                <el-form-item label="新产品功能">{{tabs.data_one.newproduct}}</el-form-item>
                                             </el-col>
                                             <el-col :span="24" v-if="tabs.data_one.oldproduct" style="color: #ffa005">
                                                 <el-form-item label="原产品功能">{{tabs.data_one.oldproduct}}</el-form-item>
@@ -539,7 +547,7 @@
                 </div>
             </div>
         </el-card>
-        <!--立项-->
+        <!--新增-->
         <el-dialog title="新增" :visible="addneeds.addvisible" width="60%"
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
@@ -670,7 +678,7 @@
                         class="search-input"
                         placeholder="请输入姓名"
                         v-model="assign.keyword"
-                        @keyup.13="assignSearch"
+                        @keyup.13="assignSearch($event)"
                         @change="assignSearch" clearable>
                     <i slot="prefix" class="el-input__icon el-icon-search"></i>
                 </el-input>
@@ -961,7 +969,7 @@
             return {
                 addneeds: {
                     addvisible: false,
-                    addType: '',//判断性质呢过类型，add 为重新立项，change 为新建变更 changeinset 为需求内变更
+                    addType: '',//判断性质呢过类型，add 为重新新增，change 为新建变更 changeinset 为需求内变更
                     addform: {
                         "sjxt": "",//涉及系统
                         "oldcode": "",//原需求编号
@@ -987,15 +995,15 @@
                     }
                 },
                 assign: {
-                    assignvisible: false,
-                    keyword: "",
-                    left: true,
-                    right: false,
-                    checkList: [],
-                    leftlistdata: [],
-                    leftSearch: false,
-                    rightlistdata: [],
-                    searchData: []
+                    assignvisible: false,//分配的弹窗
+                    keyword: "",//分配的搜索人员
+                    left: true,//左侧的显示
+                    right: false,//右侧的显示
+                    checkList: [],//选择的数据
+                    leftlistdata: [],//左侧显示的数据
+                    rightlistdata: [],//右侧显示的数据
+                    leftSearch: false,//左侧搜索出来的结构展示
+                    searchData: [],//左侧特殊结构，显示出来的搜索结果存放处
                 },
                 split: {
                     hasSplitvisible: false,
@@ -1027,9 +1035,9 @@
                     usetime: "",//预计用时
                 },
                 table: {
-                    tableData: [],
-                    tableOriginData: [],
-                    tableHeight: "",
+                    tableData: [],//表格展示的数据
+                    tableOriginData: [],//表格的源数据
+                    tableHeight: "",//表格高度
                 },
                 dateValue: "",
                 keyword: "",
@@ -1072,7 +1080,7 @@
                 selectValue: "与我相关",
                 dateComp: {},
                 tabs: {
-                    addProject: false,//立项权限判断
+                    addProject: false,//新增权限判断
                     codetask: false,//开发的栏目判断（开始结束任务）
                     testtask: false,//测试的栏目判断（开始结束任务）
                     allSplittask: false,//测试的栏目判断（技术经理能看到所有的项目）
@@ -1080,7 +1088,7 @@
                     consoleWrapperVisible: false,//控制台的显示
                     consoleActionVisible: false,//控制台的操作显示/隐藏
                     originActionData:[],//原所有操作
-                    consoleActionData: [],//所有操作
+                    consoleActionData: [],//展示的操作
                     codeActionData: [],//开发人员的操作权限
                     testActionData: [],//测试人员的操作权限
                     rejectType: "",//驳回操作的特殊判断，“jl 为技术经理的驳回，gl 为管理部的驳回”
@@ -1158,7 +1166,6 @@
                     allBugs: [],//所有的bug信息
                     allBUGvisible: false,//BUG清单的展示
                 },
-
             }
         },
         filters: {
@@ -1177,9 +1184,6 @@
             this.loadData();
         },
         methods: {
-            submitUpload(){
-                this.$refs.upload.submit()
-            },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -1191,19 +1195,20 @@
                 if (this.tabs.consoleWrapperVisible) {
                     this.calculateTabsHeight();
                 }
-                //控制台的内容区域高度
             },
+            //计算表格高度
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
                 //true代表没有控制台
                 if (!type) {
-                    //----------------------------------------------body的上下padding--table的margin-top
-                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
+                    //----------------------------------------------body的上下padding--table的margin-top-table上border
+                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20-1;
                 } else {
                     this.table.tableHeight = height * 0.3;
                 }
             },
+            //计算操作台的高度
             calculateTabsHeight(){
                 let card_body = document.querySelector(".box-card .el-card__body");
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
@@ -1213,10 +1218,12 @@
                     i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
                 }
             },
+            //设置控制台的展示
             setConsoleVisible(){
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false)
             },
+            //加载请求
             loadData(){
                 //初始化栏目展示情况
                 this.tabs.codetask = false;
@@ -1226,7 +1233,7 @@
                 this.tabs.activeName = "info";
                 //初始化控制台的可视情况
                 this.tabs.consoleWrapperVisible = false;
-                //清楚新增立项的表单
+                //清楚新增新增的表单
                 this.clearAddData();
                 //加载权限
                 this.setActionBtn();
@@ -1244,16 +1251,14 @@
                 let power = (new Function("return" + store))();
                 let activeRoute = localStorage.getItem("ACTIVEMENU");
                 if (this.$route.name == activeRoute) {
-                    let arr = [];
+                    let origin = [];
                     let roleArr_temp = [];
                     for (let i of power) {
-//                        console.log(i)
                         if (i.menu_fname == activeRoute) {
-                            //针对相同操作但是不同权限
-                            if (i.act.split("-")[0] != "开始" && i.act.split("-")[0] != "完成" && i.act.split("-")[0] != "立项") {
-                                arr.push({"name": i.act.split("-")[0], "role": i.act.split("-")[1]});
-                            } else {
-                                //判断是测试的操作还是开发的操作
+                            //存放原数据
+                            origin.push(i);
+                            //开发和测试无需根据当期需求状态来判断,直接添加操作
+                            if(i.act.split("-")[0] == "开始" || i.act.split("-")[0] == "完成"){
                                 let type = i.act.split("-")[1];
                                 if (type == "开发") {
                                     this.tabs.codeActionData.push(i.act.split("-")[0])
@@ -1261,24 +1266,26 @@
                                     this.tabs.testActionData.push(i.act.split("-")[0])
                                 }
                             }
-                            if (i.act == "驳回-技术经理") {
-                                this.tabs.rejectType = "jl"
-                            }
-                            if (i.act == "驳回-技术管理部") {
-                                this.tabs.rejectType = "gl"
-                            }
-                            //判断是否有立项权限
-                            if (i.act.split("-")[0].indexOf("立项") >= 0) {
-                                this.tabs.addProject = true;
-                            }
                             if(i.act == "转接-开发"){
                                 this.tabs.codeActionData.push("转接");
+                            }
+                            //驳回的判断
+                            if (i.act.indexOf("驳回-技术经理") !=-1) {
+                                this.tabs.rejectType = "jl"
+                            }
+                            if (i.act.indexOf("驳回-技术管理部") !=-1) {
+                                this.tabs.rejectType = "gl"
+                            }
+                            //新增的权限判断
+                            if (i.act.split("-")[0] == "新增" && i.act.split("-")[1] == localStorage.getItem("ROLE")) {
+                                this.tabs.addProject = true;
                             }
                         }
                         roleArr_temp.push(i.act.split("-")[1]);
                     }
+                    //设置源操作数组
+                    this.$set(this.tabs,"originActionData",origin);
                     let roleArr = this.$unique(roleArr_temp);
-                    this.$set(this.tabs, "consoleActionData", arr);
                     //初始化操作
                     this.tabs.codetask = false;//开发的栏目判断（开始任务）
                     this.tabs.testtask = false;//测试的栏目判断（开始任务）
@@ -1294,6 +1301,7 @@
                     }
                 }
             },
+            //加载表格数据
             setTableData(data){
                 if (data.code == 200) {
                     let arr = [];
@@ -1316,11 +1324,11 @@
             //新建弹窗
             newneeds(){
                 this.addneeds.addType = "add";//当前是重新建立变更
-                this.addneeds.addvisible = true;
                 let params = new URLSearchParams();
                 this.$axios.post("/base/baseSaveFront", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        this.addneeds.addvisible = true;
                         let deptArr = [];
                         for (let i of data.result.depts) {
                             deptArr.push(i);
@@ -1372,6 +1380,8 @@
                     url = "/base/newUpdate"
                 }else if (this.addneeds.addType = "add"){
                     url = "/base/saveBaseConstruct"
+                }else if(this.addneeds.addType == "changeinset"){
+                    url = ""
                 }
                 this.$axios.post(url,params).then((res)=>{
                     let data = res.data;
@@ -1384,7 +1394,7 @@
                     }
                 })
             },
-            //清除新增立项的表单
+            //清除新增新增的表单
             clearAddData(){
                 for (let i in this.addneeds.addform) {
                     this.addneeds.addform[i] = "";
@@ -1406,6 +1416,26 @@
                 }
                 this.$maskoff();
             },
+            //根据日期搜索
+            searchByDate(){
+                console.log(this.dateComp)
+                if(!this.dateComp.value){
+                    this.$set(this.table,"tableData",this.table.tableOriginData);
+                    return;
+                }
+                let left = (new Date(this.dateComp.value[0])).getTime();
+                let right = (new Date(this.dateComp.value[1])).getTime();
+                let arr = [];
+                for(let i of this.table.tableOriginData){
+                   let start = (new Date(i.start_DATE)).getTime();
+                   let end = (new Date(i.end_DATE)).getTime();
+                   if(start>=left && end<=right){
+                       arr.push(i)
+                   }
+                }
+                this.$set(this.table,"tableData",arr);
+            },
+            //关闭弹窗
             closeDialog(){
                 this.addneeds.addvisible = false;//新建项目的弹窗
                 this.assign.assignvisible = false;//分配任务的弹窗
@@ -1418,12 +1448,6 @@
                 this.testTask.codeBUGlistvisible = false;//开发转接bug弹窗
                 this.testTask.allBUGvisible = false;//bug清单的展示弹窗
                 this.testFinished.taskFinishedvisible = false;//测试人员超时填写原因和实际用时的弹窗
-            },
-            split_splitaddvisible(){
-                this.split.splitaddvisible = false
-            },
-            handleSizeChange(val){
-
             },
             //点击表格列表展示控制台
             handleCurrentChange(val){
@@ -1452,19 +1476,17 @@
                     if (data.code == 200) {
                         //以下是设置展示数据
                         let base = data.result.base;
-                        //初始化其他的数据
+                        //初始化其他的数据，默认不展示
                         this.tabs.data_one.oldcode = "";//原需求ID
                         this.tabs.data_one.oldproduct = "";//原产品功能
                         this.tabs.data_one.olddescribe = "";//原需求描述
                         this.tabs.data_one.newcode = "";//新需求ID
                         this.tabs.data_one.newproduct = "";//新产品功能
                         this.tabs.data_one.newdescribe = "";//新需求描述
-//                        if(!base.base_NEET_FID && !base.base_NEW_ID){
-                            //当前是正产的页面信息（默认展示）
-                            this.tabs.data_one.base_NEET_ID = base.base_NEET_ID;//需求ID
-                            this.tabs.data_one.product_FUNCTION = base.product_FUNCTION;//需求功能
-                            this.tabs.data_one.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
-//                        }
+                        //当前是正产的页面信息（默认展示）
+                        this.tabs.data_one.base_NEET_ID = base.base_NEET_ID;//需求ID
+                        this.tabs.data_one.product_FUNCTION = base.product_FUNCTION;//需求功能
+                        this.tabs.data_one.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
                         if(base.base_NEW_ID){
                             //当前是变更前的数据当前要展示新需求ID描述的等
                             this.tabs.data_one.newcode = base.base_NEW_ID;//新需求ID
@@ -1478,20 +1500,6 @@
                             this.tabs.data_one.oldproduct = base.product_OLD_FUNCTION;//新产品功能
                             this.tabs.data_one.olddescribe = base.neel_OLD_DESCRIPTION;//新需求描述
                         }
-//                        if(data.result.base.base_NEW_ID){
-//                            //加载原需求和原产品功能和描述
-//                            this.tabs.data_one.oldcode = base.base_NEET_ID;//原需求ID
-//                            this.tabs.data_one.base_NEET_ID = base.base_NEW_ID;//新需求ID
-//                            this.tabs.data_one.oldproduct = base.product_FUNCTION;//原产品功能
-//                            this.tabs.data_one.olddescribe = base.neel_DESCRIPTION;//原需求描述
-//                            this.tabs.data_one.product_FUNCTION = base.product_NEW_FUNCTION;//新需求功能
-//                            this.tabs.data_one.neel_DESCRIPTION = base.neel_NEW_DESCRIPTION;//新需求描述
-//                        }else{
-//                            //正常情况下的需求信息加载
-//                            this.tabs.data_one.base_NEET_ID = base.base_NEET_ID;//需求ID
-//                            this.tabs.data_one.product_FUNCTION = base.product_FUNCTION;//需求功能
-//                            this.tabs.data_one.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
-//                        }
                         this.tabs.data_one.state_NAME = base.state_NAME;
                         this.tabs.data_one.apply_NAME = base.apply_NAME;
                         this.tabs.data_one.importance_NAME = base.importance_NAME;
@@ -1554,11 +1562,105 @@
                         if(data.result.bugs.length){
                             this.$set(this.testTask, "allBugs", data.result.bugs);
                         }
+                        this. setStateAction(base);
                         this.$maskoff();
                     }
                 })
             },
-            //操作台的事件判断-------------------------
+            //设置当前状态的下的操作
+            setStateAction(base){
+                //根据当前状态配置对应权限
+                let state = base.state_ID;
+                let nowRole = localStorage.getItem("ROLE");
+                let arr = [];
+                switch (state){
+                    case 303:
+                        //待技术管理部分配任务，驳回
+                        for(let i of this.tabs.originActionData) {
+                            if (i.act.split("-")[1] == "技术管理部"){
+                                if( i.act.split("-")[0] == "驳回" || i.act.split("-")[0] == "分配任务"){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }else if(i.act.split("-")[0] == "撤回" && i.act.split("-")[1] == nowRole){
+                                arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                            }
+                        }
+                        this.$set(this.tabs,"consoleActionData",arr);
+                        break;
+                    case 304:
+                        //技术经理：分配任务,拆分任务
+                        //技术管理部：
+                        for(let i of this.tabs.originActionData) {
+                            if (i.act.split("-")[1] == nowRole) {
+                                //当前是技术经理
+                                if(i.act.split("-")[0] == "拆分任务" ||
+                                    i.act.split("-")[0] == "新建变更" ||
+                                    i.act.split("-")[0] == "需求内变更" ){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }else{
+                                //当前是技术管理部的操作
+                                if(i.act.split("-")[0] == "分配任务" && i.act.split("-")[1] != nowRole){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }
+                        }
+                        this.$set(this.tabs,"consoleActionData",arr);
+                        break;
+                    case 305:
+                        //驳回，拆分任务，新建变更，需求内变更
+                        for(let i of this.tabs.originActionData) {
+                            if (i.act.split("-")[1] == nowRole) {
+                                if(i.act.split("-")[0] == "驳回"
+                                    || i.act.split("-")[0] == "拆分任务"
+                                    || i.act.split("-")[0] == "新建变更"
+                                    || i.act.split("-")[0] == "需求内变更"){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }
+                        }
+                        this.$set(this.tabs,"consoleActionData",arr);
+                        break;
+                    case 318:
+                        //拆分任务，新建变更，需求内变更
+                        for(let i of this.tabs.originActionData) {
+                            console.log(i.act)
+                            if (i.act.split("-")[1] == nowRole) {
+                                if( i.act.split("-")[0] == "拆分任务" ||
+                                    i.act.split("-")[0] == "新建变更" ||
+                                    i.act.split("-")[0] == "需求内变更"){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }
+                        }
+                        this.$set(this.tabs,"consoleActionData",arr);
+                        break;
+                    case 310:
+                        //验收
+                        for(let i of this.tabs.originActionData) {
+                            if (i.act.split("-")[1] == nowRole) {
+                                if( i.act.split("-")[0] == "验收"){
+                                    arr.push({"name":i.act.split("-")[0],"role":i.act.split("-")[1]})
+                                }
+                            }
+                        }
+                        this.$set(this.tabs,"consoleActionData",arr);
+                        break;
+                    case 311:
+                        this.$set(this.tabs,"consoleActionData",[]);
+                        break;
+                }
+            },
+            //点击新需求和旧需求进行跳转
+            goNeedList(e,code,type){
+                for(let i of this.table.tableOriginData){
+                    if(i.base_NEET_ID == code){
+                        this.handleCurrentChange(i);
+                        this.$refs.jcjs_table.setCurrentRow(i)
+                    }
+                }
+            },
+            //-------------------------------------操作台的事件判断---------------------------
             consoleActionEvent(val){
                 this.tabs.consoleActionVisible = false;
                 switch (val.name) {
@@ -1566,10 +1668,10 @@
                         this.back();
                         break;
                     case "新建变更":
-                        this.newchange();
+                        this.newchange("change");
                         break;
                     case "需求内变更":
-                        this.changeinset();
+                        this.newchange("changeinset");
                         break;
                     case "分配任务":
                         this.getAssign();
@@ -1585,7 +1687,7 @@
                         break;
                 }
             },
-            //操作台的事件---------------------------
+            //-------------------------------------操作台的具体事件---------------------------
             //验收操作
             acceptance(){
                 let info = this.tabs.activeTableInfo;
@@ -1625,10 +1727,14 @@
                     })
                 })
             },
-            //新建变更
-            newchange(){
+            //新建变更和需求内变更
+            newchange(type){
                 this.$maskin();
-                this.addneeds.addType = "change";//当前是新建变更
+                if(type=="change"){
+                    this.addneeds.addType = "change";//当前是新建变更
+                }else{
+                    this.addneeds.addType = "changeinset";//当前是新建变更
+                }
                 let params = new URLSearchParams();
                 params.append("BASE_NELL_ID",this.tabs.activeTableInfo.base_NEET_ID);
                 this.$axios.post("/base/checkBaseUpdate",params).then((res)=>{
@@ -1641,8 +1747,15 @@
                         this.addneeds.addform.levelArr = data.result.priority;//优先级
                         this.addneeds.addform.zhongyaochegnduArr = data.result.importance;//重要程度
                         this.addneeds.addform.gongneng = "";
-                        this.addneeds.addform.oldgongneng = base.product_FUNCTION;//原需求功能
-                        this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                        if(type=="changeinset"){
+                            //需求内变更需展示
+                            this.addneeds.addform.oldgongneng = base.product_FUNCTION;//原需求功能
+                            this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                        }else{
+                            //新建变更无需展示
+                            this.addneeds.addform.oldgongneng = "";
+                            this.addneeds.addform.oldneedsname = "";
+                        }
                         this.addneeds.addvisible = true;
                         this.$maskoff();
 //                        this.addneeds.addform.needsname = "";
@@ -1660,19 +1773,7 @@
 //                        this.addneeds.addform.level = base.rriority;//选择的优先级
 //                        this.addneeds.addform.zhongyaochegndu = base.importance;//选择的重要程度
 //                        this.addneeds.addform.jiaji = base.urgent?'1':'0';//是否加急
-//                        this.addneeds.addform.jiajireason = base.urgent;//加急原因
-                    }
-                })
-            },
-            //需求内变更
-            changeinset(){
-                this.addneeds.addType = "changeinset";//当前是新建变更
-                let params = new URLSearchParams();
-                params.append("BASE_NELL_ID",this.tabs.activeTableInfo.base_NEET_ID);
-                this.$axios.post("/base/checkBaseUpdate",params).then((res)=>{
-                    let data = res.data;
-                    if(data.code == 200){
-
+//                        this.addneeds.addform.jiajireason = base.urgent;//加急原
                     }
                 })
             },
@@ -2085,7 +2186,6 @@
             },
             //测试点击完成
             splitTestFinish(index, val){
-                console.log(val)
                 let nowtime = new Date();
                 let params = new URLSearchParams();
                 if (nowtime.getTime() < val.end_DATE) {
@@ -2118,7 +2218,6 @@
                     this.$warn("请填写超时原因");
                     return;
                 }
-                console.log(this.testFinished);
                 let params = new URLSearchParams();
                 let info = this.tabs.activeTableInfo;
                 params.append("BASE_ID", info.base_NEET_ID);
@@ -2287,9 +2386,7 @@
             },
             //选中人员后进行分配操作(开发的转接bug同样在此处)
             assignpersonAction(e, code){
-                console.log(code)
                 if (!code) {
-                    console.log(this.testTask.assignPerson)
                     if (!this.testTask.assignPerson) {
                         this.$warn("请选择人员");
                         return;
@@ -2319,7 +2416,6 @@
                         }
                     });
                 } else {
-                    console.log(this.testTask.assignPerson_code)
                     if (!this.testTask.assignPerson_code) {
                         this.$warn("请选择人员");
                         return;
@@ -2358,8 +2454,12 @@
                 this.$axios.post("/base/queryBugByCode", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.$set(this.testTask, "codeBUGData", data.result.bugs);
-                        this.testTask.codeBUGlistvisible = true;
+                        if(data.result.bugs.length){
+                            this.$set(this.testTask, "codeBUGData", data.result.bugs);
+                            this.testTask.codeBUGlistvisible = true;
+                        }else{
+                            this.$success("当前无BUG待处理");
+                        }
                     }
                 })
             },

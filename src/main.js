@@ -134,10 +134,9 @@ Vue.prototype.$format = (time) => {
         "second": second.length == 1 ? "0" + day : day,
     }
 };
+//---------------------------------------------------
+// axios配置------------------------------------------
 //----------------------------------------------------
-// axios配置----------------------------------------------------
-//----------------------------------------------------
-let token = "99a435577a5042bc95b2e8ad6d5b8f73";
 let instance = axios.create({
     baseURL: 'http://172.16.2.58:8989/JiFu_Project',
     headers: {
@@ -166,6 +165,7 @@ instance.interceptors.response.use(function (response) {
 //     }else
 if(response.data.code !=200){
         Vue.prototype.$warn(response.data.message);
+        Vue.prototype.$maskoff()
     }
     return response;
 // }, function (error) {

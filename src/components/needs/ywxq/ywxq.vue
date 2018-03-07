@@ -26,7 +26,7 @@
             <div class="text item">
                 <div class="content">
                     <div class="action clear">
-                        <el-button type="danger" size="mini" @click="addneeds.addvisible = true">立项</el-button>
+                        <el-button type="danger" size="mini" @click="addneeds.addvisible = true">新增</el-button>
                         <el-select v-model="selectValue" clearable size="mini">
                             <el-option
                                     v-for="item in options"
@@ -49,13 +49,12 @@
                                 >
                                 </el-date-picker>
                             </div>
-                            <div class="search i-b" @keyup="searchKeyword($event)">
+                            <div class="search i-b">
                                 <el-input
                                         placeholder="请输入检索关键字"
                                         suffix-icon="icon-sousuo iconfont"
                                         v-model="keyword"
-                                        size="mini"
-                                >
+                                        size="mini">
                                 </el-input>
                             </div>
                         </div>
@@ -66,9 +65,8 @@
                         highlight-current-row
                         @row-click="handleCurrentChange">
                         <el-table-column prop="aa" label="需求编号" width="200"></el-table-column>
-                        <el-table-column prop="aa" label="原需求编号" width="200"></el-table-column>
-                        <el-table-column prop="aa" label="申请日期"></el-table-column>
-                        <el-table-column prop="aa" label="计划投产日期"></el-table-column>
+                        <el-table-column prop="aa" label="申请日期" width="100"></el-table-column>
+                        <el-table-column prop="aa" label="计划投产日期" width="120"></el-table-column>
                         <el-table-column prop="aa" label="产品功能"></el-table-column>
                         <el-table-column prop="aa" label="需求来源"></el-table-column>
                         <el-table-column prop="aa" label="涉及系统"></el-table-column>
@@ -93,7 +91,9 @@
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
                             <el-tab-pane label="详情页" name="info">
-                                <tabinfo :infodata="tabs.infodata"></tabinfo>
+                                <div class="console-tab-content">
+                                    a
+                                </div>
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console">
                                 <div class="console-tab-content">
@@ -116,7 +116,7 @@
                             </el-tab-pane>
                             <el-tab-pane label="全程跟踪" name="genzong">
                                 <div class="console-tab-content">
-                                    <tablog :log = "tabs.log"></tablog>
+                                  a
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="tongji">
@@ -130,15 +130,10 @@
             </div>
         </el-card>
         <!--立项-->
-        <el-dialog title="新增" :visible="addneeds.addvisible || addneeds.changeInset" width="70%"
-                   append-to-body modal-append-to-body :before-close="closeAddDialog">
+        <el-dialog title="新增" :visible="addneeds.addvisible" width="70%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-row :md="24" :gutter="20" v-if="addneeds.addvisible">
-                    <el-col :span="24" :md="24" v-if="addneeds.addInsetvisible">
-                        <el-form-item label="原需求编号">
-                            原需求编号
-                        </el-form-item>
-                    </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求编号">
                             <el-input v-model="addneeds.addform.name"></el-input>
@@ -212,125 +207,20 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row :md="24" :gutter="20" v-if="addneeds.changeInset">
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="原需求编号">
-                            原需求编号
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="需求编号">
-                            <el-input v-model="addneeds.changeInsetform.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="需求名称">
-                            <el-input v-model="addneeds.changeInsetform.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="申请人">
-                            <el-input v-model="addneeds.changeInsetform.name"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="需求来源">
-                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择部门"
-                                       style="width: 49%;float: left;margin-right: 2%;">
-                            </el-select>
-                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择人员"
-                                       style="width: 49%;float: left;">
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="优先级">
-                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择部门" style="width: 100%;">
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="重要程度">
-                            <el-select v-model="addneeds.changeInsetform.name" placeholder="请选择部门" style="width: 100%;">
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="是否加急">
-                            <el-row :span="24">
-                                <el-col :span="6" :md="6">
-                                    <el-radio v-model="addneeds.changeInsetform.name" label="1">否</el-radio>
-                                    <el-radio v-model="addneeds.changeInsetform.name" label="2">是</el-radio>
-                                </el-col>
-                                <el-col :span="18" :md="18">
-                                    <el-input v-model="addneeds.changeInsetform.name"></el-input>
-                                </el-col>
-                            </el-row>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="申请日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.changeInsetform.name"
-                                            style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="计划投产日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.changeInsetform.name"
-                                            style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="原需求描述">
-                            原需求描述
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="原产品功能">
-                            原需求描述
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="23" :md="23">
-                        <el-form-item label="变更描述">
-                            <el-input type="textarea" v-model="addneeds.changeInsetform.name"
-                                      placeholder="必填项"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="23">
-                        <el-form-item label="变更功能">
-                            <el-input type="textarea" v-model="addneeds.changeInsetform.name"
-                                      placeholder="非必填项"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
             </el-form>
-            <div slot="footer" class="dialog-footer" v-if="addneeds.addvisible">
+            <div slot="footer" class="dialog-footer">
                 <el-button @click="addneeds.addvisible = false" size="mini">取 消</el-button>
                 <el-button type="primary" @click="addneeds.addvisible = false" size="mini">确 定</el-button>
-            </div>
-            <div slot="footer" class="dialog-footer" v-if="addneeds.changeInset">
-                <el-button @click="addneeds.changeInset = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="addneeds.changeInset = false" size="mini">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
-
 <script>
-    import  tabinfo from  "./tab_info.vue";
-    import tablog from  "./tab_log.vue";
     export default {
-        components: {
-            "tabinfo": tabinfo,
-            "tablog": tablog
-        },
         data(){
             return {
                 addneeds: {
-                    addInsetvisible: true,
                     addvisible: false,
-                    changeInset: false,
                     addform: {
                         name: ""
                     },
@@ -399,12 +289,9 @@
                 totalPage: "1",
                 dateComp: {},
                 tabs: {
-                    log:"",
-                    infodata: "",
+                    consoleWrapperVisible: false,//控制台的显示
+                    consoleActionVisible: false,//控制台的操作显示/隐藏
                     activeName: "info",
-                    consoleWrapperVisible: 1,
-                    consoleActionData:["adas","sad"],
-                    consoleActionVisible: false,
                 },
             }
         },
@@ -428,37 +315,43 @@
                 let height = document.querySelector(".mainr").offsetHeight;
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                card_body.style.height = height - 34 + "px";
+                card_body.style.height = height - 36 + "px";
                 //表格高度
-                this.calculateTableHeight(this.tabs.consoleWrapperVisible ? 1 : 0);
+                this.calculateTableHeight(this.tabs.consoleWrapperVisible);
                 //tab高度
                 if (this.tabs.consoleWrapperVisible) {
                     this.calculateTabsHeight();
                 }
-                //控制台的内容区域高度
             },
+            //计算表格高度
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
-                //0代表没有控制台
-                if (type == 0) {
-                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
+                //true代表没有控制台
+                if (!type) {
+                    //----------------------------------------------body的上下padding--table的margin-top-table上border
+                    this.table.tableHeight = height - 36 - actionHeight - 20 - 20-1;
                 } else {
                     this.table.tableHeight = height * 0.3;
                 }
             },
+            //计算操作台的高度
             calculateTabsHeight(){
                 let card_body = document.querySelector(".box-card .el-card__body");
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
                 let allTabContent = document.querySelectorAll(".console-tab-content");
                 for (let i of allTabContent) {
-                    //---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高---
-                    i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) + "px";
+                    //---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高----------操作台border
+                    i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
                 }
             },
-            closeAddDialog(){
+            //设置控制台的展示
+            setConsoleVisible(){
+                this.tabs.consoleWrapperVisible = false;
+                this.calculateTableHeight(false)
+            },
+            closeDialog(){
                 this.addneeds.addvisible = false;
-                this.addneeds.changeInset = false
             },
             setConsoleVisible(){
 
@@ -470,9 +363,6 @@
                 if (e.keyCode == 13) {
 
                 }
-            },
-            handleSizeChange(val){
-                console.log(val)
             },
             handleCurrentChange(val){
                 console.log(val)

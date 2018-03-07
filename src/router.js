@@ -91,12 +91,15 @@ let option = {
                 },{
                     path: "flow",
                     component: resolve => require(['./components/flow/flow.vue'], resolve)
+                },{
+                    path: "version",
+                    name:"版本库",
+                    component: resolve => require(['./components/version/version.vue'], resolve)
+                },{
+                    path: "zlk",
+                    name:"资料库",
+                    component: resolve => require(['./components/zlk/zlk.vue'], resolve)
                 }
-                // ,{
-                //     path: "version",
-                //     name:"版本库",
-                //     component: resolve => require(['./components/version/version.vue'], resolve)
-                // }
             ]
         }, {
             path: '/test',
