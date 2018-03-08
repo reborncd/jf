@@ -1,4 +1,4 @@
-import Vue from 'vue'
+﻿import Vue from 'vue'
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../element-ui/lib/theme-chalk/index.css'
@@ -138,17 +138,16 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    baseURL: 'http://172.16.2.162:8080/JiFu_Project',
-    //baseURL:"http:/localhost:8082/",
+	baseURL:"http://irany.free.ngrok.cc",
     headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded'
     }
 });
 instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
-    if(localStorage.getItem("token")){
+    if(localStorage.getItem("token") && config.data.constructor.name == "URLSearchParams"){
         let token = localStorage.getItem("token");
         // config.data+="&token="+"1234";
         config.data+=`&token=${token}`;
