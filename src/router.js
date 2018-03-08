@@ -69,6 +69,10 @@ let option = {
                     name:"业务需求",
                     component: resolve => require(['./components/needs/ywxq/ywxq.vue'], resolve)
                 },{
+                    path: 'jsxq',
+                    name:"技术需求",
+                    component: resolve => require(['./components/needs/jsxq/jsxq.vue'], resolve)
+                },{
                     path: 'jcjs',
                     name:"基础建设",
                     component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)

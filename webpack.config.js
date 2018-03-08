@@ -50,7 +50,7 @@ module.exports = (options = {}) => ({
   ],
   resolve: {
     alias: {
-      '~': resolve(__dirname, 'src')
+      '~': resolve(__dirname, 'src'),
     }
   },
   devServer: {
@@ -70,5 +70,5 @@ module.exports = (options = {}) => ({
     }
   },
   devtool: options.dev ? '#eval-source-map' : '#source-map',
- 
+
 })

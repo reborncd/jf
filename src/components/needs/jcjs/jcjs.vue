@@ -1328,7 +1328,6 @@
                 this.$axios.post("/base/baseSaveFront", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.addneeds.addvisible = true;
                         let deptArr = [];
                         for (let i of data.result.depts) {
                             deptArr.push(i);
@@ -1337,6 +1336,7 @@
                         this.$set(this.addneeds.addform, "fromdeptArr", deptArr);
                         this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance);
                         this.$set(this.addneeds.addform, "levelArr", data.result.priority);
+                        this.addneeds.addvisible = true;
                     }
                 })
             },

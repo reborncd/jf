@@ -98,7 +98,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="已存在角色">
-                                <el-select clearable v-model="a" style="width: 100%" placeholder="请选择部门">
+                                <el-select clearable v-model="a" style="width: 100%" placeholder="可查看已存在的角色">
                                     <el-option v-for="item in live_arr" :label="item.role_NAME"
                                                :value="item.role_ID"></el-option>
                                 </el-select>
