@@ -138,8 +138,9 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    // baseURL: 'http://172.16.2.58:8989/JiFu_Project',
-    baseURL:"http://172.16.1.200:8080/JiFu_Project",
+//     baseURL: 'http://172.16.2.58:8989/JiFu_Project',
+//     baseURL:"http://172.16.2.225:8082",
+	baseURL:"http://irany.free.ngrok.cc",
     headers: {
         'content-type': 'application/x-www-form-urlencoded',
     }
@@ -148,7 +149,7 @@ instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
-    if(localStorage.getItem("token")){
+    if(localStorage.getItem("token") && config.data.constructor.name == "URLSearchParams"){
         let token = localStorage.getItem("token");
         // config.data+="&token="+"1234";
         config.data+=`&token=${token}`;
