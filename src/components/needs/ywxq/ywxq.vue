@@ -311,6 +311,10 @@
             }
         },
         methods: {
+            //加载列表数据
+            loadData(){
+
+            },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
