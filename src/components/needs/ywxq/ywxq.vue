@@ -313,7 +313,14 @@
         methods: {
             //加载列表数据
             loadData(){
-
+                let params = new URLSearchParams();
+                this.$axios.post("/business/query",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.table.tableData = data.result;
+                        this.table.tableOriginData = data.result;
+                    }
+                })
             },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
