@@ -64,14 +64,14 @@
                         :height="table.tableHeight"
                         highlight-current-row
                         @row-click="handleCurrentChange">
-                        <el-table-column prop="aa" label="需求编号" width="200"></el-table-column>
-                        <el-table-column prop="aa" label="申请日期" width="100"></el-table-column>
-                        <el-table-column prop="aa" label="计划投产日期" width="120"></el-table-column>
-                        <el-table-column prop="aa" label="产品功能"></el-table-column>
-                        <el-table-column prop="aa" label="需求来源"></el-table-column>
-                        <el-table-column prop="aa" label="涉及系统"></el-table-column>
-                        <el-table-column prop="aa" label="优先级"></el-table-column>
-                        <el-table-column prop="aa" label="状态"></el-table-column>
+                        <el-table-column prop="ID" label="需求编号" width="200"></el-table-column>
+                        <el-table-column prop="START_DATE" label="申请日期" width="100"></el-table-column>
+                        <el-table-column prop="END_DATE" label="计划投产日期" width="120"></el-table-column>
+                        <el-table-column prop="PRODUCT_FUNCTION" label="产品功能"></el-table-column>
+                        <el-table-column prop="NEEL_SOURCE" label="需求来源"></el-table-column>
+                        <el-table-column prop="DESIGN_SYSTEM" label="涉及系统"></el-table-column>
+                        <el-table-column prop="RRIORITY_NAME" label="优先级"></el-table-column>
+                        <el-table-column prop="STATE" label="状态"></el-table-column>
                         <el-table-column prop="aa" label="bug清单"></el-table-column>
                         <!--<el-table-column label="操作">-->
                         <!--<template slot-scope="scope" class="action-wrap">-->
@@ -296,7 +296,7 @@
             }
         },
         mounted(){
-            this.calculate();
+            this.loadData();
             this.tabs.infodata = {
                 "name": 1
             };
@@ -313,12 +313,15 @@
         methods: {
             //加载列表数据
             loadData(){
+
+                this.calculate();
                 let params = new URLSearchParams();
                 this.$axios.post("/business/query",params).then((res)=>{
                     let data = res.data;
+                    console.log(data.result.data);
                     if(data.code == 200){
-                        this.table.tableData = data.result;
-                        this.table.tableOriginData = data.result;
+                        this.table.tableData = data.result.data;
+                        this.table.tableOriginData = data.result.data;
                     }
                 })
             },
