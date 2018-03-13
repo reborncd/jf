@@ -54,6 +54,10 @@
 
 .console-tab-wrapper .el-tabs__item {
     border: none !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .console-tab-wrapper .el-tabs__nav {

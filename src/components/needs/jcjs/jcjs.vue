@@ -246,7 +246,7 @@
                                     </el-form>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="经理操作台" name="console">
+                            <el-tab-pane label="操作台" name="console">
                                 <div class="console-tab-content">
                                     <div class="console-action-wrapper">
                                         <i class="icon-more iconfont"
@@ -569,20 +569,28 @@
                             <el-input v-model="addneeds.addform.name"></el-input>
                         </el-form-item>
                     </el-col>
+
+
+
+
                     <el-col :span="12" :md="12">
                         <el-form-item label="申请人">
                             <el-input v-model="addneeds.addform.sxname"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
-                        <el-form-item label="需求来源">
+                        <el-form-item label="需求提出部门">
                             <el-select v-model="addneeds.addform.fromdeptId" clearable placeholder="请选择部门"
-                                       style="width: 49%;float: left;margin-right: 2%;" @change="fromdeptchange">
+                                       style="width: 100%" @change="fromdeptchange">
                                 <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
                                            :value="item.dept_id"></el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="需求提出人">
                             <el-select v-model="addneeds.addform.fromdeptroleId" clearable placeholder="请选择人员"
-                                       style="width: 49%;float: left;">
+                                       style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
                                            :value="item.user_ID"></el-option>
                             </el-select>
@@ -630,6 +638,15 @@
                                               v-if="addneeds.addform.jiaji ==1?true:false"></el-input>
                                 </el-col>
                             </el-row>
+                        </el-form-item>
+                    </el-col>
+
+
+
+
+                    <el-col :span="24" :md="24">
+                        <el-form-item label="产品改造点">
+                            <el-input v-model="addneeds.addform.reform"></el-input>
                         </el-form-item>
                     </el-col>
                     <!--原产品功能-->
@@ -992,6 +1009,7 @@
                         "gongneng": "",//产品功能
                         "oldneedsname": "",//原需求描述
                         "needsname": "",//需求描述
+                        "reform":"",//产品改造点
                     }
                 },
                 assign: {
@@ -1280,8 +1298,8 @@
                             if (i.act.split("-")[0] == "新增" && i.act.split("-")[1] == localStorage.getItem("ROLE")) {
                                 this.tabs.addProject = true;
                             }
+                            roleArr_temp.push(i.act.split("-")[1]);
                         }
-                        roleArr_temp.push(i.act.split("-")[1]);
                     }
                     //设置源操作数组
                     this.$set(this.tabs,"originActionData",origin);
@@ -1361,6 +1379,42 @@
             //提交新增
             subaddForm(){
                 let url = "";
+                if(!this.addneeds.addform.name){
+                    this.$warn("请填写需求名称");
+                    return;
+                }
+                if(!this.addneeds.addform.shenqingdate){
+                    this.$warn("请选择申请日期");
+                    return;
+                }
+                if(!this.addneeds.addform.jihuadate){
+                    this.$warn("请选择计划投产日期");
+                    return;
+                }
+                if(!this.addneeds.addform.sxname){
+                    this.$warn("请填写申请人");
+                    return;
+                }
+                if(!this.addneeds.addform.gongneng){
+                    this.$warn("请填写产品功能");
+                    return;
+                }
+                if(!this.addneeds.addform.fromdeptroleId){
+                    this.$warn("请选择需求来源");
+                    return;
+                }
+                if(!this.addneeds.addform.level){
+                    this.$warn("请选择优先级");
+                    return;
+                }
+                if(!this.addneeds.addform.zhongyaochegndu){
+                    this.$warn("请选择重要程度");
+                    return;
+                }
+                if(!this.addneeds.addform.needsname){
+                    this.$warn("请填写需求描述");
+                    return;
+                }
                 let params = new URLSearchParams();
                 params.append("BASE_NEET_ID", this.addneeds.addform.code);	//需求编码
                 params.append("NEEL_NAME", this.addneeds.addform.name);	//需求名称
@@ -1451,7 +1505,8 @@
             },
             //点击表格列表展示控制台
             handleCurrentChange(val){
-                this.split.splitvisible = false;
+                //清空拆分任务的操作台
+                this.clearSplitSub();
                 this.tabs.activeName = "info";
                 this.testTask.typevalue = "";
                 this.testTask.type = "";
@@ -1777,7 +1832,7 @@
                     }
                 })
             },
-            //分配任务
+            //---------------------------------------------分配任务
             getAssign(){
                 let info = this.tabs.activeTableInfo;
                 if (info.state_ID != 303 && info.state_ID != 304) {
@@ -1904,7 +1959,7 @@
                     })
                 })
             },
-            //拆分任务
+            //---------------------------------------------拆分任务
             splitTask(){
                 let info = this.tabs.activeTableInfo;
                 let params = new URLSearchParams();
@@ -2073,6 +2128,17 @@
                     }
                 });
             },
+            //清空拆分任务界面
+            clearSplitSub(){
+                this.split.splitvisible = false;//关闭操作台
+                this.$set(this.split,"systemAll",[{
+                    "name": "", "version": ""
+                }]);//清空系统
+                this.split.startdate = "";//开始时间
+                this.split.enddate = "";//结束时间
+                this.split.tableData = [];//人员信息
+            },
+            //------------------------------------------开发的任务操作
             //开发的开始操作
             splitCodeStart(index, val){
                 let info = this.tabs.activeTableInfo;
@@ -2124,7 +2190,7 @@
                 this.taskFinished.taskFinishedvisible = false;
                 this.sendFinished(params)
             },
-            //调用完成借口
+            //调用完成接口
             sendFinished(params){
                 this.$axios.post("/base/completeInfo", params).then((res) => {
                     let data = res.data;
@@ -2136,7 +2202,7 @@
                     }
                 })
             },
-            //拆分任务点击事件
+            //------------------------------------拆分任务详情点击事件，展示数据
             splitTaskClick(val){
                 this.$set(this.split, "hasSplitTaskData", []);
                 //为空时不展示内容
@@ -2146,7 +2212,7 @@
                 this.split.hasSplitvisible = true;
                 this.$set(this.split, "hasSplitTaskData", val.infos)
             },
-            //测试选择用例类型
+            //-----------------------------------------测试的任务操作
             chooseTestType(){
                 if (!this.testTask.type) {
                     this.$warn("请选择用例类型");
