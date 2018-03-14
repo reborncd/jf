@@ -25,7 +25,7 @@
     <div class="zlk common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
             <div class="text item">
-                <div class="content" >
+                <div class="content">
                     <div class="action clear">
                         <el-button type="danger" size="mini" @click="addZL">新资料</el-button>
                         <el-select v-model="selectValue" size="mini" @change="changeTree">
@@ -73,6 +73,7 @@
                 </div>
             </div>
         </el-card>
+        <!--新建资料-->
         <el-dialog title="新建资料" :visible="add.addvisible" width="80%"
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
@@ -202,6 +203,24 @@
                 <el-button type="primary" @click="subaddForm" size="mini">确 定</el-button>
             </div>
         </el-dialog>
+        <!--下载-->
+        <el-dialog title="下载资料" :visible="download.downloadvisible" width="80%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
+            <div class="table-list">
+                <el-table :data="download.data" border style="width: 100%">
+                    <el-table-column prop="at_FILENAME" label="文档名"></el-table-column>
+                    <el-table-column prop="at_FILESIZE" :formatter="filesize" label="大小" width="100"></el-table-column>
+                    <el-table-column label="操作" width=100>
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="primary" @click="dlFromTable(scope.row)">下载</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="download.downloadvisible = false" size="mini">取 消</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -209,8 +228,12 @@
     export default {
         data(){
             return {
-                tableDataVisible:false,//表格数据的展示
-                infoVisible:true,//详情页
+                download: {
+                    downloadvisible: false,
+                    data: [],//表格数据
+                },
+                tableDataVisible: false,//表格数据的展示
+                infoVisible: true,//详情页
                 leftData: [],//左侧的树形菜单数据
                 selectValue: "1",//选择的筛选的值
                 options: [{"key": "按目录检索", "value": "1"}, {"key": "按系统检索", "value": "2"}],
@@ -379,11 +402,15 @@
             },
             //关闭弹窗
             closeDialog(){
-                this.add.addvisible = false;
-                let dialogData = this.add.subform;
-                for (let i in dialogData) {
-                    if (dialogData.hasOwnProperty(i)) {
-                        dialogData[i] = "";
+                if (this.download.downloadvisible) {
+                    this.download.downloadvisible = false;
+                } else {
+                    this.add.addvisible = false;
+                    let dialogData = this.add.subform;
+                    for (let i in dialogData) {
+                        if (dialogData.hasOwnProperty(i)) {
+                            dialogData[i] = "";
+                        }
                     }
                 }
             },
@@ -435,39 +462,39 @@
             //提交
             subaddForm(){
                 let subform = this.add.subform;
-                if(!subform.company){
+                if (!subform.company) {
                     this.$warn("请选择企业代号");
                     return;
                 }
-                if(!subform.system){
+                if (!subform.system) {
                     this.$warn("请选择系统代号");
                     return;
                 }
-                if(!subform.doc){
+                if (!subform.doc) {
                     this.$warn("请选择文档类型");
                     return;
                 }
-                if(!subform.wordname){
+                if (!subform.wordname) {
                     this.$warn("请填写文档名称");
                     return;
                 }
-                if(!subform.version){
+                if (!subform.version) {
                     this.$warn("请填写文档版本");
                     return;
                 }
-                if(!subform.dirF || !subform.dirC){
+                if (!subform.dirF || !subform.dirC) {
                     this.$warn("请选择完整的目录位置");
                     return;
                 }
-                if(!subform.sysF || !subform.sysC){
+                if (!subform.sysF || !subform.sysC) {
                     this.$warn("请选择完整的系统");
                     return;
                 }
-                if(!subform.intro){
+                if (!subform.intro) {
                     this.$warn("请填写文档简介");
                     return;
                 }
-                if(!subform.fileIds.length){
+                if (!subform.fileIds.length) {
                     this.$warn("请至少上传一个文档");
                     return;
                 }
@@ -475,22 +502,24 @@
                 let code = `${subform.company}_${subform.system}_${subform.doc}_${subform.code}_${subform.year}`;//文档编号
                 let name = subform.wordname;//文档名称
                 let version = subform.version;//版本
-                let intro = subform.version;//描述
+                let intro = subform.intro;//描述
                 let params = new URLSearchParams();
-                params.append("DATUM_ID",code); // 文档编码
-                params.append("DATUM_NAME",name);// 文档名称
-                params.append("DATUM_VERSION",version);// 文本版本
+                params.append("DATUM_ID", code); // 文档编码
+                params.append("DATUM_NAME", name);// 文档名称
+                params.append("DATUM_VERSION", version);// 文本版本
                 params.append("DIRECTORY_LOCATION",
                     `${subform.dirF.split(",")[1]}-${subform.dirC.split(",")[1]}`);// 目录位置
                 params.append("INTERCONNECTED_SYSTEM",
-                    subform.sysF.split(",")[1]+'-'+ subform.sysC.split(",")[1]);//关联系统
-                params.append("FILE_DESCRIPTIOON",intro);// 文档简介
-                params.append("uploadfileIds",subform.fileIds);//上传文件
-                params.append("CONDITION_FLAGF",subform.dirF.split(",")[0]);
-                params.append("CONDITION_FLAGC",subform.dirC.split(",")[0]);
-                this.$axios.post("datum/addDatum",params).then((res)=>{
-                    let data =  res.data;
-                    if(data.code == 200){
+                    subform.sysF.split(",")[1] + '-' + subform.sysC.split(",")[1]);//关联系统
+                params.append("FILE_DESCRIPTIOON", intro);// 文档简介
+                params.append("uploadfileIds", subform.fileIds);//上传文件
+                params.append("CONDITION_FLAGF",
+                    `${subform.dirF.split(",")[0]},${subform.sysF.split(",")[0]}`);//系统和目录的父级ID
+                params.append("CONDITION_FLAGC",
+                    `${subform.dirC.split(",")[0]},${subform.sysC.split(",")[0]}`);//系统和目录的子集ID
+                this.$axios.post("datum/addDatum", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
                         this.$success("操作成功");
                         this.$maskoff();
                         this.closeDialog();
@@ -501,7 +530,7 @@
             //左侧点击事件
             leftclick(val){
                 console.log(val)
-                if(val.children){
+                if (val.children) {
                     return;
                 }
                 this.$maskin();
@@ -509,7 +538,7 @@
                 if (val.no_ID && val.system_ID && this.selectValue == 1) {
                     params.append("CONDITION_FLAGF", val.no_ID);
                 }
-                if(val.system_FID && val.system_ID && this.selectValue == 2){
+                if (val.system_FID && val.system_ID && this.selectValue == 2) {
                     params.append("CONDITION_FLAGF", val.system_FID);
                 }
                 params.append("CONDITION_FLAG", this.selectValue);
@@ -526,11 +555,15 @@
             },
             //查看功能
             viewrow(index, val){
-
+                this.$go("material", {
+                    "id": val.datum_ID
+                })
             },
             //下载功能
             downloadrow(index, val){
-
+                console.log(val);
+                this.$set(this.download, "data", val.datumATDetails);
+                this.download.downloadvisible = true;
             },
             //文件上传的操作
             getFile(e){
@@ -546,10 +579,10 @@
                 this.$axios.post("/datum/upload", params, config).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        if(typeof this.add.subform.uploadFiles == "string" ||
-                        typeof this.add.subform.fileIds == "string"){
-                            this.$set(this.add.subform,"uploadFiles",[]);
-                            this.$set(this.add.subform,"fileIds",[]);
+                        if (typeof this.add.subform.uploadFiles == "string" ||
+                            typeof this.add.subform.fileIds == "string") {
+                            this.$set(this.add.subform, "uploadFiles", []);
+                            this.$set(this.add.subform, "fileIds", []);
                         }
                         this.add.subform.uploadFiles.push(file[0]);
                         this.add.subform.fileIds.push(data.result.attachmentId);
@@ -561,6 +594,14 @@
                 let date = this.$format(row.date_TIME);
                 return `${date.year}-${date.mouth}-${date.day}`
             },
+            filesize(val){
+                let size = parseFloat(val.at_FILESIZE / 1000).toFixed(2);
+                return size + "kb"
+            },
+            dlFromTable(row){
+                let id = row.at_ID;//文件ID
+                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${localStorage.getItem("token")}`)
+            }
         }
     }
 </script>

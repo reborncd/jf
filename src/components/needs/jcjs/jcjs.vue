@@ -365,11 +365,11 @@
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
                                                     <el-button size="mini" type="primary"
-                                                               v-if="!scope.row.start_DATE && tabs.codeActionData.indexOf('开始')>=0"
+                                                               v-if="!scope.row.start_DATE"
                                                                @click="splitCodeStart(scope.$index, scope.row)">开始
                                                     </el-button>
                                                     <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID != 319 && scope.row.start_DATE && tabs.codeActionData.indexOf('完成')>=0"
+                                                               v-if="scope.row.state_ID != 319 && scope.row.start_DATE"
                                                                @click="splitCodeFinish(scope.$index, scope.row)">完成
                                                     </el-button>
                                                     <span v-if="scope.row.state_ID == 319"
@@ -429,7 +429,7 @@
                                                             <div style="text-align: center">
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 308 && tabs.testActionData.indexOf('开始')>=0"
+                                                                           v-if="scope.row.state_ID == 308"
                                                                            @click="testTaskStart(scope.$index, scope.row)">
                                                                     开始
                                                                 </el-button>
@@ -440,7 +440,7 @@
                                                                 </el-button>
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 309 && tabs.testActionData.indexOf('完成')>=0"
+                                                                           v-if="scope.row.state_ID == 309"
                                                                            @click="splitTestFinish(scope.$index, scope.row)">
                                                                     完成
                                                                 </el-button>
@@ -569,13 +569,46 @@
                             <el-input v-model="addneeds.addform.name"></el-input>
                         </el-form-item>
                     </el-col>
-
-
-
-
                     <el-col :span="12" :md="12">
-                        <el-form-item label="申请人">
-                            <el-input v-model="addneeds.addform.sxname"></el-input>
+                        <el-form-item label="需求类型">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="成果类型">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="需求影响面">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="优先级评定">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="需求划分归属">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="涉及产品线">
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="申请日期">
+                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.shenqingdate"
+                                            style="width: 100%;"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="期望上线日期">
+                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.jihuadate"
+                                            style="width: 100%;"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
@@ -597,24 +630,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
-                        <el-form-item label="申请日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.shenqingdate"
-                                            style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="计划投产日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.jihuadate"
-                                            style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="优先级">
-                            <el-select v-model="addneeds.addform.level" clearable placeholder="请选择优先级"
-                                       style="width: 100%;">
-                                <el-option v-for="item in addneeds.addform.levelArr" :label="item.rriority_NAME"
-                                           :value="item.rriority_ID"></el-option>
-                            </el-select>
+                        <el-form-item label="产品负责人">
+                            <el-input v-model="addneeds.addform.sxname"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
@@ -623,6 +640,24 @@
                                        style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.zhongyaochegnduArr"
                                            :label="item.importance_NAME" :value="item.importance_ID"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+
+
+                    <!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="申请人">
+                            <el-input v-model="addneeds.addform.sxname"></el-input>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="优先级">
+                            <el-select v-model="addneeds.addform.level" clearable placeholder="请选择优先级"
+                                       style="width: 100%;">
+                                <el-option v-for="item in addneeds.addform.levelArr" :label="item.rriority_NAME"
+                                           :value="item.rriority_ID"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -640,8 +675,7 @@
                             </el-row>
                         </el-form-item>
                     </el-col>
-
-
+                    <!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
 
 
                     <el-col :span="24" :md="24">
@@ -870,7 +904,7 @@
                 <el-table :data="testTask.buglistTableData" ref="testTask_bug" border style="width: 100%"
                           class="testTask_bugtable"
                           @selection-change="buglistChange">
-                    <el-table-column type="selection" width="55" :selectable="AssigncheckedAble"></el-table-column>
+                    <el-table-column type="selection" width="55" :selectable="assignCheckedAble"></el-table-column>
                     <el-table-column type="index" label="编号" width="180"></el-table-column>
                     <el-table-column prop="ASSIGNOR_PERSON_NAME" label="人员"></el-table-column>
                     <el-table-column prop="TEST_DESC" label="问题描述"></el-table-column>
@@ -912,7 +946,7 @@
                         <template slot-scope="scope">
                             <div style="text-align: center">
                                 <el-button size="mini" type="primary" style="display: inline-block;float: none"
-                                           v-if="scope.row.bug_STATE !=1 && tabs.codeActionData.indexOf('完成')>=0"
+                                           v-if="scope.row.bug_STATE !=1"
                                            @click="codeBUGAction(scope.$index, scope.row,'完成')">完成
                                 </el-button>
                                 <el-button size="mini" type="danger" style="display: inline-block;float: none"
@@ -962,19 +996,19 @@
             </div>
         </el-dialog>
         <!--测试点击完成-->
-        <el-dialog title="您已超出任务规定时间" :visible="testFinished.taskFinishedvisible" width="60%"
+        <el-dialog title="您已超出任务规定时间" :visible="taskFinished.taskFinishedvisible" width="60%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
             <el-form label-width="120px">
                 <el-form-item label="请填写实际用时">
-                    <el-input v-model="testFinished.usetime"></el-input>
+                    <el-input v-model="taskFinished.usetime"></el-input>
                 </el-form-item>
                 <el-form-item label="请填写超时原因">
-                    <el-input v-model="testFinished.reason"></el-input>
+                    <el-input v-model="taskFinished.reason"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="testFinished.taskFinishedvisible = false" size="mini">取 消</el-button>
+                <el-button @click="taskFinished.taskFinishedvisible = false" size="mini">取 消</el-button>
                 <el-button type="primary" @click="testSubTask" size="mini">确定</el-button>
             </div>
         </el-dialog>
@@ -1148,12 +1182,6 @@
                     usetime: "",//实际用时
                     reason: "",//超时原因
                 },
-                testFinished: {
-                    taskFinishedvisible: false,
-                    taskId: "",//当前任务ID
-                    usetime: "",//实际用时
-                    reason: "",//超时原因
-                },
                 //测试任务操作台的内容
                 testTask: {
                     hasTask: false,//判断是否有测试任务
@@ -1275,24 +1303,17 @@
                         if (i.menu_fname == activeRoute) {
                             //存放原数据
                             origin.push(i);
-                            //开发和测试无需根据当期需求状态来判断,直接添加操作
-                            if(i.act.split("-")[0] == "开始" || i.act.split("-")[0] == "完成"){
-                                let type = i.act.split("-")[1];
-                                if (type == "开发") {
-                                    this.tabs.codeActionData.push(i.act.split("-")[0])
-                                } else if (type == "测试") {
-                                    this.tabs.testActionData.push(i.act.split("-")[0])
-                                }
-                            }
-                            if(i.act == "转接-开发"){
+//                            //开发和测试无需根据当期需求状态来判断,直接添加操作
+//                            if(i.act.split("-")[0] == "开始" || i.act.split("-")[0] == "完成"){
+//                                let type = i.act.split("-")[1];
+//                                if (type == "开发") {
+//                                    this.tabs.codeActionData.push(i.act.split("-")[0])
+//                                } else if (type == "测试") {
+//                                    this.tabs.testActionData.push(i.act.split("-")[0])
+//                                }
+//                            }
+                            if(i.act.indexOf("转接-开发")>=0){
                                 this.tabs.codeActionData.push("转接");
-                            }
-                            //驳回的判断
-                            if (i.act.indexOf("驳回-技术经理") !=-1) {
-                                this.tabs.rejectType = "jl"
-                            }
-                            if (i.act.indexOf("驳回-技术管理部") !=-1) {
-                                this.tabs.rejectType = "gl"
                             }
                             //新增的权限判断
                             if (i.act.split("-")[0] == "新增" && i.act.split("-")[1] == localStorage.getItem("ROLE")) {
@@ -1501,9 +1522,8 @@
                 this.testTask.codeBUGlistvisible = false;//开发人员查看bug的弹窗
                 this.testTask.codeBUGlistvisible = false;//开发转接bug弹窗
                 this.testTask.allBUGvisible = false;//bug清单的展示弹窗
-                this.testFinished.taskFinishedvisible = false;//测试人员超时填写原因和实际用时的弹窗
             },
-            //点击表格列表展示控制台
+            //----------------------------------点击表格列表展示控制台
             handleCurrentChange(val){
                 //清空拆分任务的操作台
                 this.clearSplitSub();
@@ -1561,7 +1581,6 @@
                         this.tabs.data_one.neel_NAME = base.neel_NAME;
                         this.tabs.data_one.rriority_NAME = base.rriority_NAME;
                         this.tabs.data_one.urgent = base.urgent;
-
                         //判断是否有驳回理由
                         this.tabs.data_one.reject_RESON =
                             base.reject_RESON ? base.reject_RESON : false;
@@ -1595,7 +1614,8 @@
                         this.$set(this.tabs, "genzong", data.result.records);
                         //判断当前任务是否被拆分过
                         data.result.systemDepts.length > 0 ?
-                            this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts) : this.$set(this.split, "hasSplitTaskDataByGroup", []);
+                            this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts)
+                            : this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         //是否有开发任务
                         data.result.codeInfos.length > 0 ?
                             this.$set(this.split, "codetask", data.result.codeInfos) : this.$set(this.split, "codetask", []);
@@ -1745,21 +1765,19 @@
             //-------------------------------------操作台的具体事件---------------------------
             //验收操作
             acceptance(){
-                let info = this.tabs.activeTableInfo;
-                if(info.state_ID == 311){
-                    this.$warn("该需求已验收！");
-                    return;
-                }
-                this.$maskin();
-                let params = new URLSearchParams();
-                params.append("BASE_NEEL_ID", info.base_NEET_ID);
-                this.$axios.post("/base/baseAccept", params).then((res) => {
+                this.confirm("确定进行验收操作？",()=>{
+                    let info = this.tabs.activeTableInfo;
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("BASE_NEEL_ID", info.base_NEET_ID);
+                    this.$axios.post("/base/baseAccept", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功！");
                         this.$maskoff();
                         this.loadData();
                     }
+                })
                 })
             },
             //基础开发的撤回操作
@@ -2181,7 +2199,7 @@
                 }
                 if (!this.taskFinished.reason) {
                     this.$warn("请填写超时原因");
-                    returnl
+                    return;
                 }
                 params.append("BASE_ID", info.base_NEET_ID);//需求ID
                 params.append("REMARK", this.taskFinished.reason);//原因
@@ -2268,34 +2286,34 @@
                         }
                     })
                 } else {
-                    this.testFinished.usetime = "";
-                    this.testFinished.reason = "";
-                    this.testFinished.taskFinishedvisible = true;
-                    this.testFinished.taskId = val.base_INFO_ID;
+                    this.taskFinished.usetime = "";
+                    this.taskFinished.reason = "";
+                    this.taskFinished.taskFinishedvisible = true;
+                    this.taskFinished.taskId = val.base_INFO_ID;
                 }
             },
             //测试填写超时原因提交
             testSubTask(){
-                if (!this.testFinished.usetime) {
+                if (!this.taskFinished.usetime) {
                     this.$warn("请填写实际用时");
                     return;
                 }
-                if (!this.testFinished.reason) {
+                if (!this.taskFinished.reason) {
                     this.$warn("请填写超时原因");
                     return;
                 }
                 let params = new URLSearchParams();
                 let info = this.tabs.activeTableInfo;
                 params.append("BASE_ID", info.base_NEET_ID);
-                params.append("BASE_INFO_ID", this.testFinished.taskId);
-                params.append("ACTUAL_TIME", this.testFinished.usetime);
-                params.append("REMARK", this.testFinished.reason);
+                params.append("BASE_INFO_ID", this.taskFinished.taskId);
+                params.append("ACTUAL_TIME", this.taskFinished.usetime);
+                params.append("REMARK", this.taskFinished.reason);
                 this.$axios.post("/base/completeTestInfo", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功！");
-                        this.testFinished.taskId = "";
-                        this.testFinished.taskFinishedvisible = false;
+                        this.taskFinished.taskId = "";
+                        this.taskFinished.taskFinishedvisible = false;
                         this.loadData()
                     }
                 })
@@ -2394,6 +2412,7 @@
                     let text = {value}.value;
                     if (!text) {
                         this.$warn("请填写不通过原因");
+                        return;
                     }
                     let params = new URLSearchParams();
                     params.append("TEST_STATE", 0);
@@ -2509,7 +2528,7 @@
                 }
             },
             //分配问题时是否能被选中
-            AssigncheckedAble(val){
+            assignCheckedAble(val){
                 return val.ASSIGNOR_PERSON_NAME ? false : true
             },
             //展示给开发人员的bug

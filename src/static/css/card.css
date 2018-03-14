@@ -46,3 +46,6 @@
     font-size: 16px;
     color: #d95853;
 }
+.el-card__body .action .el-select{
+    vertical-align: middle;
+}

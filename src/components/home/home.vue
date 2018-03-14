@@ -342,6 +342,10 @@
             },
             //顶部菜单点击事件
             changeMainMenu(val){
+                if(val.menu_id == 4 || val.menu_id == 5){
+                    this.$success("您已订阅成功，每月资费 200元/月！！！");
+                    return;
+                }
                 this.subMenu = [];
                 this.menuActive = val.menu_id;
                 this.activeTitle = val.menu_name;
@@ -356,6 +360,10 @@
             },
             //左侧菜单点击事件
             subMenuAction(val){
+                if(val.menu_url == "/home/ywxq"){
+                    this.$success("您已订阅成功，每月资费 100元/月！！！");
+                    return;
+                }
                 this.$go(val.menu_url);
                 this.subActive = val.menu_id;
             },

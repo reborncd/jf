@@ -85,28 +85,27 @@
 					<!--表格部分-->
 					<div class="table-list">
 						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
-							<el-table-column prop="nELL" label="需求编号"></el-table-column>
-							<el-table-column prop="dESIRED_START_DATETIME" label="预计上线日期" width="110"></el-table-column>
-							<el-table-column prop="dESIRED_END_DATETIME" label="预期上线时间" width="110"></el-table-column>
-							<el-table-column prop="sYSTEM_NAME" label="系统名称"></el-table-column>
-							<el-table-column prop="gOLIVE_SYSTEM" label="子系统"></el-table-column>
-							<el-table-column prop="bAN" label="版本号"></el-table-column>
-							<el-table-column prop="pRODUCT_FUNCTION" label="产品功能"></el-table-column>
-							<el-table-column prop="cOLIVE_TYPE_NAME" label="上线类型"></el-table-column>
-							<el-table-column prop="sTATE_NAME" label="状态"></el-table-column>
+							<el-table-column prop="nell" label="需求编号"></el-table-column>
+							<el-table-column prop="desired_START_DATETIME" label="预计上线日期" width="110"></el-table-column>
+							<el-table-column prop="desired_END_DATETIME" label="预期上线时间" width="110"></el-table-column>
+							<el-table-column prop="system_NAME" label="系统名称"></el-table-column>
+							<el-table-column prop="golive_SYSTEM" label="子系统"></el-table-column>
+							<el-table-column prop="ban" label="版本号"></el-table-column>
+							<el-table-column prop="product_FUNCTION" label="产品功能"></el-table-column>
+							<el-table-column prop="colive_TYPE_NAME" label="上线类型"></el-table-column>
+							<el-table-column prop="state_NAME" label="状态"></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
-									<el-button v-if="scope.row.sTATE==2 || scope.row.sTATE==9" @click="agreeRow(scope.row,scope,$event)" size="small" type="primary">通过
+									<el-button v-if="scope.row.state==2 || scope.row.state==9 || scope.row.state==12" @click="agreeRow(scope.row,scope,$event)" size="small" type="primary">通过
 									</el-button>
-									<el-button v-if="scope.row.sTATE==2 || scope.row.sTATE==9" @click="unagreeRow(scope.row,scope,$event)" size="small" type="danger">驳回
+									<el-button v-if="scope.row.state==2 || scope.row.state==9 || scope.row.state==12" @click="unagreeRow(scope.row,scope,$event)" size="small" type="danger">驳回
 									</el-button>
-									<el-button v-if="scope.row.sTATE==4" @click="ensureRow(scope.row,scope,$event)" size="middle" type="primary">确定上线
+									<el-button v-if="scope.row.state==4" @click="ensureRow(scope.row,scope,$event)" size="middle" type="primary">确定上线
 									</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
 					</div>
-					<!--表格部分-->
 					<!--控制台部分-->
 					<div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
 						<div class="console-action-wrapper">
@@ -116,90 +115,93 @@
 							<el-tab-pane label="详情页" name="info">
 								<div class="console-tab-content">
 									<el-form label-width="100px" label-position="left">
+										<el-row :gutter="20" v-if="tabs.data_one.goliveProject">
+											<el-col :span="12">
+												<el-form-item v-if="state.id && state.id!=1" label="上线类型">{{tabs.data_one.goliveProject.colive_TYPE_NAME}}</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item v-if="state.id && state.id!=1" label="上线模块">{{tabs.data_one.goliveProject.golive_MODULE}}</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item v-if="state.id && state.id!=1" label="上线内容">{{tabs.data_one.goliveProject.golive_CONTENT}}</el-form-item>
+											</el-col>
+										</el-row>
 										<el-row :gutter="20">
-
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="上线类型">{{tabs.data_one.goliveProject.cOLIVE_TYPE_NAME}}</el-form-item>
+												<el-form-item label="需求编号">{{tabs.data_one.DemandTechnology.technology_NEEL_ID}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="上线模块">{{tabs.data_one.goliveProject.gOLIVE_MODULE}}</el-form-item>
+												<el-form-item label="需求名称">{{tabs.data_one.DemandTechnology.neel_NAME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="上线内容">{{tabs.data_one.goliveProject.gOLIVE_CONTENT}}</el-form-item>
-											</el-col>
-
-											<el-col :span="12">
-												<el-form-item label="需求编号">{{tabs.data_one.DemandTechnology.tECHNOLOGY_NEEL_ID}}</el-form-item>
+												<el-form-item label="申请人">{{tabs.data_one.DemandTechnology.user_NAME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="需求名称">{{tabs.data_one.DemandTechnology.nEEL_NAME}}</el-form-item>
+												<el-form-item label="需求来源">{{tabs.data_one.DemandTechnology.neel_SOURCE}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="申请人">{{tabs.data_one.DemandTechnology.uSER_NAME}}</el-form-item>
+												<el-form-item label="申请日期">{{tabs.data_one.DemandTechnology.start_DATE}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="需求来源">{{tabs.data_one.DemandTechnology.nEEL_SOURCE}}</el-form-item>
+												<el-form-item label="计划投产日期">{{tabs.data_one.DemandTechnology.end_DATE}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="申请日期">{{tabs.data_one.DemandTechnology.sTART_DATE}}</el-form-item>
+												<el-form-item label="优先级">{{tabs.data_one.DemandTechnology.rriority_NAME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="计划投产日期">{{tabs.data_one.DemandTechnology.eND_DATE}}</el-form-item>
-											</el-col>
-											<el-col :span="12">
-												<el-form-item label="优先级">{{tabs.data_one.DemandTechnology.rRIORITY_NAME}}</el-form-item>
-											</el-col>
-											<el-col :span="12">
-												<el-form-item label="重要程度">{{tabs.data_one.DemandTechnology.iMPORTANCE_NAME}}
+												<el-form-item label="重要程度">{{tabs.data_one.DemandTechnology.importance_NAME}}
 												</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.uRGENT}}</span><span>{{tabs.data_one.DemandTechnology.uRGENT_NAME}}</span>
+												<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.urgent}}</span><span>{{tabs.data_one.DemandTechnology.urgent_NAME}}</span>
 												</el-form-item>
 											</el-col>
 											<el-col :span="24">
-												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.nEEL_DESCRIPTION}}
+												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}
 												</el-form-item>
 											</el-col>
 											<el-col :span="24">
-												<el-form-item label="产品功能">{{tabs.data_one.DemandTechnology.pRODUCT_FUNCTION}}
+												<el-form-item label="产品功能">{{tabs.data_one.DemandTechnology.product_FUNCTION}}
 												</el-form-item>
 											</el-col>
+
+										</el-row>
+										<el-row :gutter="20" v-if="tabs.data_one.goliveProject">
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="开发负责人">{{tabs.data_one.goliveProject.oPEN_LEADER}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="开发负责人">{{tabs.data_one.goliveProject.open_LEADER}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="项目负责人">{{tabs.data_one.goliveProject.pROJECT_LEADER}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="项目负责人">{{tabs.data_one.goliveProject.project_LEADER}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="产品负责人">{{tabs.data_one.goliveProject.pRODUCT_LEADER}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="产品负责人">{{tabs.data_one.goliveProject.product_LEADER}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="测试负责人">{{tabs.data_one.goliveProject.tEST_LEADER}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="测试负责人">{{tabs.data_one.goliveProject.test_LEADER}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="预计上线日期">{{tabs.data_one.goliveProject.dESIRED_START_DATETIME}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="预计上线日期">{{tabs.data_one.goliveProject.desired_START_DATETIME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="预计上线时间">{{tabs.data_one.goliveProject.dESIRED_END_DATETIME}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="预计上线时间">{{tabs.data_one.goliveProject.desired_END_DATETIME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="影响时间">{{tabs.data_one.goliveProject.iNFLUENCE_MM}}分钟</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="影响时间">{{tabs.data_one.goliveProject.influence_MM}}分钟</el-form-item>
 											</el-col>
 											<el-col :span="12">
-												<el-form-item v-if="state.id==9" label="是否停交易">{{tabs.data_one.goliveProject.tRADE_NAME}}</el-form-item>
+												<el-form-item v-if="state.id && state.id!=1" label="是否停交易">{{tabs.data_one.goliveProject.trade==0?'是':'否'}}</el-form-item>
 											</el-col>
 										</el-row>
 									</el-form>
 								</div>
 							</el-tab-pane>
 
-							<el-tab-pane label="操作台" name="console">
+							<el-tab-pane label="操作台" name="console" v-if="state.id!=5 && state.id!=6">
 								<div class="console-tab-content">
 									<div class="console-action-wrapper">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
 										<div class="console-action fr" v-if="tabs.consoleActionVisible">
-											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}
+											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item,)">{{item.name}}
                                             </span>
 										</div>
 									</div>
@@ -312,7 +314,7 @@
 
 									</el-form>
 
-									<el-form label-width="60px" label-position="left" v-if="state.id==9">
+									<el-form label-width="60px" label-position="left" v-if="state.id==9 || state.id==10 || state.id==4 || state.id==2 || state.id==3">
 										<el-row :gutter="20">
 											<el-col :span="10" :sm="10">
 												<el-form-item label="状态：">
@@ -324,40 +326,36 @@
 													{{tabs.user_NAME}}
 												</el-form-item>
 											</el-col>
-											<el-col :span="24" :sm="24">
-												<el-form-item label="附件说明：" label-width="100px">
-													{{tabs.user_NAME}}
+											<!--<el-col :span="24" :sm="24">
+												<el-form-item label="上传附件" style="position: relative;" label-width="90px">
+													<el-button type="primary">上传附件</el-button>
+													<input type="file" @change="getFile($event)" placeholder="上传附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
+													<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
+													</p>
 												</el-form-item>
-											</el-col>
+											</el-col>-->
 										</el-row>
 									</el-form>
-
 								</div>
 							</el-tab-pane>
-							<el-tab-pane label="全程跟踪" name="log">
+							<el-tab-pane label="全程跟踪" name="log" v-if="state.id!=5 && state.id!=6">
 								<div class="console-tab-content">
 									<el-form label-width="60px" label-position="left">
 										<el-row :gutter="20">
 											<el-col :span="10" :sm="10">
 												<el-form-item label="状态：">
-													<span style="color: red">{{tabs.state_NAME}}</span>
-												</el-form-item>
-											</el-col>
-											<el-col :span="6" :sm="6">
-												<el-form-item label="发送人：" label-width="100px">
-													{{tabs.user_NAME}}
+													<span style="color: red">{{state.name}}</span>
 												</el-form-item>
 											</el-col>
 											<el-col :span="24" :sm="24">
 												<p v-for="(item,index) in tabs.genzong" class="genzong">
-													{{index+1}}. <span>{{item.record_START | date}}</span>{{item.record_DESC}}
+													{{index+1}}. <span>{{item.date_START}}</span>&nbsp;&nbsp;&nbsp;&nbsp;{{item.record_DESC}}
 												</p>
 											</el-col>
 										</el-row>
 									</el-form>
 								</div>
 							</el-tab-pane>
-
 						</el-tabs>
 					</div>
 					<!--控制台部分-->
@@ -479,7 +477,7 @@
 				screenKey: {
 					"STATE": "",
 					"DATE": "",
-					"START_DATE": "",
+					"START_DATE": null,
 					"END_DATE": ""
 				},
 				optionsUs: [{
@@ -508,13 +506,39 @@
 					user_NAME: "", //负责人
 					genzong: ""
 				},
-				consoleRight: {
-					level: 1 //权限等级    1是质量管理部
+				agreeData: {
+					"COLIVE_ID": '',
+					"GOLIVE_ID": '',
+					"STATE": ''
 				},
 				state: {
 					id: '',
 					name: ''
+				},
+				popup: {
+				priperty: [{
+						'name': '紧急',
+						"value": "101"
+					},
+					{
+						'name': '中等',
+						"value": "102"
+					},
+					{
+						'name': '一般',
+						"value": "103"
+					}
+				],
+				popTxt: {
+					'priperty2': '', //故障等级
+					'relationUser': "", //故障分析人员
+					'description': "", //故障描述
+					'descriptionEx': "", //故障复盘分析
+					'sumEffect': "", //交易量影响
+					'uploadFiles': [], // 上传成功的文件数组
+					'fileList': [], //上传附件
 				}
+			}
 			}
 		},
 		mounted() {
@@ -537,7 +561,6 @@
 						"name": '驳回'
 					})
 				}
-
 			}, //权限控制
 			submitConsole() {
 				let formArr = JSON.stringify(this.onlineForm.onlineContent);
@@ -589,25 +612,29 @@
 			getSelectUs() {
 				let params = new URLSearchParams();
 				this.$axios.post("/golive/stategolive", params).then((res) => {
-					let data = res.data.data;
-					for(let i of data) {
+					let data = res.data;
+					for(let i of data.result) {
 						let arr = {
-							"key": i.sTATE_GOLIVE_NAME,
-							"value": i.iD
+							"key": i.state_GOLIVE_NAME,
+							"value": i.id
 						};
 						this.optionsUs.push(arr);
 					}
 				})
 			},
 			selectStatUs(value) {
+				this.screenKey.STATE = '';
 				this.screenKey.STATE = value;
 				this.loadData();
 			},
 			selectStatOn(value) {
+				this.screenKey.DATE = '';
 				this.screenKey.DATE = value;
 				this.loadData();
 			},
 			pickDate(value) {
+				this.screenKey.START_DATE = '';
+				this.screenKey.END_DATE = '';
 				this.screenKey.START_DATE = value[0];
 				this.screenKey.END_DATE = value[1];
 				this.loadData();
@@ -618,15 +645,15 @@
 				this.tabs.consoleWrapperVisible = false;
 				this.clearAddData();
 				let params = new URLSearchParams();
-				if(this.screenKey) {
-					params.append('STATE', this.screenKey.STATE);
-					params.append('DATE', this.screenKey.DATE);
-					params.append('START_DATE', this.screenKey.START_DATE);
+				if(this.screenKey.START_DATE) {
+					params.append('DESIRED_START_DATETIMES', this.screenKey.START_DATE);
 					params.append('END_DATE', this.screenKey.END_DATE);
 				}
+				params.append('STATE', this.screenKey.STATE);
+				params.append('DATE', this.screenKey.DATE);
 				this.$axios.post("/golive/getgoliveprojectlist", params).then((res) => {
-					let data = res.data.data
-					this.setTableData(data);
+					let data = res.data
+					this.setTableData(data.result);
 				})
 			},
 			setTableData(data) {
@@ -638,8 +665,9 @@
 			agreeRow(val, arg, e) {
 				e.cancelBubble = true;
 				let params = new URLSearchParams();
-				params.append('COLIVE_ID', val.cOLIVE_ID);
-				params.append('GOLIVE_ID', val.gOLIVE_ID);
+				params.append('COLIVE_ID', val.colive_ID);
+				params.append('GOLIVE_ID', val.golive_ID);
+				params.append('STATE', val.state);
 				this.$axios.post("/golive/upgoliveneel", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -650,25 +678,84 @@
 					}
 				})
 			},
-			unagreeRow(val, arg, e) {
-				e.cancelBubble = true;
+			agreeRow2() {
 				let params = new URLSearchParams();
-				params.append('COLIVE_ID', val.cOLIVE_ID);
-				params.append('GOLIVE_ID', val.gOLIVE_ID);
-				this.$axios.post("/golive/upgoliveState", params).then((res) => {
+				params.append('COLIVE_ID', this.agreeData.COLIVE_ID);
+				params.append('GOLIVE_ID', this.agreeData.GOLIVE_ID);
+				params.append('STATE', this.agreeData.STATE);
+				this.$axios.post("/golive/upgoliveneel", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
 						this.$success(data.message);
+						this.tabs.consoleWrapperVisible = false;
+						this.calculateTableHeight(false)
+						this.clearAddData();
 						this.loadData();
 					} else {
 						this.$warn(data.message);
 					}
 				})
 			},
+			unagreeRow(val, arg, e) {
+				e.cancelBubble = true;
+				this.$prompt('确定进行驳回操作？', '请填写驳回理由', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPattern: /[\S]/,
+					inputErrorMessage: '驳回理由不能为空'
+				}).then(({
+					value
+				}) => {
+					let params = new URLSearchParams();
+					params.append('COLIVE_ID', val.colive_ID);
+					params.append('GOLIVE_ID', val.golive_ID);
+					params.append('REMARK', value);
+					this.$axios.post("/golive/upgoliveState", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.$success(data.message);
+							this.loadData();
+						} else {
+							this.$warn(data.message);
+						}
+					})
+				}).catch(() => {
+
+				});
+			},
+			unagreeRow2() {
+				this.$prompt('确定进行驳回操作？', '请填写驳回理由', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPattern: /[\S]/,
+					inputErrorMessage: '驳回理由不能为空'
+				}).then(({
+					value
+				}) => {
+					let params = new URLSearchParams();
+					params.append('COLIVE_ID', this.agreeData.COLIVE_ID);
+					params.append('GOLIVE_ID', this.agreeData.GOLIVE_ID);
+					params.append('REMARK', value);
+					this.$axios.post("/golive/upgoliveState", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.$success(data.message);
+							this.tabs.consoleWrapperVisible = false;
+							this.calculateTableHeight(false)
+							this.clearAddData();
+							this.loadData();
+						} else {
+							this.$warn(data.message);
+						}
+					})
+				}).catch(() => {
+
+				});
+			},
 			ensureRow(val, arg, e) {
 				e.cancelBubble = true;
 				this.onlineSure.addvisible = true;
-				this.onlineSure.addform.sxxqId = val.gOLIVE_ID;
+				this.onlineSure.addform.sxxqId = val.golive_ID;
 				this.systeMv2(val);
 			},
 			//最终通过
@@ -731,39 +818,51 @@
 			handleCurrentChange(val) {
 				//              this.$maskin();
 				this.tabs.activeTableInfo = val;
-				this.state.id = val.sTATE;
-				this.state.name = val.sTATE_NAME;
-				this.consoleAction(val.sTATE)
+				this.state.id = val.state;
+				this.state.name = val.state_NAME;
+				this.consoleAction(val.state)
 				if(!this.tabs.consoleWrapperVisible) {
 					this.tabs.consoleWrapperVisible = true;
 					setTimeout(() => {
 						this.calculate()
 					}, 0);
 				}
-				if(val.nELL) {
+				if(val.nell) {
 					let params = new URLSearchParams();
-					this.mainId = val.nELL;
-					params.append("NEEL_ID", val.nELL);
-					params.append("GOLIVE_ID", val.gOLIVE_ID);
+					this.mainId = val.nell;
+					params.append("NEEL_ID", val.nell);
+					params.append("GOLIVE_ID", val.golive_ID);
 					this.$axios.post("/golive/goliveneel", params).then((res) => {
-						let data = res.data.data;
-						this.tabs.data_one = data;
-						this.$set(this.tabs, "data_one", data);
+						let data = res.data;
+						this.$set(this.tabs, "data_one", data.result);
 						this.$maskoff();
 					})
 				}
 				this.goliveType()
 				this.systemList()
-
+				this.allTrack(val.golive_ID)
+				//添加审批字段
+				this.agreeData.COLIVE_ID = val.colive_ID
+				this.agreeData.GOLIVE_ID = val.golive_ID
+				this.agreeData.STATE = val.state
+			},
+			allTrack(value) {
+				let params = new URLSearchParams()
+				params.append("GOLIVE_ID", value);
+				this.$axios.post("/golive/tracking", params).then((res) => {
+					//设置全程跟踪数据
+					this.$set(this.tabs, "genzong", res.data.result);
+				})
 			},
 			goliveType() {
+				this.onlineTypes = []
 				let params = new URLSearchParams()
 				this.$axios.post("/golive/golivetype", params).then((res) => {
-					let data = res.data.data;
+					let data = res.data.result;
 					for(let i of data) {
 						this.onlineTypes.push({
-							"key": i.cOLIVE_TYPE_NAME,
-							"value": i.cOLIVE_TYPE_ID
+							"key": i.colive_TYPE_NAME,
+							"value": i.colive_TYPE_ID
 						})
 					}
 				})
@@ -771,11 +870,11 @@
 			systemList() {
 				let params = new URLSearchParams()
 				this.$axios.post("/golive/systemlist", params).then((res) => {
-					let data = res.data.data;
+					let data = res.data.result;
 					for(let i of data) {
 						this.aboutSystems.push({
-							"key": i.sYSTEM_NAME,
-							"value": i.sYSTEM_ID
+							"key": i.system_NAME,
+							"value": i.system_ID
 						})
 					}
 				})
@@ -787,11 +886,11 @@
 				this.onlineForm.onlineContent[index].GOLIVE_SYSTEM = ''
 				this.onlineSystems = []
 				this.$axios.post("/golive/systemv", params).then((res) => {
-					let data = res.data.data;
+					let data = res.data.result;
 					for(let i of data) {
 						this.onlineSystems.push({
-							"key": i.sYSTEM,
-							"value": i.sYSTEM
+							"key": i.system,
+							"value": i.system
 						})
 					}
 				})
@@ -799,57 +898,36 @@
 			systeMv2(value) {
 				this.onlineSure.addform.hgxt = "";
 				let params = new URLSearchParams()
-				params.append('NEEL', value.nELL)
-				params.append('SYSTEM_ID', value.sYSTEM_ID)
+				this.onlineSystems = []
+				params.append('NEEL', value.nell)
+				params.append('SYSTEM_ID', value.system_ID)
 				this.$axios.post("/golive/systemv", params).then((res) => {
-					let data = res.data.data;
+					let data = res.data.result;
 					for(let i of data) {
 						this.onlineSystems.push({
-							"key": i.sYSTEM,
-							"value": i.sYSTEM
+							"key": i.system,
+							"value": i.system
 						})
 					}
 				})
 			},
 			//操作台的事件
-			consoleActionEvent(val) {
-				this.tabs.consoleActionVisible = false;
+			consoleActionEvent(val, value) {
 				switch(val.name) {
 					case "提交":
 						this.submitConsole();
 						break;
 					case "驳回":
-						this.rejected();
+						this.unagreeRow2();
 						break;
 					case "通过":
-						this.consoleAgree();
+						this.agreeRow2();
 						break;
 				}
+				this.tabs.consoleActionVisible = false;
 			},
-
-			rejected() {
-				let info = this.tabs.activeTableInfo;
-				if(info.state_ID != 303 && info.state_ID != 305) {
-					this.$warn("当期状态无法进行驳回操作！");
-					return;
-				}
-				this.prompt("确定进行驳回操作？", "请填写驳回理由", (val) => {
-					if(val.value == "") {
-						this.$warn("请填写驳回理由");
-						return;
-					}
-					let params = new URLSearchParams();
-					params.append("BASE_ID", info.base_NEET_ID);
-					params.append("RESON", val.value);
-					params.append("OLD_STATE", info.state_ID);
-					this.$axios.post("/base/baseReject", params).then((res) => {
-						let data = res.data;
-						if(data.code == 200) {
-							this.$success("操作成功！");
-							this.loadData();
-						}
-					})
-				})
+			consoleAgree() {
+				//          	this.ensureRow(scope.row,scope,$event);
 			},
 			calculate() {
 				let height = document.querySelector(".mainr").offsetHeight;
@@ -887,6 +965,33 @@
 			setConsoleVisible() {
 				this.tabs.consoleWrapperVisible = false;
 				this.calculateTableHeight(false)
+			},
+			getFile(e) {
+				//上传附件
+				let config = {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					}
+				};
+				let params = new FormData();
+				params.append("token", localStorage.getItem("token"))
+				params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
+				params.append("file", e.target.files[0]);
+				this.$axios.post("/daliy/upload", params, config).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						if(typeof this.popup.popTxt.uploadFiles == "string") {
+							this.$set(this.popup.popTxt, "uploadFiles", [])
+							this.$set(this.popup.popTxt, "fileList", [])
+						}
+						this.popup.popTxt.uploadFiles.push(data.result.name)
+						this.popup.popTxt.fileList.push(data.result.id)
+					}
+				})
+			},
+			//下载附件
+			downfile(val) {
+				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
 			}
 		}
 	}

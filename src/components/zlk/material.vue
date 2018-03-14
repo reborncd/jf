@@ -5,6 +5,7 @@
     .word {
         text-align: center;
         line-height: 50px;
+        height: 50px;
         font-size: 24px;
         font-weight: bold;
     }
@@ -20,7 +21,7 @@
             <div class="text item">
                 <div class="content">
                     <h2 class="word">{{name}}</h2>
-                    <el-form label-width="100px">
+                    <el-form label-width="100px" label-position="left">
                         <el-form-item label="文档编号">
                             {{code}}
                         </el-form-item>
@@ -43,13 +44,20 @@
                             {{date}}
                         </el-form-item>
                         <el-form-item label="文档简介">
-                            {{dec}}
-                        </el-form-item>
-                        <el-form-item label="文档预览">
-                            <el-button type="primary" size="mini" @click="viewWord">点击预览</el-button>
+                            {{des}}
                         </el-form-item>
                     </el-form>
-                    <canvas id="canvas" style="border: 1px solid #ccc"></canvas>
+                    <div class="table-list">
+                        <el-table :data="fileList" border style="width: 100%">
+                            <el-table-column prop="at_FILENAME" label="文档名"></el-table-column>
+                            <el-table-column prop="at_FILESIZE" :formatter="filesize" label="大小" width="100"></el-table-column>
+                            <el-table-column label="操作" width=100>
+                                <template slot-scope="scope">
+                                    <el-button size="mini" type="primary" @click="download(scope.row)">下载</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
                 </div>
             </div>
         </el-card>
@@ -57,20 +65,19 @@
 </template>
 
 <script>
-    import "../../static/js/pdf.js";
-    import "../../static/js/pdf.worker.js";
     export default {
         data(){
             return {
+                fileList:[],//文档数据数组
                 file: "",
-                code: "1",//编号
-                name: "文档名称",//文档名称
-                version: "1",//文档版本
-                dir: "1",//目录位置
-                system: "1",//关联系统
-                person: "1",//录入人员
-                date: "1",//录入时间
-                dec: "1",//文档简介
+                code: "",//编号
+                name: "",//文档名称
+                version: "",//文档版本
+                dir: "",//目录位置
+                system: "",//关联系统
+                person: "",//录入人员
+                date: "",//录入时间
+                des: "",//文档简介
             }
         },
         filters: {
@@ -97,23 +104,40 @@
                 let card_body = document.querySelector(".box-card .el-card__body");
                 card_body.style.height = height - 36 + "px";
             },
+            filesize(val){
+                let size = parseFloat(val.at_FILESIZE/1000).toFixed(2);
+                return size+"kb"
+            },
             loadData(){
                 this.calculate();
+                let id = this.$route.query.id;//获取当前的ID
+                if(id){
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("DATUM_ID",id);
+                    this.$axios.post("/datum/getDatumById",params).then((res)=>{
+                        let data = res.data;
+                        if(data.code == 200){
+                            let result = data.result;
+                            let date = this.$format(result.date_TIME);
+                            this.fileList =result.datumATDetails;
+                            this.code = result.datum_ID;
+                            this.name = result.datum_NAME;
+                            this.version = result.datum_VERSION;
+                            this.dir = result.directory_LOCATION;
+                            this.system = result.interconnected_SYSTEM;
+                            this.person = result.user_NAME;
+                            this.date =`${date.year}-${date.mouth}-${date.day}  ${date.hour}:${date.min}:${date.second}`;
+                            this.des = result.file_DESCRIPTIOON;
+                            this.$maskoff();
+                        }
+                    })
+                }
             },
-            //预览文档
-            viewWord(){
-//                let params= new FormData();
-//                params.append("id","20180312184843")
-//                params.append("token","7b0cc2cf9a474c9285573bcea2406565")
-//                params.append("type","1")
-//                this.$axios.post("/fault/download",params).then((res)=>{
-//                    let reader = new FileReader()
-//                    reader.readAsBinaryString(res)
-//                    reader.onload = function (e) {
-//                        console.log(e)
-//                    }
-//                });
-
+            //下载
+            download(row){
+                let id = row.at_ID;
+                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${localStorage.getItem("token")}`)
             }
         }
     }
