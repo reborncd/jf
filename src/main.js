@@ -13,8 +13,8 @@ Vue.config.productionTip = false;
 //----------------------------------------------------
 //路由跳转
 //----------------------------------------------------
-Vue.prototype.$go = function (route,params) {
-    this.$router.push({'path': route,"query":params})
+Vue.prototype.$go = function (route, params) {
+    this.$router.push({'path': route, "query": params})
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
@@ -46,34 +46,34 @@ Vue.prototype.alert = function (msg, callback, option) {
         });
     }
 };
-Vue.prototype.confirm = function (msg, success, cancel) {
+Vue.prototype.confirm = function (msg, success, cancel,btn) {
     this.$confirm(msg, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: btn? btn[0]:"确定",
+        cancelButtonText: btn? btn[1]:'取消',
         lockScroll: false,
         type: 'warning'
     }).then(() => {
         success()
     }).catch(() => {
-        cancel?cancel():""
+        cancel ? cancel() : ""
     });
 };
-Vue.prototype.prompt = function (title,msg,success,cancel) {
+Vue.prototype.prompt = function (title, msg, success, cancel) {
     this.$prompt(msg, title, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-    }).then(({ value }) => {
-      success({ value })
+    }).then(({value}) => {
+        success({value})
     }).catch(() => {
         cancel()
     });
 };
 //数组去重
-Vue.prototype.$unique = (arr)=>{
+Vue.prototype.$unique = (arr) => {
     let res = [];
     let json = {};
-    for(let i = 0; i < arr.length; i++){
-        if(!json[arr[i]]){
+    for (let i = 0; i < arr.length; i++) {
+        if (!json[arr[i]]) {
             res.push(arr[i]);
             json[arr[i]] = 1;
         }
@@ -138,7 +138,11 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-	baseURL:"http://irany.free.ngrok.cc",
+    baseURL: "http://172.16.2.250:8080/JiFu_Project",//薛
+    //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
+    //baseURL:"http://172.16.2.124:8082",//欧
+    //baseURL:"http://172.16.2.8:8989/JiFu_Project",//康
+    //baseURL:"http://192.168.1.106:8080",
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
@@ -147,81 +151,64 @@ instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
-    if(localStorage.getItem("token") && config.data.constructor.name == "URLSearchParams"){
+    if (config.method == "post" && localStorage.getItem("token") &&
+        config.data.constructor.name == "URLSearchParams") {
         let token = localStorage.getItem("token");
         // config.data+="&token="+"1234";
-        config.data+=`&token=${token}`;
+        config.data += `&token=${token}`;
     }
     return config;
 }, function (err) {
-    return Promise.reject(err);
+    Vue.prototype.$warn("网络异常，请稍后再试");
+    Vue.prototype.$maskoff();
 });
+
+//下载拦截器
+const downloadUrl = (url) => {
+    let iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    iframe.onload = function () {
+        document.body.removeChild(iframe)
+    };
+    document.body.appendChild(iframe)
+};
 //响应拦截器
 instance.interceptors.response.use(function (response) {
+    //下载拦截
+    if (response.headers && (response.headers['content-type'] === 'application/x-msdownload'
+        || response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        || response.headers['content-type'] === 'application/octet-stream;charset=UTF-8')) {
+        downloadUrl(response.request.responseURL);
+        return
+    }
+
 //     //验证token是否失效
 //     if(response.data.token){
 //         Vue.prototype.$goLogin();
 //         return;
 //     }else
-if(response.data.code !=200){
+    if (response.data.code != 200) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff()
     }
     return response;
-// }, function (error) {
-//     // 对响应错误做点什么
-//     return Promise.reject(error);
+}, function (error) {
+    Vue.prototype.$warn("网络异常，请稍后再试");
+    Vue.prototype.$maskoff();
 });
-//搜索功能
 Vue.prototype.$axios = instance;
-Vue.prototype.$needsStatus =  (status)=>{
-    let result = "";
-    switch (status){
-        case 301:
-            result = "已提交";
-            break;
-        case 302:
-            result = "已撤回";
-            break;
-        case 303:
-            result = "待技术管理部审核";
-            break;
-        case 304:
-            result = "被驳回";
-            break;
-        case 305:
-            result = "待技术经理审核";
-            break;
-        case 306:
-            result = "待开发";
-            break;
-        case 307:
-            result = "开发中";
-            break;
-        case 308:
-            result = "待测试";
-            break;
-        case 309:
-            result = "测试中";
-            break;
-        case 310:
-            result = "待验收";
-            break;
-        case 311:
-            result = "已验收";
-            break;
-        case 312:
-            result = "待上线";
-            break;
-        case 313:
-            result = "已上线";
-            break;
-        case 314:
-            result = "已变更需求";
-            break;
-        case 317:
-            result = "被技术管理部驳回";
-            break;
+
+//--------正则匹配
+Vue.prototype.$reg = () => {
+    return {
+        "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
+        "en": /[a-zA-Z]/,
+        "cn": /[\u4e00-\u9fa5]/,
+        "number": /[0-9]/,
+        "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
+        "en_num": /^[A-Za-z0-9]+$/,
+
     }
 };
 new Vue({
