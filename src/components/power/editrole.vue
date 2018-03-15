@@ -448,23 +448,21 @@
                 }
                 let r = this.$unique(rightArr);
                 let menus = this.$unique(l.concat(r));
-                //
-//                this.$maskin();
-                console.log(menus.length)
                 if(!menus.length){
                     this.$warn("请至少选择一个权限！");
                     return;
                 }
+                this.$maskin();
                 let roleId = this.$route.query.id;
                 let params = new URLSearchParams();
-//                //roleId存在表示编辑否则是新增
-                params.append("menus", menus);
+                //roleId存在表示编辑否则是新增
                 if (roleId) {
                     params.append("role_ID", roleId);
                 } else {
                     params.append("ROLE_NAME", ROLE_NAME);
                     params.append("DEPT_ID", DEPT_ID);
                 }
+                params.append("menus", menus);
                 this.$axios.post(roleId ? "/role/editRole" : "/role/addRole", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {

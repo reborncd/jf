@@ -61,7 +61,7 @@
         <el-card class="box-card">
             <div slot="header" class="clearfix">
                 <p class="card-title por">
-                    <span class="back fl clear" @click="bugVisible = !bugVisible" v-if="bugVisible">
+                    <span class="back fl clear" @click="backPage" v-if="bugVisible">
                         <i class="el-icon-arrow-left"></i>
                         <i class="b">返回</i></span>
                     {{!bugVisible?'提交BUG':'BUG提交单'}}
@@ -71,13 +71,12 @@
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
                         <el-button type="danger" @click="bugVisible = !bugVisible" size="mini">提交BUG</el-button>
-                        <el-select v-model="selectValue" clearable
+                        <el-select v-model="selectValues" @change="statusOpt"  clearable
                                    size="mini">
                             <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :label="item.key"
-                                    :value="item.value">
+                                    v-for="item in selectValue"
+                                   :label="item.value"
+                                    :value="item.id">
                             </el-option>
                         </el-select>
                         <div class="fr">
@@ -91,6 +90,7 @@
                                         align="right"
                                         size="mini"
                                         :picker-options="dateComp"
+                                        @change='timeChange'
                                 >
                                 </el-date-picker>
                             </div>
@@ -107,10 +107,9 @@
                     </div>
                     <div class="table-list">
                         <el-table :data="table.tableData" border style="width: 100%"
-                                  :height="table.tableHeight"
-                                  highlight-current-row
-                                  @row-click="handleCurrentChange">
-                                  <el-table-column prop="type" label="类型"></el-table-column>
+                              :height="table.tableHeight"
+                              highlight-current-row
+                              @row-click="handleCurrentChange">
                             <el-table-column prop="id" label="编号"></el-table-column>
                             <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
                             <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
@@ -147,8 +146,11 @@
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="24" :sm="24">
-                                                <el-form-item label="故障说明">
+                                                <el-form-item label="BUG说明">
                                                      {{tabs.form.description}}
+                                                    <p>
+										               	<a style="margin-right: 20px; color: #999;" v-for="(item,index) in tabs.form.downName" @click="downfile(item.id)" >{{item.name}}</a>
+										            </p>
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
@@ -262,13 +264,13 @@
                         <el-row :gutter="24">
                             <el-col>
                                 <el-form-item label="标题">
-                                    <el-input v-model="popup.title" ></el-input>
+                                    <el-input v-model="popup.popTxt.title" ></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :gutter="24">
                             <el-form-item label="故障等级">
-                                <el-select v-model="popup.priperty2" placeholder="故障等级" clearable>
+                                <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
                                     <el-option
                                     	v-for="item in popup.priperty"
 	                                    :label="item.name"
@@ -279,12 +281,20 @@
                         </el-row>
                         <el-row :gutter="24">
                             <el-form-item label="BUG说明">
-                                <el-input v-model="popup.description" type="textarea"></el-input>
+                                <el-input v-model="popup.popTxt.description" type="textarea"></el-input>
+                                <el-button type="primary">上传附件</el-button>
+                                <input type="file" @change="getFile($event)" placeholder="上传附件"
+				                       style="width:78px;opacity: 0;position: absolute;left: 0;top: 63px;">
+				                <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
+				                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
+				                  	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
+				                </p>
+				                </el-upload>  
                             </el-form-item>
                         </el-row>
                         <el-row :gutter="24">
                             <el-form-item label="提交人">
-                                <el-input v-model="popup.createUser" type="textarea"></el-input>
+                                <el-input v-model="popup.popTxt.createUser" type="textarea"></el-input>
                             </el-form-item>
                         </el-row>
                     </el-form>
@@ -314,11 +324,9 @@
                     sender:'',//发送人
                     reason:'',//成因
                     effectScope:'',//影响范围
-                    systemTxt:'', //涉及系统
-                    subStystemValue:[],//子系统
                     system:'',//涉及系统
                     subSystem:[],//子系统
-                    systemAll:[{"fsty":"","csty":""}]
+                    systemAll:[{"csty":""}]
                   },
               way:{
                 status:'',
@@ -327,40 +335,29 @@
               },
                 keyword: "",
                 options: [
-                    {
-                        "key": "与我相关",
-                        "value": "1"
-                    },
-					{
-                        "key": "全部",
-                        "value": "2"
-                    },
-                    {
-                        "key": "订制中",
-                        "value": "3"
-                    },
-                    {
-                        "key": "制定方案",
-                        "value": "4"
-                    },
-                    {
-                        "key": "方案选择",
-                        "value": "5"
-                    },
-                    {
-                        "key": "追踪信息",
-                        "value": "6"
-                    },
-                    {
-                        "key": "已完成",
-                        "value": "7"
-                    },
-                    {
-                        "key": "已作废",
-                        "value": "8"
-                    }
                 ],
-                selectValue: "与我相关",
+                selectValues:[],
+                selectValue:[
+                 {
+                	'id':1,
+                	"value":'待审核'
+                },{
+                	'id':'2',
+                	"value":'已完成'
+                },
+                {
+                	'id':'3',
+                	"value":'已作废'
+                },
+                {
+                	'id':'4',
+                	"value":'已驳回'
+                },
+                {
+                	'id':'',
+                	'value':'全部'
+                }
+                ],
                 page: {},
                 form: {},
                 error: {
@@ -409,14 +406,13 @@
                     	id:'',
                     	title:'',
                     	createUser:'',
-                    	description:''
+                    	description:'',
+                    	downName:[]
                     },
                     consoleActionVisible: false,
                     consoleWrapperVisible: false,
                 },
-                popup:{
-                	priperty2:'',
-                	title:'',
+                popup:{                	
                 	priperty:[
                     {
                       'name':'紧急',
@@ -431,8 +427,16 @@
                       "value": "103"
                     }
                   ],
-                	description:'',
-                	createUser:''
+                  popTxt:{
+			          'priperty2':'',//故障等级
+			          'relationUser': "",			//故障分析人员
+			          'description': "",				//故障描述
+			          'descriptionEx': "",			//故障复盘分析
+			          'sumEffect': "",				//交易量影响
+			          'uploadFiles':[],              // 上传成功的文件数组
+			          'fileList':[],                //上传附件
+		         }
+                 
                 }
             }
         },
@@ -488,6 +492,37 @@
             	 if (data.code == 200) {
                     let arr = [];
                     for (let i of data.result) {
+                    	 if (i.update_TIME) {
+                            let update = this.$format(i.update_TIME);
+                            i.update_TIME = `${update.year}-${update.mouth}-${update.day}`;
+                        }
+                    	 if (i.create_TIME) {
+                            let create = this.$format(i.create_TIME);
+                            i.create_TIME = `${create.year}-${create.mouth}-${create.day}`;
+                        }
+                    	switch(i.status ){
+		            	 case 1:
+		                 i.status = '待审核'
+		                  break;
+		                  case 2:
+		                 i.status = '已完成'
+		                  break;
+		                  case 3:
+		                 i.status = '已作废'
+		                  break;
+		                  case 4:
+		                 i.status = '已驳回'
+		                  break;
+		            }
+                        if(i.priperty==101){
+                        	i.priperty='紧急'
+                        }
+                        if(i.priperty==102){
+                        	i.priperty='中等'
+                        }
+                        if(i.priperty==103){
+                        	i.priperty='一般'
+                        }
                         	arr.push(i)
                     }
                     this.$set(this.table, "tableData", arr);
@@ -495,6 +530,168 @@
                     this.$maskoff();
                 }
             },
+            //故障bug状态选择
+             statusOpt(val){
+             	this.setConsoleVisible()
+				let params = new URLSearchParams();
+				params.append("status",val);
+				this.$axios.post("/fault/query?type=2", params).then((res) => {
+					 let data = res.data;
+					if (data.code == 200) {
+						this.$warn('操作成功');
+						 let arr = [];
+						for (let i of data.result) {
+                    	 if (i.update_TIME) {
+                            let update = this.$format(i.update_TIME);
+                            i.update_TIME = `${update.year}-${update.mouth}-${update.day}`;
+                        }
+                    	 if (i.create_TIME) {
+                            let create = this.$format(i.create_TIME);
+                            i.create_TIME = `${create.year}-${create.mouth}-${create.day}`;
+                        }
+                    	switch(i.status ){
+		            	 case 1:
+		                 i.status = '待审核'
+		                  break;
+		                  case 2:
+		                 i.status = '已完成'
+		                  break;
+		                  case 3:
+		                 i.status = '已作废'
+		                  break;
+		                  case 4:
+		                 i.status = '已驳回'
+		                  break;
+		            }
+                        if(i.priperty==101){
+                        	i.priperty='紧急'
+                        }
+                        if(i.priperty==102){
+                        	i.priperty='中等'
+                        }
+                        if(i.priperty==103){
+                        	i.priperty='一般'
+                        }
+                        	arr.push(i)
+                    }
+						this.$set(this.table, "tableData", arr);
+					}
+					else{
+						this.$warn(message);
+					}
+				})
+            },
+//          时间搜索
+            timeChange(val){
+            	this.setConsoleVisible()
+				let startTime=val[0]
+				let endTime=val[1]
+				startTime=Date.parse(startTime);
+				endTime=Date.parse(endTime);
+				let params = new URLSearchParams();
+				params.append("startTime",startTime);
+				params.append("endTime",endTime);
+				this.$axios.post("/fault/query?type=2", params).then((res) => {
+					 let data = res.data;
+					if (data.code == 200) {
+						this.$warn('操作成功');
+						let arr = [];
+			          for (let i of data.result) {
+			            if (i.update_TIME) {
+			              let update = this.$format(i.update_TIME);
+			              i.update_TIME = `${update.year}-${update.mouth}-${update.day}`;
+			            }
+			            if (i.create_TIME) {
+			              let create = this.$format(i.create_TIME);
+			              i.create_TIME = `${create.year}-${create.mouth}-${create.day}`;
+			            }
+			            switch(i.status ){
+			            	 case 1:
+			                 i.status = '待审核'
+			                  break;
+			                  case 2:
+			                 i.status = '已完成'
+			                  break;
+			                  case 3:
+			                 i.status = '已作废'
+			                  break;
+			                  case 4:
+			                 i.status = '已驳回'
+			                  break;
+			            }
+			            if (i.priperty == 101) {
+			              i.priperty = '紧急'
+			            }
+			            if (i.priperty == 102) {
+			              i.priperty = '中等'
+			            }
+			            if (i.priperty == 103) {
+			              i.priperty = '一般'
+			            }
+			            arr.push(i)
+			          }
+			          this.$set(this.table, "tableData", arr);
+					}
+					else{
+						this.$warn(message);
+					}
+				})
+            },
+            // 搜索关键字
+           searchKeyword(e){
+           	this.setConsoleVisible()
+                if (e.keyCode == 13) {
+                	this.keyword=this.keyword.replace(/(^\s*)|(\s*$)/g, "");
+                	let params = new URLSearchParams();
+                	params.append("key",this.keyword);
+                    this.$axios.post("/fault/query?type=2", params).then((res) => {
+                    	let data = res.data;
+						if (data.code == 200) {
+							this.$warn('操作成功');
+							let arr = [];
+			          for (let i of data.result) {
+			            if (i.update_TIME) {
+			              let update = this.$format(i.update_TIME);
+			              i.update_TIME = `${update.year}-${update.mouth}-${update.day}`;
+			            }
+			            if (i.create_TIME) {
+			              let create = this.$format(i.create_TIME);
+			              i.create_TIME = `${create.year}-${create.mouth}-${create.day}`;
+			            }
+			            switch(i.status ){
+			            	 case 1:
+			                 i.status = '待审核'
+			                  break;
+			                  case 2:
+			                 i.status = '已完成'
+			                  break;
+			                  case 3:
+			                 i.status = '已作废'
+			                  break;
+			                  case 4:
+			                 i.status = '已驳回'
+			                  break;
+			            }
+			            if (i.priperty == 101) {
+			              i.priperty = '紧急'
+			            }
+			            if (i.priperty == 102) {
+			              i.priperty = '中等'
+			            }
+			            if (i.priperty == 103) {
+			              i.priperty = '一般'
+			            }
+			            arr.push(i)
+			          }
+			          this.$set(this.table, "tableData", arr);
+						}
+						else{
+							this.$warn(message);
+						}
+                    })
+                }
+           },
+            //点击row显示详情
             handleCurrentChange(val){
                 this.tabs.activeTableInfo = val;
                 if (!this.tabs.consoleWrapperVisible) {
@@ -564,32 +761,83 @@
                           	}
                           }
                           this.$set(this.operate, "subSystem", subSystems);
+                          
+                          //显示下载附件
+			              if(data.result.attachment.length>0){
+			              	let down=[]
+			              	for(let i of data.result.attachment){
+			              		if(i.id){
+			              			down.push(i);
+			              		}
+			              		 this.$set(this.tabs.form, "downName", down);
+			              	}
+			              }
                         }
                     })
                 }
                 return false;
             },
+            
+           getFile(e){
+	        //上传附件
+	        let config = {
+	          headers: {
+	            'Content-Type': 'multipart/form-data',
+	          }
+	        };
+	         let params = new FormData();
+	         params.append("token",localStorage.getItem("token"))
+	         params.append("file",e.target.files[0]);	
+	         this.$axios.post("/fault/upload", params,config).then((res)=>{
+	         	let data =res.data;
+	         	if(data.code == 200){
+	         		if(typeof this.popup.popTxt.uploadFiles =="string"){
+	         		this.$set(this.popup.popTxt,"uploadFiles",[])
+	         		this.$set(this.popup.popTxt,"fileList",[])
+	         		}
+	         		this.popup.popTxt.uploadFiles.push(data.result.name)
+	         		this.popup.popTxt.fileList.push(data.result.id)
+	         	}
+	         })
+	      },
+	      //下载附件
+	      downfile(val){      	
+	      	let token=localStorage.getItem("token")
+	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
+	      },
+// 			提交bug表单
             subForm(){
-//					提交bug表单
-					if(!this.popup.title){
+					if(!this.popup.popTxt.title){
 						this.$warn('请填写标题');
 						return;
 					}
-					if(!this.popup.description){
+					if(!this.popup.popTxt.priperty2){
+						this.$warn('请选择故障等级');
+						return;
+					}
+					if(!this.popup.popTxt.description){
 						this.$warn('请填写BUG说明');
 						return;
 					}
-					if(!this.popup.createUser){
+					if(!this.popup.popTxt.createUser){
 						this.$warn("请填写提交人");
 						return;
 					}
-		            let params = new URLSearchParams();
-		          params.append("description", this.popup.description);//BUG说明
-		          params.append("title",this.popup.title);//标题
-		          params.append('createUser',this.popup.createUser);//提交人
-		          params.append("type",2);//类型
-		          params.append("priperty",this.popup.priperty2);	//故障等级
-	              this.$axios.post("/fault/submit", params).then((res) => {
+					//上传附件
+	            	let config = {
+	            		headers: {
+					        'Content-Type': 'multipart/form-data',
+					    }
+	            	}
+	        	let params = new FormData();
+	        	params.append("token",localStorage.getItem("token"))
+		        params.append("description", this.popup.popTxt.description);//BUG说明
+		        params.append("title",this.popup.popTxt.title);//标题
+		        params.append('createUser',this.popup.popTxt.createUser);//提交人
+		        params.append("type",2);//类型
+		        params.append("priperty",this.popup.popTxt.priperty2);	//故障等级
+		        params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
+	            this.$axios.post("/fault/submit", params).then((res) => {
 	                let data = res.data;
 	                if (data.code == 200) {
 	                  this.$success("操作成功！");
@@ -606,6 +854,12 @@
             handleClick(tab, event){
             	
             },
+            //清除新增新增的表单
+		    clearAddData(){
+		        for (let i in this.popup.popTxt) {
+		            this.popup.popTxt[i] = "";
+		        }
+		    },
 			//添加系统
             addsubStystem(index,e){
             	let type = e.target.className
@@ -626,38 +880,35 @@
             //驳回 确认操作
             consoleActionEvent(val, f){
             	if(val=='确认'){
-            		
-          		if(!this.operate.reason){
-          			this.$warn("请填写成因")
-          			return
-          		}
-          		if(!this.operate.effectScope){
-          			this.$warn("请填写影响范围")
-          			return
-          		}
-                let nameArr=[]
-                let idArr=[]
-                for(let i of this.operate.systemAll){
-                  let idTxt=i.csty.split(",")[0];//子系统id                  
-                  if(idArr.indexOf(idTxt)==-1){
-                  	idArr.push(i.csty.split(",")[0])
-                    nameArr.push(i.csty.split(",")[1])                         
-                  }
-                  else{
-                    this.$warn('请选择不同的子系统')
-                    return
-                  }
-//                nameArr=nameArr.join(',')
-//                idArr=idArr.join(',')
-                }
-                if(idArr[0]==''){
-                  this.$warn('请选择子系统')
-                  return
-                }
-                if(!this.operate.solution){
-                  this.$warn("请填写解决方案")
-                  return
-                }
+	          		if(!this.operate.reason){
+	          			this.$warn("请填写成因")
+	          			return
+	          		}
+	          		if(!this.operate.effectScope){
+	          			this.$warn("请填写影响范围")
+	          			return
+	          		}
+	                let nameArr=[]
+	                let idArr=[]
+	                for(let i of this.operate.systemAll){
+	                  let idTxt=i.csty.split(",")[0];//子系统id                  
+	                  if(idArr.indexOf(idTxt)==-1){
+	                  	idArr.push(i.csty.split(",")[0])
+	                    nameArr.push(i.csty.split(",")[1])                         
+	                  }
+	                  else{
+	                    this.$warn('请选择不同的子系统')
+	                    return
+	                  }
+	                }
+	                if(idArr[0]==''){
+	                  this.$warn('请选择子系统')
+	                  return
+	                }
+	                if(!this.operate.solution){
+	                  this.$warn("请填写解决方案")
+	                  return
+	                }
             		let params = new URLSearchParams();
             		params.append("id", this.tabs.form.id);	//id
 	                params.append("reason", this.operate.reason);	//成因
@@ -692,9 +943,13 @@
             			}
             		})
             	}
-            	
                 this.tabs.consoleActionVisible = false   
            },  
+           backPage(val){
+             	this.loadData();       
+             	this.clearAddData();
+            	this.bugVisible=false
+            }
         }
     }
 </script>

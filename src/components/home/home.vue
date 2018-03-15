@@ -7,7 +7,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.0);
-        z-index: 100;
+        z-index: 9999;
     }
 
     #loading {
@@ -24,6 +24,7 @@
         font-size: 40px;
         margin: auto;
         color: #ff6700;
+        z-index: 10000;
     }
 
     .header {
@@ -278,7 +279,7 @@
                 this.$axios.post("/user/main", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        //添加权限按钮
+                        //添加权限按钮----------------
                         let action = [];
                         for(let i of data.result.menus){
                             if(i.childMenus && i.childMenus.length){
@@ -305,47 +306,30 @@
                         this.userName = data.result.user.user_NAME;
                         this.mainMenu = data.result.menus;
                         let nowPath = this.$router.currentRoute.path;//当前的路径
+                        //------------------------设置左边子目录和active
                         for (let i of data.result.menus) {//根据当前路径判断标题的active
-                            if(i.menu_url &&  i.menu_url == nowPath){
-                                this.subMenu = i.childMenus;
+                            if(i.menu_url && i.menu_url == nowPath ) {
+                                //判断当前主菜单下面是页面还是操作，是操作则不展示
+                                if(i.childMenus && i.childMenus.length
+                                    && i.childMenus[0].menu_action != 0) {
+                                    this.subMenu = i.childMenus;
+                                }
                                 this.subActive = "";//清空左侧active
                                 this.menuActive = i.menu_id;//设置当前的主菜单
                                 this.activeTitle = i.menu_name;//设置左侧抬头标题
-                            }else{
-                                if(i.childMenus){
-                                    for(let j of i.childMenus){
-                                        if(j.menu_url && j.menu_url == nowPath){
-                                            this.subMenu = i.childMenus;
-                                            this.subActive = j.menu_id;//设置左侧active为当前
-                                            this.menuActive = j.menu_fid;//设置当前的主菜单
-                                            this.activeTitle = i.menu_name;//设置左侧抬头标题
-                                        }
+                                break;
+                            }
+                            if(!i.menu_url  && i.childMenus){
+                                for(let j of i.childMenus){
+                                    if(j.menu_action == 1 && j.menu_url == nowPath){
+                                        this.subMenu = i.childMenus;
+                                        this.menuActive = i.menu_id;//设置当前的主菜单
+                                        this.subActive = j.menu_id;//清空左侧active
+                                        this.activeTitle = i.menu_name;//设置左侧抬头标题
+                                        break;
                                     }
                                 }
                             }
-//                            if (i.menu_url) {//大菜单有相应页面且和当前路径相等
-//                                if (i.menu_url == nowPath) {
-//                                    this.subActive = "";//清空左侧active
-//                                    this.menuActive = i.menu_id;//设置当前的主菜单
-//                                } else {
-//                                    for (let j of i.childMenus) {
-//                                        if (j.menu_url == nowPath) {
-//                                            this.subActive = j.menu_id;//设置左侧active
-//                                        }
-//                                    }
-//                                }
-//                                this.menuActive = i.menu_id;//设置大标题的active;
-//                                this.activeTitle = i.menu_name;//设置左侧的名称;
-//                            } else if (!i.menu_url && i.childMenus) {//大菜单没有相应页面调用的是子菜单的页面
-//                                for (let j of i.childMenus) {
-//                                    if (j.menu_url == nowPath) {
-//                                        this.subMenu = i.childMenus;
-//                                        this.menuActive = i.menu_id;//设置大标题的active;
-//                                        this.activeTitle = i.menu_name;//设置左侧的名称;
-//                                        this.subActive = j.menu_id;//设置左侧active
-//                                    }
-//                                }
-//                            }
                         }
                     }
                 })
@@ -358,6 +342,10 @@
             },
             //顶部菜单点击事件
             changeMainMenu(val){
+                if(val.menu_id == 4 || val.menu_id == 5){
+                    this.$success("您已订阅成功，每月资费 200元/月！！！");
+                    return;
+                }
                 this.subMenu = [];
                 this.menuActive = val.menu_id;
                 this.activeTitle = val.menu_name;
@@ -372,6 +360,10 @@
             },
             //左侧菜单点击事件
             subMenuAction(val){
+                if(val.menu_url == "/home/ywxq"){
+                    this.$success("您已订阅成功，每月资费 100元/月！！！");
+                    return;
+                }
                 this.$go(val.menu_url);
                 this.subActive = val.menu_id;
             },

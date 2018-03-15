@@ -73,9 +73,7 @@
                             <el-table-column align="center" label="操作">
                                 <template slot-scope="scope">
                                     <router-link :to="{path:'editrole',query:{id: scope.row.role_ID}}">
-                                        <el-button @click="editRow(scope.row,scope)" size="small">
-                                            编辑
-                                        </el-button>
+                                        <el-button @click="editRow(scope.row,scope)" size="small" type="primary">编辑</el-button>
                                     </router-link>
                                     <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除
                                     </el-button>

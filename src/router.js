@@ -3,7 +3,7 @@ import Router from "vue-router";
 
 Vue.use(Router);
 let option = {
-    mode: 'history',
+    //mode: 'history',
     routes: [
         {
             path: '/',
@@ -39,7 +39,7 @@ let option = {
                     component: resolve => require(['./components/home/homeIndex.vue'], resolve)
                 },{
                     path: 'workreport',
-                    component: resolve => require(['./components/needs/workreport.vue'], resolve)
+                    component: resolve => require(['./components/gzhb/workreport.vue'], resolve)
                 },{
                     path: 'addrole',
                     component: resolve => require(['./components/power/editrole.vue'], resolve),
@@ -79,7 +79,7 @@ let option = {
                 },{
                     path: 'rcrw',
                     name:"日常任务",
-                    component: resolve => require(['./components/needs/jcjs/jcjs.vue'], resolve)
+                    component: resolve => require(['./components/needs/rcrw/rcrw.vue'], resolve)
                 },{
                     path: 'errorlist',
                     name:"故障列表",
@@ -96,9 +96,16 @@ let option = {
                     path: "flow",
                     component: resolve => require(['./components/flow/flow.vue'], resolve)
                 },{
+                    path: "version",
+                    name:"版本库",
+                    component: resolve => require(['./components/version/version.vue'], resolve)
+                },{
                     path: "zlk",
                     name:"资料库",
                     component: resolve => require(['./components/zlk/zlk.vue'], resolve)
+                },{
+                    path: "material",
+                    component: resolve => require(['./components/zlk/material.vue'], resolve)
                 }
             ]
         }, {
