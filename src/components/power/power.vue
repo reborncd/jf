@@ -44,9 +44,9 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: center;margin-top: 20px;" @click="a">
-                <el-button>返回</el-button>
-            </div>
+            <!--<div style="text-align: center;margin-top: 20px;" @click="a">-->
+                <!--<el-button>返回</el-button>-->
+            <!--</div>-->
         </el-card>
     </div>
 </template>
