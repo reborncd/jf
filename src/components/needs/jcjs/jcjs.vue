@@ -803,7 +803,7 @@
                     <!--原需求编号-->
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求编号">
-                            <el-input v-model="addneeds.addform.code" disabled></el-input>
+                            <el-input :disabled="addneeds.notAllowChooseType" v-model="addneeds.addform.code" disabled></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
@@ -813,7 +813,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求类型">
-                            <el-select v-model="addneeds.addform.needstype" clearable placeholder="请选择需求类型"
+                            <el-select :disabled="addneeds.notAllowChooseType" v-model="addneeds.addform.needstype" clearable placeholder="请选择需求类型"
                                        style="width: 100%">
                                 <el-option v-for="item in addneeds.addform.needstypeArr" :label="item.NEEL_TYPE_NAME"
                                            :value="item.NEEL_TYPE_NAME"></el-option>
@@ -1382,6 +1382,7 @@
             return {
                 //新增需求
                 addneeds: {
+                    notAllowChooseType: false,//是否能修改需求类型
                     addif:false,//新增按钮的判断
                     addvisible: false ,
                     addType: '',//判断性质呢过类型，add 为重新新增，change 为新建变更 changeinset 为需求内变更,edit表示被驳回后编辑
@@ -1724,7 +1725,7 @@
             },
             //控制台选项卡点击时间
             tabClick(val){
-            this.calculateTabsHeight();
+                this.calculateTabsHeight();
             },
             //加载请求
             loadData(){
@@ -1947,6 +1948,7 @@
             },
             //清除新增新增的表单
             clearAddData(){
+                this.addneeds.notAllowChooseType = false;
                 for (let i in this.addneeds.addform) {
                     this.addneeds.addform[i] = "";
                 }
@@ -2084,24 +2086,22 @@
                         this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
 
                         //-----------------------------判断开发和测试控制台的加载--------------
-                        if( data.result.codeInfos ||  data.result.testInfos){
-                            if(data.result.codeInfos){
-                                this.tabs.codetask = true;
-                                //是否有开发任务
-                                data.result.codeInfos.length > 0 ?
-                                    this.$set(this.split, "codetask", data.result.codeInfos) : this.$set(this.split, "codetask", []);
-                            }
-                            if(data.result.testInfos){
-                                this.tabs.testtask = true;
-                                //是否有测试任务
-                                this.testTask.testTaskActiveInfo = "";
-                                if (data.result.testInfos.length > 0) {
-                                    this.$set(this.testTask, "testSplitData", data.result.testInfos);
-                                    this.testTask.hasTask = true;
-                                } else {
-                                    this.$set(this.testTask, "testSplitData", []);
-                                    this.testTask.hasTask = false;
-                                }
+                        if(data.result.codeInfos){
+                            this.tabs.codetask = true;
+                            //是否有开发任务
+                            data.result.codeInfos.length > 0 ?
+                                this.$set(this.split, "codetask", data.result.codeInfos) : this.$set(this.split, "codetask", []);
+                        }
+                        if(data.result.testInfos){
+                            this.tabs.testtask = true;
+                            //是否有测试任务
+                            this.testTask.testTaskActiveInfo = "";
+                            if (data.result.testInfos.length > 0) {
+                                this.$set(this.testTask, "testSplitData", data.result.testInfos);
+                                this.testTask.hasTask = true;
+                            } else {
+                                this.$set(this.testTask, "testSplitData", []);
+                                this.testTask.hasTask = false;
                             }
                         }
 
@@ -2113,11 +2113,16 @@
                         //选择过则展示
                         data.result.TYPE_NAME ? this.testTask.typevalue = data.result.TYPE_NAME : data.result.TYPE_NAME = "";
 
-                        //----------------判断是否上传了用例模板
-                        this.$set(this.testTask,"uploadFile",data.result.testFiles);
+                        if(data.result.testFiles){
+                            this.$set(this.testTask,"uploadFile",data.result.testFiles);
+                        }
 
                         //----------------判断是否上传了开发手册
-                        this.$set(this.codeupload,"uploadFile",data.result.codeFiles);
+                        if(data.result.codeFiles) {
+                            this.$set(this.codeupload,"uploadFile",data.result.codeFiles);
+                        }
+
+
                         //---------------------------设置全程跟踪数据
                         this.tabs.state_NAME = base.state_NAME;
                         this.tabs.user_NAME = base.apply_NAME;
@@ -2138,22 +2143,22 @@
                         }
 
                         //-----------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
-                        if(data.result.systemDepts){
+                        if (data.result.systemDepts && data.result.systemDepts.length > 0) {
                             this.tabs.allSplittask = true;
-                            if(data.result.systemDepts.length > 0){
-                                console.log(data.result.systemDepts)
-                                //计算合计用时
-                                let num = 0;
-                                for(let i of data.result.systemDepts){
-                                    if(i.allTime){
-                                        num += parseInt(i.allTime);
-                                    }
+                            console.log(data.result.systemDepts)
+                            //计算合计用时
+                            let num = 0;
+                            for (let i of data.result.systemDepts) {
+                                if (i.allTime) {
+                                    num += parseInt(i.allTime);
                                 }
-                                this.split.allUseTime = num +"小时"
-                                this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts)
-                            }else{
-                                this.$set(this.split, "hasSplitTaskDataByGroup", []);
                             }
+                            this.split.allUseTime = num + "小时"
+                            this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts)
+
+                        }
+                        else {
+                            this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         }
 
                         //------------------判断是否有驳回理由
@@ -2300,10 +2305,12 @@
                     if(data.code == 200){
                         let info = data.result.base;
                         //加载数据
+                        this.addneeds.notAllowChooseType = true;
                         this.addneeds.addform.code = info.base_NEET_ID;//需求编号
                         this.addneeds.addform.name = info.neel_NAME;//需求名称
                         this.addneeds.addform.needstypeArr = data.baseTypeName;//需求类型
                         this.addneeds.addform.needstype = info.type;//需求类型
+                        this.addneeds.addform.resulttypeArr = info.result;//成果类型
                         this.addneeds.addform.resulttype = info.result;//成果类型
                         this.addneeds.addform.affectArr =  data.result.influece;//需求影响面
                         this.addneeds.addform.affect = info.influece;//需求影响面
