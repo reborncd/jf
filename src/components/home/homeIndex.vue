@@ -78,10 +78,7 @@
         cursor: pointer;
     }
 
-    .box-card ul li:hover .content {
-        text-decoration: underline;
-        color: #da534f;
-    }
+
 
     .box-card ul .dian {
         position: absolute;
@@ -98,13 +95,18 @@
         font-size: 12px;
     }
 
+    /*内容部分*/
+    .box-card ul li:hover .content {
+        text-decoration: underline;
+        color: #ff4f1f;
+    }
     .box-card ul .content {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         height: 40px;
         overflow: hidden;
-        color: #929292;
+        color: #ff4f1f;
         margin-top: 3px;
     }
 </style>
@@ -117,22 +119,6 @@
                 <div class="grid-content bg-purple box-wrap scroll-wrap mr por">
                     <i class="iconfont icon-laba"></i>
                     <ul class="scrollContent">
-                        <li @mouseover="scrollMouseover" @mouseleave="setInterval">
-                            <h5 class="title">标题</h5>
-                            <p>当前项目什么什么的</p>
-                        </li>
-                        <li @mouseover="scrollMouseover" @mouseleave="setInterval">
-                            <h5 class="title">标题</h5>
-                            <p>当前项目什么什么的</p>
-                        </li>
-                        <li @mouseover="scrollMouseover" @mouseleave="setInterval">
-                            <h5 class="title">标题</h5>
-                            <p>当前项目什么什么的</p>
-                        </li>
-                        <li @mouseover="scrollMouseover" @mouseleave="setInterval">
-                            <h5 class="title">标题</h5>
-                            <p>当前项目什么什么的</p>
-                        </li>
                         <li @mouseover="scrollMouseover" @mouseleave="setInterval">
                             <h5 class="title">标题</h5>
                             <p>当前项目什么什么的</p>
@@ -150,7 +136,7 @@
                             <ul class="text item">
                                 <li v-for="(item, index) in todo" @click="goPage(item)">
                                     <span class="dian"></span>
-                                    <h4 class="content-title">{{todoTitle[item.neel_TYPE]}}
+                                    <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
                                         <span class="date fr">{{item.work_TIME | date}}</span>
                                     </h4>
                                     <p class="content">{{item.main_DESC}}</p>
@@ -167,47 +153,12 @@
                                 <span class="card-title">经办事项</span>
                             </div>
                             <ul class="text item">
-                                <li>
+                                <li v-for="(item, index) in hasdo" @click="goPage(item)">
                                     <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
+                                    <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
+                                        <span class="date fr">{{item.work_TIME | date}}</span>
                                     </h4>
-                                    <p class="content">内容</p>
-                                </li>
-                                <li>
-                                    <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
-                                    </h4>
-                                    <p class="content">内容</p>
-                                </li>
-                                <li>
-                                    <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
-                                    </h4>
-                                    <p class="content">内容</p>
-                                </li>
-                                <li>
-                                    <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
-                                    </h4>
-                                    <p class="content">内容</p>
-                                </li>
-                                <li>
-                                    <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
-                                    </h4>
-                                    <p class="content">内容</p>
-                                </li>
-                                <li>
-                                    <span class="dian"></span>
-                                    <h4 class="content-title">标题
-                                        <span class="date fr">2017-01-01</span>
-                                    </h4>
-                                    <p class="content">内容</p>
+                                    <p class="content">{{item.main_DESC}}</p>
                                 </li>
                             </ul>
                         </el-card>
@@ -280,7 +231,14 @@
                 topHeight: "",
                 bottomHeight: "",
                 todo:[],//代办事项
-                todoTitle: ["业务需求","技术需求","基础建设","日常任务","问题管理"],//代办事项的标题数组
+                srcRoute: {
+                    "1":"业务需求",
+                    "2":"技术需求",
+                    "3":"基础建设",
+                    "4":"日常任务",
+                    "5":"问题管理"
+                },//代办事项的标题数组
+                hasdo:[],//经办事项
             }
         },
         components: {
@@ -418,36 +376,42 @@
             },
             //加载数据
             loadData(){
+                this.$maskin();
                 let params = new URLSearchParams();
                 this.$axios.post("/main/queryMatter",params).then((res)=>{
                     let data =res.data;
                     if(data.code == 200){
                         //main代办事项
                         this.$set(this,"todo",data.result.main);
+                        //havaMain经办事项
+                        this.$set(this,"hasdo",data.result.havaMain);
+                        this.$maskoff();
                     }
                 })
             },
             //点击代办事项跳转页面
             goPage(val){
-                let url = ""
+                let url = "";
                 console.log(val)
                 switch(val.neel_TYPE){
-                    case 1://技术需求
-                        url = "";
-                    break;
+                    case 1://业务需求
+                        url = "业务需求";
+                        break;
                     case 2://技术需求
-                        url = "";
+                        url = "技术需求";
                         break;
-                    case 3://技术需求
-                        url = "";
+                    case 3://基础建设
+                        url = "基础建设";
                         break;
-                    case 4://技术需求
-                        url = "";
+                    case 4://日常任务
+                        url = "日常任务";
                         break;
-                    case 5://技术需求
-                        url = "";
+                    case 5://问题管理
+                        url = "/home/ywxq";
                         break;
                 }
+                //跳转页面
+                this.$go("","",{"neelId":val.nell_ID},url);
             },
             clearInt(){
 //                clearInterval(this.interval)

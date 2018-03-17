@@ -23,7 +23,7 @@ table.el-table__header th {
     border-right: 0 !important;
 }
 
-.action-wrap button {
+table .action-wrap button {
     padding: 5px 12px;
     margin: 0;
 }

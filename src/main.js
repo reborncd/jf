@@ -13,8 +13,8 @@ Vue.config.productionTip = false;
 //----------------------------------------------------
 //路由跳转
 //----------------------------------------------------
-Vue.prototype.$go = function (route, params) {
-    this.$router.push({'path': route, "query": params})
+Vue.prototype.$go = function (route, query, params,name) {
+    this.$router.push({"name":name,'path': route, "query": query, "params": params});
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
@@ -46,10 +46,10 @@ Vue.prototype.alert = function (msg, callback, option) {
         });
     }
 };
-Vue.prototype.confirm = function (msg, success, cancel,btn) {
+Vue.prototype.confirm = function (msg, success, cancel, btn) {
     this.$confirm(msg, '提示', {
-        confirmButtonText: btn? btn[0]:"确定",
-        cancelButtonText: btn? btn[1]:'取消',
+        confirmButtonText: btn ? btn[0] : "确定",
+        cancelButtonText: btn ? btn[1] : '取消',
         lockScroll: false,
         type: 'warning'
     }).then(() => {
@@ -127,23 +127,24 @@ Vue.prototype.$format = (time) => {
     let second = date.getSeconds();
     return {
         "year": year,
-        "mouth": mouth,
-        "day": day.length == 1 ? "0" + day : day,
-        "hour": hour.length == 1 ? "0" + day : day,
-        "min": min.length == 1 ? "0" + day : day,
-        "second": second.length == 1 ? "0" + day : day,
+        "mouth": mouth < 10 ? "0" + mouth : mouth,
+        "day": day < 10 ? "0" + day : day,
+        "hour": hour < 10 ? "0" + day : day,
+        "min": min < 10 ? "0" + day : day,
+        "second": second < 10 ? "0" + day : day,
     }
 };
 //---------------------------------------------------
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    //baseURL: "http://172.16.2.250:8080/JiFu_Project",//薛
+    baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
     //baseURL:"http://172.16.2.124:8082",//欧
-    //baseURL:"http://172.16.2.8:8989/JiFu_Project",//康
-    baseURL:"http://192.168.1.106:8080",
+    //baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+    //baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
+    //baseURL:"http://127.0.0.1:8082",
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
@@ -184,14 +185,17 @@ instance.interceptors.response.use(function (response) {
         return
     }
 
-//     //验证token是否失效
-//     if(response.data.token){
-//         Vue.prototype.$goLogin();
-//         return;
-//     }else
-    if (response.data.code != 200) {
+    //验证token是否失效
+    if (response.data.token) {
+        Vue.prototype.$warn("登录失效，请重新登陆");
+        Vue.prototype.$goLogin();
+    }
+    if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff()
+    }
+    if (response.data.code == 210) {
+        Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
     }
     return response;
 }, function (error) {

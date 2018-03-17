@@ -170,12 +170,32 @@
                                             <el-col :span="24">
                                                 <el-form-item label="需求背景">{{tabs.tabsData.background}}</el-form-item>
                                             </el-col>
-                                            <el-col :span="24">
-                                                <el-form-item label="产品改造点">{{tabs.tabsData.product_FUNCTION}}</el-form-item>
+
+                                            <!---------------------------产品改造点和产品描述-->
+                                            <el-col :span="24" v-if="tabs.tabsData.changepoint" style="color: #ffa005">
+                                                <el-form-item label="原产品改造点">{{tabs.tabsData.changepoint}}</el-form-item>
                                             </el-col>
-                                            <el-col :span="24">
-                                                <el-form-item label="需求描述">{{tabs.tabsData.neel_DESCRIPTION}}</el-form-item>
+                                            <el-col :span="24" v-if="tabs.tabsData.needsname" style="color: #ffa005">
+                                                <el-form-item label="原需求描述">{{tabs.tabsData.needsname}}</el-form-item>
                                             </el-col>
+
+                                            <!---------------------------原产品改造点和产品描述-->
+                                            <el-col :span="24" v-if="tabs.tabsData.oldchangepoint" style="color: #ffa005">
+                                                <el-form-item label="原产品改造点">{{tabs.tabsData.oldchangepoint}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.tabsData.oldneedsname" style="color: #ffa005">
+                                                <el-form-item label="原需求描述">{{tabs.tabsData.oldneedsname}}</el-form-item>
+                                            </el-col>
+
+                                            <!---------------------------新产品改造点和产品描述-->
+                                            <el-col :span="24" v-if="tabs.tabsData.newchangepoint" style="color: #ffa005">
+                                                <el-form-item label="新产品改造点">{{tabs.tabsData.newchangepoint}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.tabsData.newneedsname" style="color: #ffa005">
+                                                <el-form-item label="新产品描述">{{tabs.tabsData.newneedsname}}</el-form-item>
+                                            </el-col>
+
+
 
                                             <!----------------------------------需判断部分------------------------>
                                             <!--当前用例模板-->
@@ -273,8 +293,8 @@
                                             <el-table :data="split.tableData" border style="width: 100%">
                                                 <el-table-column prop="USER_NAME" label="人员"></el-table-column>
                                                 <el-table-column prop="SYSTEM_NAME" label="系统名"></el-table-column>
-                                                <el-table-column prop="BASE_INFO_ID" label="任务编码"></el-table-column>
-                                                <el-table-column prop="end_data_format" label="完成日期"></el-table-column>
+                                                <el-table-column prop="TASK_ID" label="任务编码" width="190"></el-table-column>
+                                                <el-table-column prop="end_data_format" label="完成日期" width="120"></el-table-column>
                                                 <el-table-column prop="RESPONSIBLE_MODULE"
                                                                  label="负责模块"></el-table-column>
                                                 <el-table-column prop="FACILITY_NAME" label="难易度"
@@ -312,14 +332,17 @@
                                                         </div>
                                                     </template>
                                                 </el-table-column>
-                                                <el-table-column prop="user_NAME" label="人员" width="100"></el-table-column>
+                                                <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
                                                 <el-table-column prop="system_NAME" label="系统名"></el-table-column>
                                                 <!--<el-table-column prop="task_ID" label="任务编码"-->
                                                                  <!--width="190"></el-table-column>-->
-                                                <el-table-column prop="end_DATE" :formatter="splitDataFormatter" wdith="120" label="完成日期"></el-table-column>
+                                                <el-table-column prop="end_DATE" :formatter="splitDataFormatter" width="120" label="完成日期"></el-table-column>
                                                 <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
-                                                <el-table-column prop="facility_NAME" label="难易度" width="80"></el-table-column>
-                                                <el-table-column prop="expect_TIME" label="预计用时（小时）" width="100"></el-table-column>
+                                                <el-table-column prop="facility_NAME" label="难易度" width="70"></el-table-column>
+                                                <el-table-column prop="expect_TIME" label="预计用时（小时）" width="80"></el-table-column>
+                                                <el-table-column prop="actual_TIME" label="实际用时（小时）" width="80"></el-table-column>
+                                                <el-table-column prop="signremark" label="挂起原因"></el-table-column>
+                                                <el-table-column prop="personnel_REMARK" label="转接原因"></el-table-column>
                                                 <el-table-column label="状态" width="80">
                                                     <template slot-scope="scope">
                                                         <div style="text-align: center">
@@ -341,10 +364,12 @@
                                                             <el-button type="primary" size="mini"
                                                                        v-if="scope.row.sign == 1"
                                                                        @click="hangAction(scope.row,scope.$index)">挂起</el-button>
-                                                            <el-button type="primary" size="mini" @click="transferAction(scope.row,scope.$index)">转接</el-button>
                                                             <el-button type="primary" size="mini"
-                                                                       v-if="scope.row.sign == 0"
-                                                                       @click="hangAction(scope.row,scope.$index)">恢复</el-button>
+                                                                       v-if="scope.row.sign == 1 && scope.row.system_NAME"
+                                                                       @click="transferAction(scope.row,scope.$index)">转接</el-button>
+                                                            <el-button type="primary" size="mini"
+                                                                       v-if="scope.row.sign == 0 "
+                                                                       @click = restore(scope.row)>恢复</el-button>
                                                         </div>
                                                     </template>
                                                 </el-table-column>
@@ -597,7 +622,7 @@
                                     </div>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="拆分任务详情" name="split" v-if="tabs.allSplittask">
+                            <el-tab-pane label="拆分项目详情" name="split" v-if="tabs.allSplittask">
                                 <div class="console-tab-content">
                                     <!--判断当前是否被拆分过任务-->
                                     <div class="table-list" v-if="split.hasSplitTaskDataByGroup.length>0">
@@ -1001,10 +1026,29 @@
                 </div>
             </el-dialog>
         </el-dialog>
-        <!--拆分任务详情-->
-        <el-dialog title="拆分任务详情" :visible="split.hasSplitvisible" width="80%"
+        <!--拆分项目详情-->
+        <el-dialog title="拆分项目详情和分析结果" :visible="split.hasSplitvisible" width="80%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
+            <el-form label-width="120px">
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-form-item label="分析结果">{{split.reviewData.ANALYSIS_RESULT}}</el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_y_m_d}}</el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_y_m_d}}</el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_y_m_d}}</el-form-item>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-form-item label=" 风险点">{{split.reviewData.TASK_RISK}}</el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <div class="table-list">
                 <el-table :data="split.hasSplitTaskData" height="280" border style="width: 100%">
                     <el-table-column label="任务类型">
@@ -1019,7 +1063,7 @@
                     <el-table-column prop="system_NAME" label="系统名"></el-table-column>
                     <el-table-column prop="task_ID" label="任务编码" width="190"></el-table-column>
                     <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
-                                     label="完成日期"></el-table-column>
+                                     width="120" label="完成日期"></el-table-column>
                     <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
                     <el-table-column prop="facility_NAME" label="难易度" width="80"></el-table-column>
                     <el-table-column prop="expect_TIME" label="预计用时（小时）" width="100"></el-table-column>
@@ -1153,6 +1197,49 @@
                 </el-table>
             </div>
         </el-dialog>
+
+
+        <!--挂起的实际用时-->
+        <el-dialog title="挂起" :visible="hang.dialogvisible" width="60%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <el-form label-width="120px">
+                <el-form-item label="请填写实际用时">
+                    <el-input v-model="hang.usetime"></el-input>
+                </el-form-item>
+                <el-form-item label="请填写挂起原因">
+                    <el-input v-model="hang.reason"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="hang.dialogvisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="hangsub" size="mini">确定</el-button>
+            </div>
+        </el-dialog>
+        <!--转接的实际用时-->
+        <el-dialog title="转接" :visible="transfer.dialogvisible" width="60%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <el-form label-width="120px">
+                <el-form-item label="请选择转接人员">
+                    <el-select v-model="transfer.person" placeholder="请选择人员"
+                               style="width: 100%">
+                        <el-option v-for="item in transfer.personArr" :label="item.user_NAME"
+                                   :value="item.user_ID+'-'+item.user_NAME"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="请填写实际用时">
+                    <el-input v-model="transfer.usetime"></el-input>
+                </el-form-item>
+                <el-form-item label="请填写转接原因">
+                    <el-input v-model="transfer.reason"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="transfer.dialogvisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="transferSub" size="mini">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -1167,10 +1254,10 @@
                     addform: {
                         //需求编号随选择变化
                         "code": "",//需求编号
-                        "codeArr":[],//需求编号数组
-                        "sjxt": "",//涉及系统
                         "oldcode": "",//原需求编号
                         "newcode":"",//新需求编号
+                        "codeArr":[],//需求编号数组
+                        "sjxt": "",//涉及系统
                         "name": "",//需求名称
                         "sxname": "",//提出人
                         "fromdeptId": "",//选择的需求来源部门ID
@@ -1250,6 +1337,14 @@
                     names: [],//放置姓名的数组
                     ids: [],//放置id的数组
                     usetime: "",//预计用时
+                    //拆分项目详情的分析结果
+                    reviewData:{
+                        TASK_RISK:"",//风险点
+                        ANALYSIS_RESULT:"",//分析结果
+                        ANALYSIS_TIME:"",//分析时间
+                        EXPECT_END:"",//预期结束时间
+                        EXPECT_START:"",//预期开始时间
+                    },
                 },
                 options: [],
                 selectValue: "",//选择的筛选的值
@@ -1305,6 +1400,7 @@
                 },
                 //测试任务操作台的内容
                 testTask: {
+                    modelvisible:false,//用例模板的可见
                     hasTask: false,//判断是否有测试任务
                     typevalue: "",//用例类型选择的值（汉字）
                     showTaskStep: false,//展示步骤的表格
@@ -1343,15 +1439,24 @@
                 },
                 //挂起对应操作
                 hang: {
-                    hangvisible: false,
+                    hangvisible: false,//挂起操作栏
+                    dialogvisible:false,//挂起的弹窗
                     hangtableData: [],//表格数据
                     hangActiveData:[],//选中的挂起信息
+                    usetime:"",//实际用时
+                    reason:"",//挂起原因
+                    task_id:"",//任务ID
+                    sign:"",//
                 },
-                //转接数据
+                //转接操作
                 transfer:{
-                    transfervisible:false,
-                    peopleArr:[],//人员
-                    people:"",
+                    dialogvisible:false,
+                    personArr:[],//人员数组
+                    person:"",//选择的人员
+                    reason:"",//理由
+                    usetime:"",//实际用时
+                    task_id:"",//任务ID
+                    sign:"",//状态
                 },
                 //需求审批
                 ifPing:{
@@ -1377,23 +1482,30 @@
                 codeupload:{
                     uploadFile:[],//上传的文件信息
                     modelvisible:false,
-                }
+                },
             }
         },
         mounted(){
             this.loadData();
         },
         filters: {
-            date: function (time) {
+            date(time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = d.getMonth() + 1 < 10 ? '0' + d.getMonth() : '' + d.getMonth()+1;
+                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-                let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
-                let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
-                let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+                let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
+                let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+                let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
                 return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
             },
+            date_y_m_d(time){
+                let d = new Date(time);
+                let year = d.getFullYear();
+                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+                return year + '-' + month + '-' + day
+            }
         },
         methods: {
             calculate(){
@@ -1521,6 +1633,8 @@
                 this.testTask.type = "";
                 //初始化测试控制台的界面
                 this.resetTestEnter();
+                //初始化挂起转接操作台
+                this.hang.hangvisible = false
             },
             handleCurrentChange(val){
                 //点击时初始化操作
@@ -1559,7 +1673,7 @@
                         this.tabs.tabsData.rriority_NAME = info.rriority_NAME;//优先级评定
                         this.tabs.tabsData.importance_NAME = info.importance_NAME;//重要程度
 
-                        //新增
+                        //---------新增内容
                         this.tabs.tabsData.type = info.neel_TYPE_NAME;//需求类型
                         this.tabs.tabsData.background = info.background;//需求背景
                         this.tabs.tabsData.result = info.result;//成果类型
@@ -1567,42 +1681,69 @@
                         this.tabs.tabsData.ascription = info.ascription;//需求划分归属
                         this.tabs.tabsData.prduct_LINE = info.prduct_LINE;//涉及产品线
 
+                        //-----------------------------判断开发和测试控制台的加载--------------
+                        if( data.result.codeInfos ||  data.result.testInfos){
+                            if(data.result.codeInfos){
+                                this.tabs.codetask = true;
+                                //是否有开发任务
+                                data.result.codeInfos.length > 0 ?
+                                    this.$set(this.split, "codetask", data.result.codeInfos) : this.$set(this.split, "codetask", []);
+                            }
+                            if(data.result.testInfos){
+                                this.tabs.testtask = true;
+                                //是否有测试任务
+                                this.testTask.testTaskActiveInfo = "";
+                                if (data.result.testInfos.length > 0) {
+                                    this.$set(this.testTask, "testSplitData", data.result.testInfos);
+                                    this.testTask.hasTask = true;
+                                } else {
+                                    this.$set(this.testTask, "testSplitData", []);
+                                    this.testTask.hasTask = false;
+                                }
+                            }
+                        }
+
+                        //----------------判断是否上传了用例模板
+                        this.$set(this.testTask,"uploadFile",data.result.testFiles);
+
+                        //----------------判断是否上传了开发手册
+                        this.$set(this.codeupload,"uploadFile",data.result.codeFiles);
+
+                        //当期已进行新建变更，要展示新的需求ID，描述和改造点
+                        if(info.oletechnology_NEEL_ID){
+                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                        }
+
+                        //当期是新建变更，要展示旧的需求ID，描述和改造点
+                        if(info.oletechnology_NEEL_ID){
+                            this.tabs.tabsData.oldcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.oldchangepoint = base.product_NEW_FUNCTION;//新产品产品改造点
+                            this.tabs.tabsData.oldneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                        }
 
                         //-----------------------------设置权限
                         this.setConsoleAction(data.result);
+
                         //----------------------加载详情页的bug列表
                         if (data.result.bugs.length) {
                             this.$set(this.testTask, "allBugs", data.result.bugs);
                         }
+
                         //------------------------设置全程跟踪数据
                         this.tabs.state_NAME = info.state_NAME;
 //                        this.tabs.user_NAME = info.apply_NAME;
                         this.$set(this.tabs, "genzong", data.result.records);
+
                         //------------------------加载拆分任务详情
                         data.result.systemDepts.length > 0 ?
                             this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts)
                             : this.$set(this.split, "hasSplitTaskDataByGroup", []);
-//
-                        if (data.result.codeTask || data.result.testTask) {
-                            //-------------------加载开发控制台任务
-                            data.result.codeTask.length > 0 ?
-                                this.$set(this.split, "codetask", data.result.codeTask) : this.$set(this.split, "codetask", []);
-                            //-------------------加载测试控制台任务
-                            this.testTask.testTaskActiveInfo = "";
-                            if (data.result.testTask.length > 0) {
-                                this.$set(this.testTask, "testSplitData", data.result.testTask);
-                                this.testTask.hasTask = true;
-                            } else {
-                                this.$set(this.testTask, "testSplitData", []);
-                                this.testTask.hasTask = false;
-                            }
-                        }
-                        //----------------------加载测试控制台的用例类型
-                        data.result.types ?
-                            this.$set(this.testTask, "typeArr", data.result.types) :
-                            this.$set(this.testTask, "typeArr", []);
-                        data.result.technology.test_NAME ? this.testTask.typevalue =
-                                data.result.technology.test_NAME : data.result.type_name = "";
+
+
+
+
                         this.$maskoff();
                     }
                 })
@@ -1612,8 +1753,8 @@
                 let arr = [];
                 for (let i in data) {
                     if (data.hasOwnProperty(i) && typeof data[i] == "string") {
-                        if(i == "type_name"){
-                            continue
+                        if(i == "TYPE_NAME"){
+                            continue;
                         }
                         //技术管理部评审加载数据
                         if(i == "REVIEW"){
@@ -1633,7 +1774,7 @@
                 this.$axios.post("/demand/gettypelist", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.addneeds.addform.code = data.result.BASE_NEET_ID;//需求编号
+                        this.addneeds.addform.code = data.result.technology_NEEL_ID;//需求编号
                         this.addneeds.addform.sxname = data.result.USERNAME;//产品提出人
                         this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts);//来源部门数组
                         this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance);//重要程度
@@ -1649,7 +1790,6 @@
             },
             //获取需求编号
             changeType(){
-                console.log(this.addneeds.addform.needstype)
                 this.addneeds.addform.code = "";
                 this.$set(this.addneeds.addform, "codeArr", "");
                 this.addneeds.addform.codeChoosen = "";
@@ -1664,7 +1804,6 @@
                                 this.$set(this.addneeds.addform, "codeArr", data.result.rt);
                             } else {
                                 this.addneeds.addform.code = data.result.rt;
-                                console.log(data.result.rt)
                             }
                         }
                     })
@@ -1774,8 +1913,8 @@
                 }
                 if(this.addneeds.addType == "change"){
                     //新建变更
-                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
-                    url = "/base/newUpdate"
+                    params.append("OLETECHNOLOGY_NEEL_ID",this.addneeds.addform.oldcode);//旧需求ID
+                    url = "/demand/insertinserttechnolog"
                 }else if (this.addneeds.addType == "add"){
                     //新建
                     url = "/demand/settechnologyadd"
@@ -1784,7 +1923,7 @@
                     url = ""
                 }else if(this.addneeds.addType == "edit"){
                     //修改编辑
-                    url = "/base/updateBaseByApply";
+                    url = "/demand/updateBaseByApply";
                 }
                 this.$axios.post(url, params).then((res) => {
                     let data = res.data;
@@ -1820,11 +1959,16 @@
                     return;
                 }
                 this.split.hasSplitvisible = true;
-                this.$set(this.split, "hasSplitTaskData", val.infos)
+                this.$set(this.split, "hasSplitTaskData", val.infos);
+
+                this.split.reviewData.TASK_RISK = val.TASK_RISK;//风险点
+                this.split.reviewData.ANALYSIS_RESULT = val.ANALYSIS_RESULT;//分析结果
+                this.split.reviewData.ANALYSIS_TIME = val.ANALYSIS_TIME;//分析时间
+                this.split.reviewData.EXPECT_END = val.EXPECT_END;//预期结束时间
+                this.split.reviewData.EXPECT_START = val.EXPECT_START;//预期开始时间
             },
             //----------------------------------操作台的权限点击事件--------------------------------
             consoleActionEvent(val){
-                console.log(val);
                 switch (val.key) {
                     case "REVIEW":
                         //技术管理部需求评审
@@ -1833,6 +1977,10 @@
                     case "PERSONCHECK":
                         //技术经理需求分析
                         this.beginreview();
+                        break;
+                    case "NEWUPDATE":
+                        //新建变更
+                        this.newchange("change");
                         break;
                     case "ASSIGN":
                         //分配
@@ -1843,7 +1991,7 @@
                         this.hang.hangvisible = false;//关闭掉挂起控制台
                         this.splitTask();
                         break;
-                    case "MANAGER_CONFIRM":
+                    case "CONFRIM":
                         //验收操作
                         this.acceptance();
                         break;
@@ -1859,7 +2007,7 @@
                         //撤回操作
                         this.rejected();
                         break;
-                    case "MANAGER_HANGUP":
+                    case "SIGN":
                         //点击挂起加载数据
                         this.split.splitvisible = false;//关闭掉拆分任务控制台
                         this.loadHangData();
@@ -1975,6 +2123,44 @@
                     }
                 })
             },
+            //新建变更和需求内变更
+            newchange(type){
+                this.$maskin();
+                if(type=="change"){
+                    this.addneeds.addType = "change";//当前是新建变更
+                }else{
+                    this.addneeds.addType = "changeinset";//当前是新建变更
+                }
+                let params = new URLSearchParams();
+                params.append("TECHNOLOGY_NEEL_ID",this.tabs.activeTableInfo.technology_NEEL_ID);
+                this.$axios.post("/demand/updatetechFront",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        let info = data.result.technology;
+                        this.addneeds.addform.sxname = data.result.USERNAME;//产品提出人
+                        this.addneeds.addform.oldcode = info.technology_NEEL_ID;
+                        this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts);//来源部门数组
+                        this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance);//重要程度
+                        this.$set(this.addneeds.addform, "levelArr", data.result.rrioritylist);//优先级
+                        this.$set(this.addneeds.addform, "needstypeArr", data.result.baseTypeName);//需求类型
+                        this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
+                        this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
+                        this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
+
+                        if(type=="changeinset"){
+                            //需求内变更需展示
+                            this.addneeds.addform.oldchangepoint = info.product_FUNCTION;//原需求改造点
+                            this.addneeds.addform.oldneedsname = info.neel_DESCRIPTION;//原需求描述
+                        }else{
+                            //新建变更无需展示
+                            this.addneeds.addform.oldchangepoint = "";
+                            this.addneeds.addform.oldneedsname = "";
+                        }
+                        this.addneeds.addvisible = true;
+                        this.$maskoff();
+                    }
+                })
+            },
             //------------------------------------------点击挂起加载任务数据
             loadHangData(){
                 this.$maskin();
@@ -1989,50 +2175,99 @@
                     }
                 })
             },
-            //挂起操作
-            hangAction(val,index){
-                this.prompt("挂起","请填写挂起原因",({value})=>{
-                    if(!{value}.value){
-                        this.$warn("请填写挂起原因");
-                        return;
-                    }
-                    this.$maskin();
-                    let params = new URLSearchParams();
-                    params.append("TASK_ID",val.task_ID);
-                    params.append("SIGNREMARK",{value}.value);
-                    params.append("SIGN",val.sign);
-                    this.$axios.post("/demand/hanguptechnologyProject",params).then((res)=>{
-                        let data = res.data;
-                        if(data.code == 200){
-                            this.$success("操作成功！");
-                            this.$maskoff();
-                            this.loadHangData();
-                        }
-                    })
-                })
+            //挂起点击操作
+            //sing:0挂起，1恢复
+            hangAction(val){
+                this.hang.task_id = val.task_ID;
+                this.hang.sign = val.sign;
+                this.hang.dialogvisible = true;
             },
-            //转接操作
-            transferAction(val,index){
-                console.log(val)
-                this.testTask.assignvisible = true;
+            //挂起提交
+            hangsub(){
+                if(!this.hang.usetime){
+                    this.$warn("请填写实际用时");
+                    return;
+                }
+                if(!this.hang.reason){
+                    this.$warn("请填写挂起原因");
+                    return;
+                }
+                this.$maskin();
                 let params = new URLSearchParams();
-                this.$axios.post("/demand/queryUserByDemand",params).then((res)=>{
+                params.append("ACTUAL_TIME",this.hang.usetime);//实际用时
+                params.append("SIGN_REAMRK",this.hang.reason);//原因
+                params.append("TASK_ID",this.hang.task_id);//任务ID
+                params.append("TECHNOLOGY_NEEL_ID",this.tabs.activeTableInfo.technology_NEEL_ID);//需求ID
+                params.append("SIGN", this.hang.sign);
+                this.$axios.post("/demand/hanguptechnologyProject",params).then((res)=>{
                     let data = res.data;
                     if(data.code == 200){
-                        this.$set(this.transfer,"peopleArr",data.result.dept.users);
-                        this.transfer.transfervisible = true;
+                        this.hang.usetime = "";
+                        this.hang.reason = "";
+                        this.hang.dialogvisible = false;
+                        this.$success("操作成功！");
+                        this.loadHangData();
+                        this.$maskoff();
+                    }
+                })
+            },
+            //恢复操作
+            restore(row){
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append("TECHNOLOGY_NEEL_ID",this.tabs.activeTableInfo.technology_NEEL_ID);
+                params.append("TASK_ID",row.task_ID);
+                params.append("SIGN",row.sign);
+                this.$axios.post("/demand/hanguptechnologyProject",params).then((res)=>{
+                    let data =res.data;
+                    if(data.code == 200){
+                        this.$success("操作成功！");
+                        this.loadHangData();
+                        this.$maskoff();
                     }
                 })
             },
             //转接操作
-            transferSub(){
-
+            transferAction(row){
+                this.$maskin();
+                let params = new URLSearchParams();
+                this.$axios.post("/demand/queryPersonByDept",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.transfer.task_id = row.task_ID;
+                        this.transfer.sign = row.sign;
+                        this.$set(this.transfer,"personArr",data.result.dept.users);
+                        this.transfer.dialogvisible = true;
+                        this.$maskoff();
+                    }
+                })
             },
-//            //选择挂起的选项框
-//            hangcheckednChange(val){
-//                console.log(val)
-//                this.$set(this.hang,"hangActiveData",val)
-//            },
+            //提交转接操作
+            transferSub(){
+                this.$maskin();
+                let info = this.transfer;
+                let params = new URLSearchParams();
+                params.append("TASK_ID",info.task_id);//拆分任务ID
+                params.append("ACTUAL_TIME",info.usetime);
+                params.append("PERSONNEL_ID",info.person.split("-")[0]);
+                params.append("PERSON_NAME",info.person.split("-")[1]);
+                params.append("PERSONNEL_REMARK",info.reason);//原因
+                params.append("SIGN",info.sign);
+                params.append("TECHNOLOGY_NEEL_ID",this.tabs.activeTableInfo.technology_NEEL_ID);//需求ID
+                this.$axios.post("/demand/transfertechnologyProject",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        //清除数据
+                        this.transfer.usetime = "";
+                        this.transfer.reason = "";
+                        this.transfer.person = "";
+                        this.transfer.dialogvisible = false;
+                        this.$success("操作成功！");
+                        //转接过后存在任务消失或新增现象，不能局部刷新，要重新拉取数据
+                        this.handleCurrentChange(this.tabs.activeTableInfo);
+                    }
+                })
+            },
             //--------------------------------- 撤回操作
             backNeed(){
                 this.confirm("是否进行撤回操作？", () => {
@@ -2074,11 +2309,14 @@
             //----------------------------------验收操作
             //验收操作
             acceptance(){
-                this.confirm("确定进行验收操作？", () => {
-                    this.$maskin();
+                this.confirm("请选择验收结果",()=>{
+                    //验收通过
                     let info = this.tabs.activeTableInfo;
+                    this.$maskin();
                     let params = new URLSearchParams();
                     params.append("TECHNOLOGY_NEEL_ID", info.technology_NEEL_ID);
+                    params.append("STATE",info.state);
+                    params.append("OPER","OK");
                     this.$axios.post("/demand/baseAccept", params).then((res) => {
                         let data = res.data;
                         if (data.code == 200) {
@@ -2087,7 +2325,30 @@
                             this.loadData();
                         }
                     })
-                })
+                },()=>{
+                    //验收不通过
+                    this.prompt("验收不通过","请填写不通过理由",(value)=>{
+                        if(!value.value){
+                            this.$warn("请填写不通过理由");
+                            return;
+                        }
+                        let info = this.tabs.activeTableInfo;
+                        this.$maskin();
+                        let params = new URLSearchParams();
+                        params.append("TECHNOLOGY_NEEL_ID", info.technology_NEEL_ID);
+                        params.append("OPER","FAIL");
+                        params.append("REJECT_RESON",value.value);
+                        params.append("STATE",info.state);
+                        this.$axios.post("/demand/baseAccept", params).then((res) => {
+                            let data = res.data;
+                            if (data.code == 200) {
+                                this.$success("操作成功！");
+                                this.$maskoff();
+                                this.loadData();
+                            }
+                        })
+                    })
+                },["通过","不通过"])
             },
             //------------------------------------分配任务
             getAssign(){
@@ -2464,7 +2725,6 @@
                 }
                 let info = this.tabs.activeTableInfo;
                 let params = new URLSearchParams();
-                console.log(info)
                 params.append("TECHNOLOGY_NEEL_ID", info.technology_NEEL_ID);
                 params.append("TYPE_NAME", this.testTask.type);
                 this.$axios.post("/demand/confirmType", params).then((res) => {
@@ -2494,6 +2754,7 @@
                     }
                 });
             },
+            //上传用例模板和开发的手册
             //测试点击开始
             testTaskStart(index, val){
                 if (!this.testTask.typevalue) {
@@ -2503,7 +2764,7 @@
                 this.$maskin();
                 let info = this.tabs.activeTableInfo;
                 let params = new URLSearchParams();
-                params.append("TECHNOLOGY_NEEL_ID", info.technology_NEET_ID);
+                params.append("TECHNOLOGY_NEEL_ID", info.technology_NEEL_ID);
                 params.append("TASK_ID", val.task_ID);
                 params.append("STATE_ID", val.state_ID);
                 this.$axios.post("/demand/technologyTestto", params).then((res) => {
@@ -2511,9 +2772,12 @@
                     if (data.code == 200) {
                         this.$success("操作成功！");
                         this.loadTabsData(val);
-                        this.$maskoff()
                     }
                 })
+            },
+            //下载用例模板和手册
+            downloadModel(val){
+                this.$axios.get(`/demand/download/?ID=${val.id}&token=${localStorage.getItem('token')}`);
             },
             //测试点击完成
             splitTestFinish(index, val){
@@ -2761,11 +3025,11 @@
                     }
                     let params = new URLSearchParams();
                     let BUG_ID = this.testTask.bugid_code;
-                    let BASE_ID = this.tabs.activeTableInfo.technology_NEEL_ID;
+                    let TECH_ID = this.tabs.activeTableInfo.technology_NEEL_ID;
                     let PERSON_ID = this.testTask.assignPerson_code.split(",")[0];
                     let PERSON_NAME = this.testTask.assignPerson_code.split(",")[1];
                     params.append("BUG_ID", BUG_ID);
-                    params.append("TECHNOLOGY_NEEL_ID", BASE_ID);
+                    params.append("TECHNOLOGY_NEEL_ID", TECH_ID);
                     params.append("PERSON_ID", PERSON_ID);
                     params.append("PERSON_NAME", PERSON_NAME);
                     this.$axios.post("/demand/updateBugState", params).then((res) => {
@@ -2809,10 +3073,9 @@
                 let params = new URLSearchParams();
                 if (type == "完成") {
                     this.$maskin();
-                    console.log(val)
                     params.append("BUG_STATE", 1);
                     params.append("BUG_ID", val.bug_ID);
-                    params.append("BASE_ID", info.technology_NEEL_ID);
+                    params.append("TECHNOLOGY_NEEL_ID", info.technology_NEEL_ID);
                     this.$axios.post("/demand/updateBugState", params).then((res) => {
                         let data = res.data;
                         if (data.code == 200) {
