@@ -1135,25 +1135,7 @@
                     </el-table-column>
                 </el-table>
             </div>
-        </el-dialog>   <el-form label-width="120px">
-        <el-row :gutter="20">
-            <el-col :span="12">
-                <el-form-item label="分析结果">{{split.reviewData.ANALYSIS_RESULT}}</el-form-item>
-            </el-col>
-            <el-col :span="12">
-                <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_y_m_d}}</el-form-item>
-            </el-col>
-            <el-col :span="12">
-                <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_y_m_d}}</el-form-item>
-            </el-col>
-            <el-col :span="12">
-                <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_y_m_d}}</el-form-item>
-            </el-col>
-            <el-col :span="24">
-                <el-form-item label=" 风险点">{{split.reviewData.TASK_RISK}}</el-form-item>
-            </el-col>
-        </el-row>
-    </el-form>
+        </el-dialog>
         <!--测试新增步骤-->
         <el-dialog title="新增步骤" :visible="testTask.addvisible" width="60%"
                    append-to-body modal-append-to-body
