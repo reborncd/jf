@@ -106,7 +106,8 @@
 	width: 120px !important;
 }</style>
 <template>
-	<div class="jcjs common-card-wrap" @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
+	<div class="jcjs common-card-wrap"
+		 @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
 		<el-card class="box-card">
 			<div class="text item">
 				<div class="content">
@@ -442,7 +443,8 @@
 		</el-card>
 
 		<!--新建任务-->
-		<el-dialog title="技术经理新建任务" :visible="addneeds.addvisible" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="技术经理新建任务" :visible="addneeds.addvisible" width="60%"
+				   append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form :model="addneeds.addform" ref="addneeds.addform" label-width="100px" class="demo-ruleForm">
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
@@ -629,7 +631,8 @@
 			</div>
 		</el-dialog>
 		<!--产品经理-->
-		<el-dialog title="产品经理新建任务" :visible="addneeds.addvisibleP" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="产品经理新建任务" :visible="addneeds.addvisibleP" width="60%"
+				   append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form label-width="100px">
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
@@ -745,7 +748,8 @@
 		</el-dialog>
 
 		<!--拆分任务-->
-		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisible" width="60%" append-to-body modal-append-to-body :before-close="closeDialogS">
+		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisible" width="60%"
+				   append-to-body modal-append-to-body :before-close="closeDialogS">
 			<el-form label-width="100px">
 				<el-row :span="24">
 					<el-col :span="12">
@@ -800,7 +804,8 @@
 			</div>
 		</el-dialog>
         <!------------控制台拆分-------------->
-		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisibleN" width="60%" append-to-body modal-append-to-body :before-close="closeDialogS">
+		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisibleN" width="60%"
+				   append-to-body modal-append-to-body :before-close="closeDialogS">
 			<el-form label-width="100px">
 				<el-row :span="24">
 					<el-col :span="12">
@@ -854,7 +859,8 @@
 		</el-dialog>
 
 		<!--拆分任务详情-->
-		<el-dialog title="拆分任务详情" :visible="addneeds.hasSplitvisible" width="80%" append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="拆分任务详情" :visible="addneeds.hasSplitvisible" width="80%"
+				   append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form label-width="100px">
 				<el-row :span="24" v-if="split.hasSplitTaskData" v-for="(item, index) in split.hasSplitTaskData">
 					<el-col :span="12" v-if="index==0">
@@ -884,7 +890,8 @@
 		</el-dialog>
 
 		<!--确认-->
-		<el-dialog title="确认" :visible="assign.assignvisible" width="30%" append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
+		<el-dialog title="确认" :visible="assign.assignvisible" width="30%"
+				   append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
 			<div slot="title">
 				<h2>分配</h2>
 				<div class="tab clear">
@@ -928,7 +935,6 @@
 		</el-dialog>
 	</div>
 </template>
-
 <script>export default {
 	data() {
 		return {
