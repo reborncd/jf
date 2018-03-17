@@ -317,19 +317,19 @@
 
                                             <!--开发和测试的完成开始时间-->
                                             <el-col :span="12" v-if="tabs.tabsData.code_start">
-                                                <el-form-item label="开发开始时间">{{tabs.tabsData.code_start | date_yyyyMMdd}}
+                                                <el-form-item label="开发开始时间">{{tabs.tabsData.code_start | date_y_m_d}}
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.code_end">
-                                                <el-form-item label="开发完成时间">{{tabs.tabsData.code_end | date_yyyyMMdd}}
+                                                <el-form-item label="开发完成时间">{{tabs.tabsData.code_end | date_y_m_d}}
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.test_start">
-                                                <el-form-item label="测试开始时间">{{tabs.tabsData.test_start | date_yyyyMMdd}}
+                                                <el-form-item label="测试开始时间">{{tabs.tabsData.test_start | date_y_m_d}}
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.test_end">
-                                                <el-form-item label="测试完成时间">{{tabs.tabsData.test_end | date_yyyyMMdd}}
+                                                <el-form-item label="测试完成时间">{{tabs.tabsData.test_end | date_y_m_d}}
                                                 </el-form-item>
                                             </el-col>
                                             <!----------------------------------需判断部分------------------------>
@@ -939,15 +939,15 @@
                     <!--产品改造点-->
 
                     <!--需求描述-->
+                    <el-col :span="24" :md="24">
+                        <el-form-item label="需求描述">
+                            <el-input type="textarea" v-model="addneeds.addform.needsname"></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldneedsname">
                         <el-form-item label="原需求描述">
                             {{addneeds.addform.oldneedsname}}
                             <!--<el-input type="textarea" v-model="addneeds.addform.oldneedsname" disabled></el-input>-->
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="需求描述">
-                            <el-input type="textarea" v-model="addneeds.addform.needsname"></el-input>
                         </el-form-item>
                     </el-col>
                     <!--需求描述-->
@@ -1090,13 +1090,13 @@
                         <el-form-item label="分析结果">{{split.reviewData.ANALYSIS_RESULT}}</el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_yyyyMMdd}}</el-form-item>
+                        <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_y_m_d}}</el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_yyyyMMdd}}</el-form-item>
+                        <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_y_m_d}}</el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_yyyyMMdd}}</el-form-item>
+                        <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_y_m_d}}</el-form-item>
                     </el-col>
                     <el-col :span="24">
                         <el-form-item label=" 风险点">{{split.reviewData.TASK_RISK}}</el-form-item>
@@ -1135,7 +1135,25 @@
                     </el-table-column>
                 </el-table>
             </div>
-        </el-dialog>
+        </el-dialog>   <el-form label-width="120px">
+        <el-row :gutter="20">
+            <el-col :span="12">
+                <el-form-item label="分析结果">{{split.reviewData.ANALYSIS_RESULT}}</el-form-item>
+            </el-col>
+            <el-col :span="12">
+                <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_y_m_d}}</el-form-item>
+            </el-col>
+            <el-col :span="12">
+                <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_y_m_d}}</el-form-item>
+            </el-col>
+            <el-col :span="12">
+                <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_y_m_d}}</el-form-item>
+            </el-col>
+            <el-col :span="24">
+                <el-form-item label=" 风险点">{{split.reviewData.TASK_RISK}}</el-form-item>
+            </el-col>
+        </el-row>
+    </el-form>
         <!--测试新增步骤-->
         <el-dialog title="新增步骤" :visible="testTask.addvisible" width="60%"
                    append-to-body modal-append-to-body
@@ -1318,7 +1336,7 @@
                 <el-button type="primary" @click="hangsub" size="mini">确定</el-button>
             </div>
         </el-dialog>
-        <!--转接-->
+        <!--转接的实际用时-->
         <el-dialog title="转接" :visible="transfer.dialogvisible" width="60%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
@@ -1671,7 +1689,7 @@
                 let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
                 return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
             },
-            date_yyyyMMdd(time){
+            date_y_m_d(time){
                 let d = new Date(time);
                 let year = d.getFullYear();
                 let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
@@ -1742,6 +1760,7 @@
                     //判断是否有新增权限
                     let data= res.data;
                     if(data.code == 200){
+                        //判断是否有新增按钮功能
                         if(data.result.DEPT_SAVE){
                             this.addneeds.addif = true;
                         }
@@ -1765,6 +1784,18 @@
                 }
                 this.$set(this.table, "tableData", arr);
                 this.$set(this.table, "tableOriginData", arr);
+                //判断是否有search跳转到赌赢的操作台
+                if(this.$route.params.neelId){
+                    let id = this.$route.params.neelId;
+                    for(let i of data.bases){
+                        if(i.base_NEET_ID == id){
+                            this.handleCurrentChange(i);
+                            this.$refs.jcjs_table.setCurrentRow(i);
+                            break;
+                        }
+                    }
+                    return;
+                }
                 this.$maskoff();
             },
             //新建弹窗
@@ -2011,6 +2042,7 @@
             },
             handleCurrentChange(val){
                 //点击时初始化操作
+                this.$maskin();
                 this.resetAllStatus();
                 this.tabs.activeTableInfo = val;
                 if (!this.tabs.consoleWrapperVisible) {
@@ -2020,11 +2052,11 @@
                     }, 0);
                 }
                 if (val.base_NEET_ID) {
-                    this.loadCheckTableData(val)
+                    this.loadTabsData(val)
                 }
             },
             //-------------------------------------请求点击的数据信息
-            loadCheckTableData(val){
+            loadTabsData(val){
                 let params = new URLSearchParams();
                 params.append("BASE_NEET_ID", val.base_NEET_ID);
                 this.$axios.post("/base/queryBaseMessage", params).then((res) => {
@@ -2069,9 +2101,8 @@
                         this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
                         this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
 
-                        // ---------------------------判断是否有开发和测试权限
+                        //-----------------------------判断开发和测试控制台的加载--------------
                         if( data.result.codeInfos ||  data.result.testInfos){
-                            //-----------------------------判断开发和测试控制台的加载--------------
                             if(data.result.codeInfos){
                                 this.tabs.codetask = true;
                                 //是否有开发任务
@@ -2090,7 +2121,6 @@
                                     this.testTask.hasTask = false;
                                 }
                             }
-                            //-----------------------------判断开发和测试控制台的加载--------------
                         }
 
                         //---------------------------------判断用例类型
@@ -2161,7 +2191,7 @@
                             this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
                         }
 
-                        //当前是正常的页面信息（默认展示）
+                        //当前是被变更的需求信息
                         if(base.base_NEW_ID){
                             //当前是变更前的数据当前要展示新需求ID描述的等
                             this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
@@ -2403,6 +2433,7 @@
             },
             //提交转接操作
             transferSub(){
+                this.$maskin()
                 let info = this.transfer;
                 let params = new URLSearchParams();
                 params.append("BASE_INFO_ID",info.task_id);//拆分任务ID
@@ -3046,6 +3077,7 @@
                 }
                 this.split.hasSplitvisible = true;
                 this.$set(this.split, "hasSplitTaskData", val.infos);
+
                 this.split.reviewData.TASK_RISK = val.TASK_RISK;//风险点
                 this.split.reviewData.ANALYSIS_RESULT = val.ANALYSIS_RESULT;//分析结果
                 this.split.reviewData.ANALYSIS_TIME = val.ANALYSIS_TIME;//分析时间
@@ -3090,7 +3122,7 @@
                     }
                 });
             },
-            //下载用例模板
+            //下载用例模板和手册
             downloadModel(val){
                 this.$axios.get(`/base/download/?ID=${val.id}&token=${localStorage.getItem('token')}`);
             },
@@ -3110,7 +3142,7 @@
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功！");
-                        this.loadCheckTableData(val);
+                        this.loadTabsData(val);
                         this.$maskoff()
                     }
                 })
