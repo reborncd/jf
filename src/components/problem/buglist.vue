@@ -70,7 +70,7 @@
             <div class="text item">
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
-                        <el-button type="danger" @click="bugVisible = !bugVisible" size="mini">提交BUG</el-button>
+                        <el-button type="danger" @click="shouBug" size="mini">提交BUG</el-button>
                         <el-select v-model="selectValues" @change="statusOpt"  clearable
                                    size="mini">
                             <el-option
@@ -170,6 +170,17 @@
                                     </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
+                                        	<el-col :span="24" :sm="24" style="float: right;width: 60%;margin-bottom: 20px;">
+                                        		<el-form-item label="关联的缺陷编号">
+                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;margin-left: 100px;'>
+                                                        <el-option
+                                                        	v-for="_item in operate.relation"
+						                                    :label="_item.technology_NEEL_ID"
+						                             		:value="_item.technology_NEEL_ID"
+                                                        	></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="状态">
                                                     <el-form-item label="">{{operate.status}}</el-form-item>
@@ -257,7 +268,7 @@
                         <el-row :gutter="24">
                             <el-col>
                                 <el-form-item label="BUG编号">
-                                    <el-input v-model="form.name" :disabled='error.disabled'></el-input>
+                                    <el-input v-model="popup.id" :disabled='error.disabled'></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -332,7 +343,9 @@
                     effectScope:'',//影响范围
                     system:'',//涉及系统
                     subSystem:[],//子系统
-                    systemAll:[{"csty":""}]
+                    systemAll:[{"csty":""}],
+                    relation:'',//关联
+                    relationValue:''
                   },
               way:{
                 status:'',
@@ -418,7 +431,8 @@
                     consoleActionVisible: false,
                     consoleWrapperVisible: false,
                 },
-                popup:{                	
+                popup:{
+                	id:'',
                 	priperty:[
                     {
                       'name':'紧急',
@@ -721,7 +735,8 @@
                         this.calculate()
                     }, 0);
                 }
-                this.loadTabsData(val)
+                this.loadTabsData(val)               
+                
             },
             loadTabsData(val){
                 	let params = new URLSearchParams();
@@ -758,6 +773,7 @@
                           }
                           this.operate.sender=data.result.fault.create_USER;
                           this.way.sender=data.result.fault.create_USER;
+                          this.operate.relation=data.result.technologys;
                           let arr=[];
                           if(data.result.process.result.length>0){
                             for(let i of data.result.process.result){
@@ -824,7 +840,17 @@
 	      downfile(val){      	
 	      	let token=localStorage.getItem("token")
 //	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
-			this.$axios.get("/fault/download?token="+token+"&id="+val)
+			this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
+	      },
+	      //提交bug弹窗显示
+	      shouBug(){
+	      	this.bugVisible=true
+	      	let params = new URLSearchParams();
+				params.append("status",2);
+				this.$axios.post("/fault/getNo", params).then((res) => {
+					 let data = res.data;				
+						this.$set(this.popup, "id",data.id);
+				})
 	      },
 // 			提交bug表单
             subForm(){
@@ -878,6 +904,7 @@
             },
 //           控制台切换
             tabClick(val){
+            	
                 this.calculateTabsHeight();
             },
             //清除新增新增的表单
@@ -946,6 +973,7 @@
 	                params.append("systemTypeId", idArr);//子系统id
 	                params.append("systemType", nameArr);//子系统名称
 	                params.append("type", 2);//子系统id
+	                params.append("technology_NEEL_ID", this.operate.relationValue);//故障ID
             		this.$axios.post("/fault/audit", params).then((res) => {
             			if(res.status==200){
             				this.$success("操作成功！");

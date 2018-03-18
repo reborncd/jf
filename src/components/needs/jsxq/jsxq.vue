@@ -61,13 +61,13 @@
             <div class="text item">
                 <div class="content">
                     <div class="action clear">
-                        <el-button type="danger" size="mini" @click="start_addneeds">新增</el-button>
-                        <el-select v-model="selectValue" clearable size="mini">
+                        <el-button type="danger" size="mini" @click="start_addneeds" v-if="addneeds.addif">新增</el-button>
+                        <el-select v-model="selectValue" clearable size="mini" @change="">
                             <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :label="item.key"
-                                    :value="item.value">
+                                    v-for="item in states"
+                                    :key="item.state_ID"
+                                    :label="item.state_NAME"
+                                    :value="item.state_ID">
                             </el-option>
                         </el-select>
                         <div class="fr">
@@ -1325,6 +1325,7 @@
         data(){
             return {
                 addneeds: {
+                    addif:false,//新增按钮的判断
                     notAllowChooseType: false,//是否能修改需求类型
                     addvisible: false,
                     addProject: true,
@@ -1422,7 +1423,7 @@
                         EXPECT_START: "",//预期开始时间
                     },
                 },
-                options: [],
+                states: [],//状态筛选
                 selectValue: "",//选择的筛选的值
                 dateComp: {},//日期筛选的值
                 keyword: "",//搜索关键词
@@ -1652,8 +1653,14 @@
                 this.$axios.post("/demand/getdemandTechnology", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.table.tableData = data.result;
-                        this.table.tableOriginData = data.result;
+                        this.table.tableData = data.result.technologyList;
+                        this.table.tableOriginData = data.result.technologyList;
+                        //加载状态筛选
+                        this.states = data.result.states;
+                        //判断新增权限
+                        if(data.result.DEPT_SAVE){
+                            this.addneeds.addif = true;
+                        }
 //                        if(this.$route.params.neelId){
 //                            let id = this.$route.params.neelId;
 //                            for(let i of data){

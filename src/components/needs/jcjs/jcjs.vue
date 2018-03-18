@@ -3230,10 +3230,10 @@
                     this.$warn("请填写用时");
                     return;
                 }
-                if (!this.$reg.number.test(this.split.usetime)) {
-                    this.$warn("用时格式不正确");
-                    return;
-                }
+//                if (!this.$reg.number.test(this.split.usetime)) {
+//                    this.$warn("用时格式不正确");
+//                    return;
+//                }
                 let end_data = this.$format(new Date(this.split.finishdate));
                 let obj = {
                     BASE_INFO_ID: this.split.taskcode,

@@ -66,7 +66,7 @@
         font-weight: bold;
         margin-bottom:5px;
     }
-        /*日期插件*/
+    /*日期插件*/
     .date-wrap {
         background: #777;
     }
@@ -203,7 +203,7 @@
                         </el-card>
                     </div>
                 </el-col>
-                <el-col :span="8" style="height: 100%">
+                <!--<el-col :span="8" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div slot="header" class="clearfix">
@@ -220,7 +220,7 @@
                             </ul>
                         </el-card>
                     </div>
-                </el-col>
+                </el-col>-->
             </el-col>
         </div>
     </el-col>
@@ -249,6 +249,19 @@
                     "5":"问题管理"
                 },//代办事项的标题数组
                 hasdo:[],//经办事项
+
+                show: {
+                    time: [],//时间
+                    comcount:[],//当日完成
+                    dcount:[],//当日执行
+                    scount:[],//当日固有
+                    newscount:[],//当日新增
+
+                    dept_NAME:[],//部门名称
+                    kocount:[],//空闲
+                    mcount:[],//忙碌
+                    sumcount:[],//人数
+                }
             }
         },
         components: {
@@ -260,83 +273,7 @@
             this.clearInt();
         },
         mounted(){
-            this.loadData();
-            this.calculate();
-            let dynamic_wrap = document.getElementById("dynamic");
-//            let dynamic_chart = this.$echarts.init(dynamic_wrap);
-            // 指定图表的配置项和数据
-            let option = {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'cross',
-                        crossStyle: {
-                            color: '#999'
-                        }
-                    }
-                },
-                legend: {
-                    data: ['当前新增需求', '当日完成需求', '当日执行任务', '当日留存需求']
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
-                        axisPointer: {
-                            type: 'shadow'
-                        }
-                    }
-                ],
-                yAxis: [
-                    {
-                        type: 'value',
-                        min: 0,
-                        max: 250,
-                        interval: 50,
-                        axisLabel: {
-                            formatter: '{value}'
-                        }
-                    },
-                    {
-                        type: 'value',
-                        min: 0,
-                        max: 25,
-                        interval: 5,
-                        axisLabel: {
-                            formatter: '{value}'
-                        }
-                    }
-                ],
-                series: [
-                    {
-                        name: '当前新增需求',
-                        type: 'bar',
-                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 23.2]
-                    },
-                    {
-                        name: '当日完成需求',
-                        type: 'bar',
-                        data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6]
-                    },
-                    {
-                        name: '当日执行任务',
-                        type: 'bar',
-                        data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6]
-                    },
-                    {
-                        name: '当日留存需求',
-                        type: 'line',
-                        yAxisIndex: 1,
-                        data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3]
-                    }
-                ]
-            };
-            // 使用刚指定的配置项和数据显示图表。
-//            dynamic_chart.setOption(option);
-//            let asset_wrap = document.getElementById("asset");
-//            let asset_chart = this.$echarts.init(asset_wrap);
-//            dynamic_chart.setOption(option);
-            this.clearInt()
+            this.loadData()
         },
         filters: {
             date: function (time) {
@@ -391,8 +328,10 @@
             },
             //加载数据
             loadData(){
+                this.calculate();
                 this.$maskin();
                 let params = new URLSearchParams();
+                //加载待办事项
                 this.$axios.post("/main/queryMatter",params).then((res)=>{
                     let data =res.data;
                     if(data.code == 200){
@@ -402,17 +341,180 @@
                         this.$set(this,"hasdo",data.result.havaMain);
                     }
                 });
+                //加载轮播图
                 this.$axios.post("/main/queryTask",params).then((res)=>{
                     let data =res.data;
                     if(data.code == 200){
                         //将要延期
-                            this.$set(this,"will_delay",data.result.willTask);
+                        this.$set(this,"will_delay",data.result.willTask);
                         //已经延期
                         this.$set(this,"has_delay",data.result.failTask);
                         this.setInterval()
                         this.$maskoff();
                     }
                 })
+
+                //一周动态
+                this.$axios.post("/main/datecount", params).then((res) => {
+                    let data = res.data;
+                    if(data.code == 200) {
+                        let dataArr = []
+                        let comcount=[]
+                        let dcount=[]
+                        let scount=[]
+                        let newscount=[]
+                        for(let i of data.result) {
+                            dataArr.push(i.dates);
+                            comcount.push(i.comcount);
+                            dcount.push(i.dcount);
+                            scount.push(i.scount);
+                            newscount.push(i.newscount);
+                        }
+                        this.$set(this.show, "time", dataArr);
+                        this.$set(this.show, "comcount", comcount);
+                        this.$set(this.show, "dcount", dcount);
+                        this.$set(this.show, "scount", scount);
+                        this.$set(this.show, "newscount", newscount);
+                        this.showEchart()
+                        this.$maskoff();
+                    }
+                })
+                //资源动态
+                this.$axios.post("/main/usercount", params).then((res) => {
+                    let data = res.data;
+                    if(data.code == 200) {
+                        let dept_NAME = []
+                        let kocount=[]
+                        let mcount=[]
+                        let sumcount=[]
+                        for(let i of data.result) {
+                            dept_NAME.push(i.dept_NAME);
+                            kocount.push(i.kocount);
+                            mcount.push(i.mcount);
+                            sumcount.push(i.sumcount);
+                        }
+                        this.$set(this.show, "dept_NAME", dept_NAME);
+                        this.$set(this.show, "kocount", kocount);
+                        this.$set(this.show, "mcount", mcount);
+                        this.$set(this.show, "sumcount", sumcount);
+                        this.showEchart()
+                        this.$maskoff();
+                    }
+                })
+            },
+            showEchart(){
+                let dynamic_wrap = document.getElementById("dynamic");
+                let dynamic_chart = this.$echarts.init(dynamic_wrap);
+                // 指定图表的配置项和数据
+
+                let optionweek = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: ['当前新增需求', '当日完成需求', '当日执行任务', '当日留存需求']
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+//                      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                            data: this.show.time,
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            min: 0,
+                            max: 20,
+                            interval: 3,
+                            axisLabel: {
+                                formatter: '{value}'
+                            }
+                        },
+                        {
+                            type: 'value',
+                            min: 0,
+                            max: 25,
+                            interval: 5,
+                            axisLabel: {
+                                formatter: '{value}'
+                            }
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '当前新增需求',
+                            type: 'bar',
+                            data: this.show.newscount
+                        },
+                        {
+                            name: '当日完成需求',
+                            type: 'bar',
+                            data: this.show.comcount
+                        },
+                        {
+                            name: '当日执行任务',
+                            type: 'bar',
+                            data: this.show.dcount
+                        },
+                        {
+                            name: '当日留存需求',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            data: this.show.scount
+                        }
+                    ]
+                };
+                let  optionresources = {
+                    angleAxis: {
+                    },
+                    radiusAxis: {
+                        type: 'category',
+                        data: this.show.dept_NAME,
+                        z: 5
+                    },
+                    polar: {
+                    },
+                    series: [{
+                        type: 'bar',
+                        data: this.show.kocount,
+                        coordinateSystem: 'polar',
+                        name: 'A',
+                        stack: 'a'
+                    }, {
+                        type: 'bar',
+                        data: this.show.mcount,
+                        coordinateSystem: 'polar',
+                        name: 'B',
+                        stack: 'a'
+                    }, {
+                        type: 'bar',
+                        data: this.show.sumcount,
+                        coordinateSystem: 'polar',
+                        name: 'C',
+                        stack: 'a'
+                    },
+                    ],
+                    legend: {
+                        show: true,
+                        data: ['A', 'B', 'C']
+                    }
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                dynamic_chart.setOption(optionweek);
+                let asset_wrap = document.getElementById("asset");
+                let asset_chart = this.$echarts.init(asset_wrap);
+                asset_chart.setOption(optionresources);
+                this.clearInt()
             },
             //------------------------设置轮播图的效果
             //移动到轮播图上移除定时器
