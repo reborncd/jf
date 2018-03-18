@@ -7,8 +7,8 @@
     }
 
     .el-table .cell button {
-        /*display: block;*/
-        margin: 5px auto;
+        display: inline-block;
+        margin: 0;
     }
 
     .el-form-item {
@@ -126,12 +126,12 @@
                 <div class="content">
                     <div class="action clear">
                         <el-button type="danger" size="mini" @click="newneeds" v-if="addneeds.addif">新增</el-button>
-                        <el-select v-model="selectValue" clearable size="mini">
+                        <el-select v-model="selectValue" clearable size="mini" @change="queryTableData($event,'select')">
                             <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :label="item.key"
-                                    :value="item.value">
+                                    v-for="item in states"
+                                    :key="item.state_ID"
+                                    :label="item.state_NAME"
+                                    :value="item.state_ID">
                             </el-option>
                         </el-select>
                         <div class="fr">
@@ -178,14 +178,30 @@
                             <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
                             <el-table-column prop="rriority_NAME" label="优先级" width="80"></el-table-column>
                             <el-table-column prop="state_NAME" label="状态"></el-table-column>
-                            <!--<el-table-column label="操作">-->
-                            <!--<template slot-scope="scope">-->
-                            <!--<el-button size="mini" type="primary"-->
-                            <!--v-if="!scope.row.start_DATE"-->
-                            <!--@click="splitCodeStart(scope.$index, scope.row)">驳回-->
-                            <!--</el-button>-->
-                            <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column label="操作" width="180">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="primary"
+                                           v-if="scope.row.check_TYPE == 'review'"
+                                           @click="tableAction(scope.$index, scope.row,$event,'review')">需求评审
+                                </el-button>
+                                <el-button size="mini" type="primary"
+                                           v-if="scope.row.check_TYPE == 'confrim'"
+                                           @click="tableAction(scope.$index, scope.row,$event,'confrim')">分配
+                                </el-button>
+                                <el-button size="mini" type="primary"
+                                           v-if="scope.row.check_TYPE == 'edit'"
+                                           @click="tableAction(scope.$index, scope.row,$event,'edit')">编辑
+                                </el-button>
+                                <el-button size="mini" type="primary"
+                                           v-if="scope.row.check_TYPE == 'edit'"
+                                           @click="tableAction(scope.$index, scope.row,$event,'back')">撤回
+                                </el-button>
+                                <el-button size="mini" type="primary"
+                                           v-if="scope.row.check_TYPE == 'accept'"
+                                           @click="tableAction(scope.$index, scope.row,$event,'accept')">验收
+                                </el-button>
+                            </template>
+                            </el-table-column>
                         </el-table>
                     </div>
                     <!--表格部分-->
@@ -197,7 +213,7 @@
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
                             <el-tab-pane label="详情页" name="info">
                                 <div class="console-tab-content">
-                                    <el-form label-width="100px" label-position="left">
+                                    <el-form label-width="120px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="24">
                                                 <el-form-item label="状态" style="color: red">
@@ -270,19 +286,59 @@
                                                 <el-form-item label="需求描述">{{tabs.tabsData.neel_DESCRIPTION}}</el-form-item>
                                             </el-col>
 
+
                                              <!----------------------------------需判断部分------------------------>
-                                            <!--当前用例模板-->
+
+                                            <!---------------------------技术管理部评审结果-->
+                                            <el-col :span="12" v-if="tabs.tabsData.pingDate">
+                                                <el-form-item label="评审时间">{{tabs.tabsData.pingDate}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="12" v-if="tabs.tabsData.pingPeople">
+                                                <el-form-item label="参会人">{{tabs.tabsData.pingPeople}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.tabsData.pingResult">
+                                                <el-form-item label="评审结果">{{tabs.tabsData.pingResult}}</el-form-item>
+                                            </el-col>
+
+                                            <!------------------------------当前用例模板-->
                                             <el-col :span="24" v-if="testTask.uploadFile.length">
                                                 <el-form-item label="当前用例模板" >
                                                     <span style="cursor: pointer;color: orangered" @click="testTask.modelvisible = true">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
-                                            <!--开发手册-->
+                                            <!------------------------------开发手册-->
                                             <el-col :span="24" v-if="codeupload.uploadFile.length">
                                                 <el-form-item label="开发手册" >
                                                     <span style="cursor: pointer;color: orangered" @click="codeupload.modelvisible = true">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
+
+
+                                            <!------------------------------生产环境附件-->
+                                            <el-col :span="24" v-if="testReport.prodFiles.length">
+                                                <el-form-item label="生产环境附件" >
+                                                    <span style="cursor: pointer;color: orangered"
+                                                          @click="testReport.modelvisible = true;testReport.activeReportTitle = '生产环境附件';
+                                                                  testReport.activeFiles = testReport.prodFiles">点击可查看</span>
+                                                </el-form-item>
+                                            </el-col>
+                                            <!------------------------------测试环境附件-->
+                                            <el-col :span="24" v-if="testReport.siceFiles.length">
+                                                <el-form-item label="测试环境附件" >
+                                                    <span style="cursor: pointer;color: orangered"
+                                                          @click="testReport.modelvisible = true;testReport.activeReportTitle = '测试环境附件';
+                                                                  testReport.activeFiles = testReport.siceFiles">点击可查看</span>
+                                                </el-form-item>
+                                            </el-col>
+                                            <!------------------------------准生产环境附件-->
+                                            <el-col :span="24" v-if="testReport.accFiles.length">
+                                                <el-form-item label="准生产环境附件" >
+                                                    <span style="cursor: pointer;color: orangered"
+                                                          @click="testReport.modelvisible = true;testReport.activeReportTitle = '准生产环境附件';
+                                                                  testReport.activeFiles = testReport.accFiles">点击可查看</span>
+                                                </el-form-item>
+                                            </el-col>
+
                                             <!--bug清单-->
                                             <el-col :span="24" v-if="testTask.allBugs.length">
                                                 <el-form-item label="BUG清单" style="color:orangered">
@@ -354,10 +410,12 @@
                                     <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="8">
-                                                <el-form-item label="状态">需求编号</el-form-item>
+                                                <el-form-item label="状态" style="color: red">
+                                                    {{tabs.tabsData.state_NAME}}
+                                                </el-form-item>
                                             </el-col>
                                             <el-col :span="12">
-                                                <el-form-item label="发送人">申请人</el-form-item>
+                                                <el-form-item label="发送人">{{tabs.tabsData.send_NAME}}</el-form-item>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -564,6 +622,29 @@
                                                        @click="reviewSub">提交分析结果</el-button>
                                         </div>
                                     </el-form>
+                                    <!--技术经理确认变更-->
+                                    <div class="table-list" v-if="changeInset.visible">
+                                        <el-table :data="changeInset.tableData" border style="width: 100%">
+                                            <el-table-column prop="user_NAME" label="人员"></el-table-column>
+                                            <el-table-column prop="system_NAME" label="系统名"></el-table-column>
+                                            <el-table-column prop="base_INFO_ID" label="任务编码" width="190"></el-table-column>
+                                            <el-table-column prop="end_DATE" :formatter="changeInsetMatter" label="完成日期" width="120"></el-table-column>
+                                            <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
+                                            <el-table-column prop="facility_NAME" label="难易度"></el-table-column>
+                                            <el-table-column prop="required_TIME" label="预计用时"></el-table-column>
+                                            <el-table-column prop="ACTUAL_TIME" label="实际用时"></el-table-column>
+                                            <el-table-column label="操作">
+                                                <template slot-scope="scope">
+                                                    <el-button size="mini" type="primary" v-if="scope.row.state_ID !=319"
+                                                               @click="editChangeInset(scope.$index, scope.row)">编辑
+                                                    </el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                        <div style="text-align: center;margin-top: 20px;">
+                                            <el-button style="float: none" type="primary" @click="subChangeInset">提交</el-button>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="开发任务操作台" name="codetask" v-if="tabs.codetask">
@@ -579,6 +660,9 @@
                                                 <input type="file" @change="uploadModel($event,'CODE')"
                                                        style="position: absolute;width: 80px;height: 28px;opacity: 0;left: 0;top: 0;">
                                             </div>
+                                            <el-button style="float: left;margin: 10px 0" type="primary" size="mini" v-if="split.oldTaskButton"
+                                                       @click="split.oldTaskvisible = true">查看原拆分任务
+                                            </el-button>
                                         </div>
                                         <el-table :data="split.codetask" border style="width: 100%">
                                             <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
@@ -597,15 +681,17 @@
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
                                                     <el-button size="mini" type="primary"
-                                                               v-if="!scope.row.start_DATE"
+                                                               v-if="scope.row.state_ID == 306 && scope.row.user_NAME != '合计'"
                                                                @click="splitCodeStart(scope.$index, scope.row)">开始
                                                     </el-button>
                                                     <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID != 319 && scope.row.start_DATE"
+                                                               v-if="scope.row.state_ID == 307 && scope.row.start_DATE"
                                                                @click="splitCodeFinish(scope.$index, scope.row)">完成
                                                     </el-button>
                                                     <span v-if="scope.row.state_ID == 319"
                                                           style="color: green">已完成</span>
+                                                    <span v-if="scope.row.state_ID == 321"
+                                                          style="color: red">已需求内变更</span>
                                                 </template>
                                             </el-table-column>
                                         </el-table>
@@ -632,10 +718,12 @@
                                         <!--上传用例模板-->
                                         <div style="display: inline-block;overflow: hidden;
                                         vertical-align: middle;position: relative;margin-left: 10px;">
-                                            <el-button type="primary"  size="mini">上传用例模板</el-button>
+                                            <el-button type="primary" size="mini">上传用例模板</el-button>
                                             <input type="file" @change="uploadModel($event,'TEST')"
                                                    style="position: absolute;width: 104px;height: 28px;opacity: 0;left: 0;top: 0;">
                                         </div>
+                                        <el-button type="primary" size="mini"
+                                                   @click="showTestReportUpload">上传测试结果</el-button>
                                         <!--测试的拆分任务-->
                                         <div class="testTask-wrapper">
                                             <div class="clear">
@@ -686,6 +774,8 @@
                                                                 </el-button>
                                                                 <span v-if="scope.row.state_ID == 319"
                                                                       style="color: green">已完成</span>
+                                                                <span v-if="scope.row.state_ID == 321"
+                                                                      style="color: red">已需求内变更</span>
                                                             </div>
                                                         </template>
                                                     </el-table-column>
@@ -740,9 +830,9 @@
                             <el-tab-pane label="拆分项目详情" name="split" v-if="tabs.allSplittask">
                                 <div class="console-tab-content">
                                     <!--判断当前是否被拆分过任务-->
-                                    <p style="text-align: right">实际用时合计：<span style="color: red">{{split.allUseTime}}</span></p>
+                                    <!--<p style="text-align: right">实际用时合计：<span style="color: red">{{split.allUseTime}}</span></p>-->
                                     <div class="table-list" v-if="split.hasSplitTaskDataByGroup.length>0">
-                                        <el-table :data="split.hasSplitTaskDataByGroup" border style="width: 100%"
+                                        <el-table :data="split.hasSplitTaskDataByGroup" show-summary border style="width: 100%"
                                                   highlight-current-row
                                                   @row-click="splitTaskClick">
                                             <el-table-column prop="DEPT_NAME" label="部门"></el-table-column>
@@ -779,8 +869,14 @@
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
-                                <div class="console-tab-content">
-                                    a
+                                <div class="console-tab-content" style="width: 100% !important;height: 250px !important;">
+                                    <el-form label-width="100px" label-position="right">
+                                        <el-row :gutter="20">
+                                            <el-col :span="24" :md="24">
+                                                <div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
+                                            </el-col>
+                                        </el-row>
+                                    </el-form>
                                 </div>
                             </el-tab-pane>
                         </el-tabs>
@@ -933,7 +1029,7 @@
                     </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldchangepoint">
                         <el-form-item label="原产品改造点">
-                            <el-input v-model="addneeds.addform.oldchangepoint"></el-input>
+                            {{addneeds.addform.oldchangepoint}}
                         </el-form-item>
                     </el-col>
                     <!--产品改造点-->
@@ -947,7 +1043,6 @@
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldneedsname">
                         <el-form-item label="原需求描述">
                             {{addneeds.addform.oldneedsname}}
-                            <!--<el-input type="textarea" v-model="addneeds.addform.oldneedsname" disabled></el-input>-->
                         </el-form-item>
                     </el-col>
                     <!--需求描述-->
@@ -1105,15 +1200,15 @@
             </el-form>
             <div class="table-list">
                 <el-table :data="split.hasSplitTaskData" height="280" border style="width: 100%">
+                    <el-table-column prop="user_NAME" label="人员" width="150"></el-table-column>
                     <el-table-column label="任务类型">
                         <template slot-scope="scope">
                             <div style="text-align: center">
-                                <span v-if="!scope.row.system_NAME">测试任务</span>
-                                <span v-if="scope.row.system_NAME">开发任务</span>
+                                <span v-if="!scope.row.system_NAME && scope.row.user_NAME != '合计'">测试任务</span>
+                                <span v-if="scope.row.system_NAME && scope.row.user_NAME != '合计'">开发任务</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="user_NAME" label="人员" width="150"></el-table-column>
                     <el-table-column prop="system_NAME" label="系统名"></el-table-column>
                     <el-table-column prop="base_INFO_ID" label="任务编码" width="190"></el-table-column>
                     <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
@@ -1374,7 +1469,79 @@
                 </el-table>
             </div>
         </el-dialog>
-        
+        <!--测试报告-->
+        <el-dialog :title="testReport.activeReportTitle" :visible="testReport.modelvisible" width="60%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <div class="table-list">
+                <el-table :data="testReport.activeFiles" border style="width: 100%">
+                    <el-table-column prop="name" label="文件名"></el-table-column>
+                    <!--<el-table-column prop="size_STRING" label="大小" width="100"></el-table-column>-->
+                    <el-table-column label="操作" width="80">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="downloadModel(scope.row)">下载</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
+        <!--上传测试报告-->
+        <el-dialog title="上传测试结果" :visible="testReport.visible" width="60%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <el-form label-width="120px">
+                <el-form-item label="报告类型">
+                    <el-select v-model="testReport.type" placeholder="请选择类型"
+                               style="width: 100%">
+                        <el-option v-for="item in testReport.typeArr" :label="item.name"
+                                   :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="上传文件">
+                    <div style="display: inline-block;overflow: hidden;
+                                            vertical-align: middle;position: relative;">
+                        <el-button type="primary" size="mini">上传测试报告</el-button>
+                        <input type="file" @change="uploadTestReport($event)"
+                               style="position: absolute;width: 104px;height: 28px;opacity: 0;left: 0;top: 8px;">
+                    </div>
+                    <p v-for ="(item,index) in testReport.uploadFile">{{item.name}}
+                        <!--<i style="margin-left: 10px;cursor: pointer;color: red;"-->
+                           <!--@click="testReport.uploadFile.splice(index,1);testReport.fileIds.splice(index,1)" class="el-icon-close"></i>-->
+                    </p>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="testReport.visible = false" size="mini">取 消</el-button>
+                <!--<el-button type="primary" @click="testReportSub" size="mini">确定</el-button>-->
+            </div>
+        </el-dialog>
+        <!--查看原拆分任务-->
+        <el-dialog title="原拆分任务" :visible="split.oldTaskvisible" width="90%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <div class="table-list">
+                <el-table :data="split.oldTaskTableData" border style="width: 100%">
+                    <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
+                    <el-table-column prop="system_NAME" label="系统名"
+                                     width="150"></el-table-column>
+                    <el-table-column prop="base_INFO_ID" label="任务编码"
+                                     width="200"></el-table-column>
+                    <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
+                                     label="完成日期" width="120"></el-table-column>
+                    <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
+                    <el-table-column prop="facility_NAME" label="难易度"
+                                     width="70"></el-table-column>
+                    <el-table-column prop="required_TIME" label="预计用时（小时）"></el-table-column>
+                    <el-table-column prop="actual_TIME" label="实际用时（小时）"></el-table-column>
+                    <el-table-column prop="remark" label="备注"></el-table-column>
+                    <el-table-column label="状态" width="120">
+                        <template slot-scope="scope">
+                            <span style="color: red">已需求内变更</span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1480,6 +1647,10 @@
                         EXPECT_START:"",//预期开始时间
                     },
                     allUseTime:"",//合计的实际用时
+                    //原拆分任务
+                    oldTaskButton:false,//查看元拆分任务的按钮展示
+                    oldTaskvisible:false,//弹窗
+                    oldTaskTableData:[],//原拆分任务弹窗展示
                 },
                 //表格数据
                 table: {
@@ -1489,43 +1660,8 @@
                 },
                 dateValue: "",
                 keyword: "",
-                options: [
-                    {
-                        "key": "与我相关",
-                        "value": "1"
-                    }, {
-                        "key": "全部",
-                        "value": "2"
-                    }, {
-                        "key": "带技术部审核",
-                        "value": "3"
-                    }, {
-                        "key": "待开发部审核",
-                        "value": "4"
-                    }, {
-                        "key": "待产品部审核",
-                        "value": "5"
-                    }, {
-                        "key": "开发计划制定",
-                        "value": "6"
-                    }, {
-                        "key": "开发执行",
-                        "value": "7"
-                    }, {
-                        "key": "开发挂起",
-                        "value": "8"
-                    }, {
-                        "key": "验收中",
-                        "value": "9"
-                    }, {
-                        "key": "需求完成",
-                        "value": "10"
-                    }, {
-                        "key": "需求关闭",
-                        "value": "11"
-                    }
-                ],
-                selectValue: "与我相关",
+                states: [],
+                selectValue: "",
                 dateComp: {},
                 //控制台
                 tabs: {
@@ -1541,8 +1677,11 @@
                     codeActionData: [],//开发人员的操作权限
                     testActionData: [],//测试人员的操作权限
                     activeTableInfo: "",//当前选中的信息表格
-                    tabsData: {//控制台的信息页展示内容
+                    tabsData: {
+                        //控制台的信息页展示内容
                         state_NAME:"",//当前状态
+                        send_NAME:"",//发送人
+
                         base_NEET_ID:"",//需求编号
                         neel_NAME:"",//需求名称
                         type:"",//需求类型
@@ -1563,6 +1702,11 @@
                         product_FUNCTION:"",//产品改造点
                         neel_DESCRIPTION:"",//需求描述
                         fali:"",//验收不通过
+
+                        //需求评审结果的展示
+                        pingResult:"",//需求评审结果
+                        pingDate:"",//评审时间
+                        pingPeople:"",//参会人
                     },
                     state_NAME: "",//状态
                     user_NAME: "",//负责人
@@ -1659,6 +1803,29 @@
                 codeupload:{
                     uploadFile:[],//上传的文件信息
                     modelvisible:false,
+                },
+                //上传测试报告
+                testReport:{
+                    typeArr:[
+                        {"name":"测试环境附件","id":"TESTSICE"},
+                        {"name":"准生产环境附件","id":"TESTACC"},
+                        {"name":"生产环境附件","id":"TESTPROD"}
+                        ],//报告类型
+                    type:"",//报告类型的值
+                    visible:false,
+                    uploadFile:[],//测试报告文件存放地方
+                    fileIds:[],//上传后的文件ID存放处
+                    modelvisible:false,//下载的弹窗
+                    accFiles:[],//准生产环境
+                    siceFiles:[],//测试环境附件
+                    prodFiles:[],//生产环境附件
+                    activeReportTitle:"",//当前报告标题
+                    activeFiles:[],//当前要放入的数据
+                },
+                //需求内变更确认
+                changeInset:{
+                    visible :false,
+                    tableData:[],//表格数据
                 }
             }
         },
@@ -1666,7 +1833,7 @@
             date(time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let month = (d.getMonth() + 1)<10?'0' + (d.getMonth()+1) : '' + d.getMonth()+ 1;
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
                 let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
                 let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
@@ -1676,7 +1843,7 @@
             date_y_m_d(time){
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let month = (d.getMonth() + 1)<10?'0' + (d.getMonth()+1) : '' + d.getMonth()+ 1;
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
                 return year + '-' + month + '-' + day
             }
@@ -1758,6 +1925,8 @@
                             this.addneeds.addif = true;
                         }
                         this.setTableData(data.result);
+                        //加载状态筛选
+                        this.states = data.result.states;
                     }
                 })
             },
@@ -1781,11 +1950,8 @@
             },
             //-------------查询功能
             queryTableData(e,type){
-                console.log(type)
-                console.log(this.dateValue)
-                console.log(this.keyword)
                 this.$maskin();
-                if(!this.dateValue && this.keyword == ""){
+                if(!this.dateValue && this.keyword == "" && !this.selectValue){
                     this.$set(this.table,"tableData",this.table.tableOriginData);
                     this.$maskoff();
                     return
@@ -1796,6 +1962,8 @@
                     params.append("endDate",this.dateValue[1]);
                 }else if(type == "keyword"){
                     params.append("key",this.keyword)
+                }else if(type == "select"){
+                    params.append("STATE_ID",this.selectValue)
                 }
                 this.$axios.post("/base/queryAll",params).then((res)=>{
                     let data = res.data;
@@ -1954,7 +2122,8 @@
                     url = "/base/saveBaseConstruct"
                 }else if(this.addneeds.addType == "changeinset"){
                     //需求内变更
-                    url = ""
+                    url = "/base/innerUpdate";
+                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
                 }else if(this.addneeds.addType == "edit"){
                     //修改编辑
                     url = "/base/updateBaseByApply";
@@ -2012,6 +2181,9 @@
                 this.testTask.modelvisible = false;//用例模板的弹窗
                 this.codeupload.modelvisible = false;//开发手册的弹窗
                 this.hang.dialogvisible = false;//挂起原因
+                this.testReport.visible = false;//上传测试报告的弹窗
+                this.testReport.modelvisible = false;//测试的环境报告弹窗
+                this.split.oldTaskvisible = false;//原拆分任务的弹窗
             },
             //----------------------------------点击表格列表展示控制台
             //初始化操作
@@ -2032,6 +2204,8 @@
                 this.testTask.type = "";
                 //初始化恢复/挂起功能
                 this.hang.hangvisible = false;
+                //关闭确认需求的表格
+                this.changeInset.visible = false;
             },
             handleCurrentChange(val){
                 //点击时初始化操作
@@ -2048,6 +2222,35 @@
                     this.loadTabsData(val)
                 }
             },
+            //表格后面按钮的点击事件
+            tableAction(index,row,e,type){
+                this.tabs.activeTableInfo = row;
+                //阻止事件冒泡
+                e.stopPropagation();
+                switch (type) {
+                    case "review":
+                        //需求评审
+                        this.handleCurrentChange(row);
+                        this.tabs.activeName = "console"
+                        break;
+                    case "confrim":
+                        //分配
+                        this.getAssign();
+                    break;
+                    case "edit":
+                        //编辑
+                        this.editNeed();
+                        break;
+                    case "back":
+                        //撤回
+                        this.back();
+                        break;
+                    case "accept":
+                        //验收
+                        this.acceptance();
+                        break;
+                }
+            },
             //-------------------------------------请求点击的数据信息
             loadTabsData(val){
                 let params = new URLSearchParams();
@@ -2057,11 +2260,11 @@
                     if (data.code == 200) {
                         //以下是初始化其需要根据状态变化而展示数据
                         this.tabs.tabsData.oldcode = "";//原需求ID
-                        this.tabs.tabsData.oldproduct = "";//原产品功能
-                        this.tabs.tabsData.olddescribe = "";//原需求描述
+                        this.tabs.tabsData.oldchangepoint = "";//原产品功能
+                        this.tabs.tabsData.oldneedsname = "";//原需求描述
                         this.tabs.tabsData.newcode = "";//新需求ID
-                        this.tabs.tabsData.newproduct = "";//新产品功能
-                        this.tabs.tabsData.newdescribe = "";//新需求描述
+                        this.tabs.tabsData.newchangepoint = "";//新产品功能
+                        this.tabs.tabsData.newneedsname = "";//新需求描述
                         let base = data.result.base;
                         //--------------------------加载展示数据
 
@@ -2094,27 +2297,64 @@
                         this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
                         this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
 
-                        //-----------------------------判断开发和测试控制台的加载--------------
-                        if(data.result.codeInfos && data.result.codeInfos.length){
+                        //--------------------------判断需求评审结果
+                        if(base.check_TIME){
+                            let ping_date = this.$format(base.check_TIME);
+                            this.tabs.tabsData.pingDate = `${ping_date.year}-${ping_date.mouth}-${ping_date.day}`;//评审时间
+                            this.tabs.tabsData.pingPeople = base.check_NAME;//评审人
+                            this.tabs.tabsData.pingResult = base.check_TYPE;//评审结果
+                        }
+
+
+                        //----------------------判断开发和测试控制台的加载--------------
+                        if(data.result.codeInfos){
                             this.tabs.codetask = true;
                             //是否有开发任务
-                            data.result.codeInfos.length > 0 ?
-                                this.$set(this.split, "codetask", data.result.codeInfos) : this.$set(this.split, "codetask", []);
+                            if(data.result.codeInfos.length>0){
+                                this.$set(this.split, "codetask", data.result.codeInfos);
+                                //添加合计
+                                let required_TIME = 0;//预计用时
+                                let actual_TIME = 0;//实际用时
+                                for(let i of data.result.codeInfos){
+                                    i.required_TIME?required_TIME+=i.required_TIME:"";
+                                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
+                                }
+                                this.split.codetask.push({
+                                    "user_NAME":"合计",
+                                    "actual_TIME":actual_TIME,
+                                    "required_TIME":required_TIME
+                                })
+                            }else{
+                                this.$set(this.split, "codetask", [])
+                            }
                         }
+
                         if(data.result.testInfos){
-                            this.tabs.testtask = true;
                             //是否有测试任务
                             this.testTask.testTaskActiveInfo = "";
                             if (data.result.testInfos.length > 0) {
+                                this.tabs.testtask = true;
                                 this.$set(this.testTask, "testSplitData", data.result.testInfos);
                                 this.testTask.hasTask = true;
+                                //添加合计
+                                let required_TIME = 0;//预计用时
+                                let actual_TIME = 0;//实际用时
+                                for(let i of data.result.testInfos){
+                                    i.required_TIME?required_TIME+=i.required_TIME:"";
+                                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
+                                }
+                                this.testTask.testSplitData.push({
+                                    "user_NAME":"合计",
+                                    "actual_TIME":actual_TIME,
+                                    "required_TIME":required_TIME
+                                })
                             } else {
                                 this.$set(this.testTask, "testSplitData", []);
                                 this.testTask.hasTask = false;
                             }
                         }
 
-                        //---------------------------------判断用例类型
+                        //----------------------判断用例类型
                         //未选择过
                         data.result.types ?
                             this.$set(this.testTask, "typeArr", data.result.types) :
@@ -2126,14 +2366,15 @@
                             this.$set(this.testTask,"uploadFile",data.result.testFiles);
                         }
 
-                        //----------------判断是否上传了开发手册
+                        //----------------------判断是否上传了开发手册
                         if(data.result.codeFiles) {
                             this.$set(this.codeupload,"uploadFile",data.result.codeFiles);
                         }
 
 
-                        //---------------------------设置全程跟踪数据
-                        this.tabs.state_NAME = base.state_NAME;
+                        //----------------------设置全程跟踪数据和发送人
+                        this.tabs.tabsData.state_NAME = base.state_NAME;
+                        this.tabs.tabsData.send_NAME = base.send_NAME;
                         this.tabs.user_NAME = base.apply_NAME;
                         this.$set(this.tabs, "genzong", data.result.records);
 
@@ -2146,31 +2387,34 @@
 //                        }
 //                        this.$set(this.tracking, "data",recordArr);
 
-                        //--------------------展示所有的bug清单
+                        //----------------------展示所有的bug清单
                         if(data.result.bugs.length){
                             this.$set(this.testTask, "allBugs", data.result.bugs);
                         }
 
-                        //-----------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
+                        //----------------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
                         if (data.result.systemDepts && data.result.systemDepts.length > 0) {
                             this.tabs.allSplittask = true;
-                            console.log(data.result.systemDepts)
-                            //计算合计用时
-                            let num = 0;
-                            for (let i of data.result.systemDepts) {
-                                if (i.allTime) {
-                                    num += parseInt(i.allTime);
-                                }
-                            }
-                            this.split.allUseTime = num + "小时"
-                            this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts)
+                            this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts);
 
-                        }
-                        else {
+                            //实时统计数据加载
+                            let datashow = data.result.systemDepts
+                            let yaxis=[]
+                            let startTime=[]
+                            let nowTime=[]
+                            let endTime=[]
+                            for(let i of datashow){
+                                yaxis.push(i.DEPT_NAME)
+                                startTime.push(new Date(i.EXPECT_START))
+                                nowTime.push(new Date(data.timestamp))
+                                endTime.push(new Date(i.EXPECT_END))
+                            }
+                            this.realTime(yaxis,startTime,nowTime,endTime)
+                        } else {
                             this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         }
 
-                        //------------------判断是否有驳回理由
+                        //----------------------判断是否有驳回理由
                         this.tabs.tabsData.reject_RESON =
                             base.reject_RESON ? base.reject_RESON : "";
 
@@ -2178,7 +2422,7 @@
                         this.tabs.tabsData.fali =
                             base.fali ? base.fali : "";
 
-                        //---------------------新建变更的判断
+                        //----------------------新建变更的判断
                         if(base.base_NEET_FID){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
@@ -2216,12 +2460,117 @@
                             this.tabs.tabsData.test_end = base.test_END_DATETIME;
                         }
 
+                        //测试报告类型
+                        this.$set(this.testReport,"accFiles",data.result.accFiles);//准生产环境
+                        this.$set(this.testReport,"siceFiles",data.result.siceFiles);//测试环境附件
+                        this.$set(this.testReport,"prodFiles",data.result.prodFiles);//生产环境附件
+
+                        //判断是否有需求变更前的拆分任务
+                        if(data.result.oldInfos && data.result.oldInfos.length){
+                            this.split.oldTaskButton = true;
+                            this.$set(this.split,"oldTaskTableData",data.result.oldInfos)
+                        }else{
+                            this.split.oldTaskButton = false;
+                        }
                         //----------------------加载权限
                         this.setStateAction(data.result);
+
+                        //加载实时统计数据
 
                         this.$maskoff();
                     }
                 })
+            },
+            //实时统计方法
+            realTime(yaxis,startTime,nowTime,endTime) {
+                let echarts = require('echarts');
+                let proBar = echarts.init(document.getElementById("system")); //实时统计
+                proBar.clear();
+                let option = {};
+                option = {
+                    legend: {
+                        data: ['实时统计']
+                    },
+                    xAxis: {
+                        type: 'time'
+                    },
+
+                    yAxis: {
+                        data: yaxis
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: function(params) {
+                            let res = params[0].name + "</br>"
+                            let date0 = params[0].data;
+                            let date1 = params[1].data;
+                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
+                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
+                            res += params[0].seriesName + ":" + date0 + "</br>"
+                            res += params[1].seriesName + ":" + date1 + "</br>"
+                            return res;
+                        }
+                    },
+                    series: [
+                        {
+                            name: '开始时间',
+                            type: 'bar',
+                            stack: '总量',
+                            itemStyle: {
+                                normal: {
+                                    color: 'rgba(0,0,0,0)',
+                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                }
+                            },
+                            data: startTime
+                        }, {
+                            name: '结束时间',
+                            type: 'bar',
+                            stack: '总量',
+                            itemStyle: {
+                                normal: {
+                                    color: '#52b4f7',
+                                    barBorderRadius: 20,
+                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                    shadowBlur: 20
+                                }
+                            },
+                            data:endTime
+                        }
+                    ]
+                };
+                let endDate =  {
+                    name: '超出开始时间',
+                    type: 'bar',
+                    stack: '总量',
+                    itemStyle: {
+                        normal: {
+                            color: 'red',
+                            shadowColor: 'rgba(255, 255, 255, 0.3)',
+                        }
+                    },
+                    data:endTime
+                };
+                let nowDate = {
+                    name: '时间',
+                    type: 'bar',
+                    stack: '总量',
+//							barWidth : 15,
+                    itemStyle: {
+                        normal: {
+                            color: 'red',
+                            barBorderRadius: 20,
+                            shadowColor: 'rgba(255, 255, 255, 0.3)',
+                            shadowBlur: 20
+                        }
+                    },
+                    data:nowTime
+                }
+                if(nowTime>endTime){
+                    option.series.push()
+                }
+
+                proBar.setOption(option);
             },
             //设置当前状态的下的操作
             setStateAction(base){
@@ -2277,7 +2626,8 @@
                         //新建变更
                         this.newchange("change");
                         break;
-                    case "需求内变更":
+                    case "INNERUPDATE":
+                        //需求内变更
                         this.newchange("changeinset");
                         break;
                     case "DRAW":
@@ -2300,6 +2650,10 @@
                     case "PERSONCHECK":
                         //技术经理需求分析
                         this.beginreview();
+                        break;
+                    case "CONFRIMUPDATE":
+                        //技术经理确认变更
+                        this.doChangeInset();
                         break;
                 }
             },
@@ -2487,12 +2841,17 @@
                 params.append("CHECK_ID",ping.checks.split("-")[0]);
                 params.append("CHECK_TIME",ping.date);
                 params.append("CHECK_NAME",ping.person);
+                params.append("RRIORITY",ping.rriority);
                 this.$axios.post("/base/reviewBase",params).then((res)=>{
                     let data =res.data;
                     if(data.code == 200){
                         this.$success("操作成功！");
+                        this.ifPing.rriority = ""
+                        this.ifPing.checks = "";
+                        this.ifPing.date = "";
+                        this.ifPing.person = "";
                         this.ifPing.visible = false;
-                        this.loadTabsData(this.tabs.activeTableInfo)
+                        this.loadData();
                     }
                 })
             },
@@ -2646,7 +3005,7 @@
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
                         if(type=="changeinset"){
                             //需求内变更需展示
-                            this.addneeds.addform.oldgongneng = base.product_FUNCTION;//原需求功能
+                            this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
                             this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
                         }else{
                             //新建变更无需展示
@@ -2661,10 +3020,6 @@
             //---------------------------------------------分配任务
             getAssign(){
                 let info = this.tabs.activeTableInfo;
-                if (info.state_ID != 303 && info.state_ID != 304) {
-                    this.$warn("只有待技术管理部审核或被技术经理驳回状态才能进行分配操作");
-                    return;
-                }
                 this.assign.eyword = "";
                 this.assign.checkList = [];
                 this.assign.assignvisible = true;
@@ -2739,7 +3094,7 @@
                     params.append("names", nameArr);
                     params.append("ids", idArr);
                     params.append("BASE_ID", info.base_NEET_ID);
-                    params.append("OLD_STATE", info.state_ID);
+//                    params.append("OLD_STATE", info.state_ID);
                     this.$axios.post("/base/checkBase", params).then((res) => {
                         let data = res.data;
                         if (data.code == 200) {
@@ -2792,8 +3147,10 @@
             },
             //拆分任务时间过滤器
             splitDataFormatter(row, col){
-                let date = this.$format(row.end_DATE);
-                return `${date.year}-${date.mouth}-${date.day}`
+                if(row.end_DATE){
+                    let date = this.$format(row.end_DATE);
+                    return `${date.year}-${date.mouth}-${date.day}`
+                }
             },
             //新增涉及系统
             systemEvent(index, e){
@@ -2873,13 +3230,17 @@
                     this.$warn("请填写用时");
                     return;
                 }
+                if (!this.$reg.number.test(this.split.usetime)) {
+                    this.$warn("用时格式不正确");
+                    return;
+                }
                 let end_data = this.$format(new Date(this.split.finishdate));
                 let obj = {
                     BASE_INFO_ID: this.split.taskcode,
                     USER_NAME: this.split.person.split("-")[1],
                     SYSTEM_NAME: this.split.choosesysyem,
                     RESPONSIBLE_MODULE: this.split.model,
-                    FACILITY: this.split.splitradio != 1?
+                    FACILITY_ID: this.split.splitradio != 1?
                         this.split.levelchoosen.split("-")[0]:"",//难度ID
                     FACILITY_NAME: this.split.splitradio != 1?
                         this.split.levelchoosen.split("-")[1]:"",//难度等级
@@ -3076,8 +3437,22 @@
                 if (!val.infos || val.infos.length == 0) {
                     return;
                 }
+                let actual_TIME = 0;//实际用时
+                let required_TIME = 0;//预计用时
+                for(let i of val.infos){
+                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
+                    i.required_TIME?required_TIME+=i.required_TIME:"";
+                }
                 this.split.hasSplitvisible = true;
                 this.$set(this.split, "hasSplitTaskData", val.infos);
+                //添加合计用时
+                if(this.split.hasSplitTaskData[this.split.hasSplitTaskData.length-1].user_NAME != "合计") {
+                    this.split.hasSplitTaskData.push({
+                        "user_NAME":"合计",
+                        "actual_TIME":actual_TIME,
+                        "required_TIME":required_TIME
+                    })
+                }
 
                 this.split.reviewData.TASK_RISK = val.TASK_RISK;//风险点
                 this.split.reviewData.ANALYSIS_RESULT = val.ANALYSIS_RESULT;//分析结果
@@ -3411,9 +3786,96 @@
             assignCheckedAble(val){
                 return val.ASSIGNOR_PERSON_NAME ? false : true
             },
+            //开启上传弹框
+            showTestReportUpload(){
+                this.$set(this.testReport,"fileIds",[]);
+                this.$set(this.testReport,"uploadFile",[]);
+                this.testReport.visible = true;
+            },
             //上传测试报告
-            uploadTestReport(){
+            uploadTestReport(e){
+                let file = e.target.files[0];
+                let type = this.testReport.type;//测试报告类型
+                this.$maskin();
+                let params = new FormData();
+                params.append("file",file);
+                params.append("TYPE",type);
+                params.append("token",localStorage.getItem("token"));
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/upload",params).then((res)=>{
+                    let data= res.data;
+                    if(data.code == 200){
+                        this.$success("上传成功！");
+                        this.testReport.uploadFile.push(file);
+                        this.testReport.fileIds.push();
+                        this.$maskoff();
+                    }
+                })
+            },
+            testReportSub(){
 
+            },
+            //技术经理确认变更
+            doChangeInset(){
+               this.$maskin();
+                let params = new URLSearchParams();
+                params.append("BASE_ID",this.tabs.tabsData.oldcode);
+                this.$axios.post("/base/querySplitInfo",params).then((res)=>{
+                    let data= res.data;
+                    if(data.code == 200){
+                        this.changeInset.visible = true;
+                        let arr = data.result;
+                        for(let i of arr){
+                            i["ACTUAL_TIME"] = 0;
+                        }
+                        this.$set(this.changeInset,"tableData",data.result);
+                        this.$maskoff();
+                    }
+                })
+
+            },
+            //过滤器
+            changeInsetMatter(row){
+                let data = this.$format(row.end_DATE);
+                return `${data.year}-${data.mouth}-${data.day}`
+            },
+            //编辑操作
+            editChangeInset(index,row){
+                this.prompt("添加实际用时","请添加实际用时",(val)=>{
+                    if(!val.value){
+                        this.$warn("请填写实际用时");
+                        return;
+                    }
+                    if(!this.$reg.number.match(val.value)){
+                        this.$warn("实际用时格式不正确");
+                        return;
+                    }
+                    this.$set(this.changeInset.tableData[index],"ACTUAL_TIME",val.value);
+                })
+            },
+            //提交需求内变更结果
+            subChangeInset(){
+                let arr = [];
+                for(let i of this.changeInset.tableData){
+                    let obj = {
+                        "USER_ID":i.user_ID,
+                        "BASE_INFO_ID":i.base_INFO_ID,
+                        "ACTUAL_TIME":i.ACTUAL_TIME
+                    };
+                    arr.push(obj);
+                }
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append("bics",JSON.stringify(arr));
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/updateInfos",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.$success("操作成功！");
+                        this.loadData();
+                        this.$maskoff();
+                    }
+                })
             }
         }
     }
