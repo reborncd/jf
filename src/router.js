@@ -106,6 +106,22 @@ let option = {
                 },{
                     path: "material",
                     component: resolve => require(['./components/zlk/material.vue'], resolve)
+                },{
+                    path: "xmtj",
+                    name:"项目统计",
+                    component: resolve => require(['./components/statistical/xmtj.vue'], resolve)
+                },{
+                    path: "jftj",
+                    name:"积分统计",
+                    component: resolve => require(['./components/statistical/jftj.vue'], resolve)
+                },{
+                    path: "rytj",
+                    name:"人员统计",
+                    component: resolve => require(['./components/statistical/rytj.vue'], resolve)
+                },{
+                    path: "wttj",
+                    name:"问题统计",
+                    component: resolve => require(['./components/statistical/wttj.vue'], resolve)
                 }
             ]
         }, {

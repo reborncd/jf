@@ -6,7 +6,7 @@ import  "./static/css/iconfont.css"
 import App from './App.vue'
 import router from "./router.js";
 import axios from "axios";
-// import echarts from  'echarts'
+import echarts from  'echarts'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -98,7 +98,7 @@ Vue.prototype.$err = function (msg) {
 //----------------------------------------------------
 //使用echarts----------------------------------------------------
 //----------------------------------------------------
-// Vue.prototype.$echarts = echarts;
+Vue.prototype.$echarts = echarts;
 //----------------------------------------------------
 //蒙版
 //----------------------------------------------------
@@ -189,13 +189,15 @@ instance.interceptors.response.use(function (response) {
     if (response.data.token) {
         Vue.prototype.$warn("登录失效，请重新登陆");
         Vue.prototype.$goLogin();
+        Vue.prototype.$maskoff();
     }
     if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
-        Vue.prototype.$maskoff()
+        Vue.prototype.$maskoff();
     }
     if (response.data.code == 210) {
         Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
+        Vue.prototype.$maskoff();
     }
     return response;
 }, function (error) {

@@ -844,7 +844,7 @@
       downfile(val){      	
       	let token=localStorage.getItem("token")
 //    	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
-      	this.$axios.get("/fault/download?token="+token+"&id="+val)
+      	this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
       },
       addPopup(){
       	this.setConsoleVisible()
