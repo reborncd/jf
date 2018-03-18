@@ -96,11 +96,11 @@
 							<el-table-column prop="state_NAME" label="状态"></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
-									<el-button v-if="scope.row.state==2 || scope.row.state==9 || scope.row.state==12" @click="agreeRow(scope.row,scope,$event)" size="small" type="primary">通过
+									<el-button v-if="scope.row.type=='check'" @click="agreeRow(scope.row,scope,$event)" size="small" type="primary">通过
 									</el-button>
-									<el-button v-if="scope.row.state==2 || scope.row.state==9 || scope.row.state==12" @click="unagreeRow(scope.row,scope,$event)" size="small" type="danger">驳回
+									<el-button v-if="scope.row.type=='check'" @click="unagreeRow(scope.row,scope,$event)" size="small" type="danger">驳回
 									</el-button>
-									<el-button v-if="scope.row.state==4" @click="ensureRow(scope.row,scope,$event)" size="middle" type="primary">确定上线
+									<el-button v-if="scope.row.type=='confirm'" @click="ensureRow(scope.row,scope,$event)" size="middle" type="primary">确定上线
 									</el-button>
 								</template>
 							</el-table-column>
@@ -111,7 +111,7 @@
 						<div class="console-action-wrapper">
 							<i class="el-icon-close close" @click="setConsoleVisible"></i>
 						</div>
-						<el-tabs v-model="tabs.activeName" type="card">
+						<el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
 							<el-tab-pane label="详情页" name="info">
 								<div class="console-tab-content">
 									<el-form label-width="100px" label-position="left">
@@ -164,8 +164,8 @@
 												<el-form-item label="产品功能">{{tabs.data_one.DemandTechnology.product_FUNCTION}}
 												</el-form-item>
 											</el-col>
-
 										</el-row>
+
 										<el-row :gutter="20" v-if="tabs.data_one.goliveProject">
 											<el-col :span="12">
 												<el-form-item v-if="state.id && state.id!=1" label="开发负责人">{{tabs.data_one.goliveProject.open_LEADER}}</el-form-item>
@@ -192,13 +192,22 @@
 												<el-form-item v-if="state.id && state.id!=1" label="是否停交易">{{tabs.data_one.goliveProject.trade==0?'是':'否'}}</el-form-item>
 											</el-col>
 										</el-row>
+										<el-row :gutter="20" v-if="tabs.data_one.dowm && tabs.data_one.dowm.length>0">
+											<el-col :span="12">
+												<el-form-item label="下载附件">
+													<p>
+														<a style="margin-right: 20px;color: #999" v-for="(item,index) in tabs.data_one.dowm" @click="downfile(item.id)">{{item.name}}</a>
+													</p>
+												</el-form-item>
+											</el-col>
+										</el-row>
 									</el-form>
 								</div>
 							</el-tab-pane>
 
 							<el-tab-pane label="操作台" name="console" v-if="state.id!=5 && state.id!=6">
 								<div class="console-tab-content">
-									<div class="console-action-wrapper">
+									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_SAVE || tabs.data_one.GOLIVE_ZLGT">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
 										<div class="console-action fr" v-if="tabs.consoleActionVisible">
 											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item,)">{{item.name}}
@@ -206,7 +215,7 @@
 										</div>
 									</div>
 
-									<el-form label-width="140px" v-if="!state.id || state.id==1">
+									<el-form label-width="140px" v-if="tabs.data_one.GOLIVE_SAVE">
 										<el-col :span="24">
 											<el-form-item label="状态">{{state.name}}
 											</el-form-item>
@@ -305,9 +314,12 @@
 													<el-input v-model="consoleForm.effectTime"></el-input>
 												</el-form-item>
 											</el-col>
-											<el-col :span="24" :md="24">
-												<el-form-item label="附件说明">
-													<el-input type="textarea" v-model="consoleForm.illustrate"></el-input>
+											<el-col :span="12">
+												<el-form-item label="上传附件" style="position: relative;">
+													<el-button type="primary">上传附件</el-button>
+													<input type="file" @change="getFile($event)" placeholder="上传附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
+													<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
+													</p>
 												</el-form-item>
 											</el-col>
 										</el-row>
@@ -318,22 +330,15 @@
 										<el-row :gutter="20">
 											<el-col :span="10" :sm="10">
 												<el-form-item label="状态：">
-													<span style="color: red">{{tabs.state_NAME}}</span>
+													<span style="color: red">{{tabs.data_one.DemandTechnology.state_NAME}}</span>
 												</el-form-item>
 											</el-col>
 											<el-col :span="6" :sm="6">
 												<el-form-item label="发送人：" label-width="100px">
-													{{tabs.user_NAME}}
+													{{tabs.data_one.DemandTechnology.user_NAME}}
 												</el-form-item>
 											</el-col>
-											<!--<el-col :span="24" :sm="24">
-												<el-form-item label="上传附件" style="position: relative;" label-width="90px">
-													<el-button type="primary">上传附件</el-button>
-													<input type="file" @change="getFile($event)" placeholder="上传附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
-													<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
-													</p>
-												</el-form-item>
-											</el-col>-->
+
 										</el-row>
 									</el-form>
 								</div>
@@ -516,83 +521,177 @@
 					name: ''
 				},
 				popup: {
-				priperty: [{
-						'name': '紧急',
-						"value": "101"
-					},
-					{
-						'name': '中等',
-						"value": "102"
-					},
-					{
-						'name': '一般',
-						"value": "103"
+					priperty: [{
+							'name': '紧急',
+							"value": "101"
+						},
+						{
+							'name': '中等',
+							"value": "102"
+						},
+						{
+							'name': '一般',
+							"value": "103"
+						}
+					],
+					popTxt: {
+						'down_id': "", //上传id
+						'uploadFiles': [], // 上传成功的文件数组
+						'fileList': [] //上传附件
 					}
-				],
-				popTxt: {
-					'priperty2': '', //故障等级
-					'relationUser': "", //故障分析人员
-					'description': "", //故障描述
-					'descriptionEx': "", //故障复盘分析
-					'sumEffect': "", //交易量影响
-					'uploadFiles': [], // 上传成功的文件数组
-					'fileList': [], //上传附件
 				}
-			}
 			}
 		},
 		mounted() {
 			this.getSelectUs(); //第一个筛选框
 			this.loadData();
-			//			this.consoleAction();
 		},
 		methods: {
-			consoleAction(id) {
+			consoleAction() {
 				this.tabs.consoleActionData = []
-				if(!id || id == 1) {
+				if(this.tabs.data_one.GOLIVE_ZLGT) {
 					this.tabs.consoleActionData.push({
-						"name": '提交'
-					})
-				} else {
-					this.tabs.consoleActionData.push({
-						"name": '通过'
-					})
-					this.tabs.consoleActionData.push({
-						"name": '驳回'
+						"name": "通过",
+					}, {
+						"name": "驳回",
 					})
 				}
-			}, //权限控制
-			submitConsole() {
-				let formArr = JSON.stringify(this.onlineForm.onlineContent);
-				let params = new URLSearchParams();
-				params.append("NEEL_ID", this.mainId); //id
-				params.append("COLIVE_ID", this.consoleForm.onlineType); //上线类型
-				params.append("PROJECT_LEADER", this.consoleForm.projectLeader); //项目负责人
-				params.append("OPEN_LEADER", this.consoleForm.developmentLeader); //开发负责人
-				params.append("TEST_LEADER", this.consoleForm.testLeader); //测试负责人
-				params.append("PRODUCT_LEADER", this.consoleForm.productManager); //产品负责人
-				params.append("DESIRED_START_DATETIMES", this.consoleForm.expectDate); //预计上线日期
-				params.append("DESIRED_END_DATETIME", this.consoleForm.expectTime); //预计上线时间
-				params.append("TRADE", this.consoleForm.ifStop); //是否停交易
-				params.append("INFLUENCE_MM", this.consoleForm.effectTime); //影响时间
-				params.append("bics", formArr); //点击加号
-				params.append("ILLUSTRATE", this.consoleForm.illustrate); //附件说明
-				if(this.consoleForm.ifUrgent) {
-					params.append("URGENT", this.consoleForm.ifUrgent); //是否加急
-				}
-				this.$axios.post("/golive/addgoliveproject", params).then((res) => {
-					let data = res.data;
-					if(data.code == 200) {
-						this.$success(data.message);
-						this.tabs.consoleWrapperVisible = false;
-						this.calculateTableHeight(false)
-						this.clearAddData();
-						this.loadData();
-					} else {
-						this.$warn(data.message);
-					}
-				});
 
+				if(this.tabs.data_one.GOLIVE_SAVE) {
+					this.tabs.consoleActionData.push({
+						"name": this.tabs.data_one.GOLIVE_SAVE.split('-')[0]
+					})
+				}
+
+			}, //权限控制
+			clearData() {
+				this.consoleForm.onlineType = ''
+				this.consoleForm.projectLeader = ''
+				this.consoleForm.developmentLeader = ''
+				this.consoleForm.testLeader = ''
+				this.consoleForm.productManager = ''
+				this.consoleForm.expectDate = ''
+				this.consoleForm.expectTime = ''
+				this.consoleForm.ifStop = ''
+				this.consoleForm.effectTime = ''
+				this.consoleForm.ifUrgent = ''
+				this.consoleForm.onlineContent = [{
+					"SYSTEM_ID": '',
+					"GOLIVE_SYSTEM": '',
+					"GOLIVE_MODULE": '',
+					"GOLIVE_CONTENT": ''
+				}]
+				this.popup.popTxt.fileList = []
+				this.popup.popTxt.down_id = ''
+			},
+			mustData() {
+				let firm = "1"
+				if(this.popup.popTxt.fileList.length == 0) {
+					this.$warn("请上传附件说明");
+					firm = "0"
+				}
+				if(this.consoleForm.onlineType != 0 && !this.consoleForm.ifUrgent) {
+					this.$warn("请选择是否加急");
+					firm = "0"
+				}
+				let arr = this.onlineForm.onlineContent[this.onlineForm.onlineContent.length - 1]
+				if(!arr.GOLIVE_CONTENT) {
+					this.$warn("请填上线内容");
+					firm = "0"
+				}
+
+				if(!arr.GOLIVE_MODULE) {
+					this.$warn("请填写上线模块");
+					firm = "0"
+				}
+
+				if(!arr.GOLIVE_SYSTEM) {
+					this.$warn("请选择上线系统");
+					firm = "0"
+				}
+
+				if(!arr.SYSTEM_ID) {
+					this.$warn("请选择涉及系统");
+					firm = "0"
+				}
+				if(!this.consoleForm.effectTime) {
+					this.$warn("请填写影响时间");
+					firm = "0"
+				}
+				if(!this.consoleForm.ifStop) {
+					this.$warn("请选择是否停交易");
+					firm = "0"
+				}
+				if(!this.consoleForm.expectTime) {
+					this.$warn("请填写预计上线时间");
+					firm = "0"
+				}
+				if(!this.consoleForm.expectDate) {
+					this.$warn("请选择预计上线日期");
+					firm = "0"
+				}
+				if(!this.consoleForm.productManager) {
+					this.$warn("请填写产品负责人");
+					firm = "0"
+				}
+				if(!this.consoleForm.testLeader) {
+					this.$warn("请填写测试负责人");
+					firm = "0"
+				}
+				if(!this.consoleForm.developmentLeader) {
+					this.$warn("请填写开发负责人");
+					firm = "0"
+				}
+				if(!this.consoleForm.projectLeader) {
+					this.$warn("请填写项目负责人");
+					firm = "0"
+				}
+				if(this.consoleForm.onlineType===""){
+					this.$warn("请选择上线类型");
+					firm = "0"
+				}
+				return firm
+			},
+			submitConsole() {
+				if(this.mustData() == "1") {
+					this.$maskin();
+					let formArr = JSON.stringify(this.onlineForm.onlineContent);
+					let params = new URLSearchParams();
+					params.append("NEEL_ID", this.mainId); //id
+					params.append("COLIVE_ID", this.consoleForm.onlineType); //上线类型
+					params.append("PROJECT_LEADER", this.consoleForm.projectLeader); //项目负责人
+					params.append("OPEN_LEADER", this.consoleForm.developmentLeader); //开发负责人
+					params.append("TEST_LEADER", this.consoleForm.testLeader); //测试负责人
+					params.append("PRODUCT_LEADER", this.consoleForm.productManager); //产品负责人
+					params.append("DESIRED_START_DATETIMES", this.consoleForm.expectDate); //预计上线日期
+					params.append("DESIRED_END_DATETIME", this.consoleForm.expectTime); //预计上线时间
+					params.append("TRADE", this.consoleForm.ifStop); //是否停交易
+					params.append("INFLUENCE_MM", this.consoleForm.effectTime); //影响时间
+					params.append("bics", formArr); //点击加号
+					if(this.consoleForm.ifUrgent) {
+						params.append("URGENT", this.consoleForm.ifUrgent); //是否加急
+					}
+					//上传文件提交
+					let upload = ""
+					if(this.popup.popTxt.fileList.length > 0) {
+						upload = this.popup.popTxt.fileList.join(",");
+					}
+					params.append("id", upload); //上传文件id
+					params.append("DOWN_ID", this.popup.popTxt.down_id); //上传文件ID
+					this.$axios.post("/golive/addgoliveproject", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.$success(data.message);
+							this.tabs.consoleWrapperVisible = false;
+							this.calculateTableHeight(false)
+							this.clearAddData();
+							this.loadData();
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					});
+				}
 			},
 			//新增涉及系统
 			systemEvent(index, e) {
@@ -610,16 +709,22 @@
 				}
 			},
 			getSelectUs() {
+				this.$maskin();
 				let params = new URLSearchParams();
 				this.$axios.post("/golive/stategolive", params).then((res) => {
 					let data = res.data;
-					for(let i of data.result) {
-						let arr = {
-							"key": i.state_GOLIVE_NAME,
-							"value": i.id
-						};
-						this.optionsUs.push(arr);
+					if(data.code == 200) {
+						for(let i of data.result) {
+							let arr = {
+								"key": i.state_GOLIVE_NAME,
+								"value": i.id
+							};
+							this.optionsUs.push(arr);
+						}
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			selectStatUs(value) {
@@ -640,7 +745,7 @@
 				this.loadData();
 			},
 			loadData() {
-				//          	this.$maskin();
+				this.$maskin();
 				this.calculate();
 				this.tabs.consoleWrapperVisible = false;
 				this.clearAddData();
@@ -649,11 +754,19 @@
 					params.append('DESIRED_START_DATETIMES', this.screenKey.START_DATE);
 					params.append('END_DATE', this.screenKey.END_DATE);
 				}
+				if(this.keyword){
+					params.append('SOUSS', this.keyword);
+				}
 				params.append('STATE', this.screenKey.STATE);
 				params.append('DATE', this.screenKey.DATE);
 				this.$axios.post("/golive/getgoliveprojectlist", params).then((res) => {
 					let data = res.data
-					this.setTableData(data.result);
+					if(data.code == 200) {
+						this.setTableData(data.result);
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff();
 				})
 			},
 			setTableData(data) {
@@ -664,6 +777,7 @@
 			//通过
 			agreeRow(val, arg, e) {
 				e.cancelBubble = true;
+				this.$maskin();
 				let params = new URLSearchParams();
 				params.append('COLIVE_ID', val.colive_ID);
 				params.append('GOLIVE_ID', val.golive_ID);
@@ -676,9 +790,11 @@
 					} else {
 						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			agreeRow2() {
+				this.$maskin();
 				let params = new URLSearchParams();
 				params.append('COLIVE_ID', this.agreeData.COLIVE_ID);
 				params.append('GOLIVE_ID', this.agreeData.GOLIVE_ID);
@@ -694,6 +810,7 @@
 					} else {
 						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			unagreeRow(val, arg, e) {
@@ -706,6 +823,7 @@
 				}).then(({
 					value
 				}) => {
+					this.$maskin();
 					let params = new URLSearchParams();
 					params.append('COLIVE_ID', val.colive_ID);
 					params.append('GOLIVE_ID', val.golive_ID);
@@ -718,6 +836,7 @@
 						} else {
 							this.$warn(data.message);
 						}
+						this.$maskoff();
 					})
 				}).catch(() => {
 
@@ -732,6 +851,7 @@
 				}).then(({
 					value
 				}) => {
+					this.$maskin();
 					let params = new URLSearchParams();
 					params.append('COLIVE_ID', this.agreeData.COLIVE_ID);
 					params.append('GOLIVE_ID', this.agreeData.GOLIVE_ID);
@@ -747,6 +867,7 @@
 						} else {
 							this.$warn(data.message);
 						}
+						this.$maskoff();
 					})
 				}).catch(() => {
 
@@ -758,8 +879,34 @@
 				this.onlineSure.addform.sxxqId = val.golive_ID;
 				this.systeMv2(val);
 			},
+			mustOnline() {
+				let firm = "1"
+				if(!this.onlineSure.addform.fbfzr) {
+					this.$warn("请填写发布负责人");
+					firm = "0"
+				}
+				if(this.onlineSure.addform.sxjg==10 && !this.onlineSure.addform.hgxt){
+					this.$warn("请选择回滚系统");
+					firm = "0"
+				}
+				if(this.onlineSure.addform.sxjg!=5 && !this.onlineSure.addform.smk){
+					this.$warn("请填写说明");
+					firm = "0"
+				}
+				if(!this.onlineSure.addform.czrq){
+					this.$warn("请选择操作日期");
+					firm = "0"
+				}
+				if(!this.onlineSure.addform.czsj){
+					this.$warn("请填写操作时间");
+					firm = "0"
+				}
+				return firm
+			},
 			//最终通过
 			agreeSure() {
+				if(this.mustOnline()=="1"){
+				this.$maskin();
 				let params = new URLSearchParams();
 				params.append('GOLIVE_ID', this.onlineSure.addform.sxxqId);
 				params.append('RELEASE_HEAD', this.onlineSure.addform.fbfzr);
@@ -772,11 +919,14 @@
 					let data = res.data;
 					if(data.code == 200) {
 						this.$success(data.message);
+						this.closeAddDialog()
 						this.loadData();
 					} else {
 						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
+				}
 			},
 			//清除新增的表单
 			clearAddData() {
@@ -796,7 +946,7 @@
 			},
 			//搜索关键字
 			searchKeyword() {
-				//              this.$maskin();
+				 this.$maskin();
 				if(this.keyword != "") {
 					let arr = [];
 					for(let i of this.table.tableOriginData) {
@@ -809,6 +959,7 @@
 					this.$set(this.table, "tableData", this.table.tableOriginData)
 				}
 				this.$maskoff();
+//          this.loadData()
 			},
 			closeAddDialog() {
 				this.clearOnline();
@@ -817,10 +968,10 @@
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				//              this.$maskin();
+				this.clearData() //清空form表单
 				this.tabs.activeTableInfo = val;
 				this.state.id = val.state;
 				this.state.name = val.state_NAME;
-				this.consoleAction(val.state)
 				if(!this.tabs.consoleWrapperVisible) {
 					this.tabs.consoleWrapperVisible = true;
 					setTimeout(() => {
@@ -831,10 +982,19 @@
 					let params = new URLSearchParams();
 					this.mainId = val.nell;
 					params.append("NEEL_ID", val.nell);
-					params.append("GOLIVE_ID", val.golive_ID);
+					if(val.golive_ID) {
+						params.append("GOLIVE_ID", val.golive_ID);
+					}
+					this.$maskin();
+					params.append("STATE", val.state);
 					this.$axios.post("/golive/goliveneel", params).then((res) => {
 						let data = res.data;
-						this.$set(this.tabs, "data_one", data.result);
+						if(data.code == 200) {
+							this.$set(this.tabs, "data_one", data.result);
+							this.consoleAction()
+						} else {
+							this.$warn(data.message);
+						}
 						this.$maskoff();
 					})
 				}
@@ -847,74 +1007,107 @@
 				this.agreeData.STATE = val.state
 			},
 			allTrack(value) {
+				this.$maskin();
 				let params = new URLSearchParams()
 				params.append("GOLIVE_ID", value);
 				this.$axios.post("/golive/tracking", params).then((res) => {
-					//设置全程跟踪数据
-					this.$set(this.tabs, "genzong", res.data.result);
+					let data = res.data;
+					if(data.code == 200) {
+						this.$set(this.tabs, "genzong", data.result);
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff();
 				})
 			},
 			goliveType() {
+				this.$maskin();
 				this.onlineTypes = []
 				let params = new URLSearchParams()
 				this.$axios.post("/golive/golivetype", params).then((res) => {
-					let data = res.data.result;
-					for(let i of data) {
-						this.onlineTypes.push({
-							"key": i.colive_TYPE_NAME,
-							"value": i.colive_TYPE_ID
-						})
+					let data = res.data;
+					if(data.code == 200) {
+						for(let i of data.result) {
+							this.onlineTypes.push({
+								"key": i.colive_TYPE_NAME,
+								"value": i.colive_TYPE_ID
+							})
+						}
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			systemList() {
+				this.$maskin();
 				let params = new URLSearchParams()
+				this.aboutSystems=[]
 				this.$axios.post("/golive/systemlist", params).then((res) => {
-					let data = res.data.result;
-					for(let i of data) {
-						this.aboutSystems.push({
-							"key": i.system_NAME,
-							"value": i.system_ID
-						})
+					let data = res.data;
+					if(data.code == 200) {
+						for(let i of data.result) {
+							this.aboutSystems.push({
+								"key": i.system_NAME,
+								"value": i.system_ID
+							})
+						}
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			systeMv(index, value) {
+				this.$maskin();
 				let params = new URLSearchParams()
 				params.append('NEEL', this.mainId)
 				params.append('SYSTEM_ID', value)
 				this.onlineForm.onlineContent[index].GOLIVE_SYSTEM = ''
 				this.onlineSystems = []
 				this.$axios.post("/golive/systemv", params).then((res) => {
-					let data = res.data.result;
-					for(let i of data) {
-						this.onlineSystems.push({
-							"key": i.system,
-							"value": i.system
-						})
+					let data = res.data;
+					if(data.code == 200) {
+						for(let i of data.result) {
+							this.onlineSystems.push({
+								"key": i.system,
+								"value": i.system
+							})
+						}
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
+			//回滚系统选择
 			systeMv2(value) {
+				this.$maskin();
 				this.onlineSure.addform.hgxt = "";
 				let params = new URLSearchParams()
 				this.onlineSystems = []
 				params.append('NEEL', value.nell)
 				params.append('SYSTEM_ID', value.system_ID)
-				this.$axios.post("/golive/systemv", params).then((res) => {
-					let data = res.data.result;
-					for(let i of data) {
-						this.onlineSystems.push({
-							"key": i.system,
-							"value": i.system
-						})
+				params.append('SUBSYSTEM', value.systemson_ID)
+				this.$axios.post("/golive/systemvs", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						for(let i of data.result) {
+							this.onlineSystems.push({
+								"key": i.system,
+								"value": i.system
+							})
+						}
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
 			},
 			//操作台的事件
 			consoleActionEvent(val, value) {
 				switch(val.name) {
-					case "提交":
+					case "上线申请":
 						this.submitConsole();
 						break;
 					case "驳回":
@@ -925,9 +1118,6 @@
 						break;
 				}
 				this.tabs.consoleActionVisible = false;
-			},
-			consoleAgree() {
-				//          	this.ensureRow(scope.row,scope,$event);
 			},
 			calculate() {
 				let height = document.querySelector(".mainr").offsetHeight;
@@ -975,24 +1165,33 @@
 				};
 				let params = new FormData();
 				params.append("token", localStorage.getItem("token"))
-				params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
 				params.append("file", e.target.files[0]);
-				this.$axios.post("/daliy/upload", params, config).then((res) => {
+				if(!this.popup.popTxt.down_id) {
+					this.popup.popTxt.down_id = "1"
+				}
+				params.append("down", this.popup.popTxt.down_id);
+				this.$axios.post("/golive/upload", params, config).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
 						if(typeof this.popup.popTxt.uploadFiles == "string") {
 							this.$set(this.popup.popTxt, "uploadFiles", [])
 							this.$set(this.popup.popTxt, "fileList", [])
 						}
-						this.popup.popTxt.uploadFiles.push(data.result.name)
-						this.popup.popTxt.fileList.push(data.result.id)
+						this.popup.popTxt.uploadFiles.push(data.name)
+						this.popup.popTxt.fileList.push(data.id)
+						this.popup.popTxt.down_id = data.DOWN_ID
+					} else {
+						this.$warn(data.message);
 					}
 				})
 			},
 			//下载附件
 			downfile(val) {
-				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
-			}
+				this.$axios.get(`/golive/download?ID=${val}&token=${localStorage.getItem("token")}`)
+			},
+			tabClick(val){
+                this.calculateTabsHeight();
+            }
 		}
 	}
 </script>

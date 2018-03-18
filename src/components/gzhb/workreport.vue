@@ -299,6 +299,9 @@
 				}
 				//控制台的内容区域高度
 			},
+			tabClick(val){
+                this.calculateTabsHeight();
+            }
 
 		}
 	}

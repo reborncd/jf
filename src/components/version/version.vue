@@ -46,7 +46,9 @@
     /*margin-left:10px;*/
 }
 .edition-line{
-	padding: 0 20px;
+	background: #EEEEEE;
+	/*padding: 0 20px;*/
+	padding: 0 3%;
 }
 .edition-line ul li span{
 	display: inline-block;
@@ -55,7 +57,8 @@
 	position: absolute;
     top: 50%;
     margin-top: -1px;
-    left: 13px;
+    left: 12px;
+    
 }
 .edition-line {
 	margin: 0 auto;
@@ -72,11 +75,12 @@
 	width: 16px;
 	float: left;
 	height: 16px;
-	background:white url(../../static/image/circular-icon.png) 0 center no-repeat;
-	background-size: 16px 16px;
+	background:white url(../../static/image/circular-icon.png) -2px center no-repeat;
+	background-size: 20px 19px;
 	position: absolute;
-	left: 0;
-	top: 28px;
+	left: -1px;
+	top: 20px;
+	cursor: pointer;border-radius: 50px;
 }
 .edition-line li span{
 	left: 20px;
@@ -85,7 +89,7 @@
 }
 .edition-line li p.banP{
 	position: absolute;
-	top: 45px;
+	top: 35px;
 	left: 0px;
     width: 100%;
     text-align: left;
@@ -95,12 +99,14 @@
 }
 .edition-line li .infoDiv{
 	position: absolute;
-	width: 80%;
-	left: 10%;
+	width: 60%;
+	left: 2%;
 	top: -19px;
-	padding: 5px;
-	background: #EEEEEE;
+	padding: 5px 10px;
+	background: #939da9;
 	z-index:100;
+	color: white;
+	border-radius: 5px;
 }
 .edition-line li .infoDiv p{
 	word-break: break-all;
@@ -124,7 +130,7 @@
                 <div class="content">
                     <div class="action clear">
                         <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
-                        <el-select v-model="selectValue" clearable
+                        <!--<el-select v-model="selectValue" clearable
                                    size="mini">
                             <el-option
                                     v-for="item in options"
@@ -132,7 +138,7 @@
                                     :value="item.value"
                             >
                             </el-option>
-                        </el-select>
+                        </el-select>-->
                         <div class="fr">                           
                             <div class="search i-b" @keyup="searchKeyword($event)">
                                 <el-input
@@ -155,39 +161,48 @@
                             <el-table-column prop="current_VERSION" label="当前版本" width="110"></el-table-column>
                             <el-table-column prop="start_DATE" label="启用日期"></el-table-column>
                             <el-table-column prop="start_TIME" label="启用时间"></el-table-column>
-                            <el-table-column prop="neel_DESCRIPTION" label="需求描述"></el-table-column>                           	
+                            <el-table-column label="需求描述">
+                            	<template slot-scope="scope">
+                            		<span @click="goneeds(scope.row)" style="color: orange;text-decoration: underline;">{{scope.row.neel_DESCRIPTION}}</span>
+                            	</template>
+                            </el-table-column>                     	
                         </el-table>
                     </div>
                     <!--详情表格-->
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
-                    	 <div class="console-action-wrapper"style="position: relative;">
+                    	<div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="tabs.consoleWrapperVisible=false"></i>
                         </div>
-                        <el-table class='detail-table' :data="table.tableDetail" border style="width: 100%;margin-top:20px;text-align: center;"
-                                  :height="table.tableHeight" highlight-current-row >
-                            <el-table-column prop="system_NAME" label="涉及名称"></el-table-column>
-                            <el-table-column prop="system_FNAME" label="子系统" width="110"></el-table-column>
-                            <el-table-column prop="new_VERSION" label="版本号"></el-table-column>
-                            <el-table-column prop="current_STATE" label="当前版本" width="110"></el-table-column>
-                            <el-table-column prop="start_DATE" label="启用日期"></el-table-column>
-                            <el-table-column prop="start_TIME" label="启用时间"></el-table-column>
-                            <el-table-column prop="neel_DESCRIPTION" label="需求描述"></el-table-column>                           	
-                        </el-table>
-                    </div>
-                    <!--版本轴-->
-                    <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">
-                    	<ul class="edition-line-ul clearfix">
-                    		<li v-for='(item,index) in tabs.versionLine' v-bind:style="{ width: tabs.width}" v-model="item.version" :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
-                    			<em v-on:mouseover="showInfo(index)" v-on:mouseleave="hiddenInfo(index)"></em>
-                    			<span></span>
-                    			<p class="banP">{{item.current_VERSION}}</p>
-                    			<div class="infoDiv" style=""  v-if="tabs.infoshowVisible && tabs.activeLineIndex == index" v-model="tabs.infoshowVisible">
-                    				<p>操作人：{{item.user_NAME}}</p>
-                    				<p>操作说明：{{item.czsm}}</p>
-                    			</div>
-                    		</li>
-                    	</ul>
-                    </div>
+                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
+				              <el-tab-pane label="详情页" name="info">
+				                <div class="console-tab-content">
+				                  <el-table class='detail-table' :data="table.tableDetail" border style="width: 100%;margin-top:20px;text-align: center;"
+	                              :height="table.tableHeight" highlight-current-row >
+		                            <el-table-column prop="system_NAME" label="涉及名称"></el-table-column>
+		                            <el-table-column prop="system_FNAME" label="子系统" width="110"></el-table-column>
+		                            <el-table-column prop="new_VERSION" label="版本号"></el-table-column>
+		                            <el-table-column prop="current_STATE" label="当前版本" width="110"></el-table-column>
+		                            <el-table-column prop="start_DATE" label="启用日期"></el-table-column>
+		                            <el-table-column prop="start_TIME" label="启用时间"></el-table-column>
+		                            <el-table-column prop="neel_DESCRIPTION" label="需求描述"></el-table-column>                           	
+		                        </el-table>
+		                        <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">
+			                    	<ul class="edition-line-ul clearfix">
+			                    		<li v-for='(item,index) in tabs.versionLine' v-bind:style="{ width: tabs.width}" v-model="item.version" :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
+			                    			<em v-on:mouseover="showInfo(index)" v-on:mouseleave="hiddenInfo(index)"></em>
+			                    			<span></span>
+			                    			<p class="banP">{{item.ban}}</p>
+			                    			<div class="infoDiv" style=""  v-if="tabs.infoshowVisible && tabs.activeLineIndex == index" v-model="tabs.infoshowVisible">
+			                    				<p>操作人：{{item.user_NAME}}</p>
+			                    				<p>操作说明：{{item.czsm}}</p>
+			                    			</div>
+			                    		</li>
+			                    	</ul>
+			                    </div>
+				                </div>
+				              </el-tab-pane>
+				        </el-tabs>
+                       </div>                                                                    
                 </div>
             </div>
         </el-card>
@@ -206,17 +221,17 @@
                         	</el-select>                        	
                         </el-form-item>
                     </el-col>
-                    <el-col class="subsystem" :span='22'>
+                    <el-col class="subsystem" :span='24' style='position: relative;'>
                         <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
-                        	<el-input v-model="item.csty" placeholder="请填写子系统"></el-input>
+                        	<el-input v-model="item.csty" placeholder="请填写子系统" style="width: 88%;"></el-input>
                           <i
                             :class="index == 0 && dialog.systemAll.length ==1?'el-icon-plus':index == dialog.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
                             @click="addsubStystem(index,$event)"
-                            style="line-height: 40px;height: 40px;text-align: center; font-size: 20px;cursor: pointer;font-weight: bold;position: absolute;top: 0;right: -30px;">
+                            style="line-height: 40px;height: 40px;text-align: right; font-size: 20px;cursor: pointer;font-weight: bold;width: 9%;top: 0;right: -35px;">
                           </i>
 
                         </el-form-item>
-                    </el-col>
+                    </el-col>                    
                      <el-col style="text-align: center;">                     	
                      	<el-button type="primary" @click="postSystem" size="medium">提交</el-button>
                         <el-button @click="backPage" size="medium">返回</el-button>
@@ -378,7 +393,7 @@
 	                    		}
 	                    		
 	                    		arr.push(i);
-                    		}
+                    		}	                    	
 	                    	this.$set(this.table, "tableDetail", arr);
 	                    	this.$set(this.tabs, "versionLine", versionP);
 	                    	for(let i=0;i<versionNum;i++){           		
@@ -490,6 +505,28 @@
 		        }
 		        
       		},
+      		//搜索
+           searchKeyword(e){
+           	this.setConsoleVisible()
+                if (e.keyCode == 13) {
+                	let params = new URLSearchParams();                
+                	params.append("SOUSS", this.keyword);
+	                this.$axios.post('/version/versionlist', params).then((res) => {
+	                	if(res.code=200){
+	                		let data = res.data.result
+	                		console.log(data);
+	                    	this.setTableData(data);
+	                	}
+	                	else{
+	                		this.warn(message);
+	                	}
+	                })
+                }
+           },
+      		 setConsoleVisible(){
+                this.tabs.consoleWrapperVisible = false;
+                this.calculateTableHeight(false)
+            },
 //         //弹窗关闭
            closeAddDialog(){
            	 	this.clearAddData();
@@ -504,17 +541,25 @@
 		        this.dialog.systemAll.splice(0,len)
 		        this.dialog.system='';
 		    },
-            //搜索
-            searchKeyword(e){
-                if (e.keyCode == 13) {
-
-                }
-            },
+			 tabClick(val){
+                this.calculateTabsHeight();
+           },
              //返回
 		      backPage(val){
 		        this.loadData();
 		        this.clearAddData();
 		        this.dialog.dialogVisible = false
+		      },
+		      //跳转到需求页面
+		      goneeds(val){
+		      	let path = "";
+		      	if(val.bs == "TECH"){
+		      		path = "/home/jsxq"
+		      	}
+		      	if(val.bs == "PROD"){
+		      		path = "/home/ywxq"
+		      	}
+		      	this.$go(path,{"neelId":val.neel_ID})
 		      }
         }
     }

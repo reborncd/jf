@@ -1,110 +1,104 @@
-<style scoped>@import "../../../static/css/table.css";
-@import "../../../static/css/console.css";
-.search .el-input {
-	width: auto;
-}
-
-.back {
-	position: absolute;
-	left: 0;
-	top: 0;
-	font-size: 13px;
-	cursor: pointer;
-	line-height: 21px;
-}
-
-.back i.b {
-	color: #606266;
-	font-style: normal;
-}
-
-.el-date-editor--datetimerange.el-input__inner {
-	width: 370px;
-}
-
-.el-textarea textarea {
-	height: 100px;
-}
-
-.el-table td,
-.el-table th {
-	padding: 5px 0;
-}
-
-.el-button {
-	padding: 6px 10px;
-}
-
-.console-tab-content .add {
-	position: absolute;
-	font-size: 20px;
-	height: 20px;
-	cursor: pointer;
-	top: 0;
-	bottom: 0;
-	right: 5px;
-	margin: auto;
-}
-
-.addCol {
-	position: relative;
-	padding: 0 30px 0 0!important;
-}
-
-.assgin-dialog h2 {
-	margin-bottom: 10px;
-	font-size: 20px;
-}
-
-.assgin-dialog .tab span {
-	float: left;
-	width: 50%;
-	text-align: center;
-	height: 30px;
-	line-height: 30px;
-	cursor: pointer;
-}
-
-.assgin-dialog .tab span.active {
-	color: dodgerblue;
-}
-
-
-/*.assign-wrapper {*/
-
-
-/*height: 300px;*/
-
-
-/*overflow-y: auto;*/
-
-
-/*}*/
-
-.assign-wrapper li {
-	margin-bottom: 6px;
-	padding: 0 10px;
-	min-height: 70px;
-}
-
-.assign-wrapper li .deptTitle {
-	display: block;
-	width: 100%;
-	line-height: 34px;
-	border: 1px solid #ccc;
-	text-align: center;
-	font-size: 14px;
-	margin: 5px auto;
-}
-
-.assign-wrapper .check-item {
-	margin: 5px 0;
-	display: block;
-}
-
-.el-form-item__label {
-	width: 120px !important;
-}</style>
+<style scoped>
+	@import "../../../static/css/table.css";
+	@import "../../../static/css/console.css";
+	.search .el-input {
+		width: auto;
+	}
+	
+	.back {
+		position: absolute;
+		left: 0;
+		top: 0;
+		font-size: 13px;
+		cursor: pointer;
+		line-height: 21px;
+	}
+	
+	.back i.b {
+		color: #606266;
+		font-style: normal;
+	}
+	
+	.el-date-editor--datetimerange.el-input__inner {
+		width: 370px;
+	}
+	
+	.el-textarea textarea {
+		height: 100px;
+	}
+	
+	.el-table td,
+	.el-table th {
+		padding: 5px 0;
+	}
+	
+	.el-button {
+		padding: 6px 10px;
+	}
+	
+	.console-tab-content .add {
+		position: absolute;
+		font-size: 20px;
+		height: 20px;
+		cursor: pointer;
+		top: 0;
+		bottom: 0;
+		right: 5px;
+		margin: auto;
+	}
+	
+	.addCol {
+		position: relative;
+		padding: 0 30px 0 0!important;
+	}
+	
+	.assgin-dialog h2 {
+		margin-bottom: 10px;
+		font-size: 20px;
+	}
+	
+	.assgin-dialog .tab span {
+		float: left;
+		width: 50%;
+		text-align: center;
+		height: 30px;
+		line-height: 30px;
+		cursor: pointer;
+	}
+	
+	.assgin-dialog .tab span.active {
+		color: dodgerblue;
+	}
+	/*.assign-wrapper {*/
+	/*height: 300px;*/
+	/*overflow-y: auto;*/
+	/*}*/
+	
+	.assign-wrapper li {
+		margin-bottom: 6px;
+		padding: 0 10px;
+		min-height: 70px;
+	}
+	
+	.assign-wrapper li .deptTitle {
+		display: block;
+		width: 100%;
+		line-height: 34px;
+		border: 1px solid #ccc;
+		text-align: center;
+		font-size: 14px;
+		margin: 5px auto;
+	}
+	
+	.assign-wrapper .check-item {
+		margin: 5px 0;
+		display: block;
+	}
+	
+	.el-form-item__label {
+		width: 120px !important;
+	}
+</style>
 <template>
 	<div class="jcjs common-card-wrap"
 		 @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -120,7 +114,7 @@
 						</el-select>
 						<div class="fr">
 							<div style="margin-right: 10px;" class="i-b">
-								<el-date-picker v-model="dateRange"  @blur="pickDate(dateRange)" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right" size="mini" :picker-options="dateComp">
+								<el-date-picker v-model="dateRange" @blur="pickDate(dateRange)" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right" size="mini" :picker-options="dateComp">
 								</el-date-picker>
 							</div>
 							<div class="search i-b">
@@ -161,7 +155,7 @@
 						<div class="console-action-wrapper">
 							<i class="el-icon-close close" @click="setConsoleVisible"></i>
 						</div>
-						<el-tabs v-model="tabs.activeName" type="card">
+						<el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
 							<el-tab-pane label="详情页" name="info">
 								<div class="console-tab-content">
 									<el-form label-width="100px" label-position="left">
@@ -255,34 +249,34 @@
 									</el-form>
 									<el-form label-width="120px" label-position="left" v-if="tabs.ifPing">
 										<el-row :gutter="20">
-										<el-col :span="12">
-											<el-form-item label="优先级评定">
-												<el-select v-model="tabs.rriority"  clearable placeholder="请选择优先级评定">
-													<el-option v-for="item in tabs.rriorityArr" :label="item.RRIORITY_NAME" :value="item.RRIORITY_ID"></el-option>
-												</el-select>
-											</el-form-item>
-										</el-col>
-										<el-col :span="12">
-											<el-form-item label="需求评审结果">
-												<el-select v-model="tabs.checks"  clearable placeholder="请选择需求评审结果">
-													<el-option v-for="item in tabs.checksArr" :label="item.CHECK_NAME" :value="item.CHECK_ID+'-'+item.CHECK_NAME"></el-option>
-												</el-select>
-											</el-form-item>
-										</el-col>
-										<el-col :span="12">
-											<el-form-item label="评审时间">
-												<el-date-picker type="date" placeholder="选择评审日期" v-model="addneeds.addform.check_time" style="width: 100%;"></el-date-picker>
-											</el-form-item>
-										</el-col>
-										<el-col :span="12">
-											<el-form-item label="参会人">
-												<el-input v-model="addneeds.addform.check_name"></el-input>
-											</el-form-item>
-										</el-col>
+											<el-col :span="12">
+												<el-form-item label="优先级评定">
+													<el-select v-model="tabs.rriority" clearable placeholder="请选择优先级评定">
+														<el-option v-for="item in tabs.rriorityArr" :label="item.RRIORITY_NAME" :value="item.RRIORITY_ID"></el-option>
+													</el-select>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="需求评审结果">
+													<el-select v-model="tabs.checks" clearable placeholder="请选择需求评审结果">
+														<el-option v-for="item in tabs.checksArr" :label="item.CHECK_NAME" :value="item.CHECK_ID+'-'+item.CHECK_NAME"></el-option>
+													</el-select>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="评审时间">
+													<el-date-picker type="date" placeholder="选择评审日期" v-model="addneeds.addform.check_time" style="width: 100%;"></el-date-picker>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item label="参会人">
+													<el-input v-model="addneeds.addform.check_name"></el-input>
+												</el-form-item>
+											</el-col>
 										</el-row>
 										<el-row :gutter="20">
 											<el-col :span="24">
-												<el-button style="display: block;margin: 0 auto;"  @click="checkDaliy" size="medium" type="primary">提交
+												<el-button style="display: block;margin: 0 auto;" @click="checkDaliy" size="medium" type="primary">提交
 												</el-button>
 											</el-col>
 										</el-row>
@@ -341,16 +335,22 @@
 										</el-row>
 										<div class="table-list">
 											<el-table :data="addneeds.addform.splitArr" border style="width: 100%" height="200" show-summary highlight-current-row>
-												<el-table-column prop="name" label="人员"></el-table-column>
+												<el-table-column prop="USER_NAME" label="人员"></el-table-column>
 												<el-table-column prop="xtname" label="系统名" width="110"></el-table-column>
 												<el-table-column prop="fzmk" label="负责模块" width="110"></el-table-column>
 												<el-table-column prop="easy" label="难易度"></el-table-column>
 												<el-table-column prop="finishDate" label="完成日期"></el-table-column>
-												<el-table-column prop="willTime" label="预计用时"></el-table-column>
+												<el-table-column prop="willTime" label="预计用时(小时)"></el-table-column>
 												<el-table-column prop="taskNum" label="任务量"></el-table-column>
 											</el-table>
 
 										</div>
+										<el-row :gutter="20">
+											<el-col :span="24">
+												<el-button style="display: block;margin: 20px auto;" @click="createNewN" size="medium" type="primary">提交
+												</el-button>
+											</el-col>
+										</el-row>
 									</el-form>
 								</div>
 							</el-tab-pane>
@@ -422,7 +422,7 @@
 											<el-col :span="8" :sm="8" v-if="tabs.chooseDeptArr">
 												<el-form-item label-width="100px">
 													<el-select v-model="tabs.chooseDept" @change="chooseDeptF" clearable placeholder="请选择部门" style="float: right;">
-														<el-option v-for="item in tabs.chooseDeptArr" :label="item.dept_name" :value="item.dept_id"></el-option>
+														<el-option v-for="item in tabs.chooseDeptArr" :label="item.DEPT_NAME" :value="item.DEPT_ID"></el-option>
 													</el-select>
 												</el-form-item>
 											</el-col>
@@ -430,6 +430,17 @@
 												<p v-for="(item,index) in tabs.genzong" class="genzong">
 													<span style="width: 30px;display: inline-block;">{{index+1}}.</span> <span style="width: 150px;display: inline-block;">{{item.record_START | time}}</span>{{item.record_DESC}}
 												</p>
+											</el-col>
+										</el-row>
+									</el-form>
+								</div>
+							</el-tab-pane>
+							<el-tab-pane label="实时统计" name="realtime" v-if="tabs.data_one.nowTimeList">
+								<div class="console-tab-content" style="width: 100% !important;height: 250px !important;">
+									<el-form label-width="100px" label-position="right">
+										<el-row :gutter="20">
+											<el-col :span="24" style="border: 1px solid #ebeef5;">
+												<div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
 											</el-col>
 										</el-row>
 									</el-form>
@@ -443,8 +454,7 @@
 		</el-card>
 
 		<!--新建任务-->
-		<el-dialog title="技术经理新建任务" :visible="addneeds.addvisible" width="60%"
-				   append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="技术经理新建任务" :visible="addneeds.addvisible" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form :model="addneeds.addform" ref="addneeds.addform" label-width="100px" class="demo-ruleForm">
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
@@ -614,12 +624,12 @@
 				</el-row>
 				<div class="table-list">
 					<el-table :data="addneeds.addform.splitArr" border style="width: 100%" height="200" show-summary highlight-current-row>
-						<el-table-column prop="name" label="人员"></el-table-column>
+						<el-table-column prop="USER_NAME" label="人员"></el-table-column>
 						<el-table-column prop="xtname" label="系统名" width="110"></el-table-column>
 						<el-table-column prop="fzmk" label="负责模块" width="110"></el-table-column>
 						<el-table-column prop="easy" label="难易度"></el-table-column>
 						<el-table-column prop="finishDate" label="完成日期"></el-table-column>
-						<el-table-column prop="willTime" label="预计用时"></el-table-column>
+						<el-table-column prop="willTime" label="预计用时(小时)"></el-table-column>
 						<el-table-column prop="taskNum" label="任务量"></el-table-column>
 					</el-table>
 
@@ -631,8 +641,7 @@
 			</div>
 		</el-dialog>
 		<!--产品经理-->
-		<el-dialog title="产品经理新建任务" :visible="addneeds.addvisibleP" width="60%"
-				   append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="产品经理新建任务" :visible="addneeds.addvisibleP" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form label-width="100px">
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
@@ -748,9 +757,8 @@
 		</el-dialog>
 
 		<!--拆分任务-->
-		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisible" width="60%"
-				   append-to-body modal-append-to-body :before-close="closeDialogS">
-			<el-form label-width="100px">
+		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisible" width="60%" append-to-body modal-append-to-body :before-close="closeDialogS">
+			<el-form label-width="120px">
 				<el-row :span="24">
 					<el-col :span="12">
 						<el-form-item label="人员">
@@ -787,7 +795,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="预计用时">
+						<el-form-item label="预计用时(小时)">
 							<el-input v-model="addneeds.addform.splitForm.willTime"></el-input>
 						</el-form-item>
 					</el-col>
@@ -803,16 +811,15 @@
 				<el-button type="primary" @click="addOneTask" size="mini">确定</el-button>
 			</div>
 		</el-dialog>
-        <!------------控制台拆分-------------->
-		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisibleN" width="60%"
-				   append-to-body modal-append-to-body :before-close="closeDialogS">
-			<el-form label-width="100px">
+		<!------------控制台拆分-------------->
+		<el-dialog title="新增拆分任务人员" :visible="addneeds.splitaddvisibleN" width="60%" append-to-body modal-append-to-body :before-close="closeDialogS">
+			<el-form label-width="120px">
 				<el-row :span="24">
 					<el-col :span="12">
 						<el-form-item label="本部门人员">
 							<el-select v-model="addneeds.addform.splitForm.name" placeholder="请选择人员">
-									<el-option v-for="item in addneeds.addform.pepoleArr" :label="item.user_NAME" :value="item.user_ID+','+item.user_NAME">
-									</el-option>
+								<el-option v-for="item in addneeds.addform.pepoleArr" :label="item.user_NAME" :value="item.user_ID+','+item.user_NAME">
+								</el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -859,21 +866,20 @@
 		</el-dialog>
 
 		<!--拆分任务详情-->
-		<el-dialog title="拆分任务详情" :visible="addneeds.hasSplitvisible" width="80%"
-				   append-to-body modal-append-to-body :before-close="closeDialog">
+		<el-dialog title="拆分任务详情" :visible="addneeds.hasSplitvisible" width="80%" append-to-body modal-append-to-body :before-close="closeDialog">
 			<el-form label-width="100px">
 				<el-row :span="24" v-if="split.hasSplitTaskData" v-for="(item, index) in split.hasSplitTaskData">
 					<el-col :span="12" v-if="index==0">
-						<el-form-item  label="需求分析结果">{{item.analysis_RESULT}}</el-form-item>
+						<el-form-item label="需求分析结果">{{item.analysis_RESULT}}</el-form-item>
 					</el-col>
 					<el-col :span="12" v-if="index==0">
-						<el-form-item  label="分析时间">{{item.analysis_TIME | date}}</el-form-item>
+						<el-form-item label="分析时间">{{item.analysis_TIME | date}}</el-form-item>
 					</el-col>
 					<el-col :span="12" v-if="index==0">
-						<el-form-item  label="预计开始时间">{{item.expect_START | date}}</el-form-item>
+						<el-form-item label="预计开始时间">{{item.expect_START | date}}</el-form-item>
 					</el-col>
 					<el-col :span="12" v-if="index==0">
-						<el-form-item  label="预计完成时间">{{item.expect_END | date}}</el-form-item>
+						<el-form-item label="预计完成时间">{{item.expect_END | date}}</el-form-item>
 					</el-col>
 				</el-row>
 			</el-form>
@@ -890,8 +896,7 @@
 		</el-dialog>
 
 		<!--确认-->
-		<el-dialog title="确认" :visible="assign.assignvisible" width="30%"
-				   append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
+		<el-dialog title="确认" :visible="assign.assignvisible" width="30%" append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
 			<div slot="title">
 				<h2>分配</h2>
 				<div class="tab clear">
@@ -905,7 +910,7 @@
 			<div class="assign-wrapper" v-if="assign.left">
 				<ul v-if="!assign.leftSearch">
 					<li v-for="item in assign.searchData" v-if="item.users.length>0">
-						<!--<span class="deptTitle">{{item.dept_name}}</span>-->
+						<span class="deptTitle">{{item.dept_name}}</span>
 						<el-checkbox-group v-model="assign.checkList">
 							<el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
 								{{_item.user_NAME}}
@@ -935,999 +940,1184 @@
 		</el-dialog>
 	</div>
 </template>
-<script>export default {
-	data() {
-		return {
-			addneeds: {
-				addvisible: false,
-				splitaddvisible: false,
-				hasSplitvisible: false,
-				splitaddvisibleN: false,
-				addvisibleP: false,
-				addType: '', //判断性质呢过类型，add 为重新立项，change 为新建变更 changeinset 为需求内变更
-				addform: {
-					"sjxt": "", //涉及系统
-					"sjxtArr": "", //涉及系统数组
-					"systemArr": '', //系统数组
-					"code": "", //任务编号
-					"name": "", //任务名称
-					"sxname": "", //申请人
-					"fromdeptId": "", //选择的任务来源部门ID
-					"fromdeptArr": "", //任务来源数组
-					"pepoleArr": "", //
-					"fromdeptroleId": "", //选择的需求任务人
-					"fromdeptroleArr": "", //择的需求来任务数组
-					"zhongyaochegndu": "", //重要程度
-					"zhongyaochegnduArr": "", //重要程度数组
-					"ascription": "", //需求划分归属
-					"ascriptionArr": "", //需求划分归属数组
-					"daliyTypeName": "", //日常任务 需求类型
-					"daliyTypeNameArr": "", //日常任务 需求类型
-					"influece": "", //影响面
-					"influeceArr": "", //影响面
-					"result": "", //成果类型
-					"resultArr": "", //成果类型
-					"prduct_function": "", //产品改造点
-					"prduct_line": "", //涉及产品线
-					"level": "", //优先级
-					"levelArr": "", //优先级数组
-					"xtname": "", //系统名称
-					"xtnameArr": "", //系统名称数组
-					"jihuadate": "", //期望上线时间
-					"startTime": "", //预计开始时间
-					"endTime": "", //预计完成时间
-					"analysisTime": "", //分析时间
-					"analysis": '', //需求分析结果
-					"analysisArr": '', //需求分析结果
-					"RISK": "", //风险点
-					"check_time": '', //评审时间
-					"check_name": '', //评审参与人
-					"jiaji": "", //是否加急
-					"jiajireason": "", //加急的原因
-					"ban": "", //版本号
-					"needsname": "", //需求描述
-					"onlineContent": [{
-						"xtname": '',
-						"ban": ''
-					}],
-					"splitForm": {
-						"name": '', //人员
-						"xtname": '', //系统
-						"fzmodule": '', //负责模块
-						"easy": '', //难易程度
-						"allDate": '', //完成日期
-						"willTime": '', //预计用时
-						"taskNum": '', //任务量
-						"splitAnalysis": {} //拆分分析
-					},
-					easyArr: [], //难易程度
-					splitArr: [],
-					splitShow: ""
-				}
-			},
-			split: {
-				hasSplitTaskDataByGroup: [], //展示拆分任务的分组
-				hasSplitTaskData: [], //展示当前的分组拆分任务
-				codetask: [], //开发的任务
-				systemAll: [{
-					"name": "",
-					"version": ""
-				}], //所有选择的系统集合
-				splitradio: "", //拆分任务类型（1为测试任务，2为开发任务）
-				splitvisible: false,
-				splitaddvisible: false, //新增人员的显示框
-				choosesysyem: "", //选择的系统值
-				systemarr: [], //所填写过的的系统数组,
-				levelchoosen: "", //难易度选择的值,
-				level: [], //难易度数组
-				version: "", //版本号
-				startdate: "", //预计开始日期
-				enddate: "", //预计结束日期
-				finishdate: "", //完成日期
-				tableData: [], //拆分任务的表数据
-				model: "", //负责模块
-				taskcode: "", //任务编码
-				personlist: [], //课选择人员的人员数组
-				person: "", //选择的人员
-				usertime: "", //预计用时
-				names: [], //放置姓名的数组
-				ids: [], //放置id的数组
-				usetime: "", //预计用时
-			},
-			assign: {
-				assignvisible: false,
+
+<script>
+	export default {
+		data() {
+			return {
+				addneeds: {
+					addvisible: false,
+					splitaddvisible: false,
+					hasSplitvisible: false,
+					splitaddvisibleN: false,
+					addvisibleP: false,
+					addType: '', //判断性质呢过类型，add 为重新立项，change 为新建变更 changeinset 为需求内变更
+					addform: {
+						"sjxt": "", //涉及系统
+						"sjxtArr": "", //涉及系统数组
+						"systemArr": '', //系统数组
+						"code": "", //任务编号
+						"name": "", //任务名称
+						"sxname": "", //申请人
+						"fromdeptId": "", //选择的任务来源部门ID
+						"fromdeptArr": "", //任务来源数组
+						"pepoleArr": "", //
+						"fromdeptroleId": "", //选择的需求任务人
+						"fromdeptroleArr": "", //择的需求来任务数组
+						"zhongyaochegndu": "", //重要程度
+						"zhongyaochegnduArr": "", //重要程度数组
+						"ascription": "", //需求划分归属
+						"ascriptionArr": "", //需求划分归属数组
+						"daliyTypeName": "", //日常任务 需求类型
+						"daliyTypeNameArr": "", //日常任务 需求类型
+						"influece": "", //影响面
+						"influeceArr": "", //影响面
+						"result": "", //成果类型
+						"resultArr": "", //成果类型
+						"prduct_function": "", //产品改造点
+						"prduct_line": "", //涉及产品线
+						"level": "", //优先级
+						"levelArr": "", //优先级数组
+						"xtname": "", //系统名称
+						"xtnameArr": "", //系统名称数组
+						"jihuadate": "", //期望上线时间
+						"startTime": "", //预计开始时间
+						"endTime": "", //预计完成时间
+						"analysisTime": "", //分析时间
+						"analysis": '', //需求分析结果
+						"analysisArr": '', //需求分析结果
+						"RISK": "", //风险点
+						"check_time": '', //评审时间
+						"check_name": '', //评审参与人
+						"jiaji": "", //是否加急
+						"jiajireason": "", //加急的原因
+						"ban": "", //版本号
+						"needsname": "", //需求描述
+						"onlineContent": [{
+							"xtname": '',
+							"ban": ''
+						}],
+						"splitForm": {
+							"name": '', //人员
+							"xtname": '', //系统
+							"fzmodule": '', //负责模块
+							"easy": '', //难易程度
+							"allDate": '', //完成日期
+							"willTime": '', //预计用时
+							"taskNum": '', //任务量
+							"splitAnalysis": {} //拆分分析
+						},
+						easyArr: [], //难易程度
+						splitArr: [],
+						splitShow: ""
+					}
+				},
+				split: {
+					hasSplitTaskDataByGroup: [], //展示拆分任务的分组
+					hasSplitTaskData: [], //展示当前的分组拆分任务
+					codetask: [], //开发的任务
+					systemAll: [{
+						"name": "",
+						"version": ""
+					}], //所有选择的系统集合
+					splitradio: "", //拆分任务类型（1为测试任务，2为开发任务）
+					splitvisible: false,
+					splitaddvisible: false, //新增人员的显示框
+					choosesysyem: "", //选择的系统值
+					systemarr: [], //所填写过的的系统数组,
+					levelchoosen: "", //难易度选择的值,
+					level: [], //难易度数组
+					version: "", //版本号
+					startdate: "", //预计开始日期
+					enddate: "", //预计结束日期
+					finishdate: "", //完成日期
+					tableData: [], //拆分任务的表数据
+					model: "", //负责模块
+					taskcode: "", //任务编码
+					personlist: [], //课选择人员的人员数组
+					person: "", //选择的人员
+					usertime: "", //预计用时
+					names: [], //放置姓名的数组
+					ids: [], //放置id的数组
+					usetime: "", //预计用时
+				},
+				assign: {
+					assignvisible: false,
+					keyword: "",
+					left: true,
+					right: false,
+					checkList: [],
+					leftlistdata: [],
+					leftSearch: false,
+					rightlistdata: [],
+					searchData: [],
+					chooseId: ""
+				},
+				handle: {
+					"daliy_NEET_ID": ''
+				},
+				table: {
+					tableData: [],
+					tableOriginData: [],
+					tableHeight: "",
+				},
 				keyword: "",
-				left: true,
-				right: false,
-				checkList: [],
-				leftlistdata: [],
-				leftSearch: false,
-				rightlistdata: [],
-				searchData: [],
-				chooseId: ""
-			},
-			handle: {
-				"daliy_NEET_ID": ''
-			},
-			table: {
-				tableData: [],
-				tableOriginData: [],
-				tableHeight: "",
-			},
-			keyword: "",
-			screenKey: {
-				"STATE": "",
-				"DATE": "",
-				"START_DATE": "",
-				"END_DATE": ""
-			},
-			optionsOn: [{
-				"STATE_NAME": "全部",
-				"STATE_ID": ""
-			}],
-			selectValueOn: "",
-			dateComp: {},
-			dateRange: '',
-			tabs: {
-				activeName: "info", //控制台的选中项
-				consoleWrapperVisible: false, //控制台的显示
-				consoleActionVisible: false, //控制台的操作显示/隐藏
-				consoleActionData: [],
-				activeTableInfo: "", //当前选中的信息表格
-				data_one: {},
-				rriority: "", //评定优先级
-				rriorityArr: "", //评定优先级
-				checks: "", //需求评审结果
-				checksArr: "", //需求评审结果
-				state_NAME: "", //状态
-				user_NAME: "", //负责人
-				genzong: "",
-				genzongs: "",
-				chooseDept: "", //追踪右边选框
-				chooseDeptArr: [],
-				ifConsole: '',
-				ifEdit: '', //产品任务是否可编辑
-				ifPing: '', //是否可评定
-				ifAssign: '',
-				ifcanEdit: '0', //是否可编辑
-				ifSplit: ''
-			}, //上传附件
-			popup: {
-				priperty: [{
-						'name': '紧急',
-						"value": "101"
-					},
-					{
-						'name': '中等',
-						"value": "102"
-					},
-					{
-						'name': '一般',
-						"value": "103"
+				screenKey: {
+					"STATE": "",
+					"DATE": "",
+					"START_DATE": "",
+					"END_DATE": ""
+				},
+				optionsOn: [{
+					"STATE_NAME": "全部",
+					"STATE_ID": ""
+				}],
+				selectValueOn: "",
+				dateComp: {},
+				dateRange: '',
+				tabs: {
+					activeName: "info", //控制台的选中项
+					consoleWrapperVisible: false, //控制台的显示
+					consoleActionVisible: false, //控制台的操作显示/隐藏
+					consoleActionData: [],
+					activeTableInfo: "", //当前选中的信息表格
+					data_one: {},
+					data_chart:{},//放实时统计的数据
+					rriority: "", //评定优先级
+					rriorityArr: "", //评定优先级
+					checks: "", //需求评审结果
+					checksArr: "", //需求评审结果
+					state_NAME: "", //状态
+					user_NAME: "", //负责人
+					genzong: "",
+					genzongs: "",
+					chooseDept: "", //追踪右边选框
+					chooseDeptArr: [],
+					ifConsole: '',
+					ifEdit: '', //产品任务是否可编辑
+					ifPing: '', //是否可评定
+					ifAssign: '',
+					ifcanEdit: '0', //是否可编辑
+					ifSplit: ''
+				}, //上传附件
+				popup: {
+					priperty: [{
+							'name': '紧急',
+							"value": "101"
+						},
+						{
+							'name': '中等',
+							"value": "102"
+						},
+						{
+							'name': '一般',
+							"value": "103"
+						}
+					],
+					popTxt: {
+						'priperty2': '', //故障等级
+						'relationUser': "", //故障分析人员
+						'description': "", //故障描述
+						'descriptionEx': "", //故障复盘分析
+						'sumEffect': "", //交易量影响
+						'uploadFiles': [], // 上传成功的文件数组
+						'fileList': [], //上传附件
 					}
-				],
-				popTxt: {
-					'priperty2': '', //故障等级
-					'relationUser': "", //故障分析人员
-					'description': "", //故障描述
-					'descriptionEx': "", //故障复盘分析
-					'sumEffect': "", //交易量影响
-					'uploadFiles': [], // 上传成功的文件数组
-					'fileList': [], //上传附件
-				}
-			},
-			ifMANAGER_SAVE:"",//是否技术经理新增
-			ifPRODUCT_SAVE:"",//是否产品经理新增
-			errorVsetTableDataisible: false,
-			addOneTaskSuccess: false
-		}
-	},
-	filters: {
-		date: function(time) {
-			let d = new Date(time);
-			let year = d.getFullYear();
-			let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
-			let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-			let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
-			let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
-			let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
-			return year + '-' + month + '-' + day;
-		},
-		time: function(time) {
-			let d = new Date(time);
-			let year = d.getFullYear();
-			let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
-			let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-			let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
-			let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
-			let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
-			return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
-		},
-	},
-	mounted() {
-		this.loadData()
-	},
-	methods: {
-		loadData() {
-			//          	this.$maskin();
-			this.optionsOn = [{
-				"STATE_NAME": "全部",
-				"STATE_ID": ""
-			}]
-			//初始化当前活动的控制台
-			this.tabs.activeName = "info";
-			//初始化控制台的可视情况
-			this.tabs.consoleWrapperVisible = false;
-			this.calculate();
-			this.tabs.consoleWrapperVisible = false;
-			let params = new URLSearchParams();
-
-			params.append('STATE_ID', this.screenKey.STATE);
-			if(this.screenKey.START_DATE){
-			params.append('startDate', this.screenKey.START_DATE);
-			params.append('endDate', this.screenKey.END_DATE);
+				},
+				ifMANAGER_SAVE: "", //是否技术经理新增
+				ifPRODUCT_SAVE: "", //是否产品经理新增
+				errorVsetTableDataisible: false,
+				addOneTaskSuccess: false
 			}
-			params.append('key', this.keyword);
-			this.$axios.post("/daliy/queryAllDaliy", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.setTableData(data.result.daliys);
-					this.ifMANAGER_SAVE=data.result.MANAGER_SAVE
-					this.ifPRODUCT_SAVE=data.result.PRODUCT_SAVE
-					for(let i of data.result.state) {
-						this.optionsOn.push(i)
-					}
+		},
+		filters: {
+			date: function(time) {
+				let d = new Date(time);
+				let year = d.getFullYear();
+				let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
+				let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+				let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
+				let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+				let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+				return year + '-' + month + '-' + day;
+			},
+			time: function(time) {
+				let d = new Date(time);
+				let year = d.getFullYear();
+				let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
+				let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+				let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
+				let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+				let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+				return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
+			},
+		},
+		mounted() {
+			this.loadData()
+		},
+		methods: {
+			loadData() {
+				this.$maskin()
+				this.optionsOn = [{
+					"STATE_NAME": "全部",
+					"STATE_ID": ""
+				}]
+				//初始化当前活动的控制台
+				this.tabs.activeName = "info";
+				//初始化控制台的可视情况
+				this.tabs.consoleWrapperVisible = false;
+				this.calculate();
+				this.tabs.consoleWrapperVisible = false;
+				let params = new URLSearchParams();
+				//筛选列表
+				params.append('STATE_ID', this.screenKey.STATE);
+				if(this.screenKey.START_DATE) {
+					params.append('startDate', this.screenKey.START_DATE);
+					params.append('endDate', this.screenKey.END_DATE);
 				}
-			})
-		},
-		selectStatOn() {
-			this.screenKey.STATE = '';
-			this.screenKey.STATE = this.selectValueOn;
-			this.loadData();
-		},
-		pickDate(value) {
-			if(!value) {
-				this.screenKey.START_DATE = ""
-				this.screenKey.END_DATE = ""
+				params.append('key', this.keyword);
+				this.$axios.post("/daliy/queryAllDaliy", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.setTableData(data.result.daliys);
+						this.ifMANAGER_SAVE = data.result.MANAGER_SAVE
+						this.ifPRODUCT_SAVE = data.result.PRODUCT_SAVE
+						for(let i of data.result.state) {
+							this.optionsOn.push(i)
+						}
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff()
+				})
+			},
+			selectStatOn() {
+				this.screenKey.STATE = '';
+				this.screenKey.STATE = this.selectValueOn;
 				this.loadData();
-				return
-			}
-			this.screenKey.START_DATE = '';
-			this.screenKey.END_DATE = '';
-			this.screenKey.START_DATE = value[0];
-			this.screenKey.END_DATE = value[1];
-			this.loadData();
-		},
-		//点击表格列表展示控制台
-		handleCurrentChange(val) {
-			//this.$maskin();
-			//				this.tabs.activeName = "info";
-
-			this.clearData()
-			this.tabs.activeTableInfo = val;
-			if(!this.tabs.consoleWrapperVisible) {
-				this.tabs.consoleWrapperVisible = true;
-				setTimeout(() => {
-					this.calculate()
-				}, 0);
-			}
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
-			this.handle.daliy_NEET_ID = val.daliy_NEET_ID
-			this.tabs.ifConsole = ''
-			this.tabs.ifAssign = ''
-			this.tabs.ifSplit = ''
-			this.tabs.ifEdit = ''
-			this.tabs.ifPing = ''
-			this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$set(this.tabs, "data_one", data.result);
-					this.tabs.state_NAME = data.result.daliy.state_NAME
-					this.tabs.user_NAME = data.result.daliy.send_NAME
-					this.tabs.ifConsole = data.result.confirm
-					this.tabs.ifAssign = data.result.assign
-					this.tabs.ifSplit = data.result.split
-					this.tabs.ifEdit = data.result.EDIT
-					this.tabs.ifPing = data.result.checkDaliy
-					this.$set(this.tabs, "rriorityArr", data.result.rriority);
-					this.$set(this.tabs, "checksArr", data.result.checks);
-					this.$set(this.tabs, "genzong", data.result.records);
-					this.$set(this.tabs, "genzongs", data.result.records);
-					this.$set(this.tabs, "chooseDeptArr", data.result.deptSystem);
-					this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem);
-					this.consoleAction()
-					this.getSplit() //获取分配默认值
-
-				}
-			})
-		},
-		proEdit() {
-			let all = this.tabs.data_one.daliy
-			this.addneeds.addform.code = all.daliy_NEET_ID
-			this.addneeds.addform.sxname = all.user_NAME
-			this.addneeds.addform.name = all.task_NAME
-			this.addneeds.addform.jihuadate = new Date(Date.parse(all.end_DATE_STRING.replace(/-/g, "/")))
-			this.addneeds.addform.needsname = all.task_DESCRIPTION
-			this.addneeds.addform.level = all.rriority
-			this.addneeds.addform.ascription = all.ascription
-			this.addneeds.addform.daliyTypeName = all.type
-			this.addneeds.addform.result = all.result
-			this.addneeds.addform.influece = all.influece
-			this.addneeds.addform.prduct_function = all.prduct_FUNCTION
-			this.addneeds.addform.prduct_line = all.prduct_LINE
-			this.addneeds.addform.zhongyaochegndu = all.importance
-			this.addneeds.addform.jiajireason = all.ugent
-			if(all.ugent && all.ugent != "null") {
-				this.addneeds.addform.jiaji = "1"
-			} else {
-				this.addneeds.addform.jiaji = "0"
-				this.addneeds.addform.jiajireason = ''
-			}
-			this.addneeds.addform.fromdeptId = all.task_SOURCE.split('-')[0]
-			this.addneeds.addform.fromdeptroleId = all.task_SOURCE.split('-')[1]
-
-		},
-		getSplit() {
-			let params = new URLSearchParams();
-			this.$axios.post("/daliy/saveInfoFront", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					//任务编号
-					this.addneeds.addform.code = data.result.DALIY_NEET_ID
-					this.$set(this.addneeds.addform, "systemArr", data.result.system)
-					//本部门人员
-					this.$set(this.addneeds.addform, "pepoleArr", data.result.deptUser.users)
-					//难易程度
-					this.$set(this.addneeds.addform, "easyArr", data.result.facility);
-					//需求划分归属
-					this.$set(this.addneeds.addform, "ascriptionArr", data.result.ascription);
-					//需求类型
-					this.$set(this.addneeds.addform, "daliyTypeNameArr", data.result.daliyTypeName);
-					//影响面
-					this.$set(this.addneeds.addform, "influeceArr", data.result.influece);
-					//成果类型
-					this.$set(this.addneeds.addform, "resultArr", data.result.result);
-					//需求分析结果
-					this.$set(this.addneeds.addform, "analysisArr", data.result.analysis);
-				}
-			})
-		},
-		handleCurrentChange2(val) {
-			this.clearData()
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', val);
-			this.tabs.ifConsole = ''
-			this.tabs.ifAssign = ''
-			this.tabs.ifSplit = ''
-			this.tabs.ifEdit = ''
-			this.tabs.ifPing = ''
-			this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$set(this.tabs, "data_one", data.result);
-					this.tabs.state_NAME = data.result.daliy.state_NAME
-					this.tabs.user_NAME = data.result.daliy.send_NAME
-					this.tabs.ifConsole = data.result.confirm
-					this.tabs.ifAssign = data.result.assign
-					this.tabs.ifSplit = data.result.split
-					this.tabs.ifEdit = data.result.EDIT
-					this.tabs.ifPing = data.result.checkDaliy
-					this.$set(this.tabs, "genzong", data.result.records);
-					this.$set(this.tabs, "genzongs", data.result.records);
-					this.$set(this.tabs, "chooseDeptArr", data.result.deptSystem);
-					this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem[0]);
-					this.consoleAction()
-					this.getSplit() //获取分配默认值
-				}
-			})
-		},
-		checkDaliy() {
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
-			params.append('CHECK_TYPE', this.tabs.checks.split('-')[1]);
-			params.append('CHECK_ID', this.tabs.checks.split('-')[0]);
-			params.append('RRIORITY', this.tabs.rriority);
-			params.append('CHECK_TIME', this.addneeds.addform.check_time);
-			params.append('CHECK_NAME', this.addneeds.addform.check_name);
-			this.$axios.post("/daliy/checkDaliy", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$success(data.message);
+			},
+			pickDate(value) {
+				if(!value) {
+					this.screenKey.START_DATE = ""
+					this.screenKey.END_DATE = ""
 					this.loadData();
-					this.tabs.rriority = ''
-					this.tabs.checks = ''
-					this.addneeds.addform.check_time = ''
-					this.addneeds.addform.check_name = ''
+					return
+				}
+				this.screenKey.START_DATE = '';
+				this.screenKey.END_DATE = '';
+				this.screenKey.START_DATE = value[0];
+				this.screenKey.END_DATE = value[1];
+				this.loadData();
+			},
+			//点击表格列表展示控制台
+			handleCurrentChange(val) {
+				this.$maskin();
+				//this.tabs.activeName = "info";
+				this.clearData()
+				this.tabs.activeTableInfo = val;
+				if(!this.tabs.consoleWrapperVisible) {
+					this.tabs.consoleWrapperVisible = true;
+					setTimeout(() => {
+						this.calculate()
+					}, 0);
+				}
+				let params = new URLSearchParams();
+				params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+				this.handle.daliy_NEET_ID = val.daliy_NEET_ID //赋值主键
+				this.tabs.ifConsole = ''
+				this.tabs.ifAssign = ''
+				this.tabs.ifSplit = ''
+				this.tabs.ifEdit = ''
+				this.tabs.ifPing = ''
+				this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.$set(this.tabs, "data_one", data.result);
+						this.tabs.state_NAME = data.result.daliy.state_NAME
+						this.tabs.user_NAME = data.result.daliy.send_NAME
+						this.tabs.ifConsole = data.result.confirm
+						this.tabs.ifAssign = data.result.assign
+						this.tabs.ifSplit = data.result.split
+						this.tabs.ifEdit = data.result.EDIT
+						this.tabs.ifPing = data.result.checkDaliy
+						this.$set(this.tabs, "rriorityArr", data.result.rriority);
+						this.$set(this.tabs, "checksArr", data.result.checks);
+						this.$set(this.tabs, "genzong", data.result.records);
+						this.$set(this.tabs, "genzongs", data.result.records);
+						this.$set(this.tabs, "chooseDeptArr", data.result.deptRecord);
+						this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem);
+						this.consoleAction() //控制台按钮展示
+						this.getSplit() //获取分配默认值
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff()
+				})
+			},
+			//编辑产品经理建立的需求初始化数值
+			proEdit() {
+				let all = this.tabs.data_one.daliy
+				this.addneeds.addform.code = all.daliy_NEET_ID
+				this.addneeds.addform.sxname = all.user_NAME
+				this.addneeds.addform.name = all.task_NAME
+				this.addneeds.addform.jihuadate = new Date(Date.parse(all.end_DATE_STRING.replace(/-/g, "/")))
+				this.addneeds.addform.needsname = all.task_DESCRIPTION
+				this.addneeds.addform.level = all.rriority
+				this.addneeds.addform.ascription = all.ascription
+				this.addneeds.addform.daliyTypeName = all.type
+				this.addneeds.addform.result = all.result
+				this.addneeds.addform.influece = all.influece
+				this.addneeds.addform.prduct_function = all.prduct_FUNCTION
+				this.addneeds.addform.prduct_line = all.prduct_LINE
+				this.addneeds.addform.zhongyaochegndu = all.importance
+				this.addneeds.addform.jiajireason = all.ugent
+				if(all.ugent && all.ugent != "null") {
+					this.addneeds.addform.jiaji = "1"
 				} else {
-					this.$warn(data.message);
+					this.addneeds.addform.jiaji = "0"
+					this.addneeds.addform.jiajireason = ''
 				}
-			})
-		},
-		//控制台action
-		consoleAction() {
-			this.tabs.consoleActionData = []
-			if(this.tabs.ifConsole) {
-				this.tabs.consoleActionData.push({
-					"key": '1',
-					"name": '通过'
-				})
-				this.tabs.consoleActionData.push({
-					"key": '2',
-					"name": '不通过'
-				})
-			}
-			if(this.tabs.ifAssign) {
-				this.tabs.consoleActionData.push({
-					"key": '3',
-					"name": '确认'
-				})
-				this.tabs.consoleActionData.push({
-					"key": '4',
-					"name": '驳回'
-				})
-			}
-			if(this.tabs.ifSplit) {
-				this.tabs.consoleActionData.push({
-					"key": '5',
-					"name": '确认'
-				})
-				this.tabs.consoleActionData.push({
-					"key": '6',
-					"name": '驳回'
-				})
-			}
-			if(this.tabs.ifEdit) {
-				this.tabs.consoleActionData.push({
-					"key": '7',
-					"name": '编辑'
-				})
-			}
-
-		},
-		//拆分任务点击事件
-		splitTaskClick(val) {
-			this.$set(this.split, "hasSplitTaskData", []);
-			//为空时不展示内容
-			this.addneeds.hasSplitvisible = true;
-			this.$set(this.split, "hasSplitTaskData", val.tasks)
-		},
-		setTableData(data) {
-			this.$set(this.table, "tableData", data);
-			this.$set(this.table, "tableOriginData", data);
-			this.$maskoff();
-		},
-		innitFrom() {
-			let params = new URLSearchParams();
-			this.$axios.post("/daliy/saveDaliyFront", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					//涉及系统
-					this.$set(this.addneeds.addform, "sjxtArr", data.result.firstSystem)
-					this.$set(this.addneeds.addform, "systemArr", data.result.system)
-					//任务编号
-					if(!this.addneeds.addform.code) {
+				this.addneeds.addform.fromdeptId = all.task_SOURCE.split('-')[0]
+				this.addneeds.addform.fromdeptroleId = all.task_SOURCE.split('-')[1]
+			},
+			//拆分列表初始化
+			getSplit() {
+				this.$maskin();
+				let params = new URLSearchParams();
+				this.$axios.post("/daliy/saveInfoFront", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						//任务编号
 						this.addneeds.addform.code = data.result.DALIY_NEET_ID
+						this.$set(this.addneeds.addform, "systemArr", data.result.system)
+						//本部门人员
+						this.$set(this.addneeds.addform, "pepoleArr", data.result.deptUser.users)
+						//难易程度
+						this.$set(this.addneeds.addform, "easyArr", data.result.facility);
+						//需求划分归属
+						this.$set(this.addneeds.addform, "ascriptionArr", data.result.ascription);
+						//需求类型
+						this.$set(this.addneeds.addform, "daliyTypeNameArr", data.result.daliyTypeName);
+						//影响面
+						this.$set(this.addneeds.addform, "influeceArr", data.result.influece);
+						//成果类型
+						this.$set(this.addneeds.addform, "resultArr", data.result.result);
+						//需求分析结果
+						this.$set(this.addneeds.addform, "analysisArr", data.result.analysis);
+					} else {
+						this.$warn(data.message);
 					}
-					//importance 重要程度
-					this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance)
-					//rriority 优先级
-					this.$set(this.addneeds.addform, "levelArr", data.result.rriority)
-					//任务来源
-					this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts)
-
-					//难易程度
-					this.$set(this.addneeds.addform, "easyArr", data.result.facility);
-					//需求划分归属
-					this.$set(this.addneeds.addform, "ascriptionArr", data.result.ascription);
-					//需求类型
-					this.$set(this.addneeds.addform, "daliyTypeNameArr", data.result.daliyTypeName);
-					//影响面
-					this.$set(this.addneeds.addform, "influeceArr", data.result.influece);
-					//成果类型
-					this.$set(this.addneeds.addform, "resultArr", data.result.result);
-					//需求分析结果
-					this.$set(this.addneeds.addform, "analysisArr", data.result.analysis);
-					//申请人
-					this.addneeds.addform.sxname = data.result.USER_NAME
-				}
-
-			})
-		},
-		//最终建立新项目
-		filterParam() {
-			if(!this.addneeds.addform.sjxt || this.addneeds.addform.sjxt.length == 0) {
-				this.$warn("请选择涉及系统")
-				return
-			}
-			if(!this.addneeds.addform.sxname) {
-				this.$warn("请填写任务申请人")
-				return
-			}
-			if(!this.addneeds.addform.name) {
-				this.$warn("请填写任务名称")
-				return
-			}
-			if(!this.addneeds.addform.jihuadate) {
-				this.$warn("请选择期望上线时间")
-				return
-			}
-			if(!this.addneeds.addform.jihuadate) {
-				this.$warn("请选择期望上线时间")
-				return
-			}
-		},
-		createNew() {
-			this.filterParam()
-			let params = new URLSearchParams();
-			let finish = this.$format(new Date(this.addneeds.addform.jihuadate));
-			params.append("DESIGN_SYSTEM", this.addneeds.addform.sjxt); //涉及系统
-			params.append("DALIY_NEET_ID", this.addneeds.addform.code); //任务编号
-			params.append("USER_NAME", this.addneeds.addform.sxname); //任务申请人
-			params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
-			params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
-			params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
-			params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
-
-			params.append("ASCRIPTION", this.addneeds.addform.ascription); //需求划分归属
-			params.append("TYPE", this.addneeds.addform.daliyTypeName); //日常任务 需求类型
-			params.append("RESULT", this.addneeds.addform.result); //成果类型
-			params.append("INFLUECE", this.addneeds.addform.influece); //需求影响面
-
-			params.append("PRDUCT_FUNCTION", this.addneeds.addform.prduct_function); //产品改造点
-			params.append("PRDUCT_LINE", this.addneeds.addform.prduct_line); // 涉及产品线
-
-			params.append("startTime", this.addneeds.addform.startTime); // 预计开始时间
-			params.append("endTime", this.addneeds.addform.endTime); // 预计完成时间
-			params.append("analysisTime", this.addneeds.addform.analysisTime); // 分析时间
-			params.append("RISK", this.addneeds.addform.RISK); //  风险点
-
-			params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
-
-			params.append("RRIORITY", this.addneeds.addform.level); //优先级
-			params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu); //重要程度
-			params.append("UGENT", this.addneeds.addform.jiajireason); //加急描述
-			params.append("infos", JSON.stringify(this.addneeds.addform.splitArr)); //拆分
-			this.$axios.post("/daliy/technologyAdd", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.closeDialog()
-					this.loadData()
-				}
-
-			})
-		},
-		createNewN() { //控制台拆分
-			//				this.filterParam()
-			let params = new URLSearchParams();
-			let finish = this.$format(new Date(this.addneeds.addform.jihuadate));
-			params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID); //任务编号
-			params.append("startTime", this.addneeds.addform.startTime); // 预计开始时间
-			params.append("endTime", this.addneeds.addform.endTime); // 预计完成时间
-			params.append("analysisTime", this.addneeds.addform.analysisTime); // 分析时间
-			params.append("RISK", this.addneeds.addform.RISK); //  风险点
-			params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
-			params.append("infos", JSON.stringify(this.addneeds.addform.splitArr)); //拆分
-			this.$axios.post("/daliy/managerSplit", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.loadData()
-				}
-
-			})
-		},
-		createNew2() {
-			let params = new URLSearchParams();
-			let finish = this.$format(new Date(this.addneeds.addform.jihuadate));
-			params.append("DALIY_NEET_ID", this.addneeds.addform.code); //任务编号
-			params.append("USER_NAME", this.addneeds.addform.sxname); //任务申请人
-			params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
-			params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
-			params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
-			if((this.addneeds.addform.fromdeptId).split('-').length > 1) {
-				params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
-			} else {
-				params.append("TASK_SOURCE", this.addneeds.addform.fromdeptId + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
-			}
-
-			params.append("RRIORITY", this.addneeds.addform.level); //优先级
-
-			params.append("ASCRIPTION", this.addneeds.addform.ascription); //需求划分归属
-			params.append("TYPE", this.addneeds.addform.daliyTypeName); //日常任务 需求类型
-			params.append("RESULT", this.addneeds.addform.result); //成果类型
-			params.append("INFLUECE", this.addneeds.addform.influece); //需求影响面
-
-			params.append("PRDUCT_FUNCTION", this.addneeds.addform.prduct_function); //产品改造点
-			params.append("PRDUCT_LINE", this.addneeds.addform.prduct_line); // 涉及产品线
-
-			//				params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
-
-			params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu); //重要程度
-			params.append("UGENT", this.addneeds.addform.jiajireason); //加急描述
-			params.append("EDIT", this.addneeds.addform.ifcanEdit);
-			if(this.tabs.ifcanEdit == '0') {
-				this.$axios.post("/daliy/productAdd", params).then((res) => {
+					this.$maskoff();
+				})
+			},
+			//控制台数据二次刷新
+			handleCurrentChange2(val) {
+				this.$maskin();
+				this.clearData()
+				let params = new URLSearchParams();
+				params.append('DALIY_NEET_ID', val);
+				this.tabs.ifConsole = ''
+				this.tabs.ifAssign = ''
+				this.tabs.ifSplit = ''
+				this.tabs.ifEdit = ''
+				this.tabs.ifPing = ''
+				this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-						this.closeDialog()
-						this.loadData()
+						this.$set(this.tabs, "data_one", data.result);
+						this.tabs.state_NAME = data.result.daliy.state_NAME
+						this.tabs.user_NAME = data.result.daliy.send_NAME
+						this.tabs.ifConsole = data.result.confirm
+						this.tabs.ifAssign = data.result.assign
+						this.tabs.ifSplit = data.result.split
+						this.tabs.ifEdit = data.result.EDIT
+						this.tabs.ifPing = data.result.checkDaliy
+						this.$set(this.tabs, "genzong", data.result.records);
+						this.$set(this.tabs, "genzongs", data.result.records);
+						this.$set(this.tabs, "chooseDeptArr", data.result.deptRecord);
+						this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem[0]);
+						this.consoleAction()
+						this.getSplit() //获取分配默认值
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
 				})
-			} else {
-				this.$axios.post("/daliy/updateDaliy", params).then((res) => {
+			},
+			mustCheck() {
+				//TODO
+				let firm = "1"
+				if(!this.tabs.rriority) {
+					this.$warn("请选择优先级评定");
+					firm = "0"
+				}
+				if(!this.tabs.checks) {
+					this.$warn("请选择需求评审结果");
+					firm = "0"
+				}
+				if(!this.addneeds.addform.check_time) {
+					this.$warn("请选择评审日期");
+					firm = "0"
+				}
+				if(!this.addneeds.addform.check_name) {
+					this.$warn("请填写参会人");
+					firm = "0"
+				}
+				return firm
+			},
+			checkDaliy() {
+				let accept = this.mustCheck()
+				if(accept == "1") {
+					this.$maskin();
+					let params = new URLSearchParams();
+					params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
+					params.append('CHECK_TYPE', this.tabs.checks.split('-')[1]);
+					params.append('CHECK_ID', this.tabs.checks.split('-')[0]);
+					params.append('RRIORITY', this.tabs.rriority);
+					params.append('CHECK_TIME', this.addneeds.addform.check_time);
+					params.append('CHECK_NAME', this.addneeds.addform.check_name);
+					this.$axios.post("/daliy/checkDaliy", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.$success(data.message);
+							this.loadData();
+							this.tabs.rriority = ''
+							this.tabs.checks = ''
+							this.addneeds.addform.check_time = ''
+							this.addneeds.addform.check_name = ''
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					})
+				}
+			},
+			//控制台action
+			consoleAction() {
+				this.tabs.consoleActionData = []
+				if(this.tabs.ifConsole) {
+					this.tabs.consoleActionData.push({
+						"key": '1',
+						"name": '通过'
+					})
+					this.tabs.consoleActionData.push({
+						"key": '2',
+						"name": '不通过'
+					})
+				}
+				if(this.tabs.ifAssign) {
+					this.tabs.consoleActionData.push({
+						"key": '3',
+						"name": '确认'
+					})
+					this.tabs.consoleActionData.push({
+						"key": '4',
+						"name": '驳回'
+					})
+				}
+				if(this.tabs.ifSplit) {
+					//					this.tabs.consoleActionData.push({
+					//						"key": '5',
+					//						"name": '确认'
+					//					})
+					this.tabs.consoleActionData.push({
+						"key": '6',
+						"name": '驳回'
+					})
+				}
+				if(this.tabs.ifEdit) {
+					this.tabs.consoleActionData.push({
+						"key": '7',
+						"name": '编辑'
+					})
+				}
+			},
+			//拆分任务点击事件
+			splitTaskClick(val) {
+				this.$set(this.split, "hasSplitTaskData", []);
+				this.addneeds.hasSplitvisible = true;
+				this.$set(this.split, "hasSplitTaskData", val.tasks)
+			},
+			setTableData(data) {
+				this.$set(this.table, "tableData", data);
+				this.$set(this.table, "tableOriginData", data);
+			},
+			innitFrom() {
+				this.$maskin();
+				let params = new URLSearchParams();
+				this.$axios.post("/daliy/saveDaliyFront", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-						this.closeDialog()
-						this.loadData()
-					}
-				})
-			}
+						//涉及系统
+						this.$set(this.addneeds.addform, "sjxtArr", data.result.firstSystem)
+						this.$set(this.addneeds.addform, "systemArr", data.result.system)
+						//任务编号
+						if(!this.addneeds.addform.code) {
+							this.addneeds.addform.code = data.result.DALIY_NEET_ID
+						}
+						//importance 重要程度
+						this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance)
+						//rriority 优先级
+						this.$set(this.addneeds.addform, "levelArr", data.result.rriority)
+						//任务来源
+						this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts)
 
-		},
-		//新建任务技术经理
-		newneeds() {
-			this.addneeds.addvisible = true;
-			this.clearData()
-			this.loadData()
-			this.innitFrom()
-		},
-		//新建任务产品经理
-		newneedsP() {
-			this.addneeds.addvisibleP = true;
-			this.clearData()
-			this.loadData()
-			this.innitFrom()
-		},
-		newneedsP2() {
-			this.addneeds.addvisibleP = true;
-			this.clearData()
-			this.loadData()
-			this.innitFrom()
-			this.proEdit()
-		},
-		//拆分任务版本拼接
-		distributionTask() {
-			if(!this.addneeds.addform.onlineContent[0].xtname) {
-				this.$warn("请选择系统");
-				return;
-			}
-			if(!this.addneeds.addform.onlineContent[0].ban) {
-				this.$warn("请填写版本号");
-				return;
-			}
-			this.addneeds.addvisible = false
-			this.addneeds.splitaddvisible = true
-			//获取系统列表从加号获取
-			this.addneeds.addform.splitForm.fzmoduleArr = []
-			for(let i of this.addneeds.addform.onlineContent) {
-				let name = (i.xtname).split(',')[1]
-				let id = (i.xtname).split(',')[0]
-				if(i.xtname && i.ban) {
+						//难易程度
+						this.$set(this.addneeds.addform, "easyArr", data.result.facility);
+						//需求划分归属
+						this.$set(this.addneeds.addform, "ascriptionArr", data.result.ascription);
+						//需求类型
+						this.$set(this.addneeds.addform, "daliyTypeNameArr", data.result.daliyTypeName);
+						//影响面
+						this.$set(this.addneeds.addform, "influeceArr", data.result.influece);
+						//成果类型
+						this.$set(this.addneeds.addform, "resultArr", data.result.result);
+						//需求分析结果
+						this.$set(this.addneeds.addform, "analysisArr", data.result.analysis);
+						//申请人
+						this.addneeds.addform.sxname = data.result.USER_NAME
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff();
+				})
+			},
+			//最终建立新项目必填限制
+			filterParam() {
+				let flag = "1"
+				if(!this.addneeds.addform.sjxt || this.addneeds.addform.sjxt.length == 0) {
+					this.$warn("请选择涉及系统")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.sxname) {
+					this.$warn("请填写申请人")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.name) {
+					this.$warn("请填写任务名称")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.needsname) {
+					this.$warn("请填写需求描述")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.jihuadate) {
+					this.$warn("请选择期望上线时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.fromdeptId) {
+					this.$warn("请选择需求提出部门")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.fromdeptroleId) {
+					this.$warn("请选择提出人")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.ascription) {
+					this.$warn("请选择需求划分归属")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.daliyTypeName) {
+					this.$warn("请选择需求类型")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.result) {
+					this.$warn("请选择成果类型")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.influece) {
+					this.$warn("请选择需求影响面")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.prduct_function) {
+					this.$warn("请填写产品改造点")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.prduct_line) {
+					this.$warn("请填写涉及产品线")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.startTime) {
+					this.$warn("请选择预计开始时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.endTime) {
+					this.$warn("请选择预计完成时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.analysisTime) {
+					this.$warn("请选择分析时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.RISK) {
+					this.$warn("请填写风险点")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.analysis) {
+					this.$warn("请选择需求分析结果")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.level) {
+					this.$warn("请选择优先级")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.zhongyaochegndu) {
+					this.$warn("请选择重要程度")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.jiaji) {
+					this.$warn("请选择是否加急")
+					flag = "0"
+				}
+				if(this.addneeds.addform.jiaji == "1" && !this.addneeds.addform.jiajireason) {
+					this.$warn("请填写加急描述")
+					flag = "0"
+				}
+				if(this.addneeds.addform.splitArr.length < 1) {
+					this.$warn("请添加拆分")
+					flag = "0"
+				}
+				return flag
+				//TODO
+
+			},
+			createNew() {
+				if(this.filterParam() == "1") {
+					this.$maskin();
+					let params = new URLSearchParams();
+					params.append("DESIGN_SYSTEM", this.addneeds.addform.sjxt); //涉及系统
+					params.append("DALIY_NEET_ID", this.addneeds.addform.code); //任务编号
+					params.append("USER_NAME", this.addneeds.addform.sxname); //任务申请人
+					params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
+					params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
+					params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
+					params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
+
+					params.append("ASCRIPTION", this.addneeds.addform.ascription); //需求划分归属
+					params.append("TYPE", this.addneeds.addform.daliyTypeName); //日常任务 需求类型
+					params.append("RESULT", this.addneeds.addform.result); //成果类型
+					params.append("INFLUECE", this.addneeds.addform.influece); //需求影响面
+
+					params.append("PRDUCT_FUNCTION", this.addneeds.addform.prduct_function); //产品改造点
+					params.append("PRDUCT_LINE", this.addneeds.addform.prduct_line); // 涉及产品线
+
+					params.append("startTime", this.addneeds.addform.startTime); // 预计开始时间
+					params.append("endTime", this.addneeds.addform.endTime); // 预计完成时间
+					params.append("analysisTime", this.addneeds.addform.analysisTime); // 分析时间
+					params.append("RISK", this.addneeds.addform.RISK); //  风险点
+
+					params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
+
+					params.append("RRIORITY", this.addneeds.addform.level); //优先级
+					params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu); //重要程度
+					params.append("UGENT", this.addneeds.addform.jiajireason); //加急描述
+					params.append("infos", JSON.stringify(this.addneeds.addform.splitArr)); //拆分
+					this.$axios.post("/daliy/technologyAdd", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.closeDialog()
+							this.loadData()
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					})
+				}
+
+			},
+			//控制台拆分
+			createNewNFilter() {
+				let flag = "1"
+
+				if(!this.addneeds.addform.startTime) {
+					this.$warn("请选择预计开始时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.endTime) {
+					this.$warn("请选择预计完成时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.analysisTime) {
+					this.$warn("请选择分析时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.RISK) {
+					this.$warn("请填写风险点")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.analysis) {
+					this.$warn("请选择需求分析结果")
+					flag = "0"
+				}
+				if(this.addneeds.addform.splitArr.length < 1) {
+					this.$warn("请添加拆分")
+					flag = "0"
+				}
+
+				return flag
+				//TODO
+			},
+			createNewN() {
+				if(this.createNewNFilter() == "1") {
+					this.$maskin();
+					let params = new URLSearchParams();
+					params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID); //任务编号
+					params.append("startTime", this.addneeds.addform.startTime); // 预计开始时间
+					params.append("endTime", this.addneeds.addform.endTime); // 预计完成时间
+					params.append("analysisTime", this.addneeds.addform.analysisTime); // 分析时间
+					params.append("RISK", this.addneeds.addform.RISK); //  风险点
+					params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
+					params.append("infos", JSON.stringify(this.addneeds.addform.splitArr)); //拆分
+					this.$axios.post("/daliy/managerSplit", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.loadData()
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					})
+				}
+			},
+			proFilter() {
+				let flag = "1"
+				if(!this.addneeds.addform.sxname) {
+					this.$warn("请填写申请人")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.name) {
+					this.$warn("请填写任务名称")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.needsname) {
+					this.$warn("请填写需求描述")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.jihuadate) {
+					this.$warn("请选择期望上线时间")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.fromdeptId) {
+					this.$warn("请选择需求提出部门")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.fromdeptroleId) {
+					this.$warn("请选择提出人")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.ascription) {
+					this.$warn("请选择需求划分归属")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.daliyTypeName) {
+					this.$warn("请选择需求类型")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.result) {
+					this.$warn("请选择成果类型")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.influece) {
+					this.$warn("请选择需求影响面")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.prduct_function) {
+					this.$warn("请填写产品改造点")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.prduct_line) {
+					this.$warn("请填写涉及产品线")
+					flag = "0"
+				}
+				//				if(!this.addneeds.addform.analysis){
+				//					this.$warn("请选择需求分析结果")
+				//					return
+				//				}
+				if(!this.addneeds.addform.level) {
+					this.$warn("请选择优先级")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.zhongyaochegndu) {
+					this.$warn("请选择重要程度")
+					flag = "0"
+				}
+				if(!this.addneeds.addform.jiaji) {
+					this.$warn("请选择是否加急")
+					flag = "0"
+				}
+				if(this.addneeds.addform.jiaji == "1" && !this.addneeds.addform.jiajireason) {
+					this.$warn("请填写加急描述")
+					flag = "0"
+				}
+				return flag
+				//TODO
+			},
+			//产品经理新建任务
+			createNew2() {
+				if(this.proFilter() == "1") {
+					this.$maskin();
+					let params = new URLSearchParams();
+					params.append("DALIY_NEET_ID", this.addneeds.addform.code); //任务编号
+					params.append("USER_NAME", this.addneeds.addform.sxname); //任务申请人
+					params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
+					params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
+					params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
+					if((this.addneeds.addform.fromdeptId).split('-').length > 1) {
+						params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
+					} else {
+						params.append("TASK_SOURCE", this.addneeds.addform.fromdeptId + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
+					}
+
+					params.append("RRIORITY", this.addneeds.addform.level); //优先级
+
+					params.append("ASCRIPTION", this.addneeds.addform.ascription); //需求划分归属
+					params.append("TYPE", this.addneeds.addform.daliyTypeName); //日常任务 需求类型
+					params.append("RESULT", this.addneeds.addform.result); //成果类型
+					params.append("INFLUECE", this.addneeds.addform.influece); //需求影响面
+
+					params.append("PRDUCT_FUNCTION", this.addneeds.addform.prduct_function); //产品改造点
+					params.append("PRDUCT_LINE", this.addneeds.addform.prduct_line); // 涉及产品线
+
+					//				params.append("ANA_RESULT", this.addneeds.addform.analysis); //  需求分析结果
+
+					params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu); //重要程度
+					params.append("UGENT", this.addneeds.addform.jiajireason); //加急描述
+					params.append("EDIT", this.addneeds.addform.ifcanEdit);
+					if(this.tabs.ifcanEdit == '0') {
+						this.$axios.post("/daliy/productAdd", params).then((res) => {
+							let data = res.data;
+							if(data.code == 200) {
+								this.closeDialog()
+								this.loadData()
+							} else {
+								this.$warn(data.message);
+							}
+							this.$maskoff();
+						})
+					} else {
+						this.$axios.post("/daliy/updateDaliy", params).then((res) => {
+							let data = res.data;
+							if(data.code == 200) {
+								this.closeDialog()
+								this.loadData()
+							} else {
+								this.$warn(data.message);
+							}
+							this.$maskoff();
+						})
+					}
+
+				}
+			},
+			//新建任务技术经理
+			newneeds() {
+				this.addneeds.addvisible = true;
+				this.clearData()
+				this.loadData()
+				this.innitFrom()
+			},
+			//新建任务产品经理
+			newneedsP() {
+				this.addneeds.addvisibleP = true;
+				this.clearData()
+				this.loadData()
+				this.innitFrom()
+			},
+			//产品经理编辑任务
+			newneedsP2() {
+				this.addneeds.addvisibleP = true;
+				this.clearData()
+				this.loadData()
+				this.innitFrom()
+				this.proEdit()
+			},
+			//拆分任务版本拼接
+			distributionTask() {
+				if(!this.addneeds.addform.onlineContent[0].xtname) {
+					this.$warn("请选择系统");
+					return;
+				}
+				if(!this.addneeds.addform.onlineContent[0].ban) {
+					this.$warn("请填写版本号");
+					return;
+				}
+				this.addneeds.addvisible = false
+				this.addneeds.splitaddvisible = true
+				this.addneeds.addform.splitForm.fzmoduleArr = []
+				for(let i of this.addneeds.addform.onlineContent) {
+					let name = (i.xtname).split(',')[1]
+					let id = (i.xtname).split(',')[0]
+					if(i.xtname && i.ban) {
+						this.addneeds.addform.splitForm.fzmoduleArr.push({
+							"value": name + i.ban,
+							"key": id
+						})
+					}
+				}
+
+			},
+			//控制台拆分任务
+			distributionTask1() {
+				if(!this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].xtname) {
+					this.$warn("请选择系统");
+					return;
+				}
+				if(!this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].ban) {
+					this.$warn("请填写版本号");
+					return;
+				}
+				if(this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].ban.indexOf("v") < 0) {
+					this.$warn("版本号格式有误");
+					return;
+				}
+				this.addneeds.addvisible = false
+				this.addneeds.splitaddvisibleN = true
+				this.addneeds.addform.splitForm.fzmoduleArr = []
+				for(let i of this.addneeds.addform.onlineContent) {
+					let name = (i.xtname).split(',')[1]
+					let id = (i.xtname).split(',')[0]
 					this.addneeds.addform.splitForm.fzmoduleArr.push({
 						"value": name + i.ban,
 						"key": id
 					})
 				}
-			}
 
-		},
-		distributionTask1() {
-			if(!this.addneeds.addform.onlineContent[0].xtname) {
-				this.$warn("请选择系统");
-				return;
-			}
-			if(!this.addneeds.addform.onlineContent[0].ban) {
-				this.$warn("请填写版本号");
-				return;
-			}
-			this.addneeds.addvisible = false
-			this.addneeds.splitaddvisibleN = true
-			//获取系统列表从加号获取
-			this.addneeds.addform.splitForm.fzmoduleArr = []
-			for(let i of this.addneeds.addform.onlineContent) {
-				let name = (i.xtname).split(',')[1]
-				let id = (i.xtname).split(',')[0]
-				this.addneeds.addform.splitForm.fzmoduleArr.push({
-					"value": name + i.ban,
-					"key": id
-				})
-			}
-
-		},
-		//分配任务搜索功能
-		assignSearch() {
-			let keyword = this.assign.keyword;
-			let type;
-			if(this.assign.left) {
-				type = "left"
-			} else {
-				type = "right"
-			}
-			//搜索关键字判断
-			if(keyword == "") {
-				//为空
-				this.assign.leftSearch = false;
-				this.$set(this.assign, "searchData", type == "left" ? this.assign.leftlistdata : this.assign.rightlistdata)
-			} else {
-				//不为空
-				let arr = [];
-				if(type == "left") {
-					for(let i of this.assign.leftlistdata) {
-						for(let j of i.users) {
-							if(j.user_NAME.indexOf(keyword) >= 0) {
-								arr.push(j)
+			},
+			//分配任务搜索功能
+			assignSearch() {
+				let keyword = this.assign.keyword;
+				let type;
+				if(this.assign.left) {
+					type = "left"
+				} else {
+					type = "right"
+				}
+				//搜索关键字判断
+				if(keyword == "") {
+					//为空
+					this.assign.leftSearch = false;
+					this.$set(this.assign, "searchData", type == "left" ? this.assign.leftlistdata : this.assign.rightlistdata)
+				} else {
+					//不为空
+					let arr = [];
+					if(type == "left") {
+						for(let i of this.assign.leftlistdata) {
+							for(let j of i.users) {
+								if(j.user_NAME.indexOf(keyword) >= 0) {
+									arr.push(j)
+								}
+							}
+						}
+						this.assign.leftSearch = true;
+					} else {
+						for(let i of this.assign.rightlistdata) {
+							if(i.user_NAME.indexOf(keyword) >= 0) {
+								arr.push(i)
 							}
 						}
 					}
-					this.assign.leftSearch = true;
-				} else {
-					for(let i of this.assign.rightlistdata) {
-						if(i.user_NAME.indexOf(keyword) >= 0) {
-							arr.push(i)
+					this.$set(this.assign, "searchData", arr);
+				}
+			},
+			//添加一行拆分任务必填控制
+			addOneFilter() {
+				this.addOneTaskSuccess = true
+				if(!this.addneeds.addform.splitForm.name) {
+					this.$warn("请选择人员")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.xtname) {
+					this.$warn("请选择系统名")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.fzmodule) {
+					this.$warn("请填写负责模块")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.easy) {
+					this.$warn("请选择难易程度")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.allDate) {
+					this.$warn("请选择完成日期")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.willTime) {
+					this.$warn("请填写预计用时")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.willTime.match(/^[0-9]*$/)) {
+					this.$warn("预计用时请填写纯数字")
+					this.addOneTaskSuccess = false
+				}
+				if(!this.addneeds.addform.splitForm.taskNum) {
+					this.$warn("请填写任务量")
+					this.addOneTaskSuccess = false
+				}
+
+				//TODO
+			},
+			//添加一行拆分任务
+			addOneTask() {
+				this.addOneFilter()
+				if(this.addOneTaskSuccess) {
+					let finish = this.$format(new Date(this.addneeds.addform.splitForm.allDate));
+					let obj = {
+						"USER_NAME": (this.addneeds.addform.splitForm.name).split(',')[1],
+						"USER_ID": (this.addneeds.addform.splitForm.name).split(',')[0],
+						"xtname": (this.addneeds.addform.splitForm.xtname),
+						"SYSTEM_NAME": (this.addneeds.addform.splitForm.xtname),
+						"fzmk": this.addneeds.addform.splitForm.fzmodule,
+						"RESPONSIBLE_MODULE": this.addneeds.addform.splitForm.fzmodule,
+						"easy": (this.addneeds.addform.splitForm.easy).split(',')[1],
+						"FACILITY_ID": (this.addneeds.addform.splitForm.easy).split(',')[0],
+						"finishDate": `${finish.year}-${finish.mouth}-${finish.day}`,
+						"END_DATE": this.addneeds.addform.splitForm.allDate,
+						"willTime": this.addneeds.addform.splitForm.willTime,
+						"EXPECT_TIME": this.addneeds.addform.splitForm.willTime,
+						"WORKLOAD": this.addneeds.addform.splitForm.taskNum,
+						"taskNum": this.addneeds.addform.splitForm.taskNum
+					}
+					this.addneeds.addform.splitArr.push(obj)
+					this.closeDialogS()
+				}
+
+			},
+			//控制台拆分组数据
+			addOneTask1() {
+				this.addOneFilter()
+				if(this.addOneTaskSuccess) {
+					let finish = this.$format(new Date(this.addneeds.addform.splitForm.allDate));
+					let obj = {
+						"USER_NAME": (this.addneeds.addform.splitForm.name).split(',')[1],
+						"USER_ID": (this.addneeds.addform.splitForm.name).split(',')[0],
+						"xtname": (this.addneeds.addform.splitForm.xtname),
+						"SYSTEM_NAME": (this.addneeds.addform.splitForm.xtname),
+						"fzmk": this.addneeds.addform.splitForm.fzmodule,
+						"RESPONSIBLE_MODULE": this.addneeds.addform.splitForm.fzmodule,
+						"easy": (this.addneeds.addform.splitForm.easy).split(',')[1],
+						"FACILITY_ID": (this.addneeds.addform.splitForm.easy).split(',')[0],
+						"finishDate": `${finish.year}-${finish.mouth}-${finish.day}`,
+						"END_DATE": this.addneeds.addform.splitForm.allDate,
+						"willTime": this.addneeds.addform.splitForm.willTime,
+						"EXPECT_TIME": this.addneeds.addform.splitForm.willTime,
+						"WORKLOAD": this.addneeds.addform.splitForm.taskNum,
+						"taskNum": this.addneeds.addform.splitForm.taskNum
+					}
+					this.addneeds.addform.splitArr.push(obj)
+					this.addneeds.splitaddvisibleN = false;
+					for(var name in this.addneeds.addform.splitForm) {
+						this.addneeds.addform.splitForm[name] = ""
+					}
+				}
+			},
+			//新需求来源二级联动
+			fromdeptchange(val) {
+				this.addneeds.addform.fromdeptroleArr = [];
+				this.addneeds.addform.fromdeptroleId = "";
+				let deptroleArr = [];
+				for(let i of this.addneeds.addform.fromdeptArr) {
+					if(val.split('-')[0] == i.dept_id) {
+						for(let j of i.users) {
+							let obj = {
+								"user_NAME": j.user_NAME,
+								"user_ID": j.user_ID
+							};
+							deptroleArr.push(obj)
 						}
 					}
 				}
-				this.$set(this.assign, "searchData", arr);
-			}
-		},
-		addOneFilter() {
-			if(!this.addneeds.addform.splitForm.allDate) {
-				this.$warn("请选择完成日期")
-				this.addOneTaskSuccess = false
-				return false
-			} else {
-				this.addOneTaskSuccess = true
-			}
-			if(!this.addneeds.addform.splitForm.fzmodule) {
-				this.$warn("请选择负责模块")
-				this.addOneTaskSuccess = false
-				return false
-			} else {
-				this.addOneTaskSuccess = true
-			}
-		},
-		addOneTask() {
-			this.addOneFilter()
-			if(this.addOneTaskSuccess) {
-				let finish = this.$format(new Date(this.addneeds.addform.splitForm.allDate));
-				let obj = {
-					"name": (this.addneeds.addform.splitForm.name).split(',')[1],
-					"USER_ID": (this.addneeds.addform.splitForm.name).split(',')[0],
-					"xtname": (this.addneeds.addform.splitForm.xtname),
-					"SYSTEM_NAME": (this.addneeds.addform.splitForm.xtname),
-					"fzmk": this.addneeds.addform.splitForm.fzmodule,
-					"RESPONSIBLE_MODULE": this.addneeds.addform.splitForm.fzmodule,
-					"easy": (this.addneeds.addform.splitForm.easy).split(',')[1],
-					"FACILITY_ID": (this.addneeds.addform.splitForm.easy).split(',')[0],
-					"finishDate": `${finish.year}-${finish.mouth}-${finish.day}`,
-					"END_DATE": this.addneeds.addform.splitForm.allDate,
-					"willTime": this.addneeds.addform.splitForm.willTime,
-					"EXPECT_TIME": this.addneeds.addform.splitForm.willTime,
-					"WORKLOAD": this.addneeds.addform.splitForm.taskNum,
-					"taskNum": this.addneeds.addform.splitForm.taskNum
-				}
-				this.addneeds.addform.splitArr.push(obj)
-				this.closeDialogS()
-
-			}
-
-		},
-		addOneTask1() {
-			let finish = this.$format(new Date(this.addneeds.addform.splitForm.allDate));
-			let obj = {
-				"name": (this.addneeds.addform.splitForm.name).split(',')[1],
-				"USER_ID": (this.addneeds.addform.splitForm.name).split(',')[0],
-				"xtname": (this.addneeds.addform.splitForm.xtname),
-				"SYSTEM_NAME": (this.addneeds.addform.splitForm.xtname),
-				"fzmk": this.addneeds.addform.splitForm.fzmodule,
-				"RESPONSIBLE_MODULE": this.addneeds.addform.splitForm.fzmodule,
-				"easy": (this.addneeds.addform.splitForm.easy).split(',')[1],
-				"FACILITY_ID": (this.addneeds.addform.splitForm.easy).split(',')[0],
-				"finishDate": `${finish.year}-${finish.mouth}-${finish.day}`,
-				"END_DATE": this.addneeds.addform.splitForm.allDate,
-				"willTime": this.addneeds.addform.splitForm.willTime,
-				"EXPECT_TIME": this.addneeds.addform.splitForm.willTime,
-				"WORKLOAD": this.addneeds.addform.splitForm.taskNum,
-				"taskNum": this.addneeds.addform.splitForm.taskNum
-			}
-			this.addneeds.addform.splitArr.push(obj)
-			this.addneeds.splitaddvisibleN = false;
-			for(var name in this.addneeds.addform.splitForm) {
-				this.addneeds.addform.splitForm[name] = ""
-			}
-		},
-		//新需求来源二级联动
-		fromdeptchange(val) {
-			this.addneeds.addform.fromdeptroleArr = [];
-			this.addneeds.addform.fromdeptroleId = "";
-			let deptroleArr = [];
-			for(let i of this.addneeds.addform.fromdeptArr) {
-				if(val.split('-')[0] == i.dept_id) {
-					for(let j of i.users) {
-						let obj = {
-							"user_NAME": j.user_NAME,
-							"user_ID": j.user_ID
-						};
-						deptroleArr.push(obj)
-					}
-				}
-			}
-			this.$set(this.addneeds.addform, "fromdeptroleArr", deptroleArr);
-		},
-		closeDialog() {
-			this.addneeds.addvisible = false; //新建项目的弹窗
-			this.addneeds.splitaddvisible = false; //拆分任务弹窗
-			this.addneeds.splitaddvisibleN = false;
-			this.addneeds.addvisibleP = false
-			this.assign.assignvisible = false
-			this.addneeds.hasSplitvisible = false
-			this.tabs.ifEdit = ''
-			this.addneeds.addform.code = ''
-			this.tabs.ifcanEdit = '0'
-		},
-		clearData() {
-			this.tabs.chooseDept = ''
-			this.addneeds.addform.sjxt = []
-			this.addneeds.addform.name = ''
-			this.addneeds.addform.jihuadate = ''
-			this.addneeds.addform.ascription = ''
-			this.addneeds.addform.daliyTypeName = ''
-			this.addneeds.addform.result = ''
-			this.addneeds.addform.influece = ''
-			this.addneeds.addform.prduct_function = ''
-			this.addneeds.addform.prduct_line = ''
-			this.addneeds.addform.fromdeptId = ''
-			this.addneeds.addform.fromdeptroleId = ''
-			this.addneeds.addform.needsname = ''
-			this.addneeds.addform.level = ''
-			this.addneeds.addform.analysis = ''
-			this.addneeds.addform.startTime = ''
-			this.addneeds.addform.endTime = ''
-			this.addneeds.addform.analysisTime = ''
-			this.addneeds.addform.RISK = ''
-			this.addneeds.addform.jiaji = ''
-			this.addneeds.addform.jiajireason = ''
-			this.addneeds.addform.zhongyaochegndu = ''
-			this.addneeds.addform.onlineContent = [{
-				"xtname": '',
-				"ban": ''
-			}]
-			this.addneeds.addform.splitArr = []
-		},
-		closeDialogS() {
-			this.addneeds.splitaddvisible = false; //拆分任务弹窗
-			this.addneeds.splitaddvisibleN = false; //拆分任务弹窗
-			if(!this.tabs.consoleWrapperVisible) {
-				this.addneeds.addvisible = true; //新建项目的弹窗
-				this.addOneTaskSuccess = false
-			}
-			for(var name in this.addneeds.addform.splitForm) {
-				this.addneeds.addform.splitForm[name] = ""
-			}
-		},
-		//新增涉及系统
-		systemEvent(index, e) {
-			let className = e.target.className;
-			if(className == "el-icon-plus") {
-				//当期是新增操作
-				if(this.addneeds.addform.onlineContent[index].xtname == "") {
-					this.$warn("请选择系统");
-					return;
-				}
-				if(this.addneeds.addform.onlineContent[index].ban == "") {
-					this.$warn("请填写版本号");
-					return;
-				}
-				if(this.addneeds.addform.onlineContent[index].ban.indexOf("v") < 0) {
-					this.$warn("版本号格式有误");
-					return;
-				}
-				this.addneeds.addform.onlineContent.push({
+				this.$set(this.addneeds.addform, "fromdeptroleArr", deptroleArr);
+			},
+			closeDialog() {
+				this.addneeds.addvisible = false; //新建项目的弹窗
+				this.addneeds.splitaddvisible = false; //拆分任务弹窗
+				this.addneeds.splitaddvisibleN = false;
+				this.addneeds.addvisibleP = false
+				this.assign.assignvisible = false
+				this.addneeds.hasSplitvisible = false
+				this.tabs.ifEdit = ''
+				this.addneeds.addform.code = ''
+				this.tabs.ifcanEdit = '0'
+			},
+			clearData() {
+				this.tabs.chooseDept = ''
+				this.addneeds.addform.sjxt = []
+				this.addneeds.addform.name = ''
+				this.addneeds.addform.jihuadate = ''
+				this.addneeds.addform.ascription = ''
+				this.addneeds.addform.daliyTypeName = ''
+				this.addneeds.addform.result = ''
+				this.addneeds.addform.influece = ''
+				this.addneeds.addform.prduct_function = ''
+				this.addneeds.addform.prduct_line = ''
+				this.addneeds.addform.fromdeptId = ''
+				this.addneeds.addform.fromdeptroleId = ''
+				this.addneeds.addform.needsname = ''
+				this.addneeds.addform.level = ''
+				this.addneeds.addform.analysis = ''
+				this.addneeds.addform.startTime = ''
+				this.addneeds.addform.endTime = ''
+				this.addneeds.addform.analysisTime = ''
+				this.addneeds.addform.RISK = ''
+				this.addneeds.addform.jiaji = ''
+				this.addneeds.addform.jiajireason = ''
+				this.addneeds.addform.zhongyaochegndu = ''
+				this.addneeds.addform.onlineContent = [{
 					"xtname": '',
 					"ban": ''
-				})
-			} else {
-				//当前是删除操作
-				this.addneeds.addform.onlineContent.splice(index, 1)
-			}
-		},
-		pickDate(value) {
-			this.screenKey.START_DATE = value[0];
-			this.screenKey.END_DATE = value[1];
-			this.loadData();
-		},
-		//确认
-		agreeRow(val, e) {
-			e.cancelBubble = true;
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
-			this.$axios.post("/daliy/daliyCheck", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$success(data.message);
-					this.loadData();
-				} else {
-					this.$warn(data.message);
+				}]
+				this.addneeds.addform.splitArr = []
+
+			},
+			closeDialogS() {
+				this.addneeds.splitaddvisible = false; //拆分任务弹窗
+				this.addneeds.splitaddvisibleN = false; //拆分任务弹窗
+				if(!this.tabs.consoleWrapperVisible) {
+					this.addneeds.addvisible = true; //新建项目的弹窗
+					this.addOneTaskSuccess = false
 				}
-			})
-		},
-		assignRow(val, e) {
-			e.cancelBubble = true;
-			this.assign.eyword = "";
-			this.assign.chooseId = ""
-			this.assign.checkList = [];
-			this.assign.assignvisible = true;
-			let params = new URLSearchParams();
-			this.$axios.post("/daliy/queryDeptUser", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$set(this.assign, "searchData", data.result.allDept);
-					this.$set(this.assign, "leftlistdata", data.result.allDept);
-					this.$set(this.assign, "rightlistdata", data.result.dept.users);
-					this.assign.chooseId = val.daliy_NEET_ID
+				for(var name in this.addneeds.addform.splitForm) {
+					this.addneeds.addform.splitForm[name] = ""
 				}
-			})
-		},
-		//提交分配任务
-		subAssign() {
-			let result = this.assign.checkList;
-			if(result.length == 0) {
-				this.$warn("当前没有选择任何人员");
-			} else {
-				let temp = [];
-				let idArr = [];
-				let nameArr = [];
-				for(let i of result) {
-					temp.push(i.split("-"))
-				}
-				for(let i of temp) {
-					idArr.push(i[0]);
-					nameArr.push(i[1]);
-				}
-				let info = this.tabs.activeTableInfo;
-				let params = new URLSearchParams();
-				params.append("names", nameArr);
-				params.append("ids", idArr);
-				params.append("DALIY_NEET_ID", this.assign.chooseId);
-				this.$axios.post("/daliy/assignManager", params).then((res) => {
-					let data = res.data;
-					if(data.code == 200) {
-						this.assign.assignvisible = false;
-						this.$success("操作成功");
-						this.loadData();
-						this.calculate();
+			},
+			//新增涉及系统
+			systemEvent(index, e) {
+				let className = e.target.className;
+				if(className == "el-icon-plus") {
+					//当期是新增操作
+					if(this.addneeds.addform.onlineContent[index].xtname == "") {
+						this.$warn("请选择系统");
+						return;
 					}
-				})
-			}
-		},
-		//打开需求平时你
-		review(val, e) {
-			//				e.cancelBubble = true;
-			this.tabs.activeName = "console";
-			this.clearData()
-			this.tabs.activeTableInfo = val;
-			if(!this.tabs.consoleWrapperVisible) {
-				this.tabs.consoleWrapperVisible = true;
-				setTimeout(() => {
-					this.calculate()
-				}, 0);
-			}
-		},
-		//驳回
-		unagreeRow(val, e, text) {
-			e.cancelBubble = true;
-			let self = this
-			this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputPattern: /[\S]/,
-				inputErrorMessage: '' + text + '理由不能为空'
-			}).then(({
-				value
-			}) => {
+					if(this.addneeds.addform.onlineContent[index].ban == "") {
+						this.$warn("请填写版本号");
+						return;
+					}
+					if(this.addneeds.addform.onlineContent[index].ban.indexOf("v") < 0) {
+						this.$warn("版本号格式有误");
+						return;
+					}
+					this.addneeds.addform.onlineContent.push({
+						"xtname": '',
+						"ban": ''
+					})
+				} else {
+					//当前是删除操作
+					this.addneeds.addform.onlineContent.splice(index, 1)
+				}
+			},
+			pickDate(value) {
+				this.screenKey.START_DATE = value[0];
+				this.screenKey.END_DATE = value[1];
+				this.loadData();
+			},
+			//确认
+			agreeRow(val, e) {
+				e.cancelBubble = true;
+				this.$maskin();
 				let params = new URLSearchParams();
 				params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
-				params.append('REJECT_RESON', value);
 				this.$axios.post("/daliy/daliyCheck", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -1936,173 +2126,369 @@
 					} else {
 						this.$warn(data.message);
 					}
+					this.$maskoff();
+				})
+			},
+			//分配
+			assignRow(val, e) {
+				e.cancelBubble = true;
+				this.$maskin();
+				this.assign.eyword = "";
+				this.assign.chooseId = ""
+				this.assign.checkList = [];
+				this.assign.assignvisible = true;
+				let params = new URLSearchParams();
+				this.$axios.post("/daliy/queryDeptUser", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.$set(this.assign, "searchData", data.result.allDept);
+						this.$set(this.assign, "leftlistdata", data.result.allDept);
+						this.$set(this.assign, "rightlistdata", data.result.dept.users);
+						this.assign.chooseId = val.daliy_NEET_ID
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff();
+				})
+			},
+			//提交分配任务
+			subAssign() {
+				let result = this.assign.checkList;
+				if(result.length == 0) {
+					this.$warn("当前没有选择任何人员");
+				} else {
+					let temp = [];
+					let idArr = [];
+					let nameArr = [];
+					for(let i of result) {
+						temp.push(i.split("-"))
+					}
+					for(let i of temp) {
+						idArr.push(i[0]);
+						nameArr.push(i[1]);
+					}
+
+					this.$maskin();
+					let info = this.tabs.activeTableInfo;
+					let params = new URLSearchParams();
+					params.append("names", nameArr);
+					params.append("ids", idArr);
+					params.append("DALIY_NEET_ID", this.assign.chooseId);
+					this.$axios.post("/daliy/assignManager", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.assign.assignvisible = false;
+							this.$success("操作成功");
+							this.loadData();
+							this.calculate();
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					})
+				}
+			},
+			//打开需求平时你
+			review(val, e) {
+				//				e.cancelBubble = true;
+				this.tabs.activeName = "console";
+				this.clearData()
+				this.tabs.activeTableInfo = val;
+				if(!this.tabs.consoleWrapperVisible) {
+					this.tabs.consoleWrapperVisible = true;
+					setTimeout(() => {
+						this.calculate()
+					}, 0);
+				}
+			},
+			//驳回
+			unagreeRow(val, e, text) {
+				e.cancelBubble = true;
+				let self = this
+				this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPattern: /[\S]/,
+					inputErrorMessage: '' + text + '理由不能为空'
+				}).then(({
+					value
+				}) => {
+
+					this.$maskin();
+					let params = new URLSearchParams();
+					params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+					params.append('REJECT_RESON', value);
+					this.$axios.post("/daliy/daliyCheck", params).then((res) => {
+						let data = res.data;
+						if(data.code == 200) {
+							this.$success(data.message);
+							this.loadData();
+						} else {
+							this.$warn(data.message);
+						}
+						this.$maskoff();
+					});
+				}).catch(() => {
+
 				});
-			}).catch(() => {
-
-			});
-		},
-		// 开始任务startTask
-		startTask(val, e) {
-			e.cancelBubble = true;
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
-			params.append('DALIY_INFO_ID', val.daliy_INFO_ID);
-			this.$axios.post("/daliy/codeStart", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$success(data.message);
-					this.handleCurrentChange2(this.handle.daliy_NEET_ID)
-				} else {
-					this.$warn(data.message);
-				}
-			})
-
-		},
-		//完成任务 finishTask
-		finishTask(val, e) {
-			e.cancelBubble = true;
-			let params = new URLSearchParams();
-			params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
-			params.append('DALIY_INFO_ID', val.daliy_INFO_ID);
-			this.$axios.post("/daliy/codeEnd", params).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					this.$success(data.message);
-					//						this.handleCurrentChange2(this.handle.daliy_NEET_ID)
-					this.loadData()
-				} else {
-					this.$warn(data.message);
-				}
-			})
-		},
-		//搜索关键字
-		chooseDeptF(value) {
-			let arr = []
-
-			if(value) {
-				for(let i of this.tabs.genzongs) {
-					if(value == i.dept_ID) {
-						arr.push(i)
+			},
+			// 开始任务startTask
+			startTask(val, e) {
+				e.cancelBubble = true;
+				this.$maskin();
+				let params = new URLSearchParams();
+				params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
+				params.append('DALIY_INFO_ID', val.daliy_INFO_ID);
+				this.$axios.post("/daliy/codeStart", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.$success(data.message);
+						this.handleCurrentChange2(this.handle.daliy_NEET_ID)
+					} else {
+						this.$warn(data.message);
 					}
+					this.$maskoff();
+				})
+
+			},
+			//完成任务 finishTask
+			finishTask(val, e) {
+				e.cancelBubble = true;
+				this.$maskin();
+				let params = new URLSearchParams();
+				params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
+				params.append('DALIY_INFO_ID', val.daliy_INFO_ID);
+				this.$axios.post("/daliy/codeEnd", params).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						this.$success(data.message);
+						this.loadData()
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff();
+				})
+			},
+			//搜索关键字
+			chooseDeptF(value) {
+				let arr = []
+				if(value) {
+					for(let i of this.tabs.genzongs) {
+						if(value == i.dept_ID) {
+							arr.push(i)
+						}
+					}
+					this.$set(this.tabs, "genzong", arr)
+				} else {
+					this.$set(this.tabs, "genzong", this.tabs.genzongs)
 				}
-				this.$set(this.tabs, "genzong", arr)
-			} else {
-				this.$set(this.tabs, "genzong", this.tabs.genzongs)
-			}
-		},
-		searchKeyword() {
-//			//              this.$maskin();
-//			if(this.keyword != "") {
-//				let arr = [];
-//				for(let i of this.table.tableOriginData) {
-//					if(JSON.stringify(i).indexOf(this.keyword) >= 0) {
-//						arr.push(i)
-//					}
-//				}
-//				this.$set(this.table, "tableData", arr)
-//			} else {
-//				this.$set(this.table, "tableData", this.table.tableOriginData)
-//			}
-//			this.$maskoff();
-        this.loadData()
-		},
-		//操作台的事件
-		consoleActionEvent(val) {
-			switch(val.key) {
-				case "1":
-					this.agreeRow(this.handle, event)
-					break;
-				case "2":
-					this.unagreeRow(this.handle, event, '不通过')
-					break;
-				case "3":
-					this.assignRow(this.handle, event)
-					break;
-				case "4":
-					this.unagreeRow(this.handle, event, '驳回')
-					break;
-				case "5":
-					this.createNewN()
-					break;
-				case "6":
-					this.unagreeRow(this.handle, event, '驳回')
-					break;
-				case "7":
-					this.tabs.ifcanEdit = "1"
-					this.newneedsP2()
-					break;
-			}
-			this.tabs.consoleActionVisible = false;
-		},
-		calculate() {
-			let height = document.querySelector(".mainr").offsetHeight;
-			//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
-			let card_body = document.querySelector(".box-card .el-card__body");
-			card_body.style.height = height - 36 + "px";
-			//表格高度
-			this.calculateTableHeight(this.tabs.consoleWrapperVisible);
-			//tab高度
-			if(this.tabs.consoleWrapperVisible) {
+			},
+			searchKeyword() {
+				this.loadData()
+			},
+			//操作台的事件
+			consoleActionEvent(val) {
+				switch(val.key) {
+					case "1":
+						this.agreeRow(this.handle, event)
+						break;
+					case "2":
+						this.unagreeRow(this.handle, event, '不通过')
+						break;
+					case "3":
+						this.assignRow(this.handle, event)
+						break;
+					case "4":
+						this.unagreeRow(this.handle, event, '驳回')
+						break;
+					case "5":
+						this.createNewN()
+						break;
+					case "6":
+						this.unagreeRow(this.handle, event, '驳回')
+						break;
+					case "7":
+						this.tabs.ifcanEdit = "1"
+						this.newneedsP2()
+						break;
+				}
+				this.tabs.consoleActionVisible = false;
+			},
+			calculate() {
+				let height = document.querySelector(".mainr").offsetHeight;
+				//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
+				let card_body = document.querySelector(".box-card .el-card__body");
+				card_body.style.height = height - 36 + "px";
+				//表格高度
+				this.calculateTableHeight(this.tabs.consoleWrapperVisible);
+				//tab高度
+				if(this.tabs.consoleWrapperVisible) {
+					this.calculateTabsHeight();
+				}
+				//控制台的内容区域高度
+			},
+			calculateTableHeight(type) {
+				let height = document.querySelector(".mainr").offsetHeight;
+				let actionHeight = document.querySelector(".content .action").offsetHeight;
+				//true代表没有控制台
+				if(!type) {
+					//----------------------------------------------body的上下padding--table的margin-top
+					this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
+				} else {
+					this.table.tableHeight = height * 0.3;
+				}
+			},
+			calculateTabsHeight() {
+				let card_body = document.querySelector(".box-card .el-card__body");
+				let actionHeight = document.querySelector(".content .action").offsetHeight;
+				let allTabContent = document.querySelectorAll(".console-tab-content");
+				for(let i of allTabContent) {
+					//---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高----------操作台border
+					i.style.height = (parseInt(card_body.style.height) - 20) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
+				}
+			},
+			setConsoleVisible() {
+				this.tabs.consoleWrapperVisible = false;
+				this.calculateTableHeight(false)
+			},
+			//拆分任务时间过滤器
+			splitDataFormatter(row, col) {
+				let date = this.$format(row.end_DATE);
+				return `${date.year}-${date.mouth}-${date.day}`
+			},
+			getFile(e) {
+				//上传附件
+				let config = {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					}
+				};
+				let params = new FormData();
+				params.append("token", localStorage.getItem("token"))
+				params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
+				params.append("file", e.target.files[0]);
+				this.$axios.post("/daliy/upload", params, config).then((res) => {
+					let data = res.data;
+					if(data.code == 200) {
+						if(typeof this.popup.popTxt.uploadFiles == "string") {
+							this.$set(this.popup.popTxt, "uploadFiles", [])
+							this.$set(this.popup.popTxt, "fileList", [])
+						}
+						this.popup.popTxt.uploadFiles.push(data.name)
+						this.popup.popTxt.fileList.push(data.id)
+					} else {
+						this.$warn(data.message);
+					}
+				})
+			},
+			//下载附件
+			downfile(val) {
+				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
+			},
+			tabClick(val) {
 				this.calculateTabsHeight();
-			}
-			//控制台的内容区域高度
-		},
-		calculateTableHeight(type) {
-			let height = document.querySelector(".mainr").offsetHeight;
-			let actionHeight = document.querySelector(".content .action").offsetHeight;
-			//true代表没有控制台
-			if(!type) {
-				//----------------------------------------------body的上下padding--table的margin-top
-				this.table.tableHeight = height - 36 - actionHeight - 20 - 20;
-			} else {
-				this.table.tableHeight = height * 0.3;
-			}
-		},
-		calculateTabsHeight() {
-			let card_body = document.querySelector(".box-card .el-card__body");
-			let actionHeight = document.querySelector(".content .action").offsetHeight;
-			let allTabContent = document.querySelectorAll(".console-tab-content");
-			for(let i of allTabContent) {
-				//---------------el-card__body的可用内容高---------顶部操作栏的高---------表格部分的高------tab的头和margin的高----------操作台border
-				i.style.height = (parseInt(card_body.style.height) - 20) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
-			}
-		},
-		setConsoleVisible() {
-			this.tabs.consoleWrapperVisible = false;
-			this.calculateTableHeight(false)
-		},
-		//拆分任务时间过滤器
-		splitDataFormatter(row, col) {
-			let date = this.$format(row.end_DATE);
-			return `${date.year}-${date.mouth}-${date.day}`
-		},
-		getFile(e) {
-			//上传附件
-			let config = {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				}
-			};
-
-			let params = new FormData();
-			params.append("token", localStorage.getItem("token"))
-			params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
-			params.append("file", e.target.files[0]);
-			this.$axios.post("/daliy/upload", params, config).then((res) => {
-				let data = res.data;
-				if(data.code == 200) {
-					if(typeof this.popup.popTxt.uploadFiles == "string") {
-						this.$set(this.popup.popTxt, "uploadFiles", [])
-						this.$set(this.popup.popTxt, "fileList", [])
+				if(val.name=="realtime"){
+					let datashow=this.tabs.data_one.nowTimeList
+					let yaxis=[]
+					let startTime=[]
+					let nowTime=[]
+					let endTime=[]
+					for(let i of datashow){
+						yaxis.push(i.deptName)
+						startTime.push(new Date(i.startTime))
+						nowTime.push(new Date(i.date))
+						endTime.push(new Date(i.endTime))
 					}
-					this.popup.popTxt.uploadFiles.push(data.result.name)
-					this.popup.popTxt.fileList.push(data.result.id)
+					this.realTime(yaxis,startTime,nowTime,endTime)
 				}
-			})
-		},
-		//下载附件
-		downfile(val) {
-			this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
+			},
+			realTime(yaxis,startTime,nowTime,endTime) {
+				var echarts = require('echarts');
+				var proBar = echarts.init(document.getElementById("system")); //实时统计
+				proBar.clear()
+				let option = {}
+				option = {
+					legend: {
+						data: ['实时统计']
+					},
+					xAxis: {
+						type: 'time'
+					},
+
+					yAxis: {
+						data: yaxis
+					},
+					tooltip: {
+						trigger: 'axis',
+						formatter: function(params) {
+							var res = params[0].name + "</br>"
+							var date0 = params[0].data;
+							var date1 = params[1].data;
+							console.log(params[0])
+							date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
+							date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
+							res += params[0].seriesName + ":" + date0 + "</br>"
+							res += params[1].seriesName + ":" + date1 + "</br>"
+							return res;
+						}
+					},
+					series: [
+
+						{
+							name: '开始时间',
+							type: 'bar',
+							stack: '总量',
+							itemStyle: {
+								normal: {
+									color: 'rgba(0,0,0,0)',
+									shadowColor: 'rgba(0, 0, 0, 0.3)',
+								}
+							},
+							data: startTime
+						}, {
+							name: '结束时间',
+							type: 'bar',
+							stack: '总量',
+							itemStyle: {
+								normal: {
+									color: '#52b4f7',
+									barBorderRadius: 20,
+									shadowColor: 'rgba(0, 0, 0, 0.3)',
+									shadowBlur: 20
+								}
+							},
+							data:endTime
+						},
+						{
+							name: '超出开始时间',
+							type: 'bar',
+							stack: '总量',
+							itemStyle: {
+								normal: {
+									color: 'red',
+									shadowColor: 'rgba(255, 255, 255, 0.3)',
+								}
+							},
+							data:nowTime
+						}, {
+							name: '时间',
+							type: 'bar',
+							stack: '总量',
+//							barWidth : 15,
+							itemStyle: {
+								normal: {
+									color: 'red',
+									barBorderRadius: 20,
+									shadowColor: 'rgba(255, 255, 255, 0.3)',
+									shadowBlur: 20
+								}
+							},
+							data:endTime
+						}
+					]
+				};
+				proBar.setOption(option);
+			}
 		}
 	}
-}</script>
+</script>

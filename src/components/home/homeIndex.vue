@@ -1,4 +1,4 @@
-<style >
+<style>
     .mr {
         margin-right: 15px;
     }
@@ -61,8 +61,12 @@
     .scrollContent li p:hover {
         text-decoration: underline;
     }
-
-    /*日期插件*/
+    .scrollContent li strong{
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom:5px;
+    }
+        /*日期插件*/
     .date-wrap {
         background: #777;
     }
@@ -119,9 +123,13 @@
                 <div class="grid-content bg-purple box-wrap scroll-wrap mr por">
                     <i class="iconfont icon-laba"></i>
                     <ul class="scrollContent">
-                        <li @mouseover="scrollMouseover" @mouseleave="setInterval">
-                            <h5 class="title">标题</h5>
-                            <p>当前项目什么什么的</p>
+                        <li v-if="will_delay.length"><strong>临限项目时间节点</strong></li>
+                        <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in will_delay">
+                            <p>{{item.failtask}}</p>
+                        </li>
+                        <li v-if="has_delay.length"><strong>超过项目时间节点</strong></li>
+                        <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in has_delay">
+                            <p>{{item.failtask}}</p>
                         </li>
                     </ul>
                 </div>
@@ -230,6 +238,8 @@
                 scrollWrap: "",
                 topHeight: "",
                 bottomHeight: "",
+                has_delay:[],//已经延期
+                will_delay:[],//将要延期
                 todo:[],//代办事项
                 srcRoute: {
                     "1":"业务需求",
@@ -243,6 +253,11 @@
         },
         components: {
             "date-plug": datePlug
+        },
+        //此处如果不写会一直触发定时器的错误，要在组建销毁前清除定时器并且在进入页面的时候清除定时器，
+        // 在数据加载完成后再启动定时器
+        destroyed(){
+            this.clearInt();
         },
         mounted(){
             this.loadData();
@@ -321,7 +336,7 @@
 //            let asset_wrap = document.getElementById("asset");
 //            let asset_chart = this.$echarts.init(asset_wrap);
 //            dynamic_chart.setOption(option);
-//this.setInterval()
+            this.clearInt()
         },
         filters: {
             date: function (time) {
@@ -385,11 +400,42 @@
                         this.$set(this,"todo",data.result.main);
                         //havaMain经办事项
                         this.$set(this,"hasdo",data.result.havaMain);
+                    }
+                });
+                this.$axios.post("/main/queryTask",params).then((res)=>{
+                    let data =res.data;
+                    if(data.code == 200){
+                        //将要延期
+                            this.$set(this,"will_delay",data.result.willTask);
+                        //已经延期
+                        this.$set(this,"has_delay",data.result.failTask);
+                        this.setInterval()
                         this.$maskoff();
                     }
                 })
             },
-            //点击代办事项跳转页面
+            //------------------------设置轮播图的效果
+            //移动到轮播图上移除定时器
+            setInterval(){
+                this.interval = setInterval(() => {
+                    let scrollWrap = document.getElementsByClassName("scrollContent")[0];
+                    let scrollHeight = scrollWrap.offsetHeight;
+                    this.scrollStyle_y--;
+                    if (-this.scrollStyle_y >= scrollHeight+20) {
+                        //122是容器scrollWrap的高
+                        this.scrollStyle_y = 122
+                    } else {
+                        scrollWrap.style.transform = `translate(0,${this.scrollStyle_y}px)`
+                    }
+                }, 50)
+            },
+            scrollMouseover(){
+                this.clearInt()
+            },
+            clearInt(){
+                clearInterval(this.interval)
+            },
+            //-----------------------点击代办事项跳转页面
             goPage(val){
                 let url = "";
                 console.log(val)
@@ -412,25 +458,6 @@
                 }
                 //跳转页面
                 this.$go("","",{"neelId":val.nell_ID},url);
-            },
-            clearInt(){
-//                clearInterval(this.interval)
-            },
-            scrollMouseover(){
-//                this.clearInt()
-            },
-            setInterval(){
-//                this.interval = setInterval(() => {
-//                    let scrollWrap = document.getElementsByClassName("scrollContent")[0];
-//                    let scrollHeight = scrollWrap.offsetHeight;
-//                    this.scrollStyle_y--;
-//                    if (-this.scrollStyle_y >= scrollHeight+20) {
-//                        //122是容器scrollWrap的高
-//                        this.scrollStyle_y = 122
-//                    } else {
-//                        scrollWrap.style.transform = `translate(0,${this.scrollStyle_y}px)`
-//                    }
-//                }, 10)
             },
             focus(){
 
