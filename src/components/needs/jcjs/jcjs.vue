@@ -137,7 +137,7 @@
                         <div class="fr">
                             <div style="margin-right: 10px;" class="i-b">
                                 <el-date-picker
-                                        v-model="dateComp.value"
+                                        v-model="dateValue"
                                         type="datetimerange"
                                         range-separator="至"
                                         start-placeholder="开始日期"
@@ -145,8 +145,8 @@
                                         align="right"
                                         size="mini"
                                         :picker-options="dateComp"
-                                        @keyup.13="searchByDate($event)"
-                                        @change="searchByDate"
+                                        @keyup.13="queryTableData($event,'date')"
+                                        @change="queryTableData($event,'date')"
                                 >
                                 </el-date-picker>
                             </div>
@@ -157,8 +157,8 @@
                                         v-model="keyword"
                                         size="mini"
                                         clearable
-                                        @keyup.13="searchKeyword($event)"
-                                        @change="searchKeyword"
+                                        @keyup.13="queryTableData($event,'keyword')"
+                                        @change="queryTableData($event,'keyword')"
                                 >
                                 </el-input>
                             </div>
@@ -172,8 +172,8 @@
                                   ref="jcjs_table"
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="base_NEET_ID" label="需求编号" width="200"></el-table-column>
-                            <el-table-column prop="start_DATE" label="申请日期" width="100"></el-table-column>
-                            <el-table-column prop="end_DATE" label="期望上线日期" width="120"></el-table-column>
+                            <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
+                            <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
                             <el-table-column prop="neel_NAME" label="需求名称"></el-table-column>
                             <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
                             <el-table-column prop="rriority_NAME" label="优先级" width="80"></el-table-column>
@@ -366,7 +366,7 @@
                                         <el-form label-width="100px" label-position="left">
                                             <el-row :gutter="20" v-for="(item,index) in split.systemAll">
                                                 <el-col :span="10">
-                                                    <el-form-item label="涉及系统">
+                                                    <el-form-item label="系统名">
                                                         <el-select v-model="item.name" placeholder="请选择">
                                                             <el-option v-for="item in split.systemarr"
                                                                        :label="item.SYSTEM_NAME"
@@ -376,7 +376,7 @@
                                                 </el-col>
                                                 <el-col :span="8">
                                                     <el-input v-model="item.version"
-                                                              placeholder="请输入版本号（格式如：v1.0）"></el-input>
+                                                              placeholder="请输入版本号（格式如：v1.0 或 V1.0）"></el-input>
                                                 </el-col>
                                                 <el-col :span="2">
                                                     <i :class="index == 0 && split.systemAll.length == 1?'el-icon-plus':index == split.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
@@ -385,22 +385,22 @@
                                                 font-size: 20px;cursor: pointer;font-weight: bold">
                                                     </i></el-col>
                                             </el-row>
-                                            <el-row :gutter="20">
-                                                <el-col :span="10">
-                                                    <el-form-item label="预计开始日期">
-                                                        <el-date-picker type="date" placeholder="选择日期"
-                                                                        v-model="split.startdate"
-                                                                        style="width: 100%;"></el-date-picker>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="10">
-                                                    <el-form-item label="预计结束日期">
-                                                        <el-date-picker type="date" placeholder="选择日期"
-                                                                        v-model="split.enddate"
-                                                                        style="width: 100%;"></el-date-picker>
-                                                    </el-form-item>
-                                                </el-col>
-                                            </el-row>
+                                            <!--<el-row :gutter="20">-->
+                                                <!--<el-col :span="10">-->
+                                                    <!--<el-form-item label="预计开始日期">-->
+                                                        <!--<el-date-picker type="date" placeholder="选择日期"-->
+                                                                        <!--v-model="split.startdate"-->
+                                                                        <!--style="width: 100%;"></el-date-picker>-->
+                                                    <!--</el-form-item>-->
+                                                <!--</el-col>-->
+                                                <!--<el-col :span="10">-->
+                                                    <!--<el-form-item label="预计结束日期">-->
+                                                        <!--<el-date-picker type="date" placeholder="选择日期"-->
+                                                                        <!--v-model="split.enddate"-->
+                                                                        <!--style="width: 100%;"></el-date-picker>-->
+                                                    <!--</el-form-item>-->
+                                                <!--</el-col>-->
+                                            <!--</el-row>-->
                                         </el-form>
                                         <div style="margin: 10px 0" class="clear">
                                             <el-button style="float: right;" type="primary" @click="addsplitperson"
@@ -1045,7 +1045,7 @@
                 <el-form-item label="负责模块">
                     <el-input v-model="split.model" placeholder="请输入负责模块"></el-input>
                 </el-form-item>
-                <el-form-item label="难易度">
+                <el-form-item label="难易度" v-if="split.splitradio == 2">
                     <el-select v-model="split.levelchoosen" placeholder="请选择难易度"
                                style="width: 100%">
                         <el-option v-for="item in split.level" :label="item.FACILITY_NAME"
@@ -1374,6 +1374,7 @@
                 </el-table>
             </div>
         </el-dialog>
+        
     </div>
 </template>
 <script>
@@ -1723,9 +1724,18 @@
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false);
             },
-            //控制台选项卡点击时间
+            //控制台选项卡点击事件
             tabClick(val){
                 this.calculateTabsHeight();
+            },
+            //转换表格时间格式
+            tableFormatter_start(row){
+                let data = this.$format(row.start_DATE)
+                return `${data.year}-${data.mouth}-${data.day}`
+            },
+            tableFormatter_end(row){
+                let data = this.$format(row.end_DATE)
+                return `${data.year}-${data.mouth}-${data.day}`
             },
             //加载请求
             loadData(){
@@ -1753,20 +1763,8 @@
             },
             //加载表格数据
             setTableData(data){
-                let arr = [];
-                for (let i of data.bases) {
-                    if (i.start_DATE) {
-                        let start = this.$format(i.start_DATE);
-                        i.start_DATE = `${start.year}-${start.mouth}-${start.day}`;
-                    }
-                    if (i.end_DATE) {
-                        let end = this.$format(i.end_DATE);
-                        i.end_DATE = `${end.year}-${end.mouth}-${end.day}`;
-                    }
-                    arr.push(i)
-                }
-                this.$set(this.table, "tableData", arr);
-                this.$set(this.table, "tableOriginData", arr);
+                this.$set(this.table, "tableData", data.bases);
+                this.$set(this.table, "tableOriginData", data.bases);
                 //判断是否有search跳转到赌赢的操作台
                 if(this.$route.params.neelId){
                     let id = this.$route.params.neelId;
@@ -1780,6 +1778,33 @@
                     return;
                 }
                 this.$maskoff();
+            },
+            //-------------查询功能
+            queryTableData(e,type){
+                console.log(type)
+                console.log(this.dateValue)
+                console.log(this.keyword)
+                this.$maskin();
+                if(!this.dateValue && this.keyword == ""){
+                    this.$set(this.table,"tableData",this.table.tableOriginData);
+                    this.$maskoff();
+                    return
+                }
+                let params = new URLSearchParams();
+                if(type == "date" && this.dateValue){
+                    params.append("startDate",this.dateValue[0]);
+                    params.append("endDate",this.dateValue[1]);
+                }else if(type == "keyword"){
+                    params.append("key",this.keyword)
+                }
+                this.$axios.post("/base/queryAll",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.$set(this.table,"tableData",data.result.bases);
+                        this.$maskoff();
+                    }
+                })
+
             },
             //新建弹窗
             newneeds(){
@@ -1953,22 +1978,6 @@
                     this.addneeds.addform[i] = "";
                 }
             },
-            //搜索关键字
-            searchKeyword(){
-                this.$maskin();
-                if (this.keyword != "") {
-                    let arr = [];
-                    for (let i of this.table.tableOriginData) {
-                        if (JSON.stringify(i).indexOf(this.keyword) >= 0) {
-                            arr.push(i)
-                        }
-                    }
-                    this.$set(this.table, "tableData", arr)
-                } else {
-                    this.$set(this.table, "tableData", this.table.tableOriginData)
-                }
-                this.$maskoff();
-            },
             //根据日期搜索
             searchByDate(){
                 if(!this.dateComp.value){
@@ -2086,7 +2095,7 @@
                         this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
 
                         //-----------------------------判断开发和测试控制台的加载--------------
-                        if(data.result.codeInfos){
+                        if(data.result.codeInfos && data.result.codeInfos.length){
                             this.tabs.codetask = true;
                             //是否有开发任务
                             data.result.codeInfos.length > 0 ?
@@ -2799,7 +2808,8 @@
                         this.$warn("请填写版本号");
                         return;
                     }
-                    if (this.split.systemAll[index].version.indexOf("v") < 0) {
+                    if (this.split.systemAll[index].version.split("v").length !=2 ||
+                        this.split.systemAll[index].version.split("V").length !=2 ) {
                         this.$warn("版本号格式有误");
                         return;
                     }
@@ -2855,7 +2865,7 @@
                     this.$warn("请填写负责模块");
                     return;
                 }
-                if (!this.split.levelchoosen) {
+                if (!this.split.levelchoosen && this.split.splitradio != 1) {
                     this.$warn("请选择难易度");
                     return;
                 }
@@ -2869,8 +2879,10 @@
                     USER_NAME: this.split.person.split("-")[1],
                     SYSTEM_NAME: this.split.choosesysyem,
                     RESPONSIBLE_MODULE: this.split.model,
-                    FACILITY_ID: this.split.levelchoosen.split("-")[0],
-                    FACILITY_NAME: this.split.levelchoosen.split("-")[1],
+                    FACILITY: this.split.splitradio != 1?
+                        this.split.levelchoosen.split("-")[0]:"",//难度ID
+                    FACILITY_NAME: this.split.splitradio != 1?
+                        this.split.levelchoosen.split("-")[1]:"",//难度等级
                     END_DATE: this.split.finishdate,
                     end_data_format: `${end_data.year}-${end_data.mouth}-${end_data.day}`,
                     REQUIRED_TIME: this.split.usetime
@@ -2900,16 +2912,16 @@
             },
             //提交拆分任务结果
             splitSubmit(){
-                let endTime = this.split.enddate;//预计结束日期
-                let startTime = this.split.startdate;//预计开始日期
-                if (!startTime) {
-                    this.$warn("请选择预计开始日期");
-                    return;
-                }
-                if (!endTime) {
-                    this.$warn("请选择预计结束日期");
-                    return;
-                }
+//                let endTime = this.split.enddate;//预计结束日期
+//                let startTime = this.split.startdate;//预计开始日期
+//                if (!startTime) {
+//                    this.$warn("请选择预计开始日期");
+//                    return;
+//                }
+//                if (!endTime) {
+//                    this.$warn("请选择预计结束日期");
+//                    return;
+//                }
                 if (this.split.tableData.length == 0) {
                     this.$warn("请选择分配人员");
                     return;
@@ -2921,8 +2933,8 @@
                 let OLD_STATE = info.state_ID;//当前状态码
                 params.append("BASE_ID", BASE_ID)
                 params.append("OLD_STATE", OLD_STATE)
-                params.append("endTime", endTime)
-                params.append("startTime", startTime)
+//                params.append("endTime", endTime)
+//                params.append("startTime", startTime)
                 params.append("names", this.split.names)
                 params.append("ids", this.split.ids)
                 params.append("bics", JSON.stringify(this.split.tableData));
@@ -2956,7 +2968,7 @@
                 this.$axios.post("/base/beginInfo", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.$success("操作成功！")
+                        this.$success("操作成功！");
                         this.loadData();
                     }
                 })
@@ -3399,7 +3411,10 @@
             assignCheckedAble(val){
                 return val.ASSIGNOR_PERSON_NAME ? false : true
             },
+            //上传测试报告
+            uploadTestReport(){
 
+            }
         }
     }
 </script>
