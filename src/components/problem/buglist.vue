@@ -64,7 +64,7 @@
                     <span class="back fl clear" @click="backPage" v-if="bugVisible">
                         <i class="el-icon-arrow-left"></i>
                         <i class="b">返回</i></span>
-                    {{!bugVisible?'提交BUG':'BUG提交单'}}
+                    {{!bugVisible?'故障清单':'提交BUG'}}
                 </p>
             </div>
             <div class="text item">
@@ -125,7 +125,7 @@
                         <div class="console-action-wrapper">
                             <i class="el-icon-close close" @click="setConsoleVisible"></i>
                         </div>
-                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="handleClick">
+                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
                             <el-tab-pane label="详情页" name="info">
                                 <div class="console-tab-content">
                                     <el-form ref="form" :model="form" label-width="80px" label-position="left">
@@ -195,9 +195,9 @@
                                                 	<el-form-item label="">{{operate.system}}</el-form-item>                                                    
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" :sm="24" >
+                                            <el-col :span="24" :sm="12" >
                                                 <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
-                                                    <el-select v-model="item.csty" placeholder="子系统" clearable>
+                                                    <el-select v-model="item.csty" placeholder="子系统" clearable style='width: 90%;'>
                                                         <el-option
                                                         	v-for="_item in operate.subSystem"
 						                                    :label="_item.SYSTEM_NAME"
@@ -206,8 +206,8 @@
                                                     </el-select>
                                                     <i :class="index == 0 && operate.systemAll.length ==1?'el-icon-plus':index == operate.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
                                                        @click="addsubStystem(index,$event)"
-                                                       style="line-height: 40px;height: 40px;text-align: center;
-                                                font-size: 20px;cursor: pointer;font-weight: bold">
+                                                       style="line-height: 40px;height: 40px;text-align: right;
+                                                font-size: 20px;cursor: pointer;font-weight: bold;width: 8%;">
                                                     </i>
                                                    
                                                 </el-form-item>
@@ -239,7 +239,7 @@
                                                 <div class="infoDiv" v-for="(item,key) in way.information">
                                                     <p>
                                                         {{key+1}}、
-                                                        <span>{{item.record_START}}</span>
+                                                        <span>{{item.record_START | date}}</span>
                                                         <em>{{item.record_DESC}}</em>
                                                     </p>
 
@@ -253,7 +253,7 @@
                     </div>
                 </div>
                 <div class="content" v-if="bugVisible">
-                    <el-form :model="form" label-width="120px">
+                    <el-form :model="form" label-width="100px">
                         <el-row :gutter="24">
                             <el-col>
                                 <el-form-item label="BUG编号">
@@ -269,33 +269,39 @@
                             </el-col>
                         </el-row>
                         <el-row :gutter="24">
-                            <el-form-item label="故障等级">
-                                <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
-                                    <el-option
-                                    	v-for="item in popup.priperty"
-	                                    :label="item.name"
-	                                    :value="item.value"
-                                    	></el-option>
-                                </el-select>
-                            </el-form-item>
+                        	  <el-col>
+	                            <el-form-item label="故障等级">
+	                                <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
+	                                    <el-option
+	                                    	v-for="item in popup.priperty"
+		                                    :label="item.name"
+		                                    :value="item.value"
+	                                    	></el-option>
+	                                </el-select>
+	                            </el-form-item>
+                             </el-col>
                         </el-row>
                         <el-row :gutter="24">
-                            <el-form-item label="BUG说明">
-                                <el-input v-model="popup.popTxt.description" type="textarea"></el-input>
-                                <el-button type="primary">上传附件</el-button>
-                                <input type="file" @change="getFile($event)" placeholder="上传附件"
-				                       style="width:78px;opacity: 0;position: absolute;left: 0;top: 63px;">
-				                <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
-				                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
-				                  	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
-				                </p>
-				                </el-upload>  
-                            </el-form-item>
+                        	  <el-col>
+	                            <el-form-item label="BUG说明">
+	                                <el-input v-model="popup.popTxt.description" type="textarea" ></el-input>
+	                                <el-button type="primary">上传附件</el-button>
+	                                <input type="file" @change="getFile($event)" placeholder="上传附件"
+					                       style="width:78px;opacity: 0;position: absolute;left: 10px;top: 63px;">
+					                <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
+					                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
+					                  	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
+					                </p>
+					                </el-upload>  
+	                            </el-form-item>
+	                             </el-col>
                         </el-row>
                         <el-row :gutter="24">
-                            <el-form-item label="提交人">
-                                <el-input v-model="popup.popTxt.createUser" type="textarea"></el-input>
-                            </el-form-item>
+                        	  <el-col>
+	                            <el-form-item label="提交人">
+	                                <el-input v-model="popup.popTxt.createUser" type="textarea"></el-input>
+	                            </el-form-item>
+	                          </el-col>
                         </el-row>
                     </el-form>
                     <div style="text-align: center">
@@ -440,6 +446,25 @@
                 }
             }
         },
+        filters: {
+            date(time) {
+                let d = new Date(time);
+                let year = d.getFullYear();
+                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+                let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
+                let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+                let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+                return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
+            },
+            date_yyyyMMdd(time){
+                let d = new Date(time);
+                let year = d.getFullYear();
+                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+                return year + '-' + month + '-' + day
+            }
+        },
         mounted(){
             this.calculate();
             this.loadData();
@@ -538,7 +563,6 @@
 				this.$axios.post("/fault/query?type=2", params).then((res) => {
 					 let data = res.data;
 					if (data.code == 200) {
-						this.$warn('操作成功');
 						 let arr = [];
 						for (let i of data.result) {
                     	 if (i.update_TIME) {
@@ -685,9 +709,6 @@
 			          }
 			          this.$set(this.table, "tableData", arr);
 						}
-						else{
-							this.$warn(message);
-						}
                     })
                 }
            },
@@ -700,7 +721,9 @@
                         this.calculate()
                     }, 0);
                 }
-                if(val.id){
+                this.loadTabsData(val)
+            },
+            loadTabsData(val){
                 	let params = new URLSearchParams();
                     params.append("id", val.id);
                     this.$axios.post("/fault/get", params).then((res) => {
@@ -738,10 +761,10 @@
                           let arr=[];
                           if(data.result.process.result.length>0){
                             for(let i of data.result.process.result){
-                              if(i.record_START){
-                                let start=this.$format(i.record_START);
-                                i.record_START= `${start.year}-${start.mouth}-${start.day}`;
-                              }
+//                            if(i.record_START){
+//                              let start=this.$format(i.record_START);
+//                              i.record_START= `${start.year}-${start.mouth}-${start.day}`;
+//                            }
                               arr.push(i);
                             }
                             this.$set(this.way, "information", arr);
@@ -774,10 +797,7 @@
 			              }
                         }
                     })
-                }
-                return false;
             },
-            
            getFile(e){
 	        //上传附件
 	        let config = {
@@ -803,24 +823,29 @@
 	      //下载附件
 	      downfile(val){      	
 	      	let token=localStorage.getItem("token")
-	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
+//	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
+			this.$axios.get("/fault/download?token="+token+"&id="+val)
 	      },
 // 			提交bug表单
             subForm(){
 					if(!this.popup.popTxt.title){
-						this.$warn('请填写标题');
+//						this.$warn('请填写标题');
+						this.$warn('请填写完整信息');
 						return;
 					}
 					if(!this.popup.popTxt.priperty2){
-						this.$warn('请选择故障等级');
+//						this.$warn('请选择故障等级');
+						this.$warn('请填写完整信息');
 						return;
 					}
 					if(!this.popup.popTxt.description){
-						this.$warn('请填写BUG说明');
+//						this.$warn('请填写BUG说明');
+						this.$warn('请填写完整信息');
 						return;
 					}
 					if(!this.popup.popTxt.createUser){
-						this.$warn("请填写提交人");
+//						this.$warn("请填写提交人");
+						this.$warn('请填写完整信息');
 						return;
 					}
 					//上传附件
@@ -849,10 +874,11 @@
 	                  this.wran(data.message);
 	                }
 	              });
+	              this.bugVisible=false
             },
 //           控制台切换
-            handleClick(tab, event){
-            	
+            tabClick(val){
+                this.calculateTabsHeight();
             },
             //清除新增新增的表单
 		    clearAddData(){
@@ -881,11 +907,13 @@
             consoleActionEvent(val, f){
             	if(val=='确认'){
 	          		if(!this.operate.reason){
-	          			this.$warn("请填写成因")
+//	          			this.$warn("请填写成因")
+						this.$warn('请填写完整信息');
 	          			return
 	          		}
 	          		if(!this.operate.effectScope){
-	          			this.$warn("请填写影响范围")
+//	          			this.$warn("请填写影响范围")
+						this.$warn('请填写完整信息');
 	          			return
 	          		}
 	                let nameArr=[]
@@ -906,7 +934,8 @@
 	                  return
 	                }
 	                if(!this.operate.solution){
-	                  this.$warn("请填写解决方案")
+//	                  this.$warn("请填写解决方案")
+						this.$warn('请填写完整信息');
 	                  return
 	                }
             		let params = new URLSearchParams();

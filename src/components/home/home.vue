@@ -187,7 +187,7 @@
         /*margin: 0!important;*/
     /*}*/
     .el-dialog__body {
-        max-height: 370px;
+        max-height: 500px;
         overflow-y: auto;
     }
 
@@ -243,7 +243,6 @@
         </div>
     </div>
 </template>
-
 <script>
     import "../../static/css/card.css";
     export default {
@@ -308,6 +307,7 @@
                         let nowPath = this.$router.currentRoute.path;//当前的路径
                         //------------------------设置左边子目录和active
                         for (let i of data.result.menus) {//根据当前路径判断标题的active
+                            //当前是主菜单且有路由
                             if(i.menu_url && i.menu_url == nowPath ) {
                                 //判断当前主菜单下面是页面还是操作，是操作则不展示
                                 if(i.childMenus && i.childMenus.length
@@ -319,6 +319,7 @@
                                 this.activeTitle = i.menu_name;//设置左侧抬头标题
                                 break;
                             }
+                            //当前是子菜单，主菜单没有路由
                             if(!i.menu_url  && i.childMenus){
                                 for(let j of i.childMenus){
                                     if(j.menu_action == 1 && j.menu_url == nowPath){
@@ -342,10 +343,6 @@
             },
             //顶部菜单点击事件
             changeMainMenu(val){
-                if(val.menu_id == 4 || val.menu_id == 5){
-                    this.$success("您已订阅成功，每月资费 200元/月！！！");
-                    return;
-                }
                 this.subMenu = [];
                 this.menuActive = val.menu_id;
                 this.activeTitle = val.menu_name;
@@ -360,10 +357,6 @@
             },
             //左侧菜单点击事件
             subMenuAction(val){
-                if(val.menu_url == "/home/ywxq"){
-                    this.$success("您已订阅成功，每月资费 100元/月！！！");
-                    return;
-                }
                 this.$go(val.menu_url);
                 this.subActive = val.menu_id;
             },
