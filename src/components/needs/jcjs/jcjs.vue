@@ -2224,6 +2224,7 @@
             },
             //表格后面按钮的点击事件
             tableAction(index,row,e,type){
+                this.tabs.activeTableInfo = row;
                 //阻止事件冒泡
                 e.stopPropagation();
                 switch (type) {
