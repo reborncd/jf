@@ -142,7 +142,7 @@ let instance = axios.create({
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
     //baseURL:"http://172.16.2.124:8082",//欧
     // baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
-    baseURL:"http://192.180.4.150:8082",
+    baseURL:"http://192.180.4.100:8082",
     //baseURL:"http://192.168.1.179:8082",
     //baseURL:"http://127.0.0.1:8082",
     headers: {
