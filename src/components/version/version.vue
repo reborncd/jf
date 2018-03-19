@@ -118,7 +118,10 @@
 	padding: 0;
 	text-align: center!important;                            
 }
-.el-table .cell{
+.el-table th>.cell{
+	text-align: center!important;
+}
+.el-table .cell,{
 	text-align: center!important;
 }
 </style>
@@ -155,8 +158,8 @@
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight" highlight-current-row
                                   @row-click="handleCurrentChange">
-                            <el-table-column prop="system_ID" label="涉及系统"></el-table-column>
-                            <el-table-column prop="version_ID" label="子系统" width="110"></el-table-column>
+                            <el-table-column prop="system_FNAME" label="涉及系统"></el-table-column>
+                            <el-table-column prop="system_NAME" label="子系统" width="110"></el-table-column>
                             <el-table-column prop="new_VERSION" label="最新版本"></el-table-column>
                             <el-table-column prop="current_VERSION" label="当前版本" width="110"></el-table-column>
                             <el-table-column prop="start_DATE" label="启用日期"></el-table-column>
@@ -178,8 +181,8 @@
 				                <div class="console-tab-content">
 				                  <el-table class='detail-table' :data="table.tableDetail" border style="width: 100%;margin-top:20px;text-align: center;"
 	                              :height="table.tableHeight" highlight-current-row >
-		                            <el-table-column prop="system_NAME" label="涉及名称"></el-table-column>
-		                            <el-table-column prop="system_FNAME" label="子系统" width="110"></el-table-column>
+		                            <el-table-column prop="system_FNAME" label="涉及系统"></el-table-column>
+		                            <el-table-column prop="system_NAME" label="子系统" width="110"></el-table-column>
 		                            <el-table-column prop="new_VERSION" label="版本号"></el-table-column>
 		                            <el-table-column prop="current_STATE" label="当前版本" width="110"></el-table-column>
 		                            <el-table-column prop="start_DATE" label="启用日期"></el-table-column>
@@ -467,6 +470,7 @@
            		 this.$axios.post('/version/addSystem ', params).then((res) => {
                 	if(res.data.code=200){    
                 		let data=res.data.result;
+                		this.loadData();
                 	}
                 	else{
                 		this.$warn(message);
@@ -514,7 +518,6 @@
 	                this.$axios.post('/version/versionlist', params).then((res) => {
 	                	if(res.code=200){
 	                		let data = res.data.result
-	                		console.log(data);
 	                    	this.setTableData(data);
 	                	}
 	                	else{

@@ -162,8 +162,6 @@
 
             },
             deleteRow(el, scope){
-                console.log(el)
-                console.log(scope)
                 this.$maskin();
                 let params = new URLSearchParams();
                 params.append("ROLE_ID", el.role_ID)

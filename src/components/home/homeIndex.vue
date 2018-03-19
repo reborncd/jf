@@ -540,7 +540,6 @@
             //-----------------------点击代办事项跳转页面
             goPage(val){
                 let url = "";
-                console.log(val)
                 switch(val.neel_TYPE){
                     case 1://业务需求
                         url = "业务需求";

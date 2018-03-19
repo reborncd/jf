@@ -245,8 +245,8 @@
                         </el-form-item>
                       </el-col>
                       <el-col class="col-div" :span="24" :sm="24">
-                        <div class="infoDiv" v-for="(item,key) in way.information">
-                          <p>
+                        <div class="infoDiv" >
+                          <p v-for="(item,key) in way.information">
                             {{key+1}}、
                             <span>{{item.record_START | date}}</span>
                             <em>{{item.record_DESC}}</em>
@@ -567,7 +567,6 @@
       },
       //故障bug状态选择
       statusOpt(val){
-//    	console.log(val);
       	this.setConsoleVisible()
         let params = new URLSearchParams();
         params.append("status", val);
@@ -668,7 +667,6 @@
       },
       //详情显示
       handleCurrentChange(val){
-//    	console.log(val);
       	this.clearAddData();
         this.tabs.activeTableInfo = val;
         if (!this.tabs.consoleWrapperVisible) {
@@ -878,7 +876,6 @@
         params.append("sumEffect", this.popup.popTxt.sumEffect);//交易量影响
         params.append("type", 1);//类型
 				params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
-//		console.log(this.popup.popTxt.fileList)
         this.$axios.post("/fault/submit", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {

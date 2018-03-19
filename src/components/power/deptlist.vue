@@ -245,8 +245,6 @@
             },
             //编辑部门
             editRow(el, scope){
-                console.log(el);
-                console.log(scope);
                 let params = new URLSearchParams();
                 params.append("dept_id",el.id);
                 this.$axios.post("/role/editDeptSystemFront", params).then((res) => {
@@ -327,7 +325,6 @@
             },
             //删除部门
             deleteRow(row,index){
-                console.log(row)
                 this.confirm("确认删除此部门吗？此操作将不可恢复！",()=>{
                     let params = new URLSearchParams();
                     params.append("dept_id",row.id);

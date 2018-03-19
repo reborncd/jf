@@ -69,7 +69,7 @@
     .nav ul li {
         float: left;
         color: white;
-        padding: 0 15px;
+        padding: 0 10px;
         line-height: 35px;
         background: #677484;
         margin-right: 5px;
@@ -367,10 +367,16 @@
             handleCommand(type){
                 switch (type) {
                     case "resetPassword":
+                        //重置密码
                         this.$go("/home/resetPassword");
                         break;
                     case "logout":
+                        //退出登录
                         this.logout();
+                        break;
+                    case "userInfo":
+                        //个人资料
+                        this.$go("/home/userCenter");
                         break;
                 }
             },

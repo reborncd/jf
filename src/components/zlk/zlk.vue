@@ -529,7 +529,6 @@
             },
             //左侧点击事件
             leftclick(val){
-                console.log(val)
                 if (val.children) {
                     return;
                 }
@@ -561,7 +560,6 @@
             },
             //下载功能
             downloadrow(index, val){
-                console.log(val);
                 this.$set(this.download, "data", val.datumATDetails);
                 this.download.downloadvisible = true;
             },

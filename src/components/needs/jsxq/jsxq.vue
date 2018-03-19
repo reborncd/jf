@@ -282,10 +282,12 @@
                                     <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="8">
-                                                <el-form-item label="状态">需求编号</el-form-item>
+                                                <el-form-item label="状态" style="color: red">
+                                                    {{tabs.tabsData.state_NAME}}
+                                                </el-form-item>
                                             </el-col>
                                             <el-col :span="12">
-                                                <el-form-item label="发送人">申请人</el-form-item>
+                                                <el-form-item label="发送人">{{tabs.tabsData.send_NAME}}</el-form-item>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -953,7 +955,7 @@
                         <el-checkbox-group v-model="assign.checkList">
                             <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
                                          class="check-item">
-                                {{_item.user_NAME}}
+                                {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
                     </li>
@@ -962,7 +964,7 @@
                     <el-checkbox-group v-model="assign.checkList">
                         <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                      class="check-item">
-                            {{item.user_NAME}}
+                            {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                         </el-checkbox>
                     </el-checkbox-group>
                 </div>
@@ -971,7 +973,7 @@
                 <el-checkbox-group v-model="assign.checkList">
                     <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                  class="check-item">
-                        {{item.user_NAME}}
+                        {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                     </el-checkbox>
                 </el-checkbox-group>
             </div>
@@ -1661,17 +1663,18 @@
                         if(data.result.DEPT_SAVE){
                             this.addneeds.addif = true;
                         }
-//                        if(this.$route.params.neelId){
-//                            let id = this.$route.params.neelId;
-//                            for(let i of data){
-//                                if(i.technology_NEEL_ID == id){
-//                                    this.handleCurrentChange(i);
-//                                    this.$refs.jsxq_table.setCurrentRow(i);
-//                                    break;
-//                                }
-//                            }
-//                            return;
-//                        }
+                        //跳转到对应需求列表
+                        if(this.$route.params.neelId){
+                            let id = this.$route.params.neelId;
+                            for(let i of data.result.technologyList){
+                                if(i.technology_NEEL_ID == id){
+                                    this.handleCurrentChange(i);
+                                    this.$refs.jsxq_table.setCurrentRow(i);
+                                    break;
+                                }
+                            }
+                            return;
+                        }
                         this.$maskoff();
                     }
                 })
@@ -1706,6 +1709,8 @@
                 this.ifPing.visible = false;
                 //初始化技术经理审批
                 this.review.reviewvisible = false;
+                //测试进入拆分任务的提交步骤
+                this.testTask.showTaskStep = false;
                 //清空拆分任务信息
                 this.clearSplitSub();
                 //初始化用例类型
@@ -1833,7 +1838,6 @@
                         //-----------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
                         if (data.result.systemDepts && data.result.systemDepts.length > 0) {
                             this.tabs.allSplittask = true;
-                            console.log(data.result.systemDepts)
                             //计算合计用时
                             let num = 0;
                             for (let i of data.result.systemDepts) {
@@ -2221,6 +2225,7 @@
                 params.append("CHECK_ID", ping.checks.split("-")[0]);
                 params.append("CHECK_TIME", ping.date);
                 params.append("CHECK_NAME", ping.person);
+                params.append("RRIORITY", ping.rriority);
                 this.$axios.post("/demand/reviewBase", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
@@ -2586,6 +2591,7 @@
                 if (result.length == 0) {
                     this.$warn("当前没有选择任何人员");
                 } else {
+                    this.$maskin();
                     let temp = [];
                     let idArr = [];
                     let nameArr = [];
@@ -2610,7 +2616,7 @@
                             this.assign.assignvisible = false;
                             this.$success("操作成功");
                             this.loadData();
-                            this.calculate();
+                            this.$maskoff();
                         }
                     })
                 }
