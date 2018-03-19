@@ -1,32 +1,4 @@
 <style scoped>
-    #mask {
-        display: none;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.0);
-        z-index: 9999;
-    }
-
-    #loading {
-        display: none;
-        position: fixed;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 40px;
-        height: 40px;
-        text-align: center;
-        line-height: 40px;
-        font-size: 40px;
-        margin: auto;
-        color: #ff6700;
-        z-index: 10000;
-    }
-
     .header {
         display: flex;
         position: fixed;
