@@ -169,7 +169,7 @@
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight"
                                   highlight-current-row
-                                  ref="jcjs_table"
+                                  ref="ywxq_table"
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="work_NEET_ID" label="需求编号" width="200"></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
@@ -1940,7 +1940,7 @@
                     for(let i of data.bases){
                         if(i.work_NEET_ID == id){
                             this.handleCurrentChange(i);
-                            this.$refs.jcjs_table.setCurrentRow(i);
+                            this.$refs.ywxq_table.setCurrentRow(i);
                             break;
                         }
                     }
@@ -2604,7 +2604,7 @@
                 for(let i of this.table.tableOriginData){
                     if(i.work_NEET_ID == code){
                         this.handleCurrentChange(i);
-                        this.$refs.jcjs_table.setCurrentRow(i)
+                        this.$refs.ywxq_table.setCurrentRow(i)
                     }
                 }
             },
