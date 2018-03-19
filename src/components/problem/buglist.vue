@@ -170,9 +170,9 @@
                                     </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                        	<el-col :span="24" :sm="24" style="float: right;width: 60%;margin-bottom: 20px;">
-                                        		<el-form-item label="关联的缺陷编号">
-                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;margin-left: 100px;'>
+                                        	<el-col :span="24" :sm="24" style="float: right;width: 51%;margin-bottom: 20px;">
+                                        		<el-form-item label="关联的缺陷号">
+                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;margin-left: 0px;'>
                                                         <el-option
                                                         	v-for="_item in operate.relation"
 						                                    :label="_item.technology_NEEL_ID"
@@ -247,8 +247,8 @@
                                                 </el-form-item>
                                             </el-col>
                                             <el-col class="col-div" :span="24" :sm="24">
-                                                <div class="infoDiv" v-for="(item,key) in way.information">
-                                                    <p>
+                                                <div class="infoDiv" >
+                                                    <p v-for="(item,key) in way.information">
                                                         {{key+1}}、
                                                         <span>{{item.record_START | date}}</span>
                                                         <em>{{item.record_DESC}}</em>
@@ -392,7 +392,7 @@
                             picker.$emit('pick', [start, end]);
                         }
                     },
- {
+ 					{
                         text: '最近一个月',
                         onClick(picker) {
                             const end = new Date();

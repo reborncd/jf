@@ -245,8 +245,8 @@
                         </el-form-item>
                       </el-col>
                       <el-col class="col-div" :span="24" :sm="24">
-                        <div class="infoDiv" v-for="(item,key) in way.information">
-                          <p>
+                        <div class="infoDiv" >
+                          <p v-for="(item,key) in way.information">
                             {{key+1}}、
                             <span>{{item.record_START | date}}</span>
                             <em>{{item.record_DESC}}</em>

@@ -71,8 +71,11 @@
                         </div>
                     </el-form>
                 </div>
-
             </div>
+        </div>
+
+        <div id="mask">
+            <i class="el-icon-loading" id="loading"></i>
         </div>
     </div>
 </template>
@@ -157,6 +160,7 @@
 //                    this.$warn("邮箱格式错误");
 //                    return;
 //                }
+                this.$maskin();
                 let dateFormat = this.$format(this.date);
                 let date_upload = dateFormat.year+"-"+dateFormat.mouth+"-"+dateFormat.day;
                 let params = new URLSearchParams();
@@ -175,8 +179,10 @@
                     } else {
                         this.$warn(data.message);
                     }
+                    this.$maskoff();
                 }).catch((err) => {
                     this.$warn("注册失败");
+                    this.$maskoff();
                 })
             }
         }

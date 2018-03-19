@@ -811,7 +811,7 @@
                                                         <i style="color: red;font-size: 20px" class="el-icon-error"
                                                            @click="testTaskNotAllow(scope.row,scope.$index)"
                                                            v-if=" scope.row.TEST_STATE == 3"></i>
-                                                        <span v-if="scope.row.TEST_STATE == 1">已通过</span>
+                                                        <span v-if="scope.row.TEST_STATE == 1" style="color: green">已通过</span>
                                                         <span style="color: red"
                                                               v-if="scope.row.TEST_STATE == 0">不通过</span>
                                                         <span style="color: green"
@@ -858,7 +858,7 @@
                                                     {{tabs.user_NAME}}
                                                 </el-form-item>
                                             </el-col>
-                                            <el-button type="primary" @click="tracking.trackingvisiible = true">视图模式</el-button>
+                                            <!--<el-button type="primary" @click="tracking.trackingvisiible = true">视图模式</el-button>-->
                                             <el-col :span="24" :sm="24">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
@@ -1055,7 +1055,7 @@
             </div>
         </el-dialog>
         <!--分配-->
-        <el-dialog title="分配" :visible="assign.assignvisible" width="30%"
+        <el-dialog title="分配" :visible="assign.assignvisible" width="40%"
                    append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
             <div slot="title">
                 <h2>分配</h2>
@@ -1081,7 +1081,7 @@
                         <el-checkbox-group v-model="assign.checkList">
                             <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
                                          class="check-item">
-                                {{_item.user_NAME}}
+                                {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
                     </li>
@@ -1090,7 +1090,7 @@
                     <el-checkbox-group v-model="assign.checkList">
                         <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                      class="check-item">
-                            {{item.user_NAME}}
+                            {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                         </el-checkbox>
                     </el-checkbox-group>
                 </div>
@@ -1099,7 +1099,7 @@
                 <el-checkbox-group v-model="assign.checkList">
                     <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                  class="check-item">
-                        {{item.user_NAME}}
+                        {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                     </el-checkbox>
                 </el-checkbox-group>
             </div>
@@ -2196,6 +2196,8 @@
                 this.tabs.allSplittask = false;//所有的拆分项目详情
                 //初始化技术管理部评审
                 this.ifPing.visible = false;
+                //测试进入拆分任务的提交步骤
+                this.testTask.showTaskStep = false;
                 //初始化技术经理的分析
                 this.review.reviewvisible = false;
                 //清空拆分任务的操作台
@@ -3030,7 +3032,6 @@
                 this.$axios.post("/work/queryUserByDemand", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-
                         this.$set(this.assign, "searchData", data.result.allDept);
                         this.$set(this.assign, "leftlistdata", data.result.allDept);
                         this.$set(this.assign, "rightlistdata", data.result.dept.users);
@@ -3079,6 +3080,7 @@
                 if (result.length == 0) {
                     this.$warn("当前没有选择任何人员");
                 } else {
+                    this.$maskin();
                     let temp = [];
                     let idArr = [];
                     let nameArr = [];
@@ -3101,7 +3103,7 @@
                             this.assign.assignvisible = false;
                             this.$success("操作成功");
                             this.loadData();
-                            this.calculate();
+                            this.$maskoff();
                         }
                     })
                 }
@@ -3165,19 +3167,8 @@
                         this.$warn("请填写版本号");
                         return;
                     }
-                  /*  var versionReg= /^v\d+(\.\d+)*$/;
-                    //versionReg.test(this.split.systemAll[index].version)
-                    console.log(versionReg.test(this.split.systemAll[index].version))
-                    if (!versionReg.test(this.split.systemAll[index].version)) {
-                        console.log(this.split.systemAll[index].version.split("v").length);
-                        console.log(this.split.systemAll[index].version.split("V").length);
-                        this.$warn("版本号格式有误");
-                        return;
-                    }*/
-                    if (this.split.systemAll[index].version.split("v").length !=2 ||
-                        this.split.systemAll[index].version.split("V").length !=2 ) {
-                        console.log(this.split.systemAll[index].version.split("v").length);
-                        console.log(this.split.systemAll[index].version.split("V").length);
+                    let  v = this.split.systemAll[index].version.slice(0,1)
+                    if (v != "v" && v !="V") {
                         this.$warn("版本号格式有误");
                         return;
                     }
@@ -3237,14 +3228,14 @@
                     this.$warn("请选择难易度");
                     return;
                 }
-                if (!this.split.usetime) {
+                if (!this.split.usetime ) {
                     this.$warn("请填写用时");
                     return;
                 }
-               /* if (!this.$reg.number.test(this.split.usetime)) {
+               if (!this.$reg.number.test(this.split.usetime)) {
                     this.$warn("用时格式不正确");
                     return;
-                }*/
+                }
                 let end_data = this.$format(new Date(this.split.finishdate));
                 let obj = {
                     WORK_INFO_ID: this.split.taskcode,

@@ -28,6 +28,9 @@
                 </div>
             </div>
         </div>
+        <div id="mask">
+            <i class="el-icon-loading" id="loading"></i>
+        </div>
     </div>
 </template>
 
@@ -79,9 +82,7 @@
                     this.$warn("手机号码格式不正确");
                     return;
                 }
-                console.log(this.account);
-                console.log(this.password);
-                console.log(this.phone);
+                this.$maskin()
                 let params = new URLSearchParams();
                 params.append('USER_ACCOUNT', this.account);
                 params.append('PASSWORD', this.password);
@@ -96,8 +97,10 @@
                     } else {
                         this.$warn(data.message);
                     }
+                    this.$maskoff();
                 }).catch(()=>{
-                    this.$warn("找回失败，请稍后重试");
+                    this.$warn("操作失败，请稍后重试");
+                this.$maskoff();
                 })
             },
             back(){

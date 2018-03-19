@@ -282,10 +282,12 @@
                                     <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="8">
-                                                <el-form-item label="状态">需求编号</el-form-item>
+                                                <el-form-item label="状态" style="color: red">
+                                                    {{tabs.tabsData.state_NAME}}
+                                                </el-form-item>
                                             </el-col>
                                             <el-col :span="12">
-                                                <el-form-item label="发送人">申请人</el-form-item>
+                                                <el-form-item label="发送人">{{tabs.tabsData.send_NAME}}</el-form-item>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -953,7 +955,7 @@
                         <el-checkbox-group v-model="assign.checkList">
                             <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
                                          class="check-item">
-                                {{_item.user_NAME}}
+                                {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
                     </li>
@@ -962,7 +964,7 @@
                     <el-checkbox-group v-model="assign.checkList">
                         <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                      class="check-item">
-                            {{item.user_NAME}}
+                            {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                         </el-checkbox>
                     </el-checkbox-group>
                 </div>
@@ -971,7 +973,7 @@
                 <el-checkbox-group v-model="assign.checkList">
                     <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                  class="check-item">
-                        {{item.user_NAME}}
+                        {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                     </el-checkbox>
                 </el-checkbox-group>
             </div>
@@ -1706,6 +1708,8 @@
                 this.ifPing.visible = false;
                 //初始化技术经理审批
                 this.review.reviewvisible = false;
+                //测试进入拆分任务的提交步骤
+                this.testTask.showTaskStep = false;
                 //清空拆分任务信息
                 this.clearSplitSub();
                 //初始化用例类型
@@ -2586,6 +2590,7 @@
                 if (result.length == 0) {
                     this.$warn("当前没有选择任何人员");
                 } else {
+                    this.$maskin();
                     let temp = [];
                     let idArr = [];
                     let nameArr = [];
@@ -2610,7 +2615,7 @@
                             this.assign.assignvisible = false;
                             this.$success("操作成功");
                             this.loadData();
-                            this.calculate();
+                            this.$maskoff();
                         }
                     })
                 }

@@ -38,6 +38,9 @@
                 </div>
             </div>
         </div>
+        <div id="mask">
+            <i class="el-icon-loading" id="loading"></i>
+        </div>
     </div>
 </template>
 
@@ -90,6 +93,7 @@
 //                    this.$warn("用户名格式错误");
 //                    return;
 //                }
+                this.$maskin();
                 let params = new URLSearchParams();
                 params.append('USER_ACCOUNT', this.account);
                 params.append('USER_PWD', this.password);
@@ -111,8 +115,10 @@
                     } else if (data.result == 0) {
                         this.$warn("登录失败");
                     }
+                    this.$maskoff();
                 }).catch(()=> {
-                    this.$warn("登录失败")
+                    this.$warn("登录失败");
+                    this.$maskoff();
                 })
             },
         }

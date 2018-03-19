@@ -207,16 +207,13 @@ instance.interceptors.response.use(function (response) {
 Vue.prototype.$axios = instance;
 
 //--------正则匹配
-Vue.prototype.$reg = () => {
-    return {
+Vue.prototype.$reg = {
         "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
         "en": /[a-zA-Z]/,
         "cn": /[\u4e00-\u9fa5]/,
-        "number": /[0-9]/,
+        "number": /^[0-9]*$/,
         "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
         "en_num": /^[A-Za-z0-9]+$/,
-
-    }
 };
 new Vue({
     el: '#app',
