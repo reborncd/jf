@@ -903,8 +903,9 @@
 		        params.append("type",2);//类型
                 params.append("priperty",this.popup.popTxt.priperty2);	//故障等级
                 params.append("id",this.popup.popTxt.id);	//问题ID
+
 		        params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
-//		        console.log(this.popup.popTxt.id);
+		        console.log(this.popup.popTxt.id);
 	            this.$axios.post("/fault/submit", params).then((res) => {
 	                let data = res.data;
 	                if (data.code == 200) {

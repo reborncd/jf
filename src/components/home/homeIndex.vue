@@ -82,8 +82,6 @@
         cursor: pointer;
     }
 
-
-
     .box-card ul .dian {
         position: absolute;
         left: 5px;
@@ -104,6 +102,7 @@
         text-decoration: underline;
         color: #ff4f1f;
     }
+
     .box-card ul .content {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -203,13 +202,24 @@
                         </el-card>
                     </div>
                 </el-col>
-                <!--<el-col :span="8" style="height: 100%">
+                <!--操作日志-->
+                <el-col :span="8" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div slot="header" class="clearfix">
-                                <span class="card-title">经办事项</span>
+                                <span class="card-title">操作日志</span>
                             </div>
+
                             <ul class="text item">
+                                <li v-for="(item, index) in operLog" @click="goPage(item)">
+                                    <span class="dian"></span>
+                                    <h4 class="content-title">{{item.record_SUBJECT}}
+                                        <span class="date fr">{{item.record_START | date}}</span>
+                                    </h4>
+                                    <p class="content">{{item.record_DESC}}</p>
+                                </li>
+                            </ul>
+                            <!--<ul class="text item">
                                 <li>
                                     <span class="dian"></span>
                                     <h4 class="content-title">标题
@@ -217,10 +227,10 @@
                                     </h4>
                                     <p class="content">内容</p>
                                 </li>
-                            </ul>
+                            </ul>-->
                         </el-card>
                     </div>
-                </el-col>-->
+                </el-col>
             </el-col>
         </div>
     </el-col>
@@ -229,8 +239,9 @@
 
 <script>
     import datePlug from "./datePlug.vue";
+
     export default {
-        data(){
+        data() {
             return {
                 scrollStyle_y: 0,
                 interval: "",
@@ -238,29 +249,30 @@
                 scrollWrap: "",
                 topHeight: "",
                 bottomHeight: "",
-                has_delay:[],//已经延期
-                will_delay:[],//将要延期
-                todo:[],//代办事项
+                has_delay: [],//已经延期
+                will_delay: [],//将要延期
+                todo: [],//代办事项
+                operLog:[],//操作日志
                 srcRoute: {
-                    "1":"业务需求",
-                    "2":"技术需求",
-                    "3":"基础建设",
-                    "4":"日常任务",
-                    "5":"问题管理"
+                    "1": "业务需求",
+                    "2": "技术需求",
+                    "3": "基础建设",
+                    "4": "日常任务",
+                    "5": "问题管理"
                 },//代办事项的标题数组
-                hasdo:[],//经办事项
+                hasdo: [],//经办事项
 
                 show: {
                     time: [],//时间
-                    comcount:[],//当日完成
-                    dcount:[],//当日执行
-                    scount:[],//当日固有
-                    newscount:[],//当日新增
+                    comcount: [],//当日完成
+                    dcount: [],//当日执行
+                    scount: [],//当日固有
+                    newscount: [],//当日新增
 
-                    dept_NAME:[],//部门名称
-                    kocount:[],//空闲
-                    mcount:[],//忙碌
-                    sumcount:[],//人数
+                    dept_NAME: [],//部门名称
+                    kocount: [],//空闲
+                    mcount: [],//忙碌
+                    sumcount: [],//人数
                 }
             }
         },
@@ -269,26 +281,26 @@
         },
         //此处如果不写会一直触发定时器的错误，要在组建销毁前清除定时器并且在进入页面的时候清除定时器，
         // 在数据加载完成后再启动定时器
-        destroyed(){
+        destroyed() {
             this.clearInt();
         },
-        mounted(){
+        mounted() {
             this.loadData()
         },
         filters: {
             date: function (time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = d.getMonth() + 1 < 10 ? '0' + d.getMonth() : '' + d.getMonth()+1;
+                let month = d.getMonth() + 1 < 10 ? '0' + d.getMonth() : '' + d.getMonth() + 1;
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
                 let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
                 let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
                 let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
-                return year + '-' + month + '-' + day ;
+                return year + '-' + month + '-' + day+' '+hour+':'+minutes+':'+seconds;
             },
         },
         methods: {
-            calculate(){
+            calculate() {
                 let height = document.getElementsByClassName("mainr")[0].offsetHeight;
                 let scrollBanner = document.querySelector(".scroll-wrap");
                 let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -327,28 +339,30 @@
                 }
             },
             //加载数据
-            loadData(){
+            loadData() {
                 this.calculate();
                 this.$maskin();
                 let params = new URLSearchParams();
                 //加载待办事项
-                this.$axios.post("/main/queryMatter",params).then((res)=>{
-                    let data =res.data;
-                    if(data.code == 200){
+                this.$axios.post("/main/queryMatter", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
                         //main代办事项
-                        this.$set(this,"todo",data.result.main);
+                        this.$set(this, "todo", data.result.main);
                         //havaMain经办事项
-                        this.$set(this,"hasdo",data.result.havaMain);
+                        this.$set(this, "hasdo", data.result.havaMain);
+                        //操作日志
+                        this.$set(this, "operLog", data.result.operLog);
                     }
                 });
                 //加载轮播图
-                this.$axios.post("/main/queryTask",params).then((res)=>{
-                    let data =res.data;
-                    if(data.code == 200){
+                this.$axios.post("/main/queryTask", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
                         //将要延期
-                        this.$set(this,"will_delay",data.result.willTask);
+                        this.$set(this, "will_delay", data.result.willTask);
                         //已经延期
-                        this.$set(this,"has_delay",data.result.failTask);
+                        this.$set(this, "has_delay", data.result.failTask);
                         this.setInterval()
                         this.$maskoff();
                     }
@@ -357,13 +371,13 @@
                 //一周动态
                 this.$axios.post("/main/datecount", params).then((res) => {
                     let data = res.data;
-                    if(data.code == 200) {
+                    if (data.code == 200) {
                         let dataArr = []
-                        let comcount=[]
-                        let dcount=[]
-                        let scount=[]
-                        let newscount=[]
-                        for(let i of data.result) {
+                        let comcount = []
+                        let dcount = []
+                        let scount = []
+                        let newscount = []
+                        for (let i of data.result) {
                             dataArr.push(i.dates);
                             comcount.push(i.comcount);
                             dcount.push(i.dcount);
@@ -382,12 +396,12 @@
                 //资源动态
                 this.$axios.post("/main/usercount", params).then((res) => {
                     let data = res.data;
-                    if(data.code == 200) {
+                    if (data.code == 200) {
                         let dept_NAME = []
-                        let kocount=[]
-                        let mcount=[]
-                        let sumcount=[]
-                        for(let i of data.result) {
+                        let kocount = []
+                        let mcount = []
+                        let sumcount = []
+                        for (let i of data.result) {
                             dept_NAME.push(i.dept_NAME);
                             kocount.push(i.kocount);
                             mcount.push(i.mcount);
@@ -402,7 +416,7 @@
                     }
                 })
             },
-            showEchart(){
+            showEchart() {
                 let dynamic_wrap = document.getElementById("dynamic");
                 let dynamic_chart = this.$echarts.init(dynamic_wrap);
                 // 指定图表的配置项和数据
@@ -474,16 +488,14 @@
                         }
                     ]
                 };
-                let  optionresources = {
-                    angleAxis: {
-                    },
+                let optionresources = {
+                    angleAxis: {},
                     radiusAxis: {
                         type: 'category',
                         data: this.show.dept_NAME,
                         z: 5
                     },
-                    polar: {
-                    },
+                    polar: {},
                     series: [{
                         type: 'bar',
                         data: this.show.kocount,
@@ -518,12 +530,12 @@
             },
             //------------------------设置轮播图的效果
             //移动到轮播图上移除定时器
-            setInterval(){
+            setInterval() {
                 this.interval = setInterval(() => {
                     let scrollWrap = document.getElementsByClassName("scrollContent")[0];
                     let scrollHeight = scrollWrap.offsetHeight;
                     this.scrollStyle_y--;
-                    if (-this.scrollStyle_y >= scrollHeight+20) {
+                    if (-this.scrollStyle_y >= scrollHeight + 20) {
                         //122是容器scrollWrap的高
                         this.scrollStyle_y = 122
                     } else {
@@ -531,16 +543,16 @@
                     }
                 }, 50)
             },
-            scrollMouseover(){
+            scrollMouseover() {
                 this.clearInt()
             },
-            clearInt(){
+            clearInt() {
                 clearInterval(this.interval)
             },
             //-----------------------点击代办事项跳转页面
-            goPage(val){
+            goPage(val) {
                 let url = "";
-                switch(val.neel_TYPE){
+                switch (val.neel_TYPE) {
                     case 1://业务需求
                         url = "业务需求";
                         break;
@@ -558,9 +570,9 @@
                         break;
                 }
                 //跳转页面
-                this.$go("","",{"neelId":val.nell_ID},url);
+                this.$go("", "", {"neelId": val.nell_ID}, url);
             },
-            focus(){
+            focus() {
 
             }
         },

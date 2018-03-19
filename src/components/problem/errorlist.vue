@@ -265,6 +265,11 @@
           <el-form :model="form" label-width="120px">
             <el-row :gutter="24">
               <el-col :span="12">
+                <el-form-item label="故障编号">
+                  <el-input disabled="true" v-model="popup.popTxt.id"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
                 <el-form-item label="故障等级">
                   <!--<el-input v-model="popup.priperty"></el-input>-->
                   <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
@@ -440,6 +445,7 @@
               "value": "103"
             }],  
          popTxt:{
+              'id':'',//问题编号
 	          'priperty2':'',//故障等级
 	          'relationUser': "",			//故障分析人员
 	          'description': "",				//故障描述
@@ -845,6 +851,13 @@
       	this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
       },
       addPopup(){
+          let params = new FormData();
+          params.append("status", 1);
+          params.append("token", localStorage.getItem("token"));
+          this.$axios.post("/fault/getNo",params).then((res) => {
+              let data = res.data;
+              this.popup.popTxt.id=data.id;
+          })
       	this.setConsoleVisible()
       	this.errorVisible=!this.errorVisible;
       	this.clearAddData();
@@ -875,7 +888,8 @@
         params.append("descriptionEx", this.popup.popTxt.descriptionEx);//故障复盘分析
         params.append("sumEffect", this.popup.popTxt.sumEffect);//交易量影响
         params.append("type", 1);//类型
-				params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
+          params.append("id",this.popup.popTxt.id);//问题ID
+		params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
         this.$axios.post("/fault/submit", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -919,7 +933,7 @@
       //驳回 确认操作
       consoleActionEvent(val, f){
         if (val == '确认') {
-          if (!this.operate.reason) {
+        /*  if (!this.operate.reason) {
 //          this.$warn("请填写成因")
 						this.$warn('请填写完整信息');
             return
@@ -928,7 +942,7 @@
 //          this.$warn("请填写影响范围")
 						this.$warn('请填写完整信息');
             return
-          }
+          }*/
           let nameArr = []
           let idArr = []
           for (let i of this.operate.systemAll) {
@@ -946,11 +960,11 @@
             this.$warn('请选择子系统')
             return
           }
-          if (!this.operate.solution) {
+         /* if (!this.operate.solution) {
 //          this.$warn("请填写解决方案")
 						this.$warn('请填写完整信息');
             return
-          }
+          }*/
           let params = new URLSearchParams();
           params.append("id", this.tabs.form.id);	//id
           params.append("reason", this.operate.reason);	//成因
