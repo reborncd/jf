@@ -1663,17 +1663,18 @@
                         if(data.result.DEPT_SAVE){
                             this.addneeds.addif = true;
                         }
-//                        if(this.$route.params.neelId){
-//                            let id = this.$route.params.neelId;
-//                            for(let i of data){
-//                                if(i.technology_NEEL_ID == id){
-//                                    this.handleCurrentChange(i);
-//                                    this.$refs.jsxq_table.setCurrentRow(i);
-//                                    break;
-//                                }
-//                            }
-//                            return;
-//                        }
+                        //跳转到对应需求列表
+                        if(this.$route.params.neelId){
+                            let id = this.$route.params.neelId;
+                            for(let i of data.result.technologyList){
+                                if(i.technology_NEEL_ID == id){
+                                    this.handleCurrentChange(i);
+                                    this.$refs.jsxq_table.setCurrentRow(i);
+                                    break;
+                                }
+                            }
+                            return;
+                        }
                         this.$maskoff();
                     }
                 })
@@ -1837,7 +1838,6 @@
                         //-----------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
                         if (data.result.systemDepts && data.result.systemDepts.length > 0) {
                             this.tabs.allSplittask = true;
-                            console.log(data.result.systemDepts)
                             //计算合计用时
                             let num = 0;
                             for (let i of data.result.systemDepts) {
@@ -2225,6 +2225,7 @@
                 params.append("CHECK_ID", ping.checks.split("-")[0]);
                 params.append("CHECK_TIME", ping.date);
                 params.append("CHECK_NAME", ping.person);
+                params.append("RRIORITY", ping.rriority);
                 this.$axios.post("/demand/reviewBase", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {

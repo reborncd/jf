@@ -170,9 +170,9 @@
                                     </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                        	<el-col :span="24" :sm="24" style="float: right;width: 51%;margin-bottom: 20px;">
+                                        	<el-col :span="24" :sm="24" v-if="operate.glvisibble" style="float: right;width: 51%;margin-bottom: 20px;">
                                         		<el-form-item label="关联的缺陷号">
-                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;margin-left: 0px;'>
+                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;'>
                                                         <el-option
                                                         	v-for="_item in operate.relation"
 						                                    :label="_item.technology_NEEL_ID"
@@ -268,7 +268,7 @@
                         <el-row :gutter="24">
                             <el-col>
                                 <el-form-item label="BUG编号">
-                                    <el-input v-model="popup.id" :disabled='error.disabled'></el-input>
+                                    <el-input v-model="popup.popTxt.id" :disabled='error.disabled'></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -303,7 +303,7 @@
 					                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
 					                  	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
 					                </p>
-					                </el-upload>  
+					                </el-upload>
 	                            </el-form-item>
 	                             </el-col>
                         </el-row>
@@ -345,7 +345,9 @@
                     subSystem:[],//子系统
                     systemAll:[{"csty":""}],
                     relation:'',//关联
-                    relationValue:''
+                    relationValue:'',
+                    glvisibble:false,
+                    
                   },
               way:{
                 status:'',
@@ -392,7 +394,7 @@
                             picker.$emit('pick', [start, end]);
                         }
                     },
- 					{
+ {
                         text: '最近一个月',
                         onClick(picker) {
                             const end = new Date();
@@ -448,6 +450,7 @@
                     }
                   ],
                   popTxt:{
+                      'id': '',//问题ID
 			          'priperty2':'',//故障等级
 			          'relationUser': "",			//故障分析人员
 			          'description': "",				//故障描述
@@ -551,6 +554,9 @@
 		                  break;
 		                  case 4:
 		                 i.status = '已驳回'
+		                  break;
+		                  case 5:
+		                 i.status = '已关联'
 		                  break;
 		            }
                         if(i.priperty==101){
@@ -751,36 +757,38 @@
                             this.tabs.form.description = data.result.fault.description
                           switch(data.result.fault.status){
                             case 1:
-                              this.operate.status='审核中'
-                              this.way.status='审核中'
+                              this.operate.status='待审核'
+                              this.way.status='待审核'
+                              this.operate.glvisibble=true
                               break;
                             case 2:
                               this.operate.status='已完成'
                               this.way.status='已完成'
+                              this.operate.glvisibble=true
                               break;
                             case 3:
                               this.operate.status='已作废'
                               this.way.status='已作废'
+                               this.operate.glvisibble=false
                               break;
                             case 4:
                               this.operate.status='已驳回'
                               this.way.status='已驳回'
+                               this.operate.glvisibble=false
                               break;
                             case 5:
                               this.operate.status='已关联'
                               this.way.status='已关联'
+                              this.operate.glvisibble=false
                               break;
                           }
                           this.operate.sender=data.result.fault.create_USER;
                           this.way.sender=data.result.fault.create_USER;
                           this.operate.relation=data.result.technologys;
+                          
                           let arr=[];
                           if(data.result.process.result.length>0){
                             for(let i of data.result.process.result){
-//                            if(i.record_START){
-//                              let start=this.$format(i.record_START);
-//                              i.record_START= `${start.year}-${start.mouth}-${start.day}`;
-//                            }
                               arr.push(i);
                             }
                             this.$set(this.way, "information", arr);
@@ -845,12 +853,19 @@
 	      //提交bug弹窗显示
 	      shouBug(){
 	      	this.bugVisible=true
-	      	let params = new URLSearchParams();
+	      /*	let params = new URLSearchParams();
 				params.append("status",2);
 				this.$axios.post("/fault/getNo", params).then((res) => {
 					 let data = res.data;				
 						this.$set(this.popup, "id",data.id);
-				})
+				})*/
+              let params = new FormData();
+              params.append("status", 2);
+              params.append("token", localStorage.getItem("token"));
+              this.$axios.post("/fault/getNo",params).then((res) => {
+                  let data = res.data;
+                  this.popup.popTxt.id=data.id;
+              })
 	      },
 // 			提交bug表单
             subForm(){
@@ -886,8 +901,10 @@
 		        params.append("title",this.popup.popTxt.title);//标题
 		        params.append('createUser',this.popup.popTxt.createUser);//提交人
 		        params.append("type",2);//类型
-		        params.append("priperty",this.popup.popTxt.priperty2);	//故障等级
+                params.append("priperty",this.popup.popTxt.priperty2);	//故障等级
+                params.append("id",this.popup.popTxt.id);	//问题ID
 		        params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
+//		        console.log(this.popup.popTxt.id);
 	            this.$axios.post("/fault/submit", params).then((res) => {
 	                let data = res.data;
 	                if (data.code == 200) {

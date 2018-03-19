@@ -518,7 +518,6 @@
 	                this.$axios.post('/version/versionlist', params).then((res) => {
 	                	if(res.code=200){
 	                		let data = res.data.result
-	                		console.log(data);
 	                    	this.setTableData(data);
 	                	}
 	                	else{
