@@ -166,7 +166,7 @@
                             <el-table-column prop="start_TIME" label="启用时间"></el-table-column>
                             <el-table-column label="需求描述">
                             	<template slot-scope="scope">
-                            		<span @click="goneeds(scope.row)" style="color: orange;text-decoration: underline;">{{scope.row.neel_DESCRIPTION}}</span>
+                            		<span @click="goneeds($event,scope.row)" style="color: orange;text-decoration: underline;">{{scope.row.neel_DESCRIPTION}}</span>
                             	</template>
                             </el-table-column>                     	
                         </el-table>
@@ -554,15 +554,17 @@
 		        this.dialog.dialogVisible = false
 		      },
 		      //跳转到需求页面
-		      goneeds(val){
+		      goneeds(e,val){
+		          e.stopPropagation();
+		          console.log(val)
 		      	let path = "";
 		      	if(val.bs == "TECH"){
-		      		path = "/home/jsxq"
+		      		path = "技术需求"
 		      	}
 		      	if(val.bs == "PROD"){
-		      		path = "/home/ywxq"
+		      		path = "业务需求"
 		      	}
-		      	this.$go(path,{"neelId":val.neel_ID})
+		      	this.$go("","",{"neelId":val.neel_ID},path);
 		      }
         }
     }
