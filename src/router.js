@@ -124,10 +124,10 @@ let option = {
                     component: resolve => require(['./components/statistical/wttj.vue'], resolve)
                 }
             ]
-        }, {
+        }/*, {
             path: '/test',
             component: resolve => require(['./components/test.vue'], resolve)
-        }
+        }*/
 
     ]
 };

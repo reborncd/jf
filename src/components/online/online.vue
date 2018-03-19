@@ -152,10 +152,10 @@
 												<el-form-item label="重要程度">{{tabs.data_one.DemandTechnology.importance_NAME}}
 												</el-form-item>
 											</el-col>
-											<el-col :span="12">
-												<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.urgent}}</span><span>{{tabs.data_one.DemandTechnology.urgent_NAME}}</span>
-												</el-form-item>
-											</el-col>
+											<!--<el-col :span="12">-->
+												<!--<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.urgent}}</span><span>{{tabs.data_one.DemandTechnology.urgent_NAME}}</span>-->
+												<!--</el-form-item>-->
+											<!--</el-col>-->
 											<el-col :span="24">
 												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}
 												</el-form-item>
