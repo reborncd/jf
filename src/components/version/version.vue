@@ -562,7 +562,7 @@
 		      	if(val.bs == "PROD"){
 		      		path = "/home/ywxq"
 		      	}
-		      	this.$go(path,{"neelId":val.neel_ID})
+		      	this.$go("","",{"neelId":val.nell_ID},path);
 		      }
         }
     }
