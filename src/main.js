@@ -1,4 +1,4 @@
-﻿﻿import Vue from 'vue'
+﻿﻿﻿import Vue from 'vue'
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
