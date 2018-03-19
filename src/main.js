@@ -19,14 +19,6 @@ Vue.prototype.$go = function (route, query, params,name) {
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
 };
-
-//验证token返回登录----------------------------------------------------
-Vue.prototype.$goLogin = function () {
-    this.alert("登录失效，请重新登录");
-    setTimeout(() => {
-        this.$go("/login")
-    }, 2000)
-};
 //----------------------------------------------------
 //定义弹窗----------------------------------------------------
 //----------------------------------------------------
@@ -188,16 +180,14 @@ instance.interceptors.response.use(function (response) {
 
     //验证token是否失效
     if (response.data.token) {
-        console.log(response.data.token);
-        Vue.prototype.$warn("登录失效，请重新登陆");
-        Vue.prototype.$goLogin();
+        Vue.prototype.$warn("登录失效，请重新登录");
+        Vue.prototype.$go('/login');
         Vue.prototype.$maskoff();
     }
     if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff();
     }
-    console.log(response.data.code);
     if (response.data.code == 210) {
         Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
         Vue.prototype.$maskoff();
