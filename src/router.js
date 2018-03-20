@@ -122,6 +122,10 @@ let option = {
                     path: "wttj",
                     name:"问题统计",
                     component: resolve => require(['./components/statistical/wttj.vue'], resolve)
+                },{
+                    path: "xtlb",
+                    name:"系统列表",
+                    component: resolve => require(['./components/version/xtlb.vue'], resolve)
                 }
             ]
         }/*, {

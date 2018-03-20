@@ -174,7 +174,11 @@
                             <el-table-column prop="base_NEET_ID" label="需求编号" width="200"></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
-                            <el-table-column prop="neel_NAME" label="需求名称"></el-table-column>
+                            <el-table-column prop="neel_NAME" label="需求名称" width="180">
+                                <template slot-scope="scope">
+                                    <p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>
+                                </template>
+                            </el-table-column>
                             <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
                             <el-table-column prop="rriority_NAME" label="优先级" width="80"></el-table-column>
                             <el-table-column prop="state_NAME" label="状态"></el-table-column>
@@ -373,20 +377,16 @@
 
                                             <!--开发和测试的完成开始时间-->
                                             <el-col :span="12" v-if="tabs.tabsData.code_start">
-                                                <el-form-item label="开发开始时间">{{tabs.tabsData.code_start | date_y_m_d}}
-                                                </el-form-item>
+                                                <el-form-item label="开发开始时间">{{tabs.tabsData.code_start | date_y_m_d}}</el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.code_end">
-                                                <el-form-item label="开发完成时间">{{tabs.tabsData.code_end | date_y_m_d}}
-                                                </el-form-item>
+                                                <el-form-item label="开发完成时间">{{tabs.tabsData.code_end | date_y_m_d}}</el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.test_start">
-                                                <el-form-item label="测试开始时间">{{tabs.tabsData.test_start | date_y_m_d}}
-                                                </el-form-item>
+                                                <el-form-item label="测试开始时间">{{tabs.tabsData.test_start | date_y_m_d}}</el-form-item>
                                             </el-col>
                                             <el-col :span="12" v-if="tabs.tabsData.test_end">
-                                                <el-form-item label="测试完成时间">{{tabs.tabsData.test_end | date_y_m_d}}
-                                                </el-form-item>
+                                                <el-form-item label="测试完成时间">{{tabs.tabsData.test_end | date_y_m_d}}</el-form-item>
                                             </el-col>
                                             <!----------------------------------需判断部分------------------------>
 
@@ -1074,11 +1074,13 @@
                     <i slot="prefix" class="el-input__icon el-icon-search"></i>
                 </el-input>
             </div>
+            <!--左侧选择全部部门-->
             <div class="assign-wrapper" v-if="assign.left">
+                <!--正常状态下展示部门-->
                 <ul v-if="!assign.leftSearch">
-                    <li v-for="item in assign.searchData" v-if="item.users.length>0">
-                        <span class="deptTitle">{{item.dept_name}}</span>
-                        <el-checkbox-group v-model="assign.checkList">
+                    <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
+                        <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
+                        <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
                             <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
                                          class="check-item">
                                 {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
@@ -1086,6 +1088,7 @@
                         </el-checkbox-group>
                     </li>
                 </ul>
+                <!--搜索状态下不展示部门-->
                 <div v-if="assign.leftSearch">
                     <el-checkbox-group v-model="assign.checkList">
                         <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
@@ -1095,6 +1098,7 @@
                     </el-checkbox-group>
                 </div>
             </div>
+            <!--右侧选择当前部门-->
             <div class="assign-wrapper" v-if="assign.right">
                 <el-checkbox-group v-model="assign.checkList">
                     <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
@@ -1607,6 +1611,7 @@
                     rightlistdata: [],//右侧显示的数据
                     leftSearch: false,//左侧搜索出来的结构展示
                     searchData: [],//左侧特殊结构，显示出来的搜索结果存放处
+                    assignDeptIndex:"",//当前选中的部门索引
                 },
                 //拆分任务
                 split: {
@@ -2195,7 +2200,7 @@
                 this.tabs.testtask = false;//测试控制台
                 this.tabs.allSplittask = false;//所有的拆分项目详情
                 //初始化技术管理部评审
-                this.ifPing.visible = false;
+                this.clearPingData();
                 //测试进入拆分任务的提交步骤
                 this.testTask.showTaskStep = false;
                 //初始化技术经理的分析
@@ -2227,13 +2232,14 @@
             //表格后面按钮的点击事件
             tableAction(index,row,e,type){
                 this.tabs.activeTableInfo = row;
+                this.$refs.jcjs_table.setCurrentRow(row)
                 //阻止事件冒泡
                 e.stopPropagation();
                 switch (type) {
                     case "review":
                         //需求评审
                         this.handleCurrentChange(row);
-                        this.tabs.activeName = "console"
+                        this.tabs.activeName = "console";
                         break;
                     case "confrim":
                         //分配
@@ -2267,9 +2273,19 @@
                         this.tabs.tabsData.newcode = "";//新需求ID
                         this.tabs.tabsData.newchangepoint = "";//新产品功能
                         this.tabs.tabsData.newneedsname = "";//新需求描述
-                        let base = data.result.base;
-                        //--------------------------加载展示数据
+                        this.$set(this.testTask, "allBugs", []); // bug清单
+                        //开发和测试的开始完成时间
+                        this.tabs.tabsData.code_start = "";
+                        this.tabs.tabsData.code_end = "";
+                        this.tabs.tabsData.test_start = "";
+                        this.tabs.tabsData.test_end = "";
+                        //评审结果的初始化
+                        this.tabs.tabsData.pingDate = "";//评审时间
+                        this.tabs.tabsData.pingPeople = "";//评审人
+                        this.tabs.tabsData.pingResult = "";//评审结果
 
+                        //--------------------------加载展示数据
+                        let base = data.result.base;
                         this.tabs.tabsData.state_NAME = base.state_NAME;
                         this.tabs.tabsData.base_NEET_ID = base.base_NEET_ID;//需求编号
                         this.tabs.tabsData.neel_NAME = base.neel_NAME;//需求名称
@@ -2581,7 +2597,6 @@
                 this.ifPing.visible = false;
                 //判断是否可评审
                 if(base.REVIEW){
-                    this.ifPing.visible = true;
                     this.setReviewData(base);
                 }
                 //以下特殊情况不需展示到操作的下拉列表中
@@ -2814,6 +2829,8 @@
             },
             //-----------------------------------------------技术管理部审批
             setReviewData(base){
+                this.clearPingData();
+                this.ifPing.visible = true;
                 this.$set(this.ifPing,"rriorityArr",base.rriority);//优先级
                 this.$set(this.ifPing,"checksArr",base.checks);//评审结果
             },
@@ -2848,14 +2865,18 @@
                     let data =res.data;
                     if(data.code == 200){
                         this.$success("操作成功！");
-                        this.ifPing.rriority = ""
-                        this.ifPing.checks = "";
-                        this.ifPing.date = "";
-                        this.ifPing.person = "";
-                        this.ifPing.visible = false;
+                        this.clearPingData()
                         this.loadData();
                     }
                 })
+            },
+            //初始化技术管理部审批数据
+            clearPingData(){
+                this.ifPing.rriority = "";
+                this.ifPing.checks = "";
+                this.ifPing.date = "";
+                this.ifPing.person = "";
+                this.ifPing.visible = false;
             },
             //----------------------------------------------技术经理需求分析
             //开启需求分析功能
@@ -3022,8 +3043,9 @@
             //---------------------------------------------分配任务
             getAssign(){
                 let info = this.tabs.activeTableInfo;
-                this.assign.eyword = "";
-                this.assign.checkList = [];
+                this.assign.keyword = "";//初始化关键字
+                this.assign.checkList = [];//初始化选中的数据
+                this.assign.assignDeptIndex = "";//初始化选中的索引
                 this.assign.assignvisible = true;
                 let params = new URLSearchParams();
                 if (info.state_ID == 304) {
