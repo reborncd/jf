@@ -1,4 +1,4 @@
-﻿﻿﻿import Vue from 'vue'
+﻿﻿﻿﻿import Vue from 'vue'
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
@@ -18,6 +18,14 @@ Vue.prototype.$go = function (route, query, params,name) {
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
+};
+
+//验证token返回登录----------------------------------------------------
+Vue.prototype.$goLogin = function () {
+    this.alert("登录失效，请重新登录");
+    setTimeout(() => {
+        this.$go("/login")
+    }, 2000)
 };
 //----------------------------------------------------
 //定义弹窗----------------------------------------------------
@@ -133,11 +141,11 @@ let instance = axios.create({
     //baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
     //baseURL:"http://172.16.2.124:8082",//欧
-    baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+    //baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
     //baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
     //baseURL:"http://127.0.0.1:8082",
-    //baseURL:"http://192.180.4.150:8082",
+    baseURL:"http://192.180.4.150:8082",
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
@@ -180,14 +188,16 @@ instance.interceptors.response.use(function (response) {
 
     //验证token是否失效
     if (response.data.token) {
-        Vue.prototype.$warn("登录失效，请重新登录");
-        location.replace("#/login")
+        console.log(response.data.token);
+        Vue.prototype.$warn("登录失效，请重新登陆");
+        Vue.prototype.$goLogin();
         Vue.prototype.$maskoff();
     }
     if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff();
     }
+    console.log(response.data.code);
     if (response.data.code == 210) {
         Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
         Vue.prototype.$maskoff();
