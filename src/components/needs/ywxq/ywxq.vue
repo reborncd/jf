@@ -174,7 +174,11 @@
                             <el-table-column prop="work_NEET_ID" label="需求编号" width="200"></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
-                            <el-table-column prop="neel_NAME" label="需求名称"></el-table-column>
+                            <el-table-column prop="neel_NAME" label="需求名称" width = "100">
+                                <template slot-scope="scope">
+                                    <p :title="scope.row.neel_NAME" style="width:80px;">{{scope.row.neel_NAME}}</p>
+                                </template>
+                            </el-table-column>
                             <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
                             <el-table-column prop="rriority_NAME" label="优先级" width="80"></el-table-column>
                             <el-table-column prop="state_NAME" label="状态"></el-table-column>
@@ -680,10 +684,10 @@
                                             <el-table-column prop="remark" label="备注"></el-table-column>
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
-                                                    <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID == 306 && scope.row.user_NAME != '合计'"
-                                                               @click="splitCodeStart(scope.$index, scope.row)">开始
-                                                    </el-button>
+                                                    <!--<el-button size="mini" type="primary"-->
+                                                               <!--v-if="scope.row.state_ID == 306 && scope.row.user_NAME != '合计'"-->
+                                                               <!--@click="splitCodeStart(scope.$index, scope.row)">开始-->
+                                                    <!--</el-button>-->
                                                     <el-button size="mini" type="primary"
                                                                v-if="scope.row.state_ID == 307 && scope.row.start_DATE"
                                                                @click="splitCodeFinish(scope.$index, scope.row)">完成

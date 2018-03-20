@@ -33,6 +33,13 @@ td,th{vertical-align:top}
   display: block;
   clear: both;
 }
+.cell>p[title]{
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 #mask {
   display: none;
   position: fixed;
