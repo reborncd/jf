@@ -877,7 +877,7 @@
                                     <el-form label-width="100px" label-position="right">
                                         <el-row :gutter="20">
                                             <el-col :span="24" :md="24">
-                                                <div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
+                                                <div id="system" style="width:800px;height: 200px;margin: 20px 0;"></div>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -2403,23 +2403,7 @@
                         if (data.result.systemDepts && data.result.systemDepts.length > 0) {
                             this.tabs.allSplittask = true;
                             this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts);
-
-                            //实时统计数据加载
-                            let datashow = data.result.systemDepts
-                            let yaxis=[]  //y轴显示
-                            let startTime=[] //预期开始时间
-                            let nowTime=data.result.currentTime //当前时间
-                            let endTime=[] //预期结束时间
-                            let realTime=data.result.realTime   //实际完成时间
-                            for(let i of datashow){
-                                yaxis.push(i.DEPT_NAME)
-                                startTime.push(new Date(i.EXPECT_START))
-//                              nowTime.push(new Date(data.timestamp))
-                                endTime.push(new Date(i.EXPECT_END))
-                            }
-                            this.realTime(yaxis,startTime,nowTime,endTime,realTime)
-                        }
-                        else {
+                        } else {
                             this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         }
 
@@ -2485,23 +2469,29 @@
                         this.setStateAction(data.result);
 
                         //加载实时统计数据
-
+                        if(data.result.estimatedTime.length){
+                            this.realTime(data.result.estimatedTime,data.result.currentTime)
+                        }
                         this.$maskoff();
                     }
                 })
             },
             //实时统计方法
-            realTime(yaxis,startTime,nowTime,endTime,realTime) {
+            realTime(data,nowTime) {
+                console.log(data)
+                let dept = ["基础开发部"];//部门
+                let expect_START= [1521388800000];//预计开始时间
+                let expect_END = [1521993600000];//预计结束时间
+                let lastCompleteTime = 1521434190000;//完成时间
+//                for(let i of data){
+//                    dept.push(i.dept_NAME)
+//                    expect_END.push(i.expect_END)
+//                    expect_START.push(i.expect_START)
+//                }
                 let echarts = require('echarts');
                 let proBar = echarts.init(document.getElementById("system")); //实时统计
+//                let sort_fn = (a,b){return b-a};
                 proBar.clear();
-                let option = {};
-//                let realDatas=[]
-//                for(let i=0;i<realTime.length;i++ ){
-//                    let times=this.$format(realTime[i]);
-//                    times=`${times.year}-${times.mouth}-${times.day}`;
-//                    realDatas.push(times)
-//                }
                 let realDate =  {
                     name: '超出时间',
                     type: 'bar',
@@ -2512,27 +2502,19 @@
                             shadowColor: 'rgba(255, 255, 255, 0.3)',
                         }
                     },
-                    data:realTime
+                    data:""
                 };
-//                for(let i =0;i<realTime.length;i++){
-//                        if(realTime[i]>endTime && realTime[i] > nowTime){
-//                            option.series.push(realDate)
-//                        }
-//                }
-//                if(realTime>nowTime){
-//                    option.series.push(realDate)
-//                }
-                option = {
+//                let option = {};
+               let option = {
                     legend: {
                         data: ['实时统计']
                     },
                     xAxis: {
                         type: 'time'
                     },
-
                     yAxis: {
 //                        data: yaxis
-                        data:["1",2,3]
+                        data:dept
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -2547,8 +2529,7 @@
                             return res;
                         }
                     },
-                    series: [
-                        {
+                    series: [{
                             name: '开始时间',
                             type: 'bar',
                             stack: '总量',
@@ -2558,10 +2539,9 @@
                                     shadowColor: 'rgba(0, 0, 0, 0.3)',
                                 }
                             },
-                            data: startTime
-                        },
-                        {
-                            name: '预期完成时间',
+                            data: expect_START
+                        }, {
+                            name: '当前时间',
                             type: 'bar',
                             stack: '总量',
                             itemStyle: {
@@ -2572,14 +2552,26 @@
                                     shadowBlur: 20
                                 }
                             },
-                            data:endTime
+                            data:nowTime
+//                            date:1538323200000
+                        }, {
+                            name: '预期完成时间',
+                            type: 'bar',
+                            stack: '总量',
+                            itemStyle: {
+                                normal: {
+                                    color: 'blue',
+                                    barBorderRadius: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                    shadowBlur: 20
+                                }
+                            },
+                            data:expect_END
 //                            date:1538323200000
                         },
-
+//
                     ]
                 };
-
-//
                proBar.setOption(option);
             },
             //设置当前状态的下的操作
