@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import Vue from 'vue'
+﻿﻿﻿import Vue from 'vue'
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
@@ -18,14 +18,6 @@ Vue.prototype.$go = function (route, query, params,name) {
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
-};
-
-//验证token返回登录----------------------------------------------------
-Vue.prototype.$goLogin = function () {
-    this.alert("登录失效，请重新登录");
-    setTimeout(() => {
-        this.$go("/login")
-    }, 2000)
 };
 //----------------------------------------------------
 //定义弹窗----------------------------------------------------
@@ -138,11 +130,11 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-   // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
+    //baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
-    baseURL:"http://172.16.2.124:8083",//欧
-    //   baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
-//  	baseURL:"http://192.168.1.106:8080",
+    //baseURL:"http://172.16.2.124:8082",//欧
+    baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+    // baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
     //baseURL:"http://127.0.0.1:8082",
     //baseURL:"http://192.180.4.150:8082",
@@ -188,16 +180,14 @@ instance.interceptors.response.use(function (response) {
 
     //验证token是否失效
     if (response.data.token) {
-        // console.log(response.data.token);
-        Vue.prototype.$warn("登录失效，请重新登陆");
-        Vue.prototype.$goLogin();
+        Vue.prototype.$warn("登录失效，请重新登录");
+        Vue.prototype.$go('/login');
         Vue.prototype.$maskoff();
     }
     if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff();
     }
-    // console.log(response.data.code);
     if (response.data.code == 210) {
         Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
         Vue.prototype.$maskoff();
@@ -211,12 +201,12 @@ Vue.prototype.$axios = instance;
 
 //--------正则匹配
 Vue.prototype.$reg = {
-        "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
-        "en": /[a-zA-Z]/,
-        "cn": /[\u4e00-\u9fa5]/,
-        "number": /^[0-9]*$/,
-        "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
-        "en_num": /^[A-Za-z0-9]+$/,
+    "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
+    "en": /[a-zA-Z]/,
+    "cn": /[\u4e00-\u9fa5]/,
+    "number": /^[0-9]*$/,
+    "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
+    "en_num": /^[A-Za-z0-9]+$/,
 };
 new Vue({
     el: '#app',

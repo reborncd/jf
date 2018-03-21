@@ -1,30 +1,24 @@
 <style scoped>
     @import "../../../static/css/table.css";
     @import "../../../static/css/console.css";
-
     .search .el-input {
         width: auto;
     }
-
     .el-table .cell button {
         display: inline-block;
         margin: 0;
     }
-
     .el-form-item {
         margin-bottom: 10px;
     }
-
     .genzong span {
         color: #4f4f4f;
         margin: 0 8px;
     }
-
     .assgin-dialog h2 {
         margin-bottom: 10px;
         font-size: 20px;
     }
-
     .assgin-dialog .tab span {
         float: left;
         width: 50%;
@@ -33,22 +27,18 @@
         line-height: 30px;
         cursor: pointer;
     }
-
     .assgin-dialog .tab span.active {
         color: dodgerblue;
     }
-
     /*.assign-wrapper {*/
     /*height: 300px;*/
     /*overflow-y: auto;*/
     /*}*/
-
     .assign-wrapper li {
         margin-bottom: 6px;
         padding: 0 10px;
         min-height: 70px;
     }
-
     .assign-wrapper li .deptTitle {
         display: block;
         width: 100%;
@@ -58,12 +48,10 @@
         font-size: 14px;
         margin: 5px auto;
     }
-
     .assign-wrapper .check-item {
         margin: 5px 0;
         display: block;
     }
-
     .testTask_bugtable table.el-table__header th {
         background: white !important;
     }
@@ -290,8 +278,28 @@
                                                 <el-form-item label="需求描述">{{tabs.tabsData.neel_DESCRIPTION}}</el-form-item>
                                             </el-col>
 
-
+                                            <el-col :span="24">
+                                                <el-form-item label="需求文档">
+                                                    <span @click="addneeds.filevisible = true" style="cursor: pointer;color: red">点击查看</span>
+                                                </el-form-item>
+                                            </el-col>
                                              <!----------------------------------需判断部分------------------------>
+
+                                            <!---------------------------原产品改造点和产品描述-->
+                                            <el-col :span="24" v-if="tabs.tabsData.oldchangepoint" style="color: #ffa005">
+                                                <el-form-item label="原产品改造点">{{tabs.tabsData.oldchangepoint}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.tabsData.oldneedsname" style="color: #ffa005">
+                                                <el-form-item label="原需求描述">{{tabs.tabsData.oldneedsname}}</el-form-item>
+                                            </el-col>
+
+                                            <!---------------------------新产品改造点和产品描述-->
+                                            <el-col :span="24" v-if="tabs.tabsData.newchangepoint" style="color: #ffa005">
+                                                <el-form-item label="新产品改造点">{{tabs.tabsData.newchangepoint}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="24" v-if="tabs.tabsData.newneedsname" style="color: #ffa005">
+                                                <el-form-item label="新产品描述">{{tabs.tabsData.newneedsname}}</el-form-item>
+                                            </el-col>
 
                                             <!---------------------------技术管理部评审结果-->
                                             <el-col :span="12" v-if="tabs.tabsData.pingDate">
@@ -356,22 +364,6 @@
                                             <!--验收不通过-->
                                             <el-col :span="24" v-if="tabs.tabsData.fali" style="color: red">
                                                 <el-form-item label="验收不通过">{{tabs.tabsData.fali}}</el-form-item>
-                                            </el-col>
-
-                                            <!---------------------------原产品改造点和产品描述-->
-                                            <el-col :span="24" v-if="tabs.tabsData.oldchangepoint" style="color: #ffa005">
-                                                <el-form-item label="原产品改造点">{{tabs.tabsData.oldchangepoint}}</el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" v-if="tabs.tabsData.oldneedsname" style="color: #ffa005">
-                                                <el-form-item label="原需求描述">{{tabs.tabsData.oldneedsname}}</el-form-item>
-                                            </el-col>
-
-                                            <!---------------------------新产品改造点和产品描述-->
-                                            <el-col :span="24" v-if="tabs.tabsData.newchangepoint" style="color: #ffa005">
-                                                <el-form-item label="新产品改造点">{{tabs.tabsData.newchangepoint}}</el-form-item>
-                                            </el-col>
-                                            <el-col :span="24" v-if="tabs.tabsData.newneedsname" style="color: #ffa005">
-                                                <el-form-item label="新产品描述">{{tabs.tabsData.newneedsname}}</el-form-item>
                                             </el-col>
 
 
@@ -623,7 +615,34 @@
                                         </div>
                                     </el-form>
                                     <!--技术经理确认变更-->
-                                    <div class="table-list" v-if="changeInset.visible">
+                                    <div v-if="changeInset.visible">
+                                        <el-form label-width="100px" label-position="left">
+                                            <el-row :gutter="20" v-for="(item,index) in changeInset.oldSystem">
+                                                <el-col><el-form-item label="系统名">{{item}}</el-form-item></el-col>
+                                            </el-row>
+                                            <el-row :gutter="20" v-for="(_item,_index) in changeInset.systemAll">
+                                                <el-col :span="10">
+                                                    <el-form-item label="系统名">
+                                                        <el-select v-model="_item.name" placeholder="请选择">
+                                                            <el-option v-for="_item in changeInset.allsystem"
+                                                                       :label="_item.SYSTEM_NAME"
+                                                                       :value="_item.SYSTEM_NAME"></el-option>
+                                                        </el-select>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <el-input v-model="_item.version"
+                                                              placeholder="请输入版本号（格式如：v1.0 或 V1.0）"></el-input>
+                                                </el-col>
+                                                <el-col :span="2">
+                                                    <i :class="_index == 0 && changeInset.systemAll.length == 1?'el-icon-plus':_index == changeInset.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
+                                                       @click="systemEvent(_index,$event,'changeInset')"
+                                                       style="line-height: 40px;height: 40px;text-align: center;
+                                                    font-size: 20px;cursor: pointer;font-weight: bold">
+                                                    </i></el-col>
+                                            </el-row>
+                                        </el-form>
+                                        <div class="table-list">
                                         <el-table :data="changeInset.tableData" border style="width: 100%">
                                             <el-table-column prop="user_NAME" label="人员"></el-table-column>
                                             <el-table-column prop="system_NAME" label="系统名"></el-table-column>
@@ -644,6 +663,7 @@
                                         <div style="text-align: center;margin-top: 20px;">
                                             <el-button style="float: none" type="primary" @click="subChangeInset">提交</el-button>
                                         </div>
+                                    </div>
                                     </div>
                                 </div>
                             </el-tab-pane>
@@ -666,26 +686,29 @@
                                         </div>
                                         <el-table :data="split.codetask" border style="width: 100%">
                                             <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
-                                            <el-table-column prop="system_NAME" label="系统名"
-                                                             width="150"></el-table-column>
+                                            <el-table-column prop="old_SYSTEM_NAME" label="原系统名"
+                                                             width="120"></el-table-column>
+                                            <el-table-column prop="system_NAME" label="当前系统名"
+                                                             width="120"></el-table-column>
                                             <el-table-column prop="base_INFO_ID" label="任务编码"
                                                              width="200"></el-table-column>
                                             <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
                                                              label="完成日期" width="120"></el-table-column>
-                                            <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
+                                            <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120"></el-table-column>
+                                            <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120"></el-table-column>
                                             <el-table-column prop="facility_NAME" label="难易度"
                                                              width="70"></el-table-column>
-                                            <el-table-column prop="required_TIME" label="预计用时（小时）"></el-table-column>
-                                            <el-table-column prop="actual_TIME" label="实际用时（小时）"></el-table-column>
+                                            <el-table-column prop="required_TIME" label="预计用时（小时）" width="100"></el-table-column>
+                                            <el-table-column prop="actual_TIME" label="实际用时（小时）" width="100"></el-table-column>
                                             <el-table-column prop="remark" label="备注"></el-table-column>
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
+                                                    <!--<el-button size="mini" type="primary"-->
+                                                               <!--v-if="scope.row.state_ID == 306 && scope.row.user_NAME != '合计'"-->
+                                                               <!--@click="splitCodeStart(scope.$index, scope.row)">开始-->
+                                                    <!--</el-button>-->
                                                     <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID == 306 && scope.row.user_NAME != '合计'"
-                                                               @click="splitCodeStart(scope.$index, scope.row)">开始
-                                                    </el-button>
-                                                    <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID == 307 && scope.row.start_DATE"
+                                                               v-if="scope.row.state_ID == 307"
                                                                @click="splitCodeFinish(scope.$index, scope.row)">完成
                                                     </el-button>
                                                     <span v-if="scope.row.state_ID == 319"
@@ -722,8 +745,11 @@
                                             <input type="file" @change="uploadModel($event,'TEST')"
                                                    style="position: absolute;width: 104px;height: 28px;opacity: 0;left: 0;top: 0;">
                                         </div>
-                                        <el-button type="primary" size="mini"
+                                        <el-button type="primary" size="mini" style="margin-left: 0;"
                                                    @click="showTestReportUpload">上传测试结果</el-button>
+                                        <!--bug清单-->
+                                        <el-button type="primary" size="mini"
+                                                   @click="showTestAllBug">BUG清单</el-button>
                                         <!--测试的拆分任务-->
                                         <div class="testTask-wrapper">
                                             <div class="clear">
@@ -742,25 +768,25 @@
                                                     <el-table-column prop="base_INFO_ID" label="任务编码"
                                                                      width="200"></el-table-column>
                                                     <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
-                                                                     label="完成日期"></el-table-column>
-                                                    <el-table-column prop="responsible_MODULE"
-                                                                     label="负责模块"></el-table-column>
+                                                                     width="120" label="完成日期"></el-table-column>
+                                                    <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120"></el-table-column>
+                                                    <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120"></el-table-column>
                                                     <el-table-column prop="facility_NAME" label="难易度"
                                                                      width="70"></el-table-column>
-                                                    <el-table-column prop="required_TIME"
+                                                    <el-table-column prop="required_TIME"  width="100"
                                                                      label="预计用时（小时）"></el-table-column>
-                                                    <el-table-column prop="actual_TIME"
+                                                    <el-table-column prop="actual_TIME"  width="100"
                                                                      label="实际用时（小时）"></el-table-column>
                                                     <el-table-column prop="remark" label="备注"></el-table-column>
                                                     <el-table-column label="操作" width="180">
                                                         <template slot-scope="scope">
                                                             <div style="text-align: center">
-                                                                <el-button size="mini" type="primary"
-                                                                           style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 308"
-                                                                           @click="testTaskStart(scope.$index, scope.row)">
-                                                                    开始
-                                                                </el-button>
+                                                                <!--<el-button size="mini" type="primary"-->
+                                                                           <!--style="float: none;display: inline-block"-->
+                                                                           <!--v-if="scope.row.state_ID == 308"-->
+                                                                           <!--@click="testTaskStart(scope.$index, scope.row)">-->
+                                                                    <!--开始-->
+                                                                <!--</el-button>-->
                                                                 <el-button size="mini" type="primary"
                                                                            style="float: none;display: inline-block"
                                                                            @click="goTestTask(scope.$index, scope.row)"
@@ -787,9 +813,9 @@
                                     <div v-if="testTask.showTaskStep">
                                         <div class="table-list">
                                             <div class="clear" style="margin-bottom: 10px;">
-                                                <el-button size="mini" type="primary" style="float: left;"
-                                                           @click="loadbuglist">问题汇总
-                                                </el-button>
+                                                <!--<el-button size="mini" type="primary" style="float: left;"-->
+                                                           <!--@click="loadbuglist">问题汇总-->
+                                                <!--</el-button>-->
                                                 <el-button size="mini" type="primary" style="float: right;"
                                                            @click="testTask.addvisible = true">新增
                                                 </el-button>
@@ -836,7 +862,7 @@
                                                   highlight-current-row
                                                   @row-click="splitTaskClick">
                                             <el-table-column prop="DEPT_NAME" label="部门"></el-table-column>
-                                            <el-table-column prop="PROJECT" label="任务编码"></el-table-column>
+                                            <el-table-column prop="PROJECT" label="项目编码"></el-table-column>
                                             <el-table-column prop="SYSTEM_NAME" label="涉及系统"></el-table-column>
                                             <el-table-column prop="allTime" label="实际用时（小时）"
                                                              width="100"></el-table-column>
@@ -886,7 +912,7 @@
             </div>
         </el-card>
         <!--新增-->
-        <el-dialog title="新增" :visible="addneeds.addvisible" width="80%"
+        <el-dialog :title="addneeds.addform.title" :visible="addneeds.addvisible" width="80%"
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-row :md="24" :gutter="20">
@@ -1046,7 +1072,22 @@
                         </el-form-item>
                     </el-col>
                     <!--需求描述-->
-
+                    <!--上传需求文档-->
+                    <el-col :span="24" :md="24">
+                        <el-form-item label="上传需求文档">
+                            <div style="display: inline-block;overflow: hidden;
+                                            vertical-align: middle;position: relative;">
+                                <el-button type="primary" size="mini">上传需求文档</el-button>
+                                <input type="file" @change="uploadneeds($event)"
+                                       style="position: absolute;width: 104px;height: 28px;opacity: 0;left: 0;top: 8px;">
+                            </div>
+                            <p v-for ="(item,index) in addneeds.uploadFiles">{{item.name}}
+                                <i style="margin-left: 10px;cursor: pointer;color: red;"
+                                   @click="addneeds.fileIds.splice(index,1);addneeds.uploadFiles.splice(index,1)" class="el-icon-close"></i>
+                            </p>
+                        </el-form-item>
+                    </el-col>
+                    <!--上传需求文档-->
                 </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -1132,7 +1173,7 @@
                 </el-form-item>
                 <el-form-item label="人员">
                     <el-select v-model="split.person" placeholder="请选择人员"
-                               style="width: 100%">
+                               style="width: 100%" @change="splitPersonChangeEvent($event)">
                         <el-option v-for="item in split.personlist" :label="item.user_NAME"
                                    :value="item.user_ID+'-'+item.user_NAME"></el-option>
                     </el-select>
@@ -1304,20 +1345,21 @@
                     <el-table-column prop="assignor_NAME" label="提交人"></el-table-column>
                     <el-table-column prop="desired_RESULT" label="预期效果"></el-table-column>
                     <el-table-column prop="problem_DESCRIPTION" label="问题描述"></el-table-column>
-                    <el-table-column prop="assignor_PERSON_NAME" label="指派人"></el-table-column>
+                    <el-table-column prop="first_PERSON_NAME" label="指派人"></el-table-column>
                     <el-table-column prop="user_NAME" label="完成人"></el-table-column>
                     <el-table-column label="操作" width="160">
                         <template slot-scope="scope">
                             <div style="text-align: center">
                                 <el-button size="mini" type="primary" style="display: inline-block;float: none"
-                                           v-if="scope.row.bug_STATE !=1"
+                                           v-if="scope.row.bug_STATE ==0"
                                            @click="codeBUGAction(scope.$index, scope.row,'完成')">完成
                                 </el-button>
                                 <el-button size="mini" type="danger" style="display: inline-block;float: none"
-                                           v-if="scope.row.bug_STATE !=1"
+                                           v-if="scope.row.bug_STATE ==0"
                                            @click="codeBUGAction(scope.$index, scope.row,'转接')">转接
                                 </el-button>
-                                <span v-if="scope.row.bug_STATE ==1" style="color: green">已完成</span>
+                                <span v-if="scope.row.bug_STATE == 1" style="color: green">已提交</span>
+                                <span v-if="scope.row.bug_STATE == 2" style="color: green">已关闭</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -1351,6 +1393,14 @@
                     <el-table-column prop="problem_DESCRIPTION" label="问题描述"></el-table-column>
                     <el-table-column prop="assignor_PERSON_NAME" label="指派人"></el-table-column>
                     <el-table-column prop="user_NAME" label="完成人"></el-table-column>
+                    <el-table-column label="状态" width="160">
+                        <template slot-scope="scope">
+                            <div style="text-align: center">
+                                <span v-if="scope.row.bug_STATE == 0" style="color: red">处理中</span>
+                                <span v-if="scope.row.bug_STATE == 2" style="color: green">已关闭</span>
+                            </div>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </div>
             <div slot="footer" class="dialog-footer">
@@ -1473,6 +1523,21 @@
                 </el-table>
             </div>
         </el-dialog>
+        <!--需求文档的下载-->
+        <el-dialog title="需求文档" :visible="addneeds.filevisible" width="60%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
+            <div class="table-list">
+                <el-table :data="addneeds.hasUploadFile" border style="width: 100%">
+                    <el-table-column prop="name" label="文件名"></el-table-column>
+                    <!--<el-table-column prop="size_STRING" label="大小" width="100"></el-table-column>-->
+                    <el-table-column label="操作" width="80">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="downloadModel(scope.row)">下载</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
         <!--测试报告-->
         <el-dialog :title="testReport.activeReportTitle" :visible="testReport.modelvisible" width="60%"
                    append-to-body modal-append-to-body
@@ -1546,6 +1611,112 @@
                 </el-table>
             </div>
         </el-dialog>
+        <!--编辑原拆分任务-->
+        <el-dialog title="编辑拆分任务人员" :visible="changeInset.splitaddvisible" width="60%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
+            <el-form label-width="100px">
+                <el-form-item label="任务编码">
+                   {{changeInset.taskcode}}
+                </el-form-item>
+                <el-form-item label="系统名">
+                    <el-col :span="24">
+                        {{changeInset.system_NAME?'开发任务':'测试任务'}}
+                        <el-select style="margin-left: 20px;" v-model="changeInset.choosesysyem"
+                                   placeholder="请选择" v-if="changeInset.system_NAME">
+                            <el-option v-for="item in changeInset.systemAll" :label="item.name+item.version"
+                                       clearable :value="item.name+item.version"></el-option>
+                        </el-select>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="人员">
+                   {{changeInset.person}}
+                </el-form-item>
+                <el-form-item label="完成日期">
+                    <el-date-picker type="date" placeholder="选择日期" v-model="changeInset.finishdate"
+                                    style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="负责模块">
+                    <el-input v-model="changeInset.model" placeholder="请输入负责模块"></el-input>
+                </el-form-item>
+                <el-form-item label="难易度" v-if="changeInset.system_NAME">
+                    <el-select v-model="changeInset.levelchoosen" placeholder="请选择难易度"
+                               style="width: 100%">
+                        <el-option v-for="item in changeInset.level" :label="item.FACILITY_NAME"
+                                   :value="item.FACILITY_ID+'-'+item.FACILITY_NAME"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="预计用时">
+                    <el-col :span="24">
+                        <el-input v-model="changeInset.usetime" placeholder="请输入预计用时（小时）"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="实际用时用时">
+                    <el-col :span="24">
+                        <el-input v-model="changeInset.truetime" placeholder="请输入预计用时（小时）"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="changeInset.splitaddvisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="changeInsetPersonSub" size="mini">确定</el-button>
+            </div>
+        </el-dialog>
+        <!--测试指派bug给开发-->
+        <el-dialog title="请选择指派人员" :visible="testTask.rejectvisible" width="40%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
+            <el-form label-width="100px">
+                <el-form-item label="原因">
+                    <el-input v-model="testTask.rejectReason" placeholder="请填写不通过原因"></el-input>
+                </el-form-item>
+                <el-form-item label="分配人员">
+                    <el-select v-model="testTask.assignPerson" placeholder="请选择" style="width: 100%">
+                        <el-option-group v-for="group in testTask.assignArr" :label="group.dept_name">
+                            <el-option
+                                    v-for="item in group.users"
+                                    :label="item.user_NAME+'——'+(item.role_NAME?item.role_NAME:'')"
+                                    :value="item.user_ID+','+item.user_NAME">
+                            </el-option>
+                        </el-option-group>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="testTask.rejectvisible = false" size="mini">取 消</el-button>
+                <el-button type="primary" @click="doTestAssignBug" size="mini">确定</el-button>
+            </div>
+        </el-dialog>
+        <!--测试的bug清单-->
+        <el-dialog title="BUG清单" :visible="testTask.allbugvisible" width="80%"
+                   append-to-body modal-append-to-body :before-close="closeDialog">
+            <div class="table-list">
+                <el-table :data="testTask.allbuglist" border style="width: 100%">
+                    <el-table-column prop="base_BUG_ID" label="编号" width="190"></el-table-column>
+                    <el-table-column prop="start_DATE" label="提交日期" width="110"></el-table-column>
+                    <el-table-column prop="start_TIME" label="提交时间"></el-table-column>
+                    <el-table-column prop="assignor_NAME" label="提交人"></el-table-column>
+                    <el-table-column prop="desired_RESULT" label="预期效果"></el-table-column>
+                    <el-table-column prop="problem_DESCRIPTION" label="问题描述"></el-table-column>
+                    <el-table-column prop="first_PERSON_NAME" label="指派人"></el-table-column>
+                    <el-table-column prop="user_NAME" label="完成人"></el-table-column>
+                    <el-table-column label="操作" width="160">
+                        <template slot-scope="scope">
+                            <div style="text-align: center">
+                                <el-button size="mini" type="primary" style="display: inline-block;float: none"
+                                           v-if="scope.row.bug_STATE ==1"
+                                           @click="testBUGAction(scope.$index, scope.row,'关闭')">关闭
+                                </el-button>
+                                <el-button size="mini" type="danger" style="display: inline-block;float: none"
+                                           v-if="scope.row.bug_STATE ==1"
+                                           @click="testBUGAction(scope.$index, scope.row,'激活')">激活
+                                </el-button>
+                                <span v-if="scope.row.bug_STATE == 0" style="color: red">处理中</span>
+                                <span v-if="scope.row.bug_STATE == 2" style="color: green">已关闭</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1554,10 +1725,14 @@
             return {
                 //新增需求
                 addneeds: {
+                    filevisible:false,//需求文档的弹窗
                     notAllowChooseType: false,//是否能修改需求类型
                     addif:false,//新增按钮的判断
                     addvisible: false ,
-                    addType: '',//判断性质呢过类型，add 为重新新增，change 为新建变更 changeinset 为需求内变更,edit表示被驳回后编辑
+                    addType: "",//判断性质呢过类型，add 为重新新增，change 为新建变更 changeinset 为需求内变更,edit表示被驳回后编辑
+                    uploadFiles:[],//上传的文件
+                    fileIds:[],//上传后返回的ID
+                    hasUploadFile:[],//上传后的回显
                     addform: {
                         "sjxt": "",//涉及系统
                         "oldcode": "",//原需求编号
@@ -1755,8 +1930,20 @@
                     buglistTableData: [],//问题汇总的信息
                     BUGActiveData: [],//选中的待分配的bug
                     assignvisible: false,//分配给人员弹窗
+
+
+                    //------------------------测试指派bug给开发人员--------------------
+                    rejectvisible:false,//分配bug的弹窗
+                    rejectReason:"",//不通过原因
                     assignArr: [],//可以分配的人员的数组
                     assignPerson: "",//分配给人员的信息
+                    test_code:"",//步骤ID
+                    step_index:"",//当前步骤的索引
+                    except:"",//预期效果
+                    //-------------------------测试的bug清单------------------------
+                    allbuglist:[],//所有bug的数据
+                    allbugvisible:false,
+
                     codeBUGlistvisible: false,//展示开发人员的bug的弹窗
                     codeBUGData: [],//开发人员的BUG的数据
                     assignvisible_code: false,//开发转接人员的弹窗
@@ -1829,8 +2016,24 @@
                 },
                 //需求内变更确认
                 changeInset:{
+                    index:"",//当前选择的索引
+                    splitaddvisible:false,
                     visible :false,
                     tableData:[],//表格数据
+                    allsystem:[],//可选择的现有的子系统
+                    oldSystem:[],//之前选择的系统
+                    systemAll: [{"name":"","version":""}],//所有选择的系统集合
+                    level:[],//难易度
+                    system_NAME:"",//系统名
+                    choosesysyem:"",//选择的系统
+                    finishdate:"",//完成日期
+                    model:"",//负责模块
+                    person:"",//人员
+                    levelchoosen:"",//选择的难易度
+                    taskcode:"",//任务编码
+                    usetime:"",//预计用时
+                    truetime:"",//实际用时
+                    subData:[],//提交的变更的信息
                 }
             }
         },
@@ -1996,7 +2199,25 @@
                         this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
                         this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
+                        this.addneeds.addform.title = "新增";
                         this.addneeds.addvisible = true;
+                        this.$maskoff();
+                    }
+                })
+            },
+            //上传需求文档
+            uploadneeds(e){
+                this.$maskin();
+                let file = e.target.files[0];
+                let params = new FormData();
+                params.append("token",localStorage.getItem("token"));
+                params.append("file",file);
+                this.$axios.post("/base/uploadNell",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.$success("上传成功！");
+                        this.addneeds.uploadFiles.push(file);
+                        this.addneeds.fileIds.push(data.result.id);
                         this.$maskoff();
                     }
                 })
@@ -2113,6 +2334,7 @@
                 params.append("ASCRIPTION", this.addneeds.addform.attribution);//需求划分归属
                 params.append("PRDUCT_LINE", this.addneeds.addform.productline);//涉及产品线
                 params.append("BACKGROUND", this.addneeds.addform.reform);//需求背景
+                params.append("attachmentId", this.addneeds.fileIds);//上传的文件
                 //------------------新增
                 //加急的判断
                 if (this.addneeds.addform.jiaji) {
@@ -2128,7 +2350,7 @@
                 }else if(this.addneeds.addType == "changeinset"){
                     //需求内变更
                     url = "/base/innerUpdate";
-                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
+//                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
                 }else if(this.addneeds.addType == "edit"){
                     //修改编辑
                     url = "/base/updateBaseByApply";
@@ -2151,6 +2373,8 @@
                 for (let i in this.addneeds.addform) {
                     this.addneeds.addform[i] = "";
                 }
+                this.$set(this.addneeds,"fileIds",[]);//上传后的ID
+                this.$set(this.addneeds,"uploadFiles",[]);//上传后的ID
             },
             //根据日期搜索
             searchByDate(){
@@ -2189,6 +2413,10 @@
                 this.testReport.visible = false;//上传测试报告的弹窗
                 this.testReport.modelvisible = false;//测试的环境报告弹窗
                 this.split.oldTaskvisible = false;//原拆分任务的弹窗
+                this.changeInset.splitaddvisible = false;//编辑查分任务的弹窗
+                this.testTask.rejectvisible = false;//测试指派bug的弹窗
+                this.testTask.allbugvisible = false;//测试的bug清单弹窗
+                this.addneeds.filevisible = false;//上传需求文档的弹窗
             },
             //----------------------------------点击表格列表展示控制台
             //初始化操作
@@ -2214,6 +2442,15 @@
                 //关闭确认需求的表格
                 this.changeInset.visible = false;
             },
+            //初始化操作台的视图
+            resetConsoleVisible(){
+                this.split.splitvisible = false;//拆分任务
+                this.ifPing.visible = false;//技术管理部评审
+                this.hang.hangvisible = false;//挂起操作
+                this.review.reviewvisible = false;//技术经理分析需求
+                this.changeInset.visible = false;//技术经理确认变更
+            },
+            //表格点击时间
             handleCurrentChange(val){
                 //点击时初始化操作
                 this.$maskin();
@@ -2323,6 +2560,10 @@
                             this.tabs.tabsData.pingResult = base.check_TYPE;//评审结果
                         }
 
+                        //---------------------------需求文档的判断-----------------
+                        if(data.result.nellFiles && data.result.nellFiles.length){
+                            this.$set(this.addneeds,"hasUploadFile",data.result.nellFiles);
+                        }
 
                         //----------------------判断开发和测试控制台的加载--------------
                         if(data.result.codeInfos){
@@ -2440,13 +2681,14 @@
                         this.tabs.tabsData.fali =
                             base.fali ? base.fali : "";
 
+
                         //----------------------新建变更的判断
-                        if(base.base_NEET_FID){
+                        if(base.old_PRODUCT_FUNCTION ||  base.old_NEEL_DESCRIPTION){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
-                            this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
-                            this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
+//                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
+                            this.tabs.tabsData.oldchangepoint = base.old_PRODUCT_FUNCTION;//原产品改造点
+                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//原需求描述
                         }
 
                         //当前是被变更的需求信息
@@ -2633,10 +2875,12 @@
                         break;
                     case "ASSIGN":
                         //分配任务
+                        this.resetConsoleVisible();
                         this.getAssign();
                         break;
                     case "SPLIT":
                         //拆分任务
+                        this.resetConsoleVisible();
                         this.splitTask();
                         break;
                     case "NEWUPDATE":
@@ -2645,6 +2889,7 @@
                         break;
                     case "INNERUPDATE":
                         //需求内变更
+                        this.resetConsoleVisible();
                         this.newchange("changeinset");
                         break;
                     case "DRAW":
@@ -2660,21 +2905,24 @@
                         this.editNeed();
                         break;
                     case "SIGN":
-                        //挂起/恢复操作
-                        this.split.splitvisible = false;//关闭掉拆分任务控制台
+                        //转接/挂起/恢复操作
+                        this.resetConsoleVisible();
                         this.loadHangData();
                         break;
                     case "PERSONCHECK":
                         //技术经理需求分析
+                        this.resetConsoleVisible();
                         this.beginreview();
                         break;
                     case "CONFRIMUPDATE":
                         //技术经理确认变更
+                        this.resetConsoleVisible();
                         this.doChangeInset();
                         break;
                 }
             },
             //------------------------------------------操作台的具体事件---------------------------
+
             //---------------------------------------------编辑操作
             editNeed(){
                 this.$maskin();
@@ -2714,6 +2962,16 @@
                         this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
                         this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
                         this.addneeds.addType = "edit";//当前是编辑状态
+                        this.addneeds.addform.title = "编辑需求";
+                        let fileIds = [];//上传的文件ID
+                        console.log(data.result.nellFiles)
+                        if(data.result.nellFiles && data.result.nellFiles.length){
+                            for(let i of data.result.nellFiles){
+                                fileIds.push(i.id);
+                            }
+                            this.$set(this.addneeds,"uploadFiles",data.result.nellFiles);
+                            this.$set(this.addneeds,"fileIds",fileIds);
+                        }
                         //显示弹窗
                         this.addneeds.addvisible = true;
                         this.$maskoff();
@@ -3002,7 +3260,7 @@
                     })
                 })
             },
-            //新建变更和需求内变更
+            //----------------------------------新建变更和需求内变更
             newchange(type){
                 this.$maskin();
                 if(type=="change"){
@@ -3017,8 +3275,7 @@
                     if(data.code == 200){
                         let base = data.result.base;
                         this.addneeds.addform.sxname = data.result.USERNAME;//产品提出人
-                        this.addneeds.addform.oldcode = base.base_NEET_ID;
-                        this.addneeds.addform.code = data.result.BASE_NEET_ID;//当前的新需求ID
+                        this.addneeds.addform.code = base.base_NEET_ID;//当前的新需求ID
                         this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts);//来源部门数组
                         this.$set(this.addneeds.addform, "zhongyaochegnduArr", data.result.importance);//重要程度
                         this.$set(this.addneeds.addform, "levelArr", data.result.priority);//优先级
@@ -3028,17 +3285,43 @@
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
                         if(type=="changeinset"){
                             //需求内变更需展示
-                            this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
-                            this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+//                            this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
+//                            this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
                         }else{
-                            //新建变更无需展示
+                            //新建变更展示原需求编号
+                            this.addneeds.addform.oldcode = base.base_NEET_ID;
                             this.addneeds.addform.oldgongneng = "";
                             this.addneeds.addform.oldneedsname = "";
                         }
+                        this.showOldData(base)
                         this.addneeds.addvisible = true;
                         this.$maskoff();
                     }
                 })
+            },
+            //需求内变更的回显操作
+            showOldData(info){
+                this.addneeds.addform.code = info.base_NEET_ID;//需求编号
+                this.addneeds.addform.name = info.neel_NAME;//需求名称
+                this.addneeds.addform.needstype = info.type;//需求类型
+                this.addneeds.addform.resulttypeArr = info.result;//成果类型
+                this.addneeds.addform.resulttype = info.result;//成果类型
+                this.addneeds.addform.affect = info.influece;//需求影响面
+                this.addneeds.addform.level = info.rriority;//优先级评定
+                this.addneeds.addform.attribution = info.ascription;//需求划分归属
+                this.addneeds.addform.productline = info.prduct_LINE;//涉及产品线
+                this.addneeds.addform.shenqingdate = new Date(info.start_DATE);//申请日期
+                this.addneeds.addform.designdate = new Date(info.end_DATE);//期望上线日期
+                this.addneeds.addform.fromdeptId = parseInt(info.dept_ID);//需求提出部门
+                this.fromdeptchange(info.dept_ID);
+                this.addneeds.addform.fromdeptroleId = info.user_ID;//需求提出人
+                this.addneeds.addform.sxname = info.apply_NAME;//产品负责人
+                this.addneeds.addform.zhongyaochegndu = info.importance;//重要程度
+                this.addneeds.addform.jiaji = info.urgent?"1":"0";//是否加急
+                this.addneeds.addform.jiajireason = info.urgent;//加急原因
+                this.addneeds.addform.reform = info.background;//需求背景
+                this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
+                this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
             },
             //---------------------------------------------分配任务
             getAssign(){
@@ -3178,32 +3461,37 @@
                 }
             },
             //新增涉及系统
-            systemEvent(index, e){
+            systemEvent(index, e,type){
+                //判断当前是需求内变更的新增系统还是拆分任务的新增系统
+                let origin = this.split;
+                if(type == 'changeInset'){
+                    origin = this.changeInset
+                }
                 let className = e.target.className;
                 if (className == "el-icon-plus") {
                     //当期是新增操作
-                    if (this.split.systemAll[index].name == "") {
+                    if (origin.systemAll[index].name == "") {
                         this.$warn("请选择系统");
                         return;
                     }
-                    if (this.split.systemAll[index].version == "") {
+                    if (origin.systemAll[index].version == "") {
                         this.$warn("请填写版本号");
                         return;
                     }
-                    let  v = this.split.systemAll[index].version.slice(0,1)
+                    let  v = origin.systemAll[index].version.slice(0,1);
                     if (v != "v" && v !="V") {
                         this.$warn("版本号格式有误");
                         return;
                     }
-                    this.split.systemAll.push({"name": "", "version": ""})
+                    origin.systemAll.push({"name": "", "version": ""})
                 } else {
                     //当前是删除操作
-                    this.split.systemAll.splice(index, 1)
+                    origin.systemAll.splice(index, 1)
                 }
             },
             //查分任务新增人员弹窗
             addsplitperson(){
-                let systemChooseArr = this.split.systemAll
+                let systemChooseArr = this.split.systemAll;
                 if (systemChooseArr.length != 1) {
                     if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
                         this.split.systemAll.pop()
@@ -3222,6 +3510,16 @@
                         this.split.taskcode = data.result;
                     }
                 })
+            },
+            //选择拆分任务人员变化时判断该人员是否被分配过任务
+            splitPersonChangeEvent(){
+              let person = this.split.person;
+              let base_id  = this.tabs.activeTableInfo.base_NEET_ID;
+              console.log(person)
+                let params = new URLSearchParams();
+                params.append("USER_ID",person.split("-")[0]);
+                params.append("BASE_ID",base_id);
+              this.$axios.post("/base/spiltCheck",params)
             },
             //拆分任务新增人员操作
             splitSub(){
@@ -3261,10 +3559,10 @@
                 }
                 let end_data = this.$format(new Date(this.split.finishdate));
                 let obj = {
-                    BASE_INFO_ID: this.split.taskcode,
-                    USER_NAME: this.split.person.split("-")[1],
-                    SYSTEM_NAME: this.split.choosesysyem,
-                    RESPONSIBLE_MODULE: this.split.model,
+                    BASE_INFO_ID: this.split.taskcode,//任务编号
+                    USER_NAME: this.split.person.split("-")[1],//人名
+                    SYSTEM_NAME: this.split.choosesysyem,//选择的系统
+                    RESPONSIBLE_MODULE: this.split.model,//负责模块
                     FACILITY_ID: this.split.splitradio != 1?
                         this.split.levelchoosen.split("-")[0]:"",//难度ID
                     FACILITY_NAME: this.split.splitradio != 1?
@@ -3277,7 +3575,7 @@
                 this.split.names.push(this.split.person.split("-")[1]);
                 this.split.tableData.push(obj);
                 this.split.splitaddvisible = false;
-                this.clearSplitAddPerson()
+                this.clearSplitAddPerson();
             },
             //拆分任务删除人员操作
             splitDelete(index){
@@ -3295,6 +3593,8 @@
                 this.split.taskcode = "";//清空任务编码
                 this.split.person = "";//清空选择的人员
                 this.split.usetime = "";//清空预计用时
+                this.$set(this.split,"ids",[]);
+                this.$set(this.split,"names",[]);
             },
             //提交拆分任务结果
             splitSubmit(){
@@ -3688,24 +3988,92 @@
             },
             //测试不通过
             testTaskNotAllow(val, index){
-                this.prompt("不通过", "请填写不通过原因", ({value}) => {
-                    let text = {value}.value;
-                    if (!text) {
-                        this.$warn("请填写不通过原因");
-                        return;
+                console.log(val)
+                console.log(index)
+                this.testTask.rejectReason = "";
+                this.testTask.assignPerson = "";
+                this.testTask.except = val.TEST_EXPECT ,//预期效果
+                this.testTask.test_code = val.TEST_ID;//步骤ID
+                this.testTask.step_index = index;//步骤ID
+                let params = new URLSearchParams();
+                this.$axios.post("/base/queryPerson",params).then((res)=>{
+                    let data =res.data;
+                    if(data.code == 200){
+                        let result = data.result.depts;
+                        this.$set(this.testTask,"assignArr", result);
+                        this.testTask.rejectvisible = true;
                     }
-                    let params = new URLSearchParams();
-                    params.append("TEST_STATE", 0);
-                    params.append("TEST_DESC", text);
-                    params.append("TEST_ID", val.TEST_ID);
-                    this.$axios.post("/base/updateTestRecord", params).then((res) => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            this.$success("操作成功！");
-                            this.$set(this.testTask.tableData[index], "TEST_STATE", 0);
-                            this.$maskoff();
-                        }
-                    })
+                });
+            },
+            //测试分配给开发bug
+            doTestAssignBug(){
+                let person = this.testTask.assignPerson;
+                if(!this.testTask.rejectReason){
+                    this.$warn("请填写不通过原因");
+                    return;
+                }
+                if(!person){
+                    this.$warn("请选择人员");
+                    return;
+                }
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);//需求ID
+                params.append("TEST_ID",this.testTask.test_code);//任务ID
+                params.append("PERSON_ID",person.split(",")[0]);//人员ID
+                params.append("PERSON_NAME",person.split(",")[1]);//人员姓名
+                params.append("TEST_DESC",this.testTask.rejectReason);//理由
+                params.append("TEST_EXPECT",this.testTask.except);//预期效果
+                params.append("TEST_STATE", 0);//表示指派bug
+                this.$axios.post("/base/updateTestRecord",params).then((res)=>{
+                    let data =res.data;
+                    if(data.code == 200){
+                        this.$success("操作成功！");
+                        this.testTask.rejectvisible = false;
+                        console.log(this.testTask.step_index)
+                        console.log(this.testTask.tableData)
+                        this.$set(this.testTask.tableData[this.testTask.step_index], "TEST_STATE", 2);
+                        this.$maskoff();
+                        this.clearAssignBug();//清除选择的数据
+                    }
+                })
+            },
+            //清除选择的人员
+            clearAssignBug(){
+                this.testTask.rejectReason = "";//不通过原因
+                this.testTask.assignPerson = "";//分配给人员的信息
+                this.testTask.test_code = "";//步骤ID
+                this.testTask.step_index = "";//当前步骤的索引
+                this.testTask.except = "";//预期效果
+            },
+            //测试的bug清单
+            showTestAllBug(){
+                let params = new URLSearchParams();
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/queryBugByTest",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.testTask.allbugvisible = true;
+                        this.$set(this.testTask,"allbuglist",data.result.bugs)
+                    }
+                })
+            },
+            //测试的bug操作
+            testBUGAction(index,row,type){
+                console.log(index)
+                console.log(row)
+                console.log(type)
+                this.$maskin();
+                let bugState = type == "激活"?0:2;
+                let params = new URLSearchParams();
+                params.append("BUG_ID",row.base_BUG_ID);
+                params.append("BUG_STATE",bugState);
+                this.$axios.post("/base/updateBugStateByTest",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.showTestAllBug();//重新加载bug清单
+                        this.$maskoff();
+                    }
                 })
             },
             //问题汇总
@@ -3842,18 +4210,29 @@
             },
             //技术经理确认变更
             doChangeInset(){
-               this.$maskin();
+                this.$maskin();
                 let params = new URLSearchParams();
-                params.append("BASE_ID",this.tabs.tabsData.oldcode);
-                this.$axios.post("/base/querySplitInfo",params).then((res)=>{
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/confrimInnerCheck",params).then((res)=>{
                     let data= res.data;
                     if(data.code == 200){
                         this.changeInset.visible = true;
-                        let arr = data.result;
+                        let arr = data.result.oldInfos;
                         for(let i of arr){
                             i["ACTUAL_TIME"] = 0;
                         }
-                        this.$set(this.changeInset,"tableData",data.result);
+                        //回显
+//                        this.$set(this.changeInset,"oldSystem",data.result.oldSystem);//之前选择的系统
+                        this.$set(this.changeInset,"tableData",data.result.oldInfos);//原拆分任务
+                        for(let i of data.result.oldSystem){
+                            let obj = {
+                                "name":i.indexOf("V")== -1?i.split("v")[0]:i.split("V")[0],
+                                "version":i.indexOf("V")== -1?'v'+i.split("v")[1]:'V'+i.split("V")[1]
+                            };
+                            this.changeInset.systemAll.unshift(obj)
+                        }
+                        this.$set(this.changeInset,"allsystem",data.result.system);//可选择的所有系统
+                        this.$set(this.changeInset,"level",data.result.facility);//难易度
                         this.$maskoff();
                     }
                 })
@@ -3864,34 +4243,92 @@
                 let data = this.$format(row.end_DATE);
                 return `${data.year}-${data.mouth}-${data.day}`
             },
-            //编辑操作
+            //编辑回显操作
             editChangeInset(index,row){
-                this.prompt("添加实际用时","请添加实际用时",(val)=>{
-                    if(!val.value){
-                        this.$warn("请填写实际用时");
-                        return;
-                    }
-                    if(!this.$reg.number.match(val.value)){
-                        this.$warn("实际用时格式不正确");
-                        return;
-                    }
-                    this.$set(this.changeInset.tableData[index],"ACTUAL_TIME",val.value);
-                })
+                let length = this.changeInset.systemAll.length;
+                if(this.changeInset.systemAll[length-1]["version"] == "" ||
+                    this.changeInset.systemAll[length-1]["name"] == ""){
+                    this.changeInset.systemAll.pop();
+                }
+                this.changeInset.index = index;
+                this.changeInset.splitaddvisible = true;
+                this.changeInset.taskcode = row.base_INFO_ID;//原需求ID
+                this.changeInset.system_NAME = row.system_NAME;//系统名
+                this.changeInset.choosesysyem = row.system_NAME;//系统名
+                this.changeInset.person = row.user_NAME;//人员
+                this.changeInset.finishdate = row.end_DATE;//完成日期
+                this.changeInset.model = row.responsible_MODULE;//负责模块
+                this.changeInset.levelchoosen = row.facility_ID+'-'+row.facility_NAME;//难易度
+                this.changeInset.usetime = row.required_TIME;//预计用时
+                this.changeInset.ACTUAL_TIME = "";//实际用时
+            },
+            //编辑原任务提交
+            changeInsetPersonSub(){
+                if (this.changeInset.choosesysyem == "" && this.changeInset.system_NAME) {
+                    this.$warn("请选择系统");
+                    return;
+                }
+                if (!this.changeInset.person) {
+                    this.$warn("请选择分配人员");
+                    return;
+                }
+                if (!this.changeInset.finishdate) {
+                    this.$warn("请选择完成日期");
+                    return;
+                }
+                if (!this.changeInset.model) {
+                    this.$warn("请填写负责模块");
+                    return;
+                }
+                if (!this.changeInset.levelchoosen && this.changeInset.system_NAME) {
+                    this.$warn("请选择难易度");
+                    return;
+                }
+                if (!this.changeInset.usetime) {
+                    this.$warn("请填写预计用时");
+                    return;
+                }
+                if (!this.changeInset.truetime) {
+                    this.$warn("请填写实际用时");
+                    return;
+                }
+                if (!this.$reg.number.test(this.changeInset.usetime)) {
+                    this.$warn("预计用时格式不正确");
+                    return;
+                }
+                if (!this.$reg.number.test(this.changeInset.truetime)) {
+                    this.$warn("实际用时格式不正确");
+                    return;
+                }
+                let end_data = this.$format(this.changeInset.finishdate);
+                let info = this.changeInset;
+                let index = this.changeInset.index;
+                //设置表格的数据
+                this.setChangeTaskInfo(index,"system_NAME",info.choosesysyem);//系统名
+                this.setChangeTaskInfo(index,"end_DATE",`${end_data.year}-${end_data.mouth}-${end_data.day}`);//完成日期
+                this.setChangeTaskInfo(index,"responsible_MODULE",info.model);//负责模块
+                this.setChangeTaskInfo(index,"facility_NAME",info.system_NAME?info.levelchoosen.split("-")[1]:"");//难易度
+                this.setChangeTaskInfo(index,"required_TIME",info.usetime);//预计用时
+                this.setChangeTaskInfo(index,"ACTUAL_TIME",info.truetime);//实际用时
+                this.changeInset.splitaddvisible = false;
+                let obj = {
+                    BASE_INFO_ID: this.changeInset.taskcode,//任务编号
+                    USER_NAME: this.changeInset.person,//人名
+                    SYSTEM_NAME: this.changeInset.choosesysyem,//选择的系统
+                    RESPONSIBLE_MODULE: this.changeInset.model,//负责模块
+                    FACILITY_ID: this.changeInset.system_NAME?
+                        this.changeInset.levelchoosen.split("-")[0]:"",//难度ID
+                    END_DATE: this.changeInset.finishdate,
+                    REQUIRED_TIME: this.changeInset.usetime,
+                    ACTUAL_TIME: this.changeInset.truetime,//实际用时
+                };
+                this.changeInset.subData[index] = obj;
             },
             //提交需求内变更结果
             subChangeInset(){
-                let arr = [];
-                for(let i of this.changeInset.tableData){
-                    let obj = {
-                        "USER_ID":i.user_ID,
-                        "BASE_INFO_ID":i.base_INFO_ID,
-                        "ACTUAL_TIME":i.ACTUAL_TIME
-                    };
-                    arr.push(obj);
-                }
                 this.$maskin();
                 let params = new URLSearchParams();
-                params.append("bics",JSON.stringify(arr));
+                params.append("bics",JSON.stringify(this.changeInset.subData));
                 params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
                 this.$axios.post("/base/updateInfos",params).then((res)=>{
                     let data = res.data;
@@ -3901,6 +4338,9 @@
                         this.$maskoff();
                     }
                 })
+            },
+            setChangeTaskInfo(index,key,value){
+                this.$set(this.changeInset.tableData[index],key,value)
             }
         }
     }
