@@ -1918,7 +1918,7 @@
                 this.clearAddData();
                 //加载权限
                 this.calculate();
-                this.$maskin();
+//                this.$maskin();
                 let params = new URLSearchParams();
                 this.$axios.post("/work/queryAll", params).then((res) => {
                     //判断是否有新增权限
@@ -2406,18 +2406,20 @@
 
                             //实时统计数据加载
                             let datashow = data.result.systemDepts
-                            let yaxis=[]
-                            let startTime=[]
-                            let nowTime=[]
-                            let endTime=[]
+                            let yaxis=[]  //y轴显示
+                            let startTime=[] //预期开始时间
+                            let nowTime=data.result.currentTime //当前时间
+                            let endTime=[] //预期结束时间
+                            let realTime=data.result.realTime   //实际完成时间
                             for(let i of datashow){
                                 yaxis.push(i.DEPT_NAME)
                                 startTime.push(new Date(i.EXPECT_START))
-                                nowTime.push(new Date(data.timestamp))
+//                              nowTime.push(new Date(data.timestamp))
                                 endTime.push(new Date(i.EXPECT_END))
                             }
-                            this.realTime(yaxis,startTime,nowTime,endTime)
-                        } else {
+                            this.realTime(yaxis,startTime,nowTime,endTime,realTime)
+                        }
+                        else {
                             this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         }
 
@@ -2489,11 +2491,37 @@
                 })
             },
             //实时统计方法
-            realTime(yaxis,startTime,nowTime,endTime) {
+            realTime(yaxis,startTime,nowTime,endTime,realTime) {
                 let echarts = require('echarts');
                 let proBar = echarts.init(document.getElementById("system")); //实时统计
                 proBar.clear();
                 let option = {};
+//                let realDatas=[]
+//                for(let i=0;i<realTime.length;i++ ){
+//                    let times=this.$format(realTime[i]);
+//                    times=`${times.year}-${times.mouth}-${times.day}`;
+//                    realDatas.push(times)
+//                }
+                let realDate =  {
+                    name: '超出时间',
+                    type: 'bar',
+                    stack: '总量',
+                    itemStyle: {
+                        normal: {
+                            color: 'yellow',
+                            shadowColor: 'rgba(255, 255, 255, 0.3)',
+                        }
+                    },
+                    data:realTime
+                };
+//                for(let i =0;i<realTime.length;i++){
+//                        if(realTime[i]>endTime && realTime[i] > nowTime){
+//                            option.series.push(realDate)
+//                        }
+//                }
+//                if(realTime>nowTime){
+//                    option.series.push(realDate)
+//                }
                 option = {
                     legend: {
                         data: ['实时统计']
@@ -2503,7 +2531,8 @@
                     },
 
                     yAxis: {
-                        data: yaxis
+//                        data: yaxis
+                        data:["1",2,3]
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -2511,8 +2540,8 @@
                             let res = params[0].name + "</br>"
                             let date0 = params[0].data;
                             let date1 = params[1].data;
-                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
-                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
+                            date0 = (date0.getMonth() + 1) + "-" + date0.getDate();
+                            date1 = (date1.getMonth() + 1) + "-" + date1.getDate();
                             res += params[0].seriesName + ":" + date0 + "</br>"
                             res += params[1].seriesName + ":" + date1 + "</br>"
                             return res;
@@ -2525,59 +2554,33 @@
                             stack: '总量',
                             itemStyle: {
                                 normal: {
-                                    color: 'rgba(0,0,0,0)',
+                                    color: 'red',
                                     shadowColor: 'rgba(0, 0, 0, 0.3)',
                                 }
                             },
                             data: startTime
-                        }, {
-                            name: '结束时间',
+                        },
+                        {
+                            name: '预期完成时间',
                             type: 'bar',
                             stack: '总量',
                             itemStyle: {
                                 normal: {
-                                    color: '#52b4f7',
-                                    barBorderRadius: 20,
+                                    color: 'black',
+                                    barBorderRadius: 0,
                                     shadowColor: 'rgba(0, 0, 0, 0.3)',
                                     shadowBlur: 20
                                 }
                             },
                             data:endTime
-                        }
+//                            date:1538323200000
+                        },
+
                     ]
                 };
-                let endDate =  {
-                    name: '超出开始时间',
-                    type: 'bar',
-                    stack: '总量',
-                    itemStyle: {
-                        normal: {
-                            color: 'red',
-                            shadowColor: 'rgba(255, 255, 255, 0.3)',
-                        }
-                    },
-                    data:endTime
-                };
-                let nowDate = {
-                    name: '时间',
-                    type: 'bar',
-                    stack: '总量',
-//							barWidth : 15,
-                    itemStyle: {
-                        normal: {
-                            color: 'red',
-                            barBorderRadius: 20,
-                            shadowColor: 'rgba(255, 255, 255, 0.3)',
-                            shadowBlur: 20
-                        }
-                    },
-                    data:nowTime
-                }
-                if(nowTime>endTime){
-                    option.series.push()
-                }
 
-                proBar.setOption(option);
+//
+               proBar.setOption(option);
             },
             //设置当前状态的下的操作
             setStateAction(base){
