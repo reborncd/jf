@@ -55,51 +55,7 @@
     .testTask_bugtable table.el-table__header th {
         background: white !important;
     }
-    /*全程跟踪视图模式*/
-    .tracking-wrapper li{
-        position: relative;
-        width: 15%;
-    }
-    .tracking-wrapper li .content{
-        width: 90%;
-        border:1px solid #ccc;
-        text-align: center;
-        line-height: 30px;
-        height: 300px;
-    }
-    .tracking-wrapper li .content .action{
-        background:#ccccff;
-    }
-    .tracking-wrapper li .content .action,
-    .tracking-wrapper li .content .date{
-        padding: 0 10px;
-        border-bottom:1px solid #ccc;
-    }
-    .tracking-wrapper li .content.border-dashed{
-        border:1px dashed #ccc;
-    }
-    .tracking-wrapper li .content.border-dashed .action,
-    .tracking-wrapper li .content.border-dashed .date{
-        border-bottom:1px dashed #ccc;
-    }
-    .tracking-wrapper li i{
-        -webkit-transform: rotateY(180deg);
-        -moz-transform: rotateY(180deg);
-        -ms-transform: rotateY(180deg);
-        -o-transform: rotateY(180deg);
-        transform: rotateY(180deg);
-    }
-    .hover-wrap{
-        position: absolute;
-        left: 10px;
-        top: 10px;
-        width: 500px;
-        padding:20px;
-        background: white;
-        z-index: 8888;
-        border: 1px solid #f4f4f4;
-        box-shadow:  0 0 10px #f4f4f4;
-    }
+
 </style>
 <style>
     .jcjs .el-table td, .jcjs .el-table th {
@@ -159,19 +115,18 @@
                                   highlight-current-row
                                   ref="jcjs_table"
                                   @row-click="handleCurrentChange">
-                            <el-table-column prop="base_NEET_ID" label="需求编号" width="200"></el-table-column>
+                            <el-table-column prop="base_NEET_ID" label="需求编号" width="200" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
-                            <el-table-column prop="neel_NAME" label="需求名称" width="180">
-                                <template slot-scope="scope">
-                                    <p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>
-                                </template>
-                            </el-table-column>
+                            <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
+                                <!--<template slot-scope="scope">-->
+                                    <!--<p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>-->
+                                <!--</template>-->
                             <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
-                            <el-table-column prop="rriority_NAME" label="优先级" width="80"></el-table-column>
-                            <el-table-column prop="state_NAME" label="状态"></el-table-column>
+                            <el-table-column prop="rriority_NAME" label="优先级" width="80"  show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="state_NAME" label="状态" show-overflow-tooltip></el-table-column>
                             <el-table-column label="操作" width="180">
-                            <template slot-scope="scope">
+                                <template slot-scope="scope">
                                 <el-button size="mini" type="primary"
                                            v-if="scope.row.check_TYPE == 'review'"
                                            @click="tableAction(scope.$index, scope.row,$event,'review')">需求评审
@@ -278,13 +233,16 @@
                                                 <el-form-item label="需求描述">{{tabs.tabsData.neel_DESCRIPTION}}</el-form-item>
                                             </el-col>
 
-                                            <el-col :span="24">
+
+                                            <!----------------------------------需判断部分------------------------>
+
+                                            <!--需求文档-->
+                                            <el-col :span="24" v-if="addneeds.hasUploadFile.length">
                                                 <el-form-item label="需求文档">
                                                     <span @click="addneeds.filevisible = true" style="cursor: pointer;color: red">点击查看</span>
                                                 </el-form-item>
-                                            </el-col>
-                                             <!----------------------------------需判断部分------------------------>
 
+                                            </el-col>
                                             <!---------------------------原产品改造点和产品描述-->
                                             <el-col :span="24" v-if="tabs.tabsData.oldchangepoint" style="color: #ffa005">
                                                 <el-form-item label="原产品改造点">{{tabs.tabsData.oldchangepoint}}</el-form-item>
@@ -411,47 +369,39 @@
                                             </el-col>
                                         </el-row>
                                     </el-form>
+                                    <!--<div>-->
+                                        <!--<el-button type="primary" size="mini" v-for="item in tabs.consoleActionData"-->
+                                                   <!--@click="consoleActionEvent(item)">{{item.name}}-->
+                                        <!--</el-button>-->
+                                    <!--</div>-->
                                     <!--拆分任务-->
                                     <div v-if="split.splitvisible">
-                                        <el-form label-width="100px" label-position="left">
-                                            <el-row :gutter="20" v-for="(item,index) in split.systemAll">
-                                                <el-col :span="10">
-                                                    <el-form-item label="系统名">
-                                                        <el-select v-model="item.name" placeholder="请选择">
-                                                            <el-option v-for="item in split.systemarr"
-                                                                       :label="item.SYSTEM_NAME"
-                                                                       :value="item.SYSTEM_NAME"></el-option>
-                                                        </el-select>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8">
-                                                    <el-input v-model="item.version"
-                                                              placeholder="请输入版本号（格式如：v1.0 或 V1.0）"></el-input>
-                                                </el-col>
-                                                <el-col :span="2">
-                                                    <i :class="index == 0 && split.systemAll.length == 1?'el-icon-plus':index == split.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
-                                                       @click="systemEvent(index,$event)"
-                                                       style="line-height: 40px;height: 40px;text-align: center;
-                                                font-size: 20px;cursor: pointer;font-weight: bold">
-                                                    </i></el-col>
-                                            </el-row>
-                                            <!--<el-row :gutter="20">-->
-                                                <!--<el-col :span="10">-->
-                                                    <!--<el-form-item label="预计开始日期">-->
-                                                        <!--<el-date-picker type="date" placeholder="选择日期"-->
-                                                                        <!--v-model="split.startdate"-->
-                                                                        <!--style="width: 100%;"></el-date-picker>-->
+                                        <!--<el-form label-width="100px" label-position="left">-->
+                                            <!--<el-row :gutter="20" v-for="(item,index) in split.systemAll">-->
+                                                <!--<el-col :span="8">-->
+                                                    <!--<el-form-item label="涉及系统">-->
+                                                        <!--<el-select v-model="item.name" placeholder="请选择系统" style="width:100%"-->
+                                                                   <!--@change="splitSystemChange($event,index)">-->
+                                                            <!--<el-option v-for="item in split.systemFarr"-->
+                                                                       <!--:label="item.system_NAME" :value="item.systemson"></el-option>-->
+                                                        <!--</el-select>-->
                                                     <!--</el-form-item>-->
                                                 <!--</el-col>-->
-                                                <!--<el-col :span="10">-->
-                                                    <!--<el-form-item label="预计结束日期">-->
-                                                        <!--<el-date-picker type="date" placeholder="选择日期"-->
-                                                                        <!--v-model="split.enddate"-->
-                                                                        <!--style="width: 100%;"></el-date-picker>-->
-                                                    <!--</el-form-item>-->
+                                                <!--<el-col :span="8">-->
+                                                    <!--<el-select v-model="item.version" placeholder="请选择系统" style="width:100%">-->
+                                                        <!--<el-option v-for="item in split.systemCarr"-->
+                                                                   <!--:label="item.system" :value="item.system_ID+','+item.system"></el-option>-->
+                                                    <!--</el-select>-->
+                                                <!--</el-col>-->
+                                                <!--<el-col :span="2">-->
+                                                    <!--<i :class="index == 0 && split.systemAll.length == 1?-->
+                                                    <!--'el-icon-plus':index == split.systemAll.length-1?'el-icon-plus':'el-icon-minus'"-->
+                                                       <!--@click="systemEvent(index,$event)" style="line-height: 40px;height: 40px;text-align: center;-->
+                                                <!--font-size: 20px;cursor: pointer;font-weight: bold">-->
+                                                    <!--</i>-->
                                                 <!--</el-col>-->
                                             <!--</el-row>-->
-                                        </el-form>
+                                        <!--</el-form>-->
                                         <div style="margin: 10px 0" class="clear">
                                             <el-button style="float: right;" type="primary" @click="addsplitperson"
                                                        size="mini">新增人员
@@ -459,14 +409,19 @@
                                         </div>
                                         <div class="table-list">
                                             <el-table :data="split.tableData" border style="width: 100%">
-                                                <el-table-column prop="USER_NAME" label="人员"></el-table-column>
-                                                <el-table-column prop="SYSTEM_NAME" label="系统名"></el-table-column>
-                                                <el-table-column prop="BASE_INFO_ID" label="任务编码"></el-table-column>
-                                                <el-table-column prop="end_data_format" label="完成日期" width="120"></el-table-column>
-                                                <el-table-column prop="RESPONSIBLE_MODULE"
+                                                <el-table-column label="任务类型" show-overflow-tooltip>
+                                                    <template slot-scope="scope">
+                                                      <span>{{scope.row.SYSTEM_NAME?'开发任务':'测试任务'}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="USER_NAME" label="人员" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="SYSTEM_NAME" label="系统名" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="BASE_INFO_ID" label="任务编码" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="end_data_format" label="完成日期" width="120" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="RESPONSIBLE_MODULE" show-overflow-tooltip
                                                                  label="负责模块"></el-table-column>
-                                                <el-table-column prop="FACILITY_NAME" label="难易度"></el-table-column>
-                                                <el-table-column prop="REQUIRED_TIME" label="预计用时"></el-table-column>
+                                                <el-table-column prop="FACILITY_NAME" label="难易度" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="REQUIRED_TIME" label="预计用时" show-overflow-tooltip></el-table-column>
                                                 <el-table-column label="操作">
                                                     <template slot-scope="scope">
                                                         <el-button size="mini" type="danger"
@@ -477,10 +432,8 @@
                                             </el-table>
                                         </div>
                                         <div class="clear">
-                                            <el-button style="float: none;margin: 10px auto;display: block"
-                                                       type="primary"
-                                                       @click="splitSubmit">提交
-                                            </el-button>
+                                            <el-button style="float: none;margin: 10px auto;display: block" size="mini"
+                                                       type="primary" @click="splitSubmit">提交</el-button>
                                         </div>
                                     </div>
                                     <!--技术管理部评审-->
@@ -519,44 +472,49 @@
                                             </el-col>
                                         </el-row>
                                     </el-form>
-                                    <!--挂起操作-->
+                                    <!--挂起/转接/恢复操作-->
                                     <div v-if="hang.hangvisible">
                                         <div class="table-list" style="margin-top: 30px;">
                                             <el-table :data="hang.hangtableData" height="280" border
                                                       style="width: 100%" >
                                                 <!--@selection-change="hangcheckednChange"-->
                                                 <!--<el-table-column type="selection" width="55"></el-table-column>-->
-                                                <el-table-column label="任务类型" width="100">
-                                                    <template slot-scope="scope">
-                                                        <div style="text-align: center">
-                                                            <span v-if="!scope.row.system_NAME">测试任务</span>
-                                                            <span v-if="scope.row.system_NAME">开发任务</span>
-                                                        </div>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column prop="user_NAME" label="人员" width="100"></el-table-column>
-                                                <el-table-column prop="system_NAME" label="系统名"></el-table-column>
+                                                <!--<el-table-column label="任务类型" width="100" show-overflow-tooltip>-->
+                                                    <!--<template slot-scope="scope">-->
+                                                        <!--<div style="text-align: center">-->
+                                                            <!--<span v-if="!scope.row.system_NAME">测试任务</span>-->
+                                                            <!--<span v-if="scope.row.system_NAME">开发任务</span>-->
+                                                        <!--</div>-->
+                                                    <!--</template>-->
+                                                <!--</el-table-column>-->
+                                                <el-table-column prop="user_NAME" label="人员" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
                                                 <!--<el-table-column prop="task_ID" label="任务编码"-->
                                                 <!--width="190"></el-table-column>-->
-                                                <el-table-column prop="end_DATE" :formatter="splitDataFormatter" wdith="120" label="完成日期"></el-table-column>
-                                                <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
-                                                <el-table-column prop="facility_NAME" label="难易度" width="80"></el-table-column>
-                                                <el-table-column prop="required_TIME" label="预计用时（小时）" width="100"></el-table-column>
-                                                <el-table-column prop="actual_TIME" label="实际用时（小时）" width="100"></el-table-column>
-                                                <el-table-column prop="sign_REAMRK" label="挂起原因"></el-table-column>
-                                                <el-table-column prop="remark" label="转接原因"></el-table-column>
+                                                <el-table-column prop="end_DATE" :formatter="splitDataFormatter" wdith="120" label="完成日期"
+                                                                 show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="facility_NAME" label="难易度" width="80" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="old_REQUIRED_TIME" label="原预计用时（小时）" width="100"></el-table-column>
+                                                <el-table-column prop="required_TIME" label="现预计用时（小时）" width="100"></el-table-column>
+                                                <el-table-column prop="old_ACTUAL_TIME" label="原实际用时（小时）" width="100"></el-table-column>
+                                                <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
+                                                <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
+                                                <el-table-column prop="sign_REAMRK" label="挂起原因" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="remark" label="转接原因" show-overflow-tooltip></el-table-column>
                                                 <el-table-column label="状态" width="80">
                                                     <template slot-scope="scope">
                                                         <div style="text-align: center">
-                                                            <span v-if="scope.row.state_ID ==306"
-                                                                  style="color: red">待开发</span>
-                                                            <span v-if="scope.row.state_ID ==307"
+                                                            <span v-if="scope.row.sign == 0"
+                                                                  style="color: red">已挂起</span>
+                                                            <span v-if="scope.row.state_ID ==307 && scope.row.sign == 1"
                                                                   style="color: red">开发中</span>
-                                                            <span v-if="scope.row.state_ID ==308"
-                                                                  style="color: red">待测试</span>
-                                                            <span v-if="scope.row.state_ID ==309"
+                                                            <span v-if="scope.row.state_ID ==309 && scope.row.sign == 1"
                                                                   style="color: red">测试中</span>
-                                                            <span v-if="scope.row.state_ID == 319" style="color: green">已完成</span>
+                                                            <span v-if="scope.row.state_ID ==319  && scope.row.sign == 1"
+                                                                  style="color: green">已完成</span>
+                                                            <span v-if="scope.row.state_ID == 319 && scope.row.sign == 2"
+                                                                  style="color: red">已转接</span>
                                                         </div>
                                                     </template>
                                                 </el-table-column>
@@ -571,7 +529,7 @@
                                                                        @click="transferAction(scope.row,scope.$index)">转接</el-button>
                                                             <el-button type="primary" size="mini"
                                                                        v-if="scope.row.sign == 0"
-                                                                       @click = restore(scope.row)>恢复</el-button>
+                                                                       @click="restore(scope.row)">恢复</el-button>
                                                         </div>
                                                     </template>
                                                 </el-table-column>
@@ -616,54 +574,31 @@
                                     </el-form>
                                     <!--技术经理确认变更-->
                                     <div v-if="changeInset.visible">
-                                        <el-form label-width="100px" label-position="left">
-                                            <el-row :gutter="20" v-for="(item,index) in changeInset.oldSystem">
-                                                <el-col><el-form-item label="系统名">{{item}}</el-form-item></el-col>
-                                            </el-row>
-                                            <el-row :gutter="20" v-for="(_item,_index) in changeInset.systemAll">
-                                                <el-col :span="10">
-                                                    <el-form-item label="系统名">
-                                                        <el-select v-model="_item.name" placeholder="请选择">
-                                                            <el-option v-for="_item in changeInset.allsystem"
-                                                                       :label="_item.SYSTEM_NAME"
-                                                                       :value="_item.SYSTEM_NAME"></el-option>
-                                                        </el-select>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8">
-                                                    <el-input v-model="_item.version"
-                                                              placeholder="请输入版本号（格式如：v1.0 或 V1.0）"></el-input>
-                                                </el-col>
-                                                <el-col :span="2">
-                                                    <i :class="_index == 0 && changeInset.systemAll.length == 1?'el-icon-plus':_index == changeInset.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
-                                                       @click="systemEvent(_index,$event,'changeInset')"
-                                                       style="line-height: 40px;height: 40px;text-align: center;
-                                                    font-size: 20px;cursor: pointer;font-weight: bold">
-                                                    </i></el-col>
-                                            </el-row>
-                                        </el-form>
                                         <div class="table-list">
-                                        <el-table :data="changeInset.tableData" border style="width: 100%">
-                                            <el-table-column prop="user_NAME" label="人员"></el-table-column>
-                                            <el-table-column prop="system_NAME" label="系统名"></el-table-column>
-                                            <el-table-column prop="base_INFO_ID" label="任务编码" width="190"></el-table-column>
-                                            <el-table-column prop="end_DATE" :formatter="changeInsetMatter" label="完成日期" width="120"></el-table-column>
-                                            <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
-                                            <el-table-column prop="facility_NAME" label="难易度"></el-table-column>
-                                            <el-table-column prop="required_TIME" label="预计用时"></el-table-column>
-                                            <el-table-column prop="ACTUAL_TIME" label="实际用时"></el-table-column>
-                                            <el-table-column label="操作">
-                                                <template slot-scope="scope">
-                                                    <el-button size="mini" type="primary" v-if="scope.row.state_ID !=319"
-                                                               @click="editChangeInset(scope.$index, scope.row)">编辑
-                                                    </el-button>
-                                                </template>
-                                            </el-table-column>
-                                        </el-table>
-                                        <div style="text-align: center;margin-top: 20px;">
+                                            <el-table :data="changeInset.tableData" border style="width: 100%">
+                                                <el-table-column prop="user_NAME" label="人员"  show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="end_DATE" :formatter="changeInsetMatter" label="完成日期" width="120" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="facility_NAME" label="难易度" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="old_REQUIRED_TIME" label="原预计用时（小时）" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="required_TIME" label="现预计用时（小时）" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="old_ACTUAL_TIME" label="原实际用时（小时）" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column prop="actual_TIME" label="总工时" width="100" show-overflow-tooltip></el-table-column>
+                                                <el-table-column label="操作">
+                                                    <template slot-scope="scope">
+                                                        <el-button size="mini" type="primary" v-if="scope.row.state_ID !=319"
+                                                                   @click="editChangeInset(scope.$index, scope.row)">编辑
+                                                        </el-button>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                            <div style="text-align: center;margin-top: 20px;">
                                             <el-button style="float: none" type="primary" @click="subChangeInset">提交</el-button>
                                         </div>
-                                    </div>
+                                        </div>
                                     </div>
                                 </div>
                             </el-tab-pane>
@@ -671,8 +606,8 @@
                                 <div class="console-tab-content">
                                     <div class="table-list" v-if="split.codetask.length >0">
                                         <div class="clear">
-                                            <el-button style="float: left;margin: 10px 0" type="primary" size="mini"
-                                                       @click="showCodeBUG">BUG清单
+                                            <el-button style="float: left;margin: 10px 0"
+                                                       type="primary" size="mini" @click="showCodeBUG">BUG清单
                                             </el-button>
                                             <!--上传手册-->
                                             <div style="float: left;overflow: hidden;position: relative;margin: 10px">
@@ -680,27 +615,25 @@
                                                 <input type="file" @change="uploadModel($event,'CODE')"
                                                        style="position: absolute;width: 80px;height: 28px;opacity: 0;left: 0;top: 0;">
                                             </div>
-                                            <el-button style="float: left;margin: 10px 0" type="primary" size="mini" v-if="split.oldTaskButton"
-                                                       @click="split.oldTaskvisible = true">查看原拆分任务
+                                            <el-button style="float: left;margin: 10px 0" type="primary" size="mini"
+                                                       v-if="split.oldTaskButton" @click="split.oldTaskvisible = true">查看原拆分任务
                                             </el-button>
                                         </div>
                                         <el-table :data="split.codetask" border style="width: 100%">
                                             <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
-                                            <el-table-column prop="old_SYSTEM_NAME" label="原系统名"
-                                                             width="120"></el-table-column>
-                                            <el-table-column prop="system_NAME" label="当前系统名"
-                                                             width="120"></el-table-column>
-                                            <el-table-column prop="base_INFO_ID" label="任务编码"
-                                                             width="200"></el-table-column>
-                                            <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
-                                                             label="完成日期" width="120"></el-table-column>
-                                            <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120"></el-table-column>
-                                            <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120"></el-table-column>
-                                            <el-table-column prop="facility_NAME" label="难易度"
-                                                             width="70"></el-table-column>
-                                            <el-table-column prop="required_TIME" label="预计用时（小时）" width="100"></el-table-column>
-                                            <el-table-column prop="actual_TIME" label="实际用时（小时）" width="100"></el-table-column>
-                                            <el-table-column prop="remark" label="备注"></el-table-column>
+                                            <el-table-column prop="old_SYSTEM_NAME" label="原系统名" show-overflow-tooltip width="120"></el-table-column>
+                                            <el-table-column prop="system_NAME" label="当前系统名" show-overflow-tooltip width="120"></el-table-column>
+                                            <el-table-column prop="base_INFO_ID" label="任务编码" show-overflow-tooltip width="200"></el-table-column>
+                                            <el-table-column prop="end_DATE" :formatter="splitDataFormatter" show-overflow-tooltip label="完成日期" width="120"></el-table-column>
+                                            <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120" show-overflow-tooltip></el-table-column>
+                                            <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120" show-overflow-tooltip></el-table-column>
+                                            <el-table-column prop="facility_NAME" label="难易度" width="70"></el-table-column>
+                                            <el-table-column prop="old_REQUIRED_TIME" label="原预计用时（小时）" width="100"></el-table-column>
+                                            <el-table-column prop="required_TIME" label="现预计用时（小时）" width="100"></el-table-column>
+                                            <el-table-column prop="old_ACTUAL_TIME" label="原实际用时（小时）" width="100"></el-table-column>
+                                            <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
+                                            <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
+                                            <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
                                             <el-table-column label="操作">
                                                 <template slot-scope="scope">
                                                     <!--<el-button size="mini" type="primary"-->
@@ -708,10 +641,12 @@
                                                                <!--@click="splitCodeStart(scope.$index, scope.row)">开始-->
                                                     <!--</el-button>-->
                                                     <el-button size="mini" type="primary"
-                                                               v-if="scope.row.state_ID == 307"
-                                                               @click="splitCodeFinish(scope.$index, scope.row)">完成
+                                                               v-if="scope.row.state_ID == 307 && scope.row.sign == 1"
+                                                               @click="splitTaskFinish(scope.$index, scope.row)">完成
                                                     </el-button>
-                                                    <span v-if="scope.row.state_ID == 319"
+                                                    <span v-if="scope.row.state_ID == 319 && scope.row.sign == 2"
+                                                          style="color: red">已转接</span>
+                                                    <span v-if="scope.row.state_ID == 319 && scope.row.sign == 1"
                                                           style="color: green">已完成</span>
                                                     <span v-if="scope.row.state_ID == 321"
                                                           style="color: red">已需求内变更</span>
@@ -763,21 +698,18 @@
                                                  style="margin-top: 10px;">
                                                 <el-table :data="testTask.testSplitData" border style="width: 100%"
                                                           v-show="testTask.testtaskvisible">
-                                                    <el-table-column prop="user_NAME" label="人员"
-                                                                     width="80"></el-table-column>
+                                                    <el-table-column prop="user_NAME" label="人员" width="80" show-overflow-tooltip></el-table-column>
                                                     <el-table-column prop="base_INFO_ID" label="任务编码"
                                                                      width="200"></el-table-column>
-                                                    <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
-                                                                     width="120" label="完成日期"></el-table-column>
-                                                    <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120"></el-table-column>
-                                                    <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120"></el-table-column>
-                                                    <el-table-column prop="facility_NAME" label="难易度"
-                                                                     width="70"></el-table-column>
-                                                    <el-table-column prop="required_TIME"  width="100"
-                                                                     label="预计用时（小时）"></el-table-column>
-                                                    <el-table-column prop="actual_TIME"  width="100"
-                                                                     label="实际用时（小时）"></el-table-column>
-                                                    <el-table-column prop="remark" label="备注"></el-table-column>
+                                                    <el-table-column prop="end_DATE" :formatter="splitDataFormatter" width="120" label="完成日期"></el-table-column>
+                                                    <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120" show-overflow-tooltip></el-table-column>
+                                                    <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120" show-overflow-tooltip></el-table-column>
+                                                    <el-table-column prop="old_REQUIRED_TIME" label="原预计用时（小时）" width="100"></el-table-column>
+                                                    <el-table-column prop="required_TIME" label="现预计用时（小时）" width="100"></el-table-column>
+                                                    <el-table-column prop="old_ACTUAL_TIME" label="原实际用时（小时）" width="100"></el-table-column>
+                                                    <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
+                                                    <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
+                                                    <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
                                                     <el-table-column label="操作" width="180">
                                                         <template slot-scope="scope">
                                                             <div style="text-align: center">
@@ -788,18 +720,17 @@
                                                                     <!--开始-->
                                                                 <!--</el-button>-->
                                                                 <el-button size="mini" type="primary"
-                                                                           style="float: none;display: inline-block"
-                                                                           @click="goTestTask(scope.$index, scope.row)"
-                                                                           v-if="scope.row.state_ID == 309">进入
+                                                                           style="float: none;display: inline-block" @click="goTestTask(scope.$index, scope.row)"
+                                                                           v-if="scope.row.state_ID == 309 && scope.row.sign == 1">进入
                                                                 </el-button>
                                                                 <el-button size="mini" type="primary"
-                                                                           style="float: none;display: inline-block"
-                                                                           v-if="scope.row.state_ID == 309"
-                                                                           @click="splitTestFinish(scope.$index, scope.row)">
-                                                                    完成
+                                                                           style="float: none;display: inline-block" @click="splitTaskFinish(scope.$index, scope.row,'test')"
+                                                                           v-if="scope.row.state_ID == 309 && scope.row.sign == 1">完成
                                                                 </el-button>
-                                                                <span v-if="scope.row.state_ID == 319"
+                                                                <span v-if="scope.row.state_ID == 319 && scope.row.sign == 1"
                                                                       style="color: green">已完成</span>
+                                                                <span v-if="scope.row.state_ID == 319 && scope.row.sign == 2"
+                                                                      style="color: red">已转接</span>
                                                                 <span v-if="scope.row.state_ID == 321"
                                                                       style="color: red">已需求内变更</span>
                                                             </div>
@@ -856,7 +787,6 @@
                             <el-tab-pane label="拆分项目详情" name="split" v-if="tabs.allSplittask">
                                 <div class="console-tab-content">
                                     <!--判断当前是否被拆分过任务-->
-                                    <!--<p style="text-align: right">实际用时合计：<span style="color: red">{{split.allUseTime}}</span></p>-->
                                     <div class="table-list" v-if="split.hasSplitTaskDataByGroup.length>0">
                                         <el-table :data="split.hasSplitTaskDataByGroup" show-summary border style="width: 100%"
                                                   highlight-current-row
@@ -874,17 +804,31 @@
                                 <div class="console-tab-content">
                                     <el-form label-width="60px" label-position="left">
                                         <el-row :gutter="20">
-                                            <el-col :span="10" :sm="10">
+                                            <el-col :span="7" :sm="7">
                                                 <el-form-item label="状态：">
                                                     <span style="color: red">{{tabs.state_NAME}}</span>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="6" :sm="6">
-                                                <el-form-item label="发送人：" label-width="100px">
+                                            <el-col :span="5" :sm="5">
+                                                <el-form-item label="发送人：" label-width="80px">
                                                     {{tabs.user_NAME}}
                                                 </el-form-item>
                                             </el-col>
-                                            <!--<el-button type="primary" @click="tracking.trackingvisiible = true">视图模式</el-button>-->
+                                            <el-col :span="6" :sm="6">
+                                                <el-form-item>
+                                                    <el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6" :sm="6">
+                                                <el-form-item>
+                                                    <el-select v-model="tabs.genzongchoosen" clearable placeholder="请选择筛选部门"
+                                                               style="width: 100%" @change="genzongChange">
+                                                        <el-option v-for="item in tabs.genzongArr" :label="item.DEPT_NAME"
+                                                                   :value="item.DEPT_ID"></el-option>
+                                                    </el-select>
+
+                                                </el-form-item>
+                                            </el-col>
                                             <el-col :span="24" :sm="24">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
@@ -895,14 +839,8 @@
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
-                                <div class="console-tab-content" style="width: 100% !important;height: 250px !important;">
-                                    <el-form label-width="100px" label-position="right">
-                                        <el-row :gutter="20">
-                                            <el-col :span="24" :md="24">
-                                                <div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-                                            </el-col>
-                                        </el-row>
-                                    </el-form>
+                                <div class="console-tab-content">
+                                   aa
                                 </div>
                             </el-tab-pane>
                         </el-tabs>
@@ -930,12 +868,12 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求名称">
-                            <el-input v-model="addneeds.addform.name"></el-input>
+                            <el-input v-model="addneeds.addform.name" :disabled="addneeds.addType == 'changeInset'"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求类型">
-                            <el-select :disabled="addneeds.notAllowChooseType" v-model="addneeds.addform.needstype" clearable placeholder="请选择需求类型"
+                            <el-select :disabled="addneeds.notAllowChooseType || addneeds.addType == 'changeInset'" v-model="addneeds.addform.needstype" clearable placeholder="请选择需求类型"
                                        style="width: 100%">
                                 <el-option v-for="item in addneeds.addform.needstypeArr" :label="item.NEEL_TYPE_NAME"
                                            :value="item.NEEL_TYPE_NAME"></el-option>
@@ -944,7 +882,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="成果类型">
-                            <el-select v-model="addneeds.addform.resulttype" clearable placeholder="请选择成果类型"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.resulttype" clearable placeholder="请选择成果类型"
                                        style="width: 100%">
                                 <el-option v-for="item in addneeds.addform.resulttypeArr" :label="item"
                                            :value="item"></el-option>
@@ -954,7 +892,7 @@
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求影响面">
                             <el-select v-model="addneeds.addform.affect" clearable placeholder="请选择影响面"
-                                       style="width: 100%">
+                                       :disabled="addneeds.addType == 'changeInset'" style="width: 100%">
                                 <el-option v-for="item in addneeds.addform.affectArr" :label="item"
                                            :value="item"></el-option>
                             </el-select>
@@ -962,7 +900,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="优先级评定">
-                            <el-select v-model="addneeds.addform.level" clearable placeholder="请选择优先级"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.level" clearable placeholder="请选择优先级"
                                        style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
                                            :value="item.RRIORITY_ID"></el-option>
@@ -971,7 +909,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求划分归属">
-                            <el-select v-model="addneeds.addform.attribution" clearable placeholder="请选择需求划分归属"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.attribution" clearable placeholder="请选择需求划分归属"
                                        style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.attributionArr" :label="item"
                                            :value="item"></el-option>
@@ -980,24 +918,24 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="涉及产品线">
-                            <el-input v-model="addneeds.addform.productline" placeholder="请填写涉及产品线"></el-input>
+                            <el-input :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.productline" placeholder="请填写涉及产品线"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="申请日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.shenqingdate"
+                            <el-date-picker :disabled="addneeds.addType == 'changeInset'" type="date" placeholder="选择日期" v-model="addneeds.addform.shenqingdate"
                                             style="width: 100%;"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="期望上线日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.designdate"
+                            <el-date-picker :disabled="addneeds.addType == 'changeInset'" type="date" placeholder="选择日期" v-model="addneeds.addform.designdate"
                                             style="width: 100%;"></el-date-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求提出部门">
-                            <el-select v-model="addneeds.addform.fromdeptId" clearable placeholder="请选择部门"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.fromdeptId" clearable placeholder="请选择部门"
                                        style="width: 100%" @change="fromdeptchange">
                                 <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
                                            :value="item.dept_id"></el-option>
@@ -1006,7 +944,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求提出人">
-                            <el-select v-model="addneeds.addform.fromdeptroleId" clearable placeholder="请选择人员"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.fromdeptroleId" clearable placeholder="请选择人员"
                                        style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
                                            :value="item.user_ID"></el-option>
@@ -1015,12 +953,12 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="产品负责人">
-                            <el-input v-model="addneeds.addform.sxname"></el-input>
+                            <el-input :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.sxname"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="重要程度">
-                            <el-select v-model="addneeds.addform.zhongyaochegndu" clearable placeholder="请选择重要程度"
+                            <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.zhongyaochegndu" clearable placeholder="请选择重要程度"
                                        style="width: 100%;">
                                 <el-option v-for="item in addneeds.addform.zhongyaochegnduArr"
                                            :label="item.importance_NAME" :value="item.importance_ID"></el-option>
@@ -1031,11 +969,11 @@
                         <el-form-item label="是否加急" style="height: 42px">
                             <el-row :span="24">
                                 <el-col :span="6" :md="6">
-                                    <el-radio v-model="addneeds.addform.jiaji" label="0">否</el-radio>
-                                    <el-radio v-model="addneeds.addform.jiaji" label="1">是</el-radio>
+                                    <el-radio v-model="addneeds.addform.jiaji" label="0" :disabled="addneeds.addType == 'changeInset'">否</el-radio>
+                                    <el-radio v-model="addneeds.addform.jiaji" label="1" :disabled="addneeds.addType == 'changeInset'">是</el-radio>
                                 </el-col>
                                 <el-col :span="18" :md="18">
-                                    <el-input placeholder="请填写加急原因" v-model="addneeds.addform.jiajireason"
+                                    <el-input placeholder="请填写加急原因" :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.jiajireason"
                                               v-if="addneeds.addform.jiaji ==1?true:false"></el-input>
                                 </el-col>
                             </el-row>
@@ -1043,7 +981,7 @@
                     </el-col>
                     <el-col :span="24" :md="24">
                         <el-form-item label="需求背景">
-                            <el-input v-model="addneeds.addform.reform"></el-input>
+                            <el-input :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.reform"></el-input>
                         </el-form-item>
                     </el-col>
 
@@ -1096,16 +1034,16 @@
             </div>
         </el-dialog>
         <!--分配-->
-        <el-dialog title="分配" :visible="assign.assignvisible" width="30%"
+        <el-dialog title="分配" :visible="assign.assignvisible" width="40%"
                    append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
             <div slot="title">
                 <h2>分配</h2>
-                <div class="tab clear">
-                    <span :class="{'active':assign.left}"
-                          @click="assign.left = true;assign.right = false;assign.searchData = assign.leftlistdata;assign.leftSearch = false">全部部门</span>
-                    <span :class="{'active':assign.right}"
-                          @click="assign.left = false;assign.right = true;assign.searchData = assign.rightlistdata;assign.leftSearch = true">本部门</span>
-                </div>
+                <!--<div class="tab clear">-->
+                    <!--<span :class="{'active':assign.left}"-->
+                          <!--@click="assign.left = true;assign.right = false;assign.searchData = assign.leftOriginData;assign.leftSearch = false">全部部门</span>-->
+                    <!--<span :class="{'active':assign.right}"-->
+                          <!--@click="assign.left = false;assign.right = true;assign.searchData = assign.rightlistdata;assign.leftSearch = true">本部门</span>-->
+                <!--</div>-->
                 <el-input
                         class="search-input"
                         placeholder="请输入姓名"
@@ -1122,8 +1060,7 @@
                     <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                         <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
                         <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                            <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME"
-                                         class="check-item">
+                            <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                                 {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
@@ -1140,14 +1077,14 @@
                 </div>
             </div>
             <!--右侧选择当前部门-->
-            <div class="assign-wrapper" v-if="assign.right">
-                <el-checkbox-group v-model="assign.checkList">
-                    <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
-                                 class="check-item">
-                        {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
-                    </el-checkbox>
-                </el-checkbox-group>
-            </div>
+            <!--<div class="assign-wrapper" v-if="assign.right">-->
+                <!--<el-checkbox-group v-model="assign.checkList">-->
+                    <!--<el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"-->
+                                 <!--class="check-item">-->
+                        <!--{{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}-->
+                    <!--</el-checkbox>-->
+                <!--</el-checkbox-group>-->
+            <!--</div>-->
             <div slot="footer" class="dialog-footer">
                 <el-button @click="assign.assignvisible = false" size="mini">取 消</el-button>
                 <el-button type="primary" @click="subAssign" size="mini">提交</el-button>
@@ -1164,10 +1101,10 @@
                     <el-col :span="24">
                         <el-radio v-model="split.splitradio" label="1">测试任务</el-radio>
                         <el-radio v-model="split.splitradio" label="2">开发任务</el-radio>
-                        <el-select style="margin-left: 20px;" v-model="split.choosesysyem"
+                        <el-select style="margin-left: 20px;" v-model="split.choosesystem"
                                    placeholder="请选择" v-if="split.splitradio == 2">
-                            <el-option v-for="item in split.systemAll" :label="item.name+item.version"
-                                       clearable :value="item.name+item.version"></el-option>
+                            <el-option v-for="item in split.choosesystemArr" :label="item.SYSTEM_NAME"
+                                       :value="item.SYSTEM_ID+','+item.SYSTEM_NAME" clearable></el-option>
                         </el-select>
                     </el-col>
                 </el-form-item>
@@ -1200,18 +1137,18 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="split.splitaddvisible = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="splitSub" size="mini">确定</el-button>
+                <el-button type="primary" @click="splitPersonSub" size="mini">确定</el-button>
             </div>
         </el-dialog>
-        <!--开发点击完成-->
-        <el-dialog title="您已超出任务规定时间" :visible="taskFinished.taskFinishedvisible" width="60%"
+        <!--开发和测试点击完成-->
+        <el-dialog title="请输入预计用时" :visible="taskFinished.taskFinishedvisible" width="60%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
             <el-form label-width="120px">
                 <el-form-item label="请填写实际用时">
                     <el-input v-model="taskFinished.usetime"></el-input>
                 </el-form-item>
-                <el-form-item label="请填写超时原因">
+                <el-form-item label="请填写超时原因" v-if="taskFinished.outtime">
                     <el-input v-model="taskFinished.reason"></el-input>
                 </el-form-item>
             </el-form>
@@ -1224,57 +1161,10 @@
         <el-dialog title="拆分项目详情和分析结果" :visible="split.hasSplitvisible" width="90%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
-            <el-form label-width="120px">
-                <el-row :gutter="20">
-                    <el-col :span="12">
-                        <el-form-item label="分析结果">{{split.reviewData.ANALYSIS_RESULT}}</el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="分析时间">{{split.reviewData.ANALYSIS_TIME | date_y_m_d}}</el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label=" 预期开始时间">{{split.reviewData.EXPECT_START | date_y_m_d}}</el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label=" 预期结束时间">{{split.reviewData.EXPECT_END | date_y_m_d}}</el-form-item>
-                    </el-col>
-                    <el-col :span="24">
-                        <el-form-item label=" 风险点">{{split.reviewData.TASK_RISK}}</el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <div class="table-list">
-                <el-table :data="split.hasSplitTaskData" height="280" border style="width: 100%">
-                    <el-table-column prop="user_NAME" label="人员" width="150"></el-table-column>
-                    <el-table-column label="任务类型">
-                        <template slot-scope="scope">
-                            <div style="text-align: center">
-                                <span v-if="!scope.row.system_NAME && scope.row.user_NAME != '合计'">测试任务</span>
-                                <span v-if="scope.row.system_NAME && scope.row.user_NAME != '合计'">开发任务</span>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="system_NAME" label="系统名"></el-table-column>
-                    <el-table-column prop="base_INFO_ID" label="任务编码" width="190"></el-table-column>
-                    <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
-                                     label="完成日期"></el-table-column>
-                    <el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
-                    <el-table-column prop="facility_NAME" label="难易度" width="80"></el-table-column>
-                    <el-table-column prop="required_TIME" label="预计用时（小时）" width="100"></el-table-column>
-                    <el-table-column prop="actual_TIME" label="实际用时（小时）" width="100"></el-table-column>
-                    <el-table-column label="状态" width="80">
-                        <template slot-scope="scope">
-                            <div style="text-align: center">
-                                <span v-if="scope.row.state_ID ==306" style="color: red">待开发</span>
-                                <span v-if="scope.row.state_ID ==307" style="color: red">开发中</span>
-                                <span v-if="scope.row.state_ID ==308" style="color: red">待测试</span>
-                                <span v-if="scope.row.state_ID ==309" style="color: red">测试中</span>
-                                <span v-if="scope.row.state_ID == 319" style="color: green">已完成</span>
-                            </div>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
+            <!--评审结果-->
+            <split-ping :data="split.reviewData"></split-ping>
+            <!--具体拆分任务-->
+            <split-task :data="split.hasSplitTaskData"></split-task>
         </el-dialog>
         <!--测试新增步骤-->
         <el-dialog title="新增步骤" :visible="testTask.addvisible" width="60%"
@@ -1407,47 +1297,6 @@
                 <el-button @click="testTask.allBUGvisible = false;" size="mini">取
                     消
                 </el-button>
-            </div>
-        </el-dialog>
-        <!--测试点击完成-->
-        <el-dialog title="您已超出任务规定时间" :visible="taskFinished.taskFinishedvisible" width="60%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog">
-            <el-form label-width="120px">
-                <el-form-item label="请填写实际用时">
-                    <el-input v-model="taskFinished.usetime"></el-input>
-                </el-form-item>
-                <el-form-item label="请填写超时原因">
-                    <el-input v-model="taskFinished.reason"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="taskFinished.taskFinishedvisible = false" size="mini">取 消</el-button>
-                <el-button type="primary" @click="testSubTask" size="mini">确定</el-button>
-            </div>
-        </el-dialog>
-        <!--全程跟踪视图模式-->
-        <el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="90%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog">
-            <div>
-                <ul class="tracking-wrapper clear">
-                    <li class="fl clear" v-for="(item, index) in tracking.data"
-                        @mouseover="tracking.hoverIndex = index;"
-                        @mouseleave="tracking.hoverIndex = ''">
-                        <div class="content fl">
-                            <p class="action">{{item.record_SUBJECT}}</p>
-                            <p class="date">{{item.record_START | date}}</p>
-                            <div style="padding: 0 10px">
-                                <p class="info" v-for="_item in item._names">{{_item}}</p>
-                            </div>
-                        </div>
-                        <div class="fl"><i class="el-icon-back"></i></div>
-                        <div v-if="index == tracking.hoverIndex && tracking.hoverIndex != ''" class="hover-wrap">
-                            <p>zxffasdasdasdasd</p>
-                        </div>
-                    </li>
-                </ul>
             </div>
         </el-dialog>
         <!--挂起的实际用时-->
@@ -1603,10 +1452,10 @@
                     <el-table-column prop="required_TIME" label="预计用时（小时）"></el-table-column>
                     <el-table-column prop="actual_TIME" label="实际用时（小时）"></el-table-column>
                     <el-table-column prop="remark" label="备注"></el-table-column>
-                    <el-table-column label="状态" width="120">
-                        <template slot-scope="scope">
-                            <span style="color: red">已需求内变更</span>
-                        </template>
+                    <el-table-column label="状态" width="120"  show-overflow-tooltip>
+                        <!--<template slot-scope="scope">-->
+                            <!--<span style="color: red">已需求内变更</span>-->
+                        <!--</template>-->
                     </el-table-column>
                 </el-table>
             </div>
@@ -1618,13 +1467,13 @@
                 <el-form-item label="任务编码">
                    {{changeInset.taskcode}}
                 </el-form-item>
-                <el-form-item label="系统名">
+                <el-form-item label="系统名" v-if="changeInset.system_NAME">
                     <el-col :span="24">
                         {{changeInset.system_NAME?'开发任务':'测试任务'}}
-                        <el-select style="margin-left: 20px;" v-model="changeInset.choosesysyem"
-                                   placeholder="请选择" v-if="changeInset.system_NAME">
-                            <el-option v-for="item in changeInset.systemAll" :label="item.name+item.version"
-                                       clearable :value="item.name+item.version"></el-option>
+                        <el-select style="margin-left: 20px;" v-model="changeInset.choosesystem"
+                                   placeholder="请选择" >
+                            <el-option v-for="item in changeInset.allsystem" :label="item.SYSTEM_NAME"
+                                       clearable :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
                         </el-select>
                     </el-col>
                 </el-form-item>
@@ -1717,9 +1566,21 @@
                 </el-table>
             </div>
         </el-dialog>
+        <!--全程跟踪视图模式-->
+        <el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <tracking :tracking="tracking"></tracking>
+        </el-dialog>
     </div>
 </template>
 <script>
+    //-----------------加载静态组件
+    import oldTaskCode from "../common/old-task-code.vue";//开发的原任务
+    import oldTaskTest from "../common/old-task-test.vue";//测试的原任务
+    import splitTask from "../common/splitTask.vue";//拆分项目里的所有拆分任务
+    import splitPing from "../common/split-ping.vue";//拆分你项目的评审结果
+    import tracking from "../common/tracking.vue";//全程跟踪视图模式
     export default {
         data(){
             return {
@@ -1729,7 +1590,7 @@
                     notAllowChooseType: false,//是否能修改需求类型
                     addif:false,//新增按钮的判断
                     addvisible: false ,
-                    addType: "",//判断性质呢过类型，add 为重新新增，change 为新建变更 changeinset 为需求内变更,edit表示被驳回后编辑
+                    addType: "",//判断性质呢过类型，add 为重新新增，change 为新建变更 changeInset 为需求内变更,edit表示被驳回后编辑
                     uploadFiles:[],//上传的文件
                     fileIds:[],//上传后返回的ID
                     hasUploadFile:[],//上传后的回显
@@ -1773,6 +1634,10 @@
                         "changepoint":"",//产品改造点
                         "oldchangepoint": "",//原产品改造点
                         "newchangepoint": "",//新产品改造点
+
+                        //需求内变更
+                        changeinsetpoint:"",//需求内变更新填的产品改造点
+                        changeisnetdes:"",//需求内变更新填的需求描述
                     }
                 },
                 //分配任务
@@ -1782,8 +1647,8 @@
                     left: true,//左侧的显示
                     right: false,//右侧的显示
                     checkList: [],//选择的数据
-                    leftlistdata: [],//左侧显示的数据
-                    rightlistdata: [],//右侧显示的数据
+                    leftOriginData: [],//左侧显示的数据
+//                    rightlistdata: [],//右侧显示的数据
                     leftSearch: false,//左侧搜索出来的结构展示
                     searchData: [],//左侧特殊结构，显示出来的搜索结果存放处
                     assignDeptIndex:"",//当前选中的部门索引
@@ -1791,17 +1656,20 @@
                 //拆分任务
                 split: {
                     hasSplitvisible: false,
+                    //----------拆分项目相关
                     hasSplitTaskDataByGroup: [],//展示拆分任务的分组
                     hasSplitTaskData: [],//展示当前的分组拆分任务
                     codetask: [],//开发的任务
-                    systemAll: [{
-                        "name": "", "version": ""
-                    }],//所有选择的系统集合
+//                    systemAll: [{
+//                        "name": "", "version": ""
+//                    }],//所有选择的系统集合
                     splitradio: "",//拆分任务类型（1为测试任务，2为开发任务）
                     splitvisible: false,
                     splitaddvisible: false,//新增人员的显示框
-                    choosesysyem: "",//选择的系统值
-                    systemarr: [],//所填写过的的系统数组,
+                    choosesystem: "",//选择的系统值
+                    choosesystemArr:[],//可选择的系统
+//                    systemFarr: [],//父级系统数组,
+//                    systemCarr: [],//父级系统数组,
                     levelchoosen: "",//难易度选择的值,
                     level: [],//难易度数组
                     version: "",//版本号
@@ -1818,7 +1686,8 @@
                     ids: [],//放置id的数组
                     usetime: "",//预计用时
                     //------------新增
-                    //需求分析结果
+
+                    //-----------------需求分析结果
                     reviewData:{
                         TASK_RISK:"",//风险点
                         ANALYSIS_RESULT:"",//分析结果
@@ -1826,7 +1695,7 @@
                         EXPECT_END:"",//预期结束时间
                         EXPECT_START:"",//预期开始时间
                     },
-                    allUseTime:"",//合计的实际用时
+
                     //原拆分任务
                     oldTaskButton:false,//查看元拆分任务的按钮展示
                     oldTaskvisible:false,//弹窗
@@ -1890,7 +1759,10 @@
                     },
                     state_NAME: "",//状态
                     user_NAME: "",//负责人
-                    genzong: ""
+                    genzong: [],//全程跟踪的数据
+                    genzongOrigin:[],//全程跟踪的源数据
+                    genzongArr:[],//全程跟踪的部门数组
+                    genzongchoosen:'',//选择的全程跟踪部门
                 },
                 //需求审批
                 ifPing:{
@@ -1902,9 +1774,10 @@
                     date:"",//评审日期
                     person:"",//参会人
                 },
-                //拆分任务完成的超时操作
+                //拆分任务完成的操作
                 taskFinished: {
-                    taskFinishedvisible: false,
+                    outtime:false,//是否超时
+                    taskFinishedvisible: false,//弹窗
                     taskId: "",//当前任务ID
                     usetime: "",//实际用时
                     reason: "",//超时原因
@@ -2021,11 +1894,9 @@
                     visible :false,
                     tableData:[],//表格数据
                     allsystem:[],//可选择的现有的子系统
-                    oldSystem:[],//之前选择的系统
-                    systemAll: [{"name":"","version":""}],//所有选择的系统集合
                     level:[],//难易度
                     system_NAME:"",//系统名
-                    choosesysyem:"",//选择的系统
+                    choosesystem:"",//选择的系统
                     finishdate:"",//完成日期
                     model:"",//负责模块
                     person:"",//人员
@@ -2056,6 +1927,13 @@
                 return year + '-' + month + '-' + day
             }
         },
+        components:{
+            "old-task-code":oldTaskCode,//开发的原任务
+            "old-task-test":oldTaskTest,//测试的原任务
+            "split-task":splitTask,//拆分项目里的所有拆分任务
+            "split-ping":splitPing,//拆分你项目的评审结果
+            "tracking":tracking,//全程跟踪视图模式
+        },
         mounted(){
             this.loadData();
         },
@@ -2072,7 +1950,7 @@
                     this.calculateTabsHeight();
                 }
             },
-            //计算表格高度
+            //-----------------------------------计算表格高度
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
@@ -2084,7 +1962,7 @@
                     this.table.tableHeight = height * 0.3;
                 }
             },
-            //计算操作台的高度
+            //-----------------------------------计算操作台的高度
             calculateTabsHeight(){
                 let card_body = document.querySelector(".box-card .el-card__body");
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
@@ -2094,16 +1972,16 @@
                     i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
                 }
             },
-            //设置控制台的展示
+            //-----------------------------------设置控制台的展示
             setConsoleVisible(){
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false);
             },
-            //控制台选项卡点击事件
+            //-----------------------------------控制台选项卡点击事件
             tabClick(val){
                 this.calculateTabsHeight();
             },
-            //转换表格时间格式
+            //-----------------------------------转换表格时间格式
             tableFormatter_start(row){
                 let data = this.$format(row.start_DATE)
                 return `${data.year}-${data.mouth}-${data.day}`
@@ -2112,7 +1990,7 @@
                 let data = this.$format(row.end_DATE)
                 return `${data.year}-${data.mouth}-${data.day}`
             },
-            //加载请求
+            //-----------------------------------加载请求
             loadData(){
                 //初始化当前活动的控制台
                 this.tabs.activeName = "info";
@@ -2138,7 +2016,7 @@
                     }
                 })
             },
-            //加载表格数据
+            //-----------------------------------加载表格数据
             setTableData(data){
                 this.$set(this.table, "tableData", data.bases);
                 this.$set(this.table, "tableOriginData", data.bases);
@@ -2156,7 +2034,7 @@
                 }
                 this.$maskoff();
             },
-            //-------------查询功能
+            //-----------------------------------查询功能
             queryTableData(e,type){
                 this.$maskin();
                 if(!this.dateValue && this.keyword == "" && !this.selectValue){
@@ -2182,7 +2060,7 @@
                 })
 
             },
-            //新建弹窗
+            //-----------------------------------新建弹窗
             newneeds(){
                 this.$maskin();
                 this.addneeds.addType = "add";//当前是重新建立变更
@@ -2190,6 +2068,7 @@
                 this.$axios.post("/base/baseSaveFront", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        this.clearAddData();
                         this.addneeds.addform.code = data.result.BASE_NEET_ID;//需求编号
                         this.addneeds.addform.sxname = data.result.USERNAME;//产品提出人
                         this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts);//来源部门数组
@@ -2205,12 +2084,12 @@
                     }
                 })
             },
-            //上传需求文档
+            //-----------------------------------上传需求文档
             uploadneeds(e){
                 this.$maskin();
                 let file = e.target.files[0];
                 let params = new FormData();
-                params.append("token",localStorage.getItem("token"));
+                params.append("token",this.$getToken());
                 params.append("file",file);
                 this.$axios.post("/base/uploadNell",params).then((res)=>{
                     let data = res.data;
@@ -2222,7 +2101,7 @@
                     }
                 })
             },
-            //新需求来源二级联动
+            //-----------------------------------新需求来源二级联动
             fromdeptchange(val){
 //                this.addneeds.addform.fromdeptroleArr = [];
 //                this.addneeds.addform.fromdeptroleId = "";
@@ -2240,7 +2119,7 @@
                 }
                 this.$set(this.addneeds.addform, "fromdeptroleArr", deptroleArr);
             },
-            //提交新增
+            //-----------------------------------提交新增
             subaddForm(){
                 let url = "";
                 if(!this.addneeds.addform.name){
@@ -2337,7 +2216,7 @@
                 params.append("attachmentId", this.addneeds.fileIds);//上传的文件
                 //------------------新增
                 //加急的判断
-                if (this.addneeds.addform.jiaji) {
+                if (this.addneeds.addform.jiaji == 1) {
                     params.append("URGENT", this.addneeds.addform.jiajireason);//加急描述
                 }
                 if(this.addneeds.addType == "change"){
@@ -2347,7 +2226,7 @@
                 }else if (this.addneeds.addType == "add"){
                     //新建
                     url = "/base/saveBaseConstruct"
-                }else if(this.addneeds.addType == "changeinset"){
+                }else if(this.addneeds.addType == "changeInset"){
                     //需求内变更
                     url = "/base/innerUpdate";
 //                    params.append("BASE_NEET_FID",this.addneeds.addform.oldcode);
@@ -2367,7 +2246,7 @@
                     }
                 })
             },
-            //清除新增新增的表单
+            //-----------------------------------清除新增新增的表单
             clearAddData(){
                 this.addneeds.notAllowChooseType = false;
                 for (let i in this.addneeds.addform) {
@@ -2376,7 +2255,7 @@
                 this.$set(this.addneeds,"fileIds",[]);//上传后的ID
                 this.$set(this.addneeds,"uploadFiles",[]);//上传后的ID
             },
-            //根据日期搜索
+            //-----------------------------------根据日期搜索
             searchByDate(){
                 if(!this.dateComp.value){
                     this.$set(this.table,"tableData",this.table.tableOriginData);
@@ -2394,7 +2273,7 @@
                 }
                 this.$set(this.table,"tableData",arr);
             },
-            //关闭弹窗
+            //-----------------------------------关闭弹窗
             closeDialog(){
                 this.addneeds.addvisible = false;//新建项目的弹窗
                 this.assign.assignvisible = false;//分配任务的弹窗
@@ -2417,9 +2296,10 @@
                 this.testTask.rejectvisible = false;//测试指派bug的弹窗
                 this.testTask.allbugvisible = false;//测试的bug清单弹窗
                 this.addneeds.filevisible = false;//上传需求文档的弹窗
+                this.transfer.dialogvisible =false;//转接的弹窗
             },
-            //----------------------------------点击表格列表展示控制台
-            //初始化操作
+            //-----------------------------------点击表格列表展示控制台----------------------------------
+            //-----------------------------------初始化操作
             resetAllStatus(){
                 //初始化当前活动的控制台
                 this.tabs.activeName = "info";
@@ -2442,7 +2322,7 @@
                 //关闭确认需求的表格
                 this.changeInset.visible = false;
             },
-            //初始化操作台的视图
+            //-----------------------------------初始化操作台的视图
             resetConsoleVisible(){
                 this.split.splitvisible = false;//拆分任务
                 this.ifPing.visible = false;//技术管理部评审
@@ -2450,7 +2330,7 @@
                 this.review.reviewvisible = false;//技术经理分析需求
                 this.changeInset.visible = false;//技术经理确认变更
             },
-            //表格点击时间
+            //-----------------------------------表格点击时间
             handleCurrentChange(val){
                 //点击时初始化操作
                 this.$maskin();
@@ -2466,7 +2346,7 @@
                     this.loadTabsData(val)
                 }
             },
-            //表格后面按钮的点击事件
+            //-----------------------------------表格后面按钮的点击事件
             tableAction(index,row,e,type){
                 this.tabs.activeTableInfo = row;
                 this.$refs.jcjs_table.setCurrentRow(row)
@@ -2496,7 +2376,8 @@
                         break;
                 }
             },
-            //-------------------------------------请求点击的数据信息
+
+            //-----------------------------------请求点击的数据信息-----------------------------------
             loadTabsData(val){
                 let params = new URLSearchParams();
                 params.append("BASE_NEET_ID", val.base_NEET_ID);
@@ -2572,17 +2453,7 @@
                             if(data.result.codeInfos.length>0){
                                 this.$set(this.split, "codetask", data.result.codeInfos);
                                 //添加合计
-                                let required_TIME = 0;//预计用时
-                                let actual_TIME = 0;//实际用时
-                                for(let i of data.result.codeInfos){
-                                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
-                                }
-                                this.split.codetask.push({
-                                    "user_NAME":"合计",
-                                    "actual_TIME":actual_TIME,
-                                    "required_TIME":required_TIME
-                                })
+                                this.setCodeAndTestTaskTotal(data.result.codeInfos,this.split.codetask)
                             }else{
                                 this.$set(this.split, "codetask", [])
                             }
@@ -2596,17 +2467,7 @@
                                 this.$set(this.testTask, "testSplitData", data.result.testInfos);
                                 this.testTask.hasTask = true;
                                 //添加合计
-                                let required_TIME = 0;//预计用时
-                                let actual_TIME = 0;//实际用时
-                                for(let i of data.result.testInfos){
-                                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
-                                }
-                                this.testTask.testSplitData.push({
-                                    "user_NAME":"合计",
-                                    "actual_TIME":actual_TIME,
-                                    "required_TIME":required_TIME
-                                })
+                                this.setCodeAndTestTaskTotal(data.result.testInfos,this.testTask.testSplitData)
                             } else {
                                 this.$set(this.testTask, "testSplitData", []);
                                 this.testTask.hasTask = false;
@@ -2621,30 +2482,23 @@
                         //选择过则展示
                         data.result.TYPE_NAME ? this.testTask.typevalue = data.result.TYPE_NAME : data.result.TYPE_NAME = "";
 
-                        if(data.result.testFiles){
-                            this.$set(this.testTask,"uploadFile",data.result.testFiles);
-                        }
+
 
                         //----------------------判断是否上传了开发手册
                         if(data.result.codeFiles) {
                             this.$set(this.codeupload,"uploadFile",data.result.codeFiles);
                         }
-
-
-                        //----------------------设置全程跟踪数据和发送人
+                        if(data.result.testFiles){
+                            this.$set(this.testTask,"uploadFile",data.result.testFiles);
+                        }
+                        //----------------------设置全程跟踪数据和发送人和筛选数组
                         this.tabs.tabsData.state_NAME = base.state_NAME;
                         this.tabs.tabsData.send_NAME = base.send_NAME;
                         this.tabs.user_NAME = base.apply_NAME;
                         this.$set(this.tabs, "genzong", data.result.records);
+                        this.$set(this.tabs, "genzongOrigin", data.result.records);
+                        this.$set(this.tabs,"genzongArr",data.result.deptRecord);
 
-//
-//                        let recordArr = [];
-//                        for(let i of data.result.records){
-//                            i._names = i.names.split(",");
-//                            i._names.pop();
-//                            recordArr.push(i)
-//                        }
-//                        this.$set(this.tracking, "data",recordArr);
 
                         //----------------------展示所有的bug清单
                         if(data.result.bugs.length){
@@ -2656,19 +2510,6 @@
                             this.tabs.allSplittask = true;
                             this.$set(this.split, "hasSplitTaskDataByGroup", data.result.systemDepts);
 
-                            //实时统计数据加载
-                            let datashow = data.result.systemDepts
-                            let yaxis=[]
-                            let startTime=[]
-                            let nowTime=[]
-                            let endTime=[]
-                            for(let i of datashow){
-                                yaxis.push(i.DEPT_NAME)
-                                startTime.push(new Date(i.EXPECT_START))
-                                nowTime.push(new Date(data.timestamp))
-                                endTime.push(new Date(i.EXPECT_END))
-                            }
-                            this.realTime(yaxis,startTime,nowTime,endTime)
                         } else {
                             this.$set(this.split, "hasSplitTaskDataByGroup", []);
                         }
@@ -2741,98 +2582,31 @@
                     }
                 })
             },
-            //实时统计方法
-            realTime(yaxis,startTime,nowTime,endTime) {
-                let echarts = require('echarts');
-                let proBar = echarts.init(document.getElementById("system")); //实时统计
-                proBar.clear();
-                let option = {};
-                option = {
-                    legend: {
-                        data: ['实时统计']
-                    },
-                    xAxis: {
-                        type: 'time'
-                    },
 
-                    yAxis: {
-                        data: yaxis
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        formatter: function(params) {
-                            let res = params[0].name + "</br>"
-                            let date0 = params[0].data;
-                            let date1 = params[1].data;
-                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
-                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
-                            res += params[0].seriesName + ":" + date0 + "</br>"
-                            res += params[1].seriesName + ":" + date1 + "</br>"
-                            return res;
-                        }
-                    },
-                    series: [
-                        {
-                            name: '开始时间',
-                            type: 'bar',
-                            stack: '总量',
-                            itemStyle: {
-                                normal: {
-                                    color: 'rgba(0,0,0,0)',
-                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                                }
-                            },
-                            data: startTime
-                        }, {
-                            name: '结束时间',
-                            type: 'bar',
-                            stack: '总量',
-                            itemStyle: {
-                                normal: {
-                                    color: '#52b4f7',
-                                    barBorderRadius: 20,
-                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                                    shadowBlur: 20
-                                }
-                            },
-                            data:endTime
-                        }
-                    ]
-                };
-                let endDate =  {
-                    name: '超出开始时间',
-                    type: 'bar',
-                    stack: '总量',
-                    itemStyle: {
-                        normal: {
-                            color: 'red',
-                            shadowColor: 'rgba(255, 255, 255, 0.3)',
-                        }
-                    },
-                    data:endTime
-                };
-                let nowDate = {
-                    name: '时间',
-                    type: 'bar',
-                    stack: '总量',
-//							barWidth : 15,
-                    itemStyle: {
-                        normal: {
-                            color: 'red',
-                            barBorderRadius: 20,
-                            shadowColor: 'rgba(255, 255, 255, 0.3)',
-                            shadowBlur: 20
-                        }
-                    },
-                    data:nowTime
+            //-----------------------------------添加开发任务和测试任务的和合计
+            setCodeAndTestTaskTotal(origin,view){
+                let old_REQUIRED_TIME = 0;//原预计用时
+                let required_TIME = 0;//预计用时
+                let old_ACTUAL_TIME = 0;//原实际用时
+                let work_TIME = 0;//实际用时
+                let actual_TIME = 0;//总工时
+                for(let i of origin){
+                    i.old_REQUIRED_TIME?old_REQUIRED_TIME+=i.old_REQUIRED_TIME:"";
+                    i.required_TIME?required_TIME+=i.required_TIME:"";
+                    i.old_ACTUAL_TIME?old_ACTUAL_TIME+=i.old_ACTUAL_TIME:"";
+                    i.work_TIME?work_TIME+=i.work_TIME:"";
+                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
                 }
-                if(nowTime>endTime){
-                    option.series.push()
-                }
-
-                proBar.setOption(option);
+                view.push({
+                    "user_NAME":"合计",
+                    "old_REQUIRED_TIME":old_REQUIRED_TIME,
+                    "required_TIME":required_TIME,
+                    "old_ACTUAL_TIME":old_ACTUAL_TIME,
+                    "work_TIME":work_TIME,
+                    "actual_TIME":actual_TIME,
+                })
             },
-            //设置当前状态的下的操作
+            //-----------------------------------设置当前状态的下的操作
             setStateAction(base){
                 //根据当前状态配置对应权限
                 //初始化评审
@@ -2856,7 +2630,7 @@
                 }
                 this.$set(this.tabs,"consoleActionData",arr)
             },
-            //点击新需求和旧需求进行跳转
+            //-----------------------------------点击新需求和旧需求进行跳转
             goNeedList(e,code,type){
                 for(let i of this.table.tableOriginData){
                     if(i.base_NEET_ID == code){
@@ -2865,7 +2639,25 @@
                     }
                 }
             },
-            //-------------------------------------操作台的事件判断---------------------------
+            //-----------------------------------全程跟踪根据组选择切换
+            genzongChange(){
+                let value = this.tabs.genzongchoosen;
+                this.$maskin();
+                if(value == ""){
+                    this.$set(this.tabs,"genzong",this.tabs.genzongOrigin);
+                    this.$maskoff();
+                    return;
+                }
+                let arr  = [];
+                for(let i of this.tabs.genzongOrigin){
+                    if(i.dept_ID == value){
+                        arr.push(i)
+                    }
+                }
+                this.$set(this.tabs,"genzong",arr);
+                this.$maskoff();
+            },
+            //-----------------------------------操作台的事件判断-----------------------------------
             consoleActionEvent(val){
                 this.tabs.consoleActionVisible = false;
                 switch (val.type) {
@@ -2890,7 +2682,7 @@
                     case "INNERUPDATE":
                         //需求内变更
                         this.resetConsoleVisible();
-                        this.newchange("changeinset");
+                        this.newchange("changeInset");
                         break;
                     case "DRAW":
                         //驳回
@@ -2921,9 +2713,9 @@
                         break;
                 }
             },
-            //------------------------------------------操作台的具体事件---------------------------
+            //-----------------------------------操作台的具体事件-----------------------------------
 
-            //---------------------------------------------编辑操作
+            //-----------------------------------编辑操作
             editNeed(){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -2932,6 +2724,9 @@
                     let data=res.data;
                     if(data.code == 200){
                         let info = data.result.base;
+                        //--初始化
+                        this.clearAddData();
+
                         //加载数据
                         this.addneeds.notAllowChooseType = true;
                         this.addneeds.addform.code = info.base_NEET_ID;//需求编号
@@ -2964,7 +2759,6 @@
                         this.addneeds.addType = "edit";//当前是编辑状态
                         this.addneeds.addform.title = "编辑需求";
                         let fileIds = [];//上传的文件ID
-                        console.log(data.result.nellFiles)
                         if(data.result.nellFiles && data.result.nellFiles.length){
                             for(let i of data.result.nellFiles){
                                 fileIds.push(i.id);
@@ -2978,7 +2772,7 @@
                     }
                 })
             },
-            //------------------------------------------挂起/恢复/转接操作
+            //-----------------------------------挂起/恢复/转接操作
             loadHangData(){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -2992,14 +2786,14 @@
                     }
                 })
             },
-            //挂起点击操作
+            //-----------------------------------挂起点击操作
             //sing:0挂起，1恢复
             hangAction(val){
                 this.hang.task_id = val.base_INFO_ID;
                 this.hang.systemName = val.system_NAME;
                 this.hang.dialogvisible = true;
             },
-            //挂起提交
+            //-----------------------------------挂起提交
             hangsub(){
                 if(!this.hang.usetime){
                     this.$warn("请填写实际用时");
@@ -3029,7 +2823,7 @@
                     }
                 })
             },
-            //恢复操作
+            //-----------------------------------恢复操作
             restore(row){
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
@@ -3043,7 +2837,7 @@
                     }
                 })
             },
-            //转接操作
+            //-----------------------------------转接操作
             transferAction(row){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -3058,7 +2852,7 @@
                     }
                 })
             },
-            //提交转接操作
+            //-----------------------------------提交转接操作
             transferSub(){
                 this.$maskin()
                 let info = this.transfer;
@@ -3085,14 +2879,14 @@
                     }
                 })
             },
-            //-----------------------------------------------技术管理部审批
+            //-----------------------------------技术管理部审批
             setReviewData(base){
                 this.clearPingData();
                 this.ifPing.visible = true;
                 this.$set(this.ifPing,"rriorityArr",base.rriority);//优先级
                 this.$set(this.ifPing,"checksArr",base.checks);//评审结果
             },
-            //提交审批
+            //-----------------------------------提交审批
             subPing(){
                 let ping = this.ifPing;
                 if(!ping.rriority){
@@ -3128,7 +2922,7 @@
                     }
                 })
             },
-            //初始化技术管理部审批数据
+            //-----------------------------------初始化技术管理部审批数据
             clearPingData(){
                 this.ifPing.rriority = "";
                 this.ifPing.checks = "";
@@ -3136,8 +2930,7 @@
                 this.ifPing.person = "";
                 this.ifPing.visible = false;
             },
-            //----------------------------------------------技术经理需求分析
-            //开启需求分析功能
+            //-----------------------------------技术经理需求分析
             beginreview(){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -3156,7 +2949,7 @@
                     }
                 })
             },
-            //提交需求分析
+            //-----------------------------------提交需求分析
             reviewSub(){
                 if(!this.review.startDate){
                     this.$warn("请选择预计开始日期");
@@ -3197,12 +2990,12 @@
                             }
                         }
                         this.review.reviewvisible = false;
-                        this.$maskoff();
                         this.loadTabsData(this.tabs.activeTableInfo);
+                        this.$maskoff();
                     }
                 })
             },
-            //----------------------------------------验收操作
+            //-----------------------------------验收操作
             acceptance(){
                 this.confirm("请选择验收结果",()=>{
                     //验收通过
@@ -3243,7 +3036,7 @@
                     })
                 },["通过","不通过"])
             },
-            //-----------------------------------------基础开发的撤回操作
+            //-----------------------------------基础开发的撤回操作
             back(){
                 this.confirm("确定进行撤回操作吗？", () => {
                     this.$maskin();
@@ -3260,13 +3053,13 @@
                     })
                 })
             },
-            //----------------------------------新建变更和需求内变更
+            //-----------------------------------新建变更和需求内变更
             newchange(type){
                 this.$maskin();
                 if(type=="change"){
                     this.addneeds.addType = "change";//当前是新建变更
                 }else{
-                    this.addneeds.addType = "changeinset";//当前是新建变更
+                    this.addneeds.addType = "changeInset";//当前是新建变更
                 }
                 let params = new URLSearchParams();
                 params.append("BASE_NELL_ID",this.tabs.activeTableInfo.base_NEET_ID);
@@ -3283,23 +3076,23 @@
                         this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
                         this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
-                        if(type=="changeinset"){
+                        if(type=="changeInset"){
                             //需求内变更需展示
-//                            this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
-//                            this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                            this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
+                            this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
                         }else{
                             //新建变更展示原需求编号
                             this.addneeds.addform.oldcode = base.base_NEET_ID;
                             this.addneeds.addform.oldgongneng = "";
                             this.addneeds.addform.oldneedsname = "";
                         }
-                        this.showOldData(base)
+                        this.showOldData(base);
                         this.addneeds.addvisible = true;
                         this.$maskoff();
                     }
                 })
             },
-            //需求内变更的回显操作
+            //-----------------------------------需求内变更的回显操作
             showOldData(info){
                 this.addneeds.addform.code = info.base_NEET_ID;//需求编号
                 this.addneeds.addform.name = info.neel_NAME;//需求名称
@@ -3320,15 +3113,16 @@
                 this.addneeds.addform.jiaji = info.urgent?"1":"0";//是否加急
                 this.addneeds.addform.jiajireason = info.urgent;//加急原因
                 this.addneeds.addform.reform = info.background;//需求背景
-                this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
-                this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
+//                this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
+//                this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
             },
-            //---------------------------------------------分配任务
+            //-----------------------------------分配任务
             getAssign(){
                 let info = this.tabs.activeTableInfo;
                 this.assign.keyword = "";//初始化关键字
                 this.assign.checkList = [];//初始化选中的数据
                 this.assign.assignDeptIndex = "";//初始化选中的索引
+                this.assign.leftSearch = false;//关闭搜索结果的展示
                 this.assign.assignvisible = true;
                 let params = new URLSearchParams();
                 if (info.state_ID == 304) {
@@ -3337,32 +3131,44 @@
                 this.$axios.post("/base/queryUserByDemand", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-
-                        this.$set(this.assign, "searchData", data.result.allDept);
-                        this.$set(this.assign, "leftlistdata", data.result.allDept);
-                        this.$set(this.assign, "rightlistdata", data.result.dept.users);
+                        this.$set(this.assign, "searchData", data.result.users);
+//                        let all = data.result.users;
+//                        let dept = [];
+//                        for(let i of all){
+//                            for(let j of i.DEPT_ID){
+//                              if(j.DEPT_ID == i.DEPT_ID)
+//                                dept.push({
+//                                    "DEPT_NAME":i.DEPT_NAME,
+//                                    "DEPT_ID":i.DEPT_ID,
+//                                    "USER_NAME":j.USER_NAME
+//                                })
+//                            }
+//                        }
+                        this.$set(this.assign, "leftOriginData", data.result.users);
+//                        this.$set(this.assign, "rightlistdata", data.result.dept.users);
                     }
                 })
             },
-            //分配任务搜索功能
+            //-----------------------------------分配任务搜索功能
             assignSearch(){
                 let keyword = this.assign.keyword;
-                let type;
-                if (this.assign.left) {
-                    type = "left"
-                } else {
-                    type = "right"
-                }
+//                let type;
+//                if (this.assign.left) {
+//                    type = "left"
+//                } else {
+//                    type = "right"
+//                }
                 //搜索关键字判断
                 if (keyword == "") {
                     //为空
                     this.assign.leftSearch = false;
-                    this.$set(this.assign, "searchData", type == "left" ? this.assign.leftlistdata : this.assign.rightlistdata)
+//                    this.$set(this.assign, "searchData", type == "left" ? this.assign.leftOriginData : this.assign.rightlistdata)
+                    this.$set(this.assign, "searchData",this.assign.leftOriginData)
                 } else {
                     //不为空
                     let arr = [];
-                    if (type == "left") {
-                        for (let i of this.assign.leftlistdata) {
+//                    if (type == "left") {
+                        for (let i of this.assign.leftOriginData) {
                             for (let j of i.users) {
                                 if (j.user_NAME.indexOf(keyword) >= 0) {
                                     arr.push(j)
@@ -3370,17 +3176,17 @@
                             }
                         }
                         this.assign.leftSearch = true;
-                    } else {
-                        for (let i of this.assign.rightlistdata) {
-                            if (i.user_NAME.indexOf(keyword) >= 0) {
-                                arr.push(i)
-                            }
-                        }
-                    }
+//                    } else {
+//                        for (let i of this.assign.rightlistdata) {
+//                            if (i.user_NAME.indexOf(keyword) >= 0) {
+//                                arr.push(i)
+//                            }
+//                        }
+//                    }
                     this.$set(this.assign, "searchData", arr);
                 }
             },
-            //提交分配任务
+            //-----------------------------------提交分配任务
             subAssign(){
                 let result = this.assign.checkList;
                 if (result.length == 0) {
@@ -3414,7 +3220,7 @@
                     })
                 }
             },
-            //驳回
+            //-----------------------------------驳回
             rejected(){
                 let info = this.tabs.activeTableInfo;
                 this.prompt("确定进行驳回操作？", "请填写驳回理由", (val) => {
@@ -3436,7 +3242,7 @@
                     })
                 })
             },
-            //---------------------------------------------拆分任务
+            //---------------------------------------------拆分任务-----------------------------------
             splitTask(){
                 this.$maskin();
                 let info = this.tabs.activeTableInfo;
@@ -3447,20 +3253,25 @@
                     if (data.code == 200) {
                         this.split.splitvisible = true;
                         this.$set(this.split, "level", data.result.facility);//设置难易度集合
-                        this.$set(this.split, "systemarr", data.result.system);//设置系统集合
+                        this.$set(this.split, "choosesystemArr", data.result.system);//设置系统集合
                         this.$set(this.split, "personlist", data.result.dept.users);//设置人员集合
                         this.$maskoff();
                     }
                 })
             },
-            //拆分任务时间过滤器
+            //-----------------------------------涉及系统选择父级系统事件
+            splitSystemChange(e,index){
+                this.$set(this.split.systemAll[index],"version","");
+                this.$set(this.split,"systemCarr",this.split.systemAll[index]["name"]);
+            },
+            //-----------------------------------拆分任务时间过滤器
             splitDataFormatter(row, col){
                 if(row.end_DATE){
                     let date = this.$format(row.end_DATE);
                     return `${date.year}-${date.mouth}-${date.day}`
                 }
             },
-            //新增涉及系统
+            //-----------------------------------新增涉及系统
             systemEvent(index, e,type){
                 //判断当前是需求内变更的新增系统还是拆分任务的新增系统
                 let origin = this.split;
@@ -3475,12 +3286,7 @@
                         return;
                     }
                     if (origin.systemAll[index].version == "") {
-                        this.$warn("请填写版本号");
-                        return;
-                    }
-                    let  v = origin.systemAll[index].version.slice(0,1);
-                    if (v != "v" && v !="V") {
-                        this.$warn("版本号格式有误");
+                        this.$warn("请选择子系统");
                         return;
                     }
                     origin.systemAll.push({"name": "", "version": ""})
@@ -3489,19 +3295,19 @@
                     origin.systemAll.splice(index, 1)
                 }
             },
-            //查分任务新增人员弹窗
+            //-----------------------------------查分任务新增人员弹窗
             addsplitperson(){
-                let systemChooseArr = this.split.systemAll;
-                if (systemChooseArr.length != 1) {
-                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
-                        this.split.systemAll.pop()
-                    }
-                } else {
-                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
-                        this.$warn("请先选择系统并填写完整信息");
-                        return
-                    }
-                }
+//                let systemChooseArr = this.split.systemAll;
+//                if (systemChooseArr.length != 1) {
+//                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
+//                        this.split.systemAll.pop()
+//                    }
+//                } else {
+//                    if (systemChooseArr[systemChooseArr.length - 1].name == "" || systemChooseArr[systemChooseArr.length - 1].version == "") {
+//                        this.$warn("请先选择涉及系统");
+//                        return
+//                    }
+//                }
                 let params = new URLSearchParams();
                 this.$axios.post("/base/BaseInfoID", params).then((res) => {
                     let data = res.data;
@@ -3511,7 +3317,7 @@
                     }
                 })
             },
-            //选择拆分任务人员变化时判断该人员是否被分配过任务
+            //-----------------------------------选择拆分任务人员变化时判断该人员是否被分配过任务
             splitPersonChangeEvent(){
               let person = this.split.person;
               let base_id  = this.tabs.activeTableInfo.base_NEET_ID;
@@ -3521,17 +3327,19 @@
                 params.append("BASE_ID",base_id);
               this.$axios.post("/base/spiltCheck",params)
             },
-            //拆分任务新增人员操作
-            splitSub(){
-                if (this.split.splitradio == "" && this.split.splitradio != 1) {
-                    this.$warn("请选择系统名");
+            //-----------------------------------拆分任务新增人员操作
+            splitPersonSub(){
+
+                //1 是测试任务 2 是开发任务
+
+                if (this.split.splitradio == "") {
+                    this.$warn("请选择任务类型");
+                    return;
                 }
-                if (this.split.splitradio != 1) {
-                    //1为测试任务，不需要选择系统名
-                    if (!this.split.choosesysyem) {
-                        this.$warn("请选择系统名");
-                        return;
-                    }
+                //判断开发任务有没有选择系统
+                if (this.split.splitradio ==2 && !this.split.choosesystem) {
+                    this.$warn("请选择系统名");
+                    return;
                 }
                 if (!this.split.person) {
                     this.$warn("请选择分配人员");
@@ -3545,7 +3353,7 @@
                     this.$warn("请填写负责模块");
                     return;
                 }
-                if (!this.split.levelchoosen && this.split.splitradio != 1) {
+                if (!this.split.levelchoosen && this.split.splitradio == 2) {
                     this.$warn("请选择难易度");
                     return;
                 }
@@ -3561,15 +3369,16 @@
                 let obj = {
                     BASE_INFO_ID: this.split.taskcode,//任务编号
                     USER_NAME: this.split.person.split("-")[1],//人名
-                    SYSTEM_NAME: this.split.choosesysyem,//选择的系统
+                    SYSTEM_NAME: this.split.choosesystem.split(",")[1],//选择的系统名
+                    SYSTEM_ID: this.split.choosesystem.split(",")[0],//选择的系统名
                     RESPONSIBLE_MODULE: this.split.model,//负责模块
-                    FACILITY_ID: this.split.splitradio != 1?
+                    FACILITY_ID: this.split.splitradio == 2?
                         this.split.levelchoosen.split("-")[0]:"",//难度ID
-                    FACILITY_NAME: this.split.splitradio != 1?
+                    FACILITY_NAME: this.split.splitradio == 2?
                         this.split.levelchoosen.split("-")[1]:"",//难度等级
                     END_DATE: this.split.finishdate,
                     end_data_format: `${end_data.year}-${end_data.mouth}-${end_data.day}`,
-                    REQUIRED_TIME: this.split.usetime
+                    REQUIRED_TIME: this.split.usetime,
                 };
                 this.split.ids.push(this.split.person.split("-")[0]);
                 this.split.names.push(this.split.person.split("-")[1]);
@@ -3577,7 +3386,7 @@
                 this.split.splitaddvisible = false;
                 this.clearSplitAddPerson();
             },
-            //拆分任务删除人员操作
+            //-----------------------------------拆分任务删除人员操作
             splitDelete(index){
                 this.split.tableData.splice(index, 1);
                 this.split.names.splice(index, 1);
@@ -3586,17 +3395,15 @@
             clearSplitAddPerson(){
                 this.split.splitradio = "";//清空任务类型
                 this.split.person = "";//清空选择的人
-                this.split.choosesysyem = "";//清空选择的系统值
+                this.split.choosesystem = "";//清空选择的系统值
                 this.split.levelchoosen = "";//清空难易度选择的值
                 this.split.finishdate = "";//清空完成日期
                 this.split.model = "";//清空负责模块
                 this.split.taskcode = "";//清空任务编码
                 this.split.person = "";//清空选择的人员
                 this.split.usetime = "";//清空预计用时
-                this.$set(this.split,"ids",[]);
-                this.$set(this.split,"names",[]);
             },
-            //提交拆分任务结果
+            //-----------------------------------提交拆分任务结果
             splitSubmit(){
 //                let endTime = this.split.enddate;//预计结束日期
 //                let startTime = this.split.startdate;//预计开始日期
@@ -3617,12 +3424,12 @@
                 let info = this.tabs.activeTableInfo;
                 let BASE_ID = info.base_NEET_ID;//需求ID
                 let OLD_STATE = info.state_ID;//当前状态码
-                params.append("BASE_ID", BASE_ID)
-                params.append("OLD_STATE", OLD_STATE)
+                params.append("BASE_ID", BASE_ID);
+                params.append("OLD_STATE", OLD_STATE);
 //                params.append("endTime", endTime)
 //                params.append("startTime", startTime)
-                params.append("names", this.split.names)
-                params.append("ids", this.split.ids)
+                params.append("names", this.split.names);
+                params.append("ids", this.split.ids);
                 params.append("bics", JSON.stringify(this.split.tableData));
                 this.$axios.post("/base/addInfos", params).then((res) => {
                     let data = res.data;
@@ -3633,7 +3440,7 @@
                     }
                 });
             },
-            //清空拆分任务界面
+            //-----------------------------------清空拆分任务界面
             clearSplitSub(){
                 this.split.splitvisible = false;//关闭操作台
                 this.$set(this.split,"systemAll",[{
@@ -3643,7 +3450,7 @@
                 this.split.enddate = "";//结束时间
                 this.split.tableData = [];//人员信息
             },
-            //------------------------------------------开发的任务操作
+            //-----------------------------------开发的任务操作
             //开发的开始操作
             splitCodeStart(index, val){
                 let info = this.tabs.activeTableInfo;
@@ -3659,57 +3466,54 @@
                     }
                 })
             },
-            //开发的完成操作
-            splitCodeFinish(index, val){
-                let info = this.tabs.activeTableInfo;
-                let nowData = new Date();
-                let params = new URLSearchParams();
-                params.append("BASE_ID", info.base_NEET_ID);//需求ID
-                params.append("BASE_INFO_ID", val.base_INFO_ID);//拆分任务ID
-                if (nowData.getTime() <= val.end_DATE) {
-                    //在预计时间内完成
-                    this.sendFinished(params)
-                } else {
-                    this.taskFinished.usetime = "";
-                    this.taskFinished.reason = "";
-                    this.taskFinished.taskFinishedvisible = true;
-                    this.taskFinished.taskId = val.base_INFO_ID;
-                }
-            },
-            //完成提交操作
-            subFinishTask(){
-                let info = this.tabs.activeTableInfo;
-                let params = new URLSearchParams();
-                if (!this.taskFinished.usetime) {
-                    this.$warn("请填写实际用时");
+            //-----------------------------------开发的完成操作
+            splitTaskFinish(index, val,type){
+                if(type == "test" && !this.testTask.typevalue){
+                    this.$warn("请选择用例类型");
                     return;
                 }
-                if (!this.taskFinished.reason) {
+                this.taskFinished.usetime = "";//实际用时
+                this.taskFinished.reason = "";//超市原因
+                this.taskFinished.outtime = false;//隐藏超时原因
+                this.taskFinished.taskId = val.base_INFO_ID;//当前任务ID
+                this.taskFinished.taskFinishedvisible = true;
+                let nowDate = new Date();
+//                let params = new URLSearchParams();
+//                params.append("BASE_ID", info.base_NEET_ID);//需求ID
+//                params.append("BASE_INFO_ID", val.base_INFO_ID);//拆分任务ID
+                if (nowDate.getTime() > val.end_DATE) {
+                    this.taskFinished.outtime = true;//显示超时原因
+                }
+            },
+            //-----------------------------------完成提交操作
+            subFinishTask(){
+                if(!this.taskFinished.usetime){
+                    this.$warn("请填写实际用时");
+                }
+                if(this.taskFinished.outtime && !this.taskFinished.reason){
                     this.$warn("请填写超时原因");
                     return;
                 }
+                this.$maskin();
+                let info = this.tabs.activeTableInfo;
+                let params = new URLSearchParams();
                 params.append("BASE_ID", info.base_NEET_ID);//需求ID
-                params.append("REMARK", this.taskFinished.reason);//原因
-                params.append("ACTUAL_TIME", this.taskFinished.usetime);//实际用时
                 params.append("BASE_INFO_ID", this.taskFinished.taskId);//当前拆分任务ID
-                this.taskFinished.taskFinishedvisible = false;
-                this.sendFinished(params)
-            },
-            //调用完成接口
-            sendFinished(params){
-                this.$maskin()
+                if(this.taskFinished.outtime){
+                    params.append("REMARK", this.taskFinished.reason);//原因
+                }
+                params.append("WORK_TIME", this.taskFinished.usetime);//实际用时
                 this.$axios.post("/base/completeInfo", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.taskFinished.taskFinishedvisible = false;
-                        this.taskFinished.taskId = "";
                         this.$success("操作成功！");
-                        this.$maskoff()
+                        this.$maskoff();
                         this.loadData();
                     }
                 })
             },
-            //展示给开发人员的bug
+            //-----------------------------------展示给开发人员的bug
             showCodeBUG(){
                 let info = this.tabs.activeTableInfo;
                 let params = new URLSearchParams();
@@ -3726,7 +3530,7 @@
                     }
                 })
             },
-            //开发的完成和转接操作
+            //-----------------------------------开发的完成和转接操作
             codeBUGAction(index, val, type){
                 let info = this.tabs.activeTableInfo;
                 let params = new URLSearchParams();
@@ -3755,7 +3559,7 @@
                     });
                 }
             },
-            //------------------------------------拆分任务详情点击事件，展示数据
+            //-----------------------------------拆分任务详情点击事件，展示数据
             splitTaskClick(val){
                 this.$set(this.split, "hasSplitTaskData", []);
                 //为空时不展示内容
@@ -3785,8 +3589,8 @@
                 this.split.reviewData.EXPECT_END = val.EXPECT_END;//预期结束时间
                 this.split.reviewData.EXPECT_START = val.EXPECT_START;//预期开始时间
             },
-            //-----------------------------------------测试的任务操作
-            //选择用例类型
+            //-----------------------------------测试的任务操作
+            //-----------------------------------选择用例类型
             chooseTestType(){
                 if (!this.testTask.type) {
                     this.$warn("请选择用例类型");
@@ -3803,12 +3607,12 @@
                     }
                 })
             },
-            //上传用例模板和开发的手册
+            //-----------------------------------上传用例模板和开发的手册
             uploadModel(e,type){
                 this.$maskin();
                 let file = e.target.files[0];
                 let params = new FormData();
-                params.append("token",localStorage.getItem("token"));
+                params.append("token",this.$getToken());
                 params.append("TYPE",type);
                 params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
                 params.append("file",file);
@@ -3823,11 +3627,11 @@
                     }
                 });
             },
-            //下载用例模板和手册
+            //-----------------------------------下载用例模板和手册
             downloadModel(val){
                 this.$axios.get(`/base/download/?ID=${val.id}&token=${localStorage.getItem('token')}`);
             },
-            //测试点击开始
+            //-----------------------------------测试点击开始
             testTaskStart(index, val){
                 if (!this.testTask.typevalue) {
                     this.$warn("请先选择用例类型");
@@ -3848,7 +3652,7 @@
                     }
                 })
             },
-            //测试点击完成
+            //-----------------------------------测试点击完成
             splitTestFinish(index, val){
                 let nowtime = new Date();
                 let params = new URLSearchParams();
@@ -3872,7 +3676,7 @@
                     this.taskFinished.taskId = val.base_INFO_ID;
                 }
             },
-            //测试填写超时原因提交
+            //-----------------------------------测试填写超时原因提交
             testSubTask(){
                 if (!this.taskFinished.usetime) {
                     this.$warn("请填写实际用时");
@@ -3898,7 +3702,7 @@
                     }
                 })
             },
-            //进入测试任务
+            //-----------------------------------进入测试任务
             goTestTask(index, val){
                 this.$maskin();
                 this.testTask.testtaskvisible = false;
@@ -3916,7 +3720,7 @@
                     }
                 })
             },
-            //测试新增步骤
+            //-----------------------------------测试新增步骤
             addTestStep(){
                 if (!this.testTask.step) {
                     this.$warn("请填写步骤");
@@ -3935,11 +3739,11 @@
                 this.testTask.result = "";
                 this.testTask.addvisible = false;
             },
-            //删除新增的步骤
+            //-----------------------------------删除新增的步骤
             testTaskDel(index, val){
                 this.testTask.tableData.splice(index, 1);
             },
-            //提交步骤
+            //-----------------------------------提交步骤
             subTestTask(){
                 if (!this.testTask.tableData.length) {
                     this.$warn("请添加步骤");
@@ -3969,7 +3773,7 @@
                     }
                 })
             },
-            //测试通过
+            //-----------------------------------测试通过
             testTaskComplate(val, index){
                 this.confirm("是否通过该项测试？", () => {
                     this.$maskin();
@@ -3986,7 +3790,7 @@
                     })
                 })
             },
-            //测试不通过
+            //-----------------------------------测试不通过
             testTaskNotAllow(val, index){
                 console.log(val)
                 console.log(index)
@@ -4005,7 +3809,7 @@
                     }
                 });
             },
-            //测试分配给开发bug
+            //-----------------------------------测试分配给开发bug
             doTestAssignBug(){
                 let person = this.testTask.assignPerson;
                 if(!this.testTask.rejectReason){
@@ -4038,7 +3842,7 @@
                     }
                 })
             },
-            //清除选择的人员
+            //-----------------------------------清除选择的人员
             clearAssignBug(){
                 this.testTask.rejectReason = "";//不通过原因
                 this.testTask.assignPerson = "";//分配给人员的信息
@@ -4046,7 +3850,7 @@
                 this.testTask.step_index = "";//当前步骤的索引
                 this.testTask.except = "";//预期效果
             },
-            //测试的bug清单
+            //-----------------------------------测试的bug清单
             showTestAllBug(){
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
@@ -4058,7 +3862,7 @@
                     }
                 })
             },
-            //测试的bug操作
+            //-----------------------------------测试的bug操作
             testBUGAction(index,row,type){
                 console.log(index)
                 console.log(row)
@@ -4076,7 +3880,7 @@
                     }
                 })
             },
-            //问题汇总
+            //-----------------------------------问题汇总
             loadbuglist(){
                 let info = this.testTask.testTaskActiveInfo;
                 let params = new URLSearchParams();
@@ -4089,7 +3893,7 @@
                     }
                 })
             },
-            //bug分配给人员
+            //-----------------------------------bug分配给人员
             bugListAssign(){
                 if (this.testTask.BUGActiveData.length == 0) {
                     this.$warn("请选择待分配问题");
@@ -4104,20 +3908,20 @@
                     }
                 });
             },
-            //bug列表选中事件
+            //-----------------------------------bug列表选中事件
             buglistChange(val){
                 this.$set(this.testTask, "BUGActiveData", val)
             },
-            //关闭选择人员的弹窗
+            //-----------------------------------关闭选择人员的弹窗
             closeAssign(){
                 this.$set(this.testTask, "BUGActiveData", []);
                 this.testTask.assignvisible = false;
             },
-            //关闭开发选择转接人员
+            //-----------------------------------关闭开发选择转接人员
             closeAssign_code(){
                 this.testTask.assignvisible_code = false;
             },
-            //选中人员后进行分配操作(开发的转接bug同样在此处)
+            //-----------------------------------选中人员后进行分配操作(开发的转接bug同样在此处)
             assignpersonAction(e, code){
                 if (!code) {
                     if (!this.testTask.assignPerson) {
@@ -4175,17 +3979,17 @@
                     })
                 }
             },
-            //分配问题时是否能被选中
+            //-----------------------------------分配问题时是否能被选中
             assignCheckedAble(val){
                 return val.ASSIGNOR_PERSON_NAME ? false : true
             },
-            //开启上传弹框
+            //-----------------------------------开启上传弹框
             showTestReportUpload(){
                 this.$set(this.testReport,"fileIds",[]);
                 this.$set(this.testReport,"uploadFile",[]);
                 this.testReport.visible = true;
             },
-            //上传测试报告
+            //-----------------------------------上传测试报告
             uploadTestReport(e){
                 let file = e.target.files[0];
                 let type = this.testReport.type;//测试报告类型
@@ -4193,7 +3997,7 @@
                 let params = new FormData();
                 params.append("file",file);
                 params.append("TYPE",type);
-                params.append("token",localStorage.getItem("token"));
+                params.append("token",this.$getToken());
                 params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
                 this.$axios.post("/base/upload",params).then((res)=>{
                     let data= res.data;
@@ -4208,7 +4012,7 @@
             testReportSub(){
 
             },
-            //技术经理确认变更
+            //-----------------------------------技术经理确认变更
             doChangeInset(){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -4224,13 +4028,6 @@
                         //回显
 //                        this.$set(this.changeInset,"oldSystem",data.result.oldSystem);//之前选择的系统
                         this.$set(this.changeInset,"tableData",data.result.oldInfos);//原拆分任务
-                        for(let i of data.result.oldSystem){
-                            let obj = {
-                                "name":i.indexOf("V")== -1?i.split("v")[0]:i.split("V")[0],
-                                "version":i.indexOf("V")== -1?'v'+i.split("v")[1]:'V'+i.split("V")[1]
-                            };
-                            this.changeInset.systemAll.unshift(obj)
-                        }
                         this.$set(this.changeInset,"allsystem",data.result.system);//可选择的所有系统
                         this.$set(this.changeInset,"level",data.result.facility);//难易度
                         this.$maskoff();
@@ -4238,23 +4035,18 @@
                 })
 
             },
-            //过滤器
+            //-----------------------------------过滤器
             changeInsetMatter(row){
                 let data = this.$format(row.end_DATE);
                 return `${data.year}-${data.mouth}-${data.day}`
             },
-            //编辑回显操作
+            //-----------------------------------编辑回显操作
             editChangeInset(index,row){
-                let length = this.changeInset.systemAll.length;
-                if(this.changeInset.systemAll[length-1]["version"] == "" ||
-                    this.changeInset.systemAll[length-1]["name"] == ""){
-                    this.changeInset.systemAll.pop();
-                }
                 this.changeInset.index = index;
                 this.changeInset.splitaddvisible = true;
                 this.changeInset.taskcode = row.base_INFO_ID;//原需求ID
                 this.changeInset.system_NAME = row.system_NAME;//系统名
-                this.changeInset.choosesysyem = row.system_NAME;//系统名
+                this.changeInset.choosesystem = row.system_ID+','+row.system_NAME;//系统名
                 this.changeInset.person = row.user_NAME;//人员
                 this.changeInset.finishdate = row.end_DATE;//完成日期
                 this.changeInset.model = row.responsible_MODULE;//负责模块
@@ -4262,9 +4054,9 @@
                 this.changeInset.usetime = row.required_TIME;//预计用时
                 this.changeInset.ACTUAL_TIME = "";//实际用时
             },
-            //编辑原任务提交
+            //-----------------------------------编辑原任务提交
             changeInsetPersonSub(){
-                if (this.changeInset.choosesysyem == "" && this.changeInset.system_NAME) {
+                if (this.changeInset.choosesystem == "" && this.changeInset.system_NAME) {
                     this.$warn("请选择系统");
                     return;
                 }
@@ -4304,7 +4096,7 @@
                 let info = this.changeInset;
                 let index = this.changeInset.index;
                 //设置表格的数据
-                this.setChangeTaskInfo(index,"system_NAME",info.choosesysyem);//系统名
+                this.setChangeTaskInfo(index,"system_NAME",info.choosesystem);//系统名
                 this.setChangeTaskInfo(index,"end_DATE",`${end_data.year}-${end_data.mouth}-${end_data.day}`);//完成日期
                 this.setChangeTaskInfo(index,"responsible_MODULE",info.model);//负责模块
                 this.setChangeTaskInfo(index,"facility_NAME",info.system_NAME?info.levelchoosen.split("-")[1]:"");//难易度
@@ -4314,7 +4106,7 @@
                 let obj = {
                     BASE_INFO_ID: this.changeInset.taskcode,//任务编号
                     USER_NAME: this.changeInset.person,//人名
-                    SYSTEM_NAME: this.changeInset.choosesysyem,//选择的系统
+                    SYSTEM_NAME: this.changeInset.choosesystem,//选择的系统
                     RESPONSIBLE_MODULE: this.changeInset.model,//负责模块
                     FACILITY_ID: this.changeInset.system_NAME?
                         this.changeInset.levelchoosen.split("-")[0]:"",//难度ID
@@ -4324,7 +4116,7 @@
                 };
                 this.changeInset.subData[index] = obj;
             },
-            //提交需求内变更结果
+            //-----------------------------------提交需求内变更结果
             subChangeInset(){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -4341,6 +4133,28 @@
             },
             setChangeTaskInfo(index,key,value){
                 this.$set(this.changeInset.tableData[index],key,value)
+            },
+            //-----------------------------------加载视图模式数据
+            loadtrack(){
+                let params = new URLSearchParams();
+                params.append("BASE_ID",this.tabs.activeTableInfo.base_NEET_ID);
+                this.$axios.post("/base/queryView",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        let res = data.result;
+                        let arr = [];
+                        let infos = [];
+                        console.log(this.tabs.genzong);
+                        for(let i of res){
+                            if(i.view_DESC){
+                                i.view_DESC = i.view_DESC.split(",");
+                            }
+                            arr.push(i)
+                        }
+                        this.$set(this.tracking, "data",arr);
+                        this.tracking.trackingvisiible = true;
+                    }
+                });
             }
         }
     }

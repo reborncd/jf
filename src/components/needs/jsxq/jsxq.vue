@@ -2921,7 +2921,7 @@
                 this.$maskin();
                 let file = e.target.files[0];
                 let params = new FormData();
-                params.append("token", localStorage.getItem("token"));
+                params.append("token", this.$getToken());
                 params.append("TYPE", type);
                 params.append("TECHNOLOGY_NEEL_ID", this.tabs.activeTableInfo.technology_NEEL_ID);
                 params.append("file", file);

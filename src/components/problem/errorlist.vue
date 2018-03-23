@@ -830,7 +830,7 @@
           }
         };
          let params = new FormData();
-         params.append("token",localStorage.getItem("token"))
+         params.append("token",this.$getToken())
          params.append("file",e.target.files[0]);	
          this.$axios.post("/fault/upload", params,config).then((res)=>{
          	let data =res.data;
@@ -853,7 +853,7 @@
       addPopup(){
           let params = new FormData();
           params.append("status", 1);
-          params.append("token", localStorage.getItem("token"));
+          params.append("token", this.$getToken());
           this.$axios.post("/fault/getNo",params).then((res) => {
               let data = res.data;
               this.popup.popTxt.id=data.id;
@@ -881,7 +881,7 @@
           return;
         }
         let params = new FormData();
-        params.append("token",localStorage.getItem("token"))
+        params.append("token",this.$getToken())
         params.append("priperty", this.popup.popTxt.priperty2);	//故障等级
         params.append("relationUser", this.popup.popTxt.relationUser);	//故障分析人员
         params.append("description", this.popup.popTxt.description);//故障描述

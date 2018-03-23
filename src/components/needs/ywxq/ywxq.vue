@@ -3485,7 +3485,7 @@
                 this.$maskin();
                 let file = e.target.files[0];
                 let params = new FormData();
-                params.append("token",localStorage.getItem("token"));
+                params.append("token",this.$getToken());
                 params.append("TYPE",type);
                 params.append("BASE_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 params.append("file",file);
@@ -3802,7 +3802,7 @@
                 let params = new FormData();
                 params.append("file",file);
                 params.append("TYPE",type);
-                params.append("token",localStorage.getItem("token"));
+                params.append("token",this.$getToken());
                 params.append("BASE_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 this.$axios.post("/work/upload",params).then((res)=>{
                     let data= res.data;

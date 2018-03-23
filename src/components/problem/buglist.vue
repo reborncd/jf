@@ -830,7 +830,7 @@
 	          }
 	        };
 	         let params = new FormData();
-	         params.append("token",localStorage.getItem("token"))
+	         params.append("token",this.$getToken())
 	         params.append("file",e.target.files[0]);	
 	         this.$axios.post("/fault/upload", params,config).then((res)=>{
 	         	let data =res.data;
@@ -861,7 +861,7 @@
 				})*/
               let params = new FormData();
               params.append("status", 2);
-              params.append("token", localStorage.getItem("token"));
+              params.append("token", this.$getToken());
               this.$axios.post("/fault/getNo",params).then((res) => {
                   let data = res.data;
                   this.popup.popTxt.id=data.id;
@@ -896,7 +896,7 @@
 					    }
 	            	}
 	        	let params = new FormData();
-	        	params.append("token",localStorage.getItem("token"))
+	        	params.append("token",this.$getToken())
 		        params.append("description", this.popup.popTxt.description);//BUG说明
 		        params.append("title",this.popup.popTxt.title);//标题
 		        params.append('createUser',this.popup.popTxt.createUser);//提交人

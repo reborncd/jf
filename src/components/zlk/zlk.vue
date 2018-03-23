@@ -572,7 +572,7 @@
                     }
                 };
                 let params = new FormData();
-                params.append("token", localStorage.getItem("token"));
+                params.append("token", this.$getToken());
                 params.append("file", file[0]);
                 this.$axios.post("/datum/upload", params, config).then((res) => {
                     let data = res.data;
@@ -598,7 +598,7 @@
             },
             dlFromTable(row){
                 let id = row.at_ID;//文件ID
-                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${localStorage.getItem("token")}`)
+                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${this.$getToken()}`)
             }
         }
     }

@@ -77,9 +77,9 @@
 
 <template>
 	<div class="workreport common-card-wrap" style="height: 100%;">
-		<el-card class="box-card">
+		<el-card class="box-card" >
 			<div slot="header" class="clearfix">
-				<span class="card-title">项目统计</span>
+				<span class="card-title">人员统计</span>
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
 				<el-select v-model="select_value" clearable size="mini" @change="loadChange">
@@ -90,18 +90,18 @@
 					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
 					</el-option>
 				</el-select>
-				<el-select v-model="date_value" clearable size="mini" @change="loadChange">
-					<el-option v-for="(item, index) in date" :label="item.label" :value="item.value">
-					</el-option>
-				</el-select>
-				<!--<div class="fr">
+				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
-						<el-button size="mini" type="primary">生成报告
+						<el-button size="mini" type="primary" @click="getPdf('问题统计')">生成报告
 						</el-button>
 					</div>
-				</div>-->
+				</div>
+				<div class="i-b" style="float: right;">
+					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="loadChange" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+					</el-date-picker>
+				</div>
 			</div>
-			<div class="text item workreport-wrapper">
+			<div class="text item workreport-wrapper" id="pdfDom">
 				<div class="report-statistics clear">
 					<el-form label-width="100px" label-position="right">
 						<el-row :gutter="20">
@@ -137,13 +137,17 @@
 						</el-form>
 						<div class="table-list">
 							<el-table :data="showData" style="width: 100%">
-								<el-table-column prop="st_NEELID" label="需求编号"></el-table-column>
-								<el-table-column prop="st_STARTDATE" label="提交日期"></el-table-column>
-								<el-table-column prop="st_ENDDATE" label="期望日期"></el-table-column>
-								<el-table-column prop="st_NEELNAME" label="需求名称"></el-table-column>
-								<el-table-column prop="st_NEELSOURCE" label="需求来源"></el-table-column>
-								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统"></el-table-column>
-								<el-table-column prop="st_RRIORITY" label="优先级"></el-table-column>
+								<el-table-column label="需求编号" width="200">
+									<template slot-scope="scope">
+										<span @click="goneeds($event,scope.row)" class="tab-opt" >{{scope.row.st_NEELID}}</span>
+									</template>
+								</el-table-column>
+								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
+								<el-table-column prop="st_ENDDATE" label="期望日期" width="110"></el-table-column>
+								<el-table-column prop="st_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>
 								<el-table-column prop="st_STATE" label="状态"></el-table-column>
 								<!--<el-table-column prop="st_WORKHOURS" label="更新时间"></el-table-column>-->
 								<!--<el-table-column prop="st_SCHEDULE" label="操作">
@@ -178,7 +182,7 @@
 					dept_id:"personal"
 				}], //部门
 				selectArr_value: "",
-				date_value: "week",
+				date_value: "orther",
 				date: [{
 					label: "日报",
 					value: "day"
@@ -194,7 +198,42 @@
 				}],
 				showData: "",
 				dateComp: {},
-				dateRange: '',
+				dateRange: [], //时间区间
+				pickerOptions2: {
+					shortcuts: [{
+						text: '日报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '周报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * start.getDay());
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '月报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '年报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							start.setMonth(0);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
 				workHoursArr: [],
 				ifshowPerson:false,
 				keyWord: ''
@@ -227,6 +266,15 @@
 			loadData() {
 				this.$maskin();
 				let params = new URLSearchParams();
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					this.date_value = "day"
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					this.date_value = "orther"
+				}
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
 				this.$axios.post("/statistical/getPersonlStatisticalLists", params).then((res) => {
@@ -236,14 +284,24 @@
 					} else {
 						this.$warn(data.message);
 					}
-					this.$maskoff();
+					 
 				})
 			},
 			loadChartsData() {
 				this.$maskin();
 				let params = new URLSearchParams();
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					this.date_value = "day"
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					this.date_value = "orther"
+				}
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
+				
 				if(this.select_value=="personal" && this.selectArr_value){
 					params.append("deptId", this.selectArr_value);
 				}
@@ -275,6 +333,15 @@
 			loadHours() {
 				this.$maskin();
 				let params = new URLSearchParams();
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					this.date_value = "day"
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					this.date_value = "orther"
+				}
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
 				if(this.select_value=="personal" && this.selectArr_value){
@@ -360,7 +427,7 @@
 					}]
 				};
 				proBar.setOption(option);
-				this.$maskoff();
+				 
 
 			},
 			loadChart(legendArr, datas, ids) {
@@ -443,7 +510,7 @@
 						} else {
 							this.$warn(data.message);
 						}
-						this.$maskoff();
+						 
 					})
 				}
 
@@ -477,6 +544,7 @@
 							var res = params[0].name + "</br>"
 							var date0 = params[0].data;
 							var date1 = params[1].data;
+							console.log(params[0])
 							date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
 							date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
 							res += params[0].seriesName + ":" + date0 + "</br>"
@@ -513,7 +581,27 @@
 					]
 				};
 				proBar.setOption(option);
-				this.$maskoff();
+				 this.$maskoff();
+			},//跳转到需求页面
+			goneeds(e, val) {
+				e.cancelBubble = true;
+				let path = "";
+				if(val.st_RETURNTYPE == "TECH") {
+					path = "技术需求"
+				}
+				if(val.st_RETURNTYPE == "WORK") {
+					path = "业务需求"
+				}
+				if(val.st_RETURNTYPE == "BASE") {
+					path = "基础建设"
+				}
+				if(val.st_RETURNTYPE == "DALIY") {
+					path = "日常任务"
+				}
+				
+				this.$go("", "", {
+					"neelId": val.st_NEELID
+				}, path);
 			}
 
 		}

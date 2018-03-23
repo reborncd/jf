@@ -85,14 +85,16 @@
 					<!--表格部分-->
 					<div class="table-list">
 						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
-							<el-table-column prop="nell" label="需求编号"></el-table-column>
+							<el-table-column prop="nell" label="需求编号" width="200"></el-table-column>
 							<el-table-column prop="desired_START_DATETIME" label="预计上线日期" width="110"></el-table-column>
+							<el-table-column prop="golive_DATE" label="上线日期" width="110"></el-table-column>
 							<el-table-column prop="desired_END_DATETIME" label="预期上线时间" width="110"></el-table-column>
-							<el-table-column prop="system_NAME" label="系统名称"></el-table-column>
-							<el-table-column prop="golive_SYSTEM" label="子系统"></el-table-column>
-							<el-table-column prop="ban" label="版本号"></el-table-column>
-							<el-table-column prop="product_FUNCTION" label="产品功能"></el-table-column>
-							<el-table-column prop="colive_TYPE_NAME" label="上线类型"></el-table-column>
+							<el-table-column prop="golive_TIME" label="上线时间" width="110"></el-table-column>
+							<el-table-column prop="system_NAME" label="系统名称" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="golive_SYSTEM" label="子系统" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="ban" label="版本号" width="70"></el-table-column>
+							<el-table-column prop="colive_TYPE_NAME" label="上线类型" width="110"></el-table-column>
+							<el-table-column prop="release_HEAD" label="发布负责人" width="110"></el-table-column>
 							<el-table-column prop="state_NAME" label="状态"></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
@@ -152,10 +154,10 @@
 												<el-form-item label="重要程度">{{tabs.data_one.DemandTechnology.importance_NAME}}
 												</el-form-item>
 											</el-col>
-											<!--<el-col :span="12">-->
-												<!--<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.urgent}}</span><span>{{tabs.data_one.DemandTechnology.urgent_NAME}}</span>-->
-												<!--</el-form-item>-->
-											<!--</el-col>-->
+											<!--<el-col :span="12">
+												<el-form-item label="是否加急"><span style="margin-right: 40px;">{{tabs.data_one.DemandTechnology.urgent}}</span><span>{{tabs.data_one.DemandTechnology.urgent_NAME}}</span>
+												</el-form-item>
+											</el-col>-->
 											<el-col :span="24">
 												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}
 												</el-form-item>
@@ -207,7 +209,7 @@
 
 							<el-tab-pane label="操作台" name="console" v-if="state.id!=5 && state.id!=6">
 								<div class="console-tab-content">
-									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_SAVE || tabs.data_one.GOLIVE_ZLGT">
+									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_ZLGT">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
 										<div class="console-action fr" v-if="tabs.consoleActionVisible">
 											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item,)">{{item.name}}
@@ -323,7 +325,12 @@
 												</el-form-item>
 											</el-col>
 										</el-row>
-
+                                        <el-row :gutter="20">
+											<el-col :span="24">
+												<el-button style="display: block;margin: 0 auto;" @click="submitConsole" size="medium" type="primary">上线申请
+												</el-button>
+											</el-col>
+										</el-row>
 									</el-form>
 
 									<el-form label-width="60px" label-position="left" v-if="state.id==9 || state.id==10 || state.id==4 || state.id==2 || state.id==3">
@@ -382,19 +389,19 @@
 								<el-col :span="24" :md="24">
 									<el-radio v-model="onlineSure.addform.sxjg" label="5">成功</el-radio>
 									<el-radio v-model="onlineSure.addform.sxjg" label="6">失败</el-radio>
-									<el-radio v-model="onlineSure.addform.sxjg" label="10">回滚</el-radio>
+									<el-radio v-model="onlineSure.addform.sxjg" label="10">未上线</el-radio>
 								</el-col>
 							</el-row>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" v-if="onlineSure.addform.sxjg==10">
+					<!--<el-col :span="12" v-if="onlineSure.addform.sxjg==10">
 						<el-form-item label="回滚系统">
 							<el-select v-model="onlineSure.addform.hgxt">
 								<el-option v-for="(item, index) in onlineSystems" :label="item.key" :value="item.value">
 								</el-option>
 							</el-select>
 						</el-form-item>
-					</el-col>
+					</el-col>-->
 					<el-col :span="12" :md="12">
 						<el-form-item label="操作日期">
 							<el-date-picker type="date" placeholder="操作日期" v-model="onlineSure.addform.czrq" style="width: 100%;"></el-date-picker>
@@ -877,6 +884,7 @@
 				e.cancelBubble = true;
 				this.onlineSure.addvisible = true;
 				this.onlineSure.addform.sxxqId = val.golive_ID;
+				this.onlineSure.addform.fbfzr=val.release_HEAD
 				this.systeMv2(val);
 			},
 			mustOnline() {
@@ -885,10 +893,10 @@
 					this.$warn("请填写发布负责人");
 					firm = "0"
 				}
-				if(this.onlineSure.addform.sxjg==10 && !this.onlineSure.addform.hgxt){
-					this.$warn("请选择回滚系统");
-					firm = "0"
-				}
+//				if(this.onlineSure.addform.sxjg==10 && !this.onlineSure.addform.hgxt){
+//					this.$warn("请选择回滚系统");
+//					firm = "0"
+//				}
 				if(this.onlineSure.addform.sxjg!=5 && !this.onlineSure.addform.smk){
 					this.$warn("请填写说明");
 					firm = "0"
@@ -914,7 +922,7 @@
 				params.append('DESIRED_START_DATETIMES', this.onlineSure.addform.czrq);
 				params.append('DESIRED_END_DATETIME', this.onlineSure.addform.czsj);
 				params.append('CZSM', this.onlineSure.addform.smk);
-				params.append('SYSTEM', this.onlineSure.addform.hgxt);
+//				params.append('SYSTEM', this.onlineSure.addform.hgxt);
 				this.$axios.post("/golive/goliveyse", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -999,7 +1007,7 @@
 					})
 				}
 				this.goliveType()
-				this.systemList()
+				this.systemList(val.nell)
 				this.allTrack(val.golive_ID)
 				//添加审批字段
 				this.agreeData.COLIVE_ID = val.colive_ID
@@ -1039,11 +1047,12 @@
 					this.$maskoff();
 				})
 			},
-			systemList() {
+			systemList(val) {
 				this.$maskin();
 				let params = new URLSearchParams()
+				params.append('NEEL_ID', val)
 				this.aboutSystems=[]
-				this.$axios.post("/golive/systemlist", params).then((res) => {
+				this.$axios.post("/golive/systemlistx", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
 						for(let i of data.result) {
