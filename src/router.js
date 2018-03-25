@@ -12,6 +12,9 @@ let option = {
             path: '/login',
             component: resolve => require(['./components/account/login.vue'], resolve)
         }, {
+            path: '*',
+            redirect: "/home"
+        }, {
             path: '/register',
             component: resolve => require(['./components/account/register.vue'], resolve)
         }, {
@@ -54,10 +57,12 @@ let option = {
                     path: 'rolelist',
                     name:"人员配置",
                     component: resolve => require(['./components/power/rolelist.vue'], resolve)
-                },{
-                    path: 'power',
-                    component: resolve => require(['./components/power/power.vue'], resolve)
-                },{
+                },
+                // {
+                //     path: 'power',
+                //     component: resolve => require(['./components/power/power.vue'], resolve)
+                // },
+                {
                     path: 'deptlist',
                     name:"部门编辑",
                     component: resolve => require(['./components/power/deptlist.vue'], resolve)

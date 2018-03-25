@@ -121,7 +121,7 @@ Vue.prototype.prompt = function (title, msg, success, cancel) {
     }).then(({value}) => {
         success({value})
     }).catch(() => {
-        cancel()
+        cancel ? cancel() : ""
     });
 };
 //数组去重
@@ -194,9 +194,9 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    //baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
+    baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
-    baseURL:"http://172.16.2.124:8082",//欧
+    //baseURL:"http://172.16.2.124:8082",//欧
     // baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
     //baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
@@ -253,7 +253,7 @@ instance.interceptors.response.use(function (response) {
         Vue.prototype.$maskoff();
     }
     if (response.data.code == 210) {
-        Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
+        Vue.prototype.$warn("您当前无权限操作，请重新登录或联系有关部门");
         Vue.prototype.$maskoff();
     }
     return response;
@@ -270,7 +270,7 @@ Vue.prototype.$getToken = ()=>{
 }
 //--------正则匹配
 Vue.prototype.$reg = {
-    "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
+    "email": /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/,
     "en": /[a-zA-Z]/,
     "cn": /[\u4e00-\u9fa5]/,
     "number": /^[0-9]*$/,

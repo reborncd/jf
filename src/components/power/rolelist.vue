@@ -94,12 +94,13 @@
                         </div>
                         <el-table stripe class="table_role fr" :data="tableData" border style="width:85%"
                                   :height="tableHeight">
-                            <el-table-column align="center" prop="user_ACCOUNT" label="用户名"></el-table-column>
-                            <el-table-column align="center" prop="user_NAME" label="姓名"></el-table-column>
-                            <el-table-column align="center" prop="dept_name" label="所处部门"></el-table-column>
-                            <el-table-column align="center" prop="role_NAME" label="职位"></el-table-column>
-                            <el-table-column align="center" prop="label_LANGUAGE_NAME" label="开发语言"></el-table-column>
-                            <el-table-column align="center" :formatter="formatter" label="职务状态"></el-table-column>
+                            <el-table-column align="center" prop="user_ACCOUNT" label="用户名" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" prop="user_NAME" label="姓名" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" prop="dept_name" label="所处部门" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" prop="role_NAME" label="角色" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" prop="position" label="职位" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" prop="label_LANGUAGE_NAME" label="开发语言" show-overflow-tooltip></el-table-column>
+                            <el-table-column align="center" :formatter="formatter" label="职务状态" show-overflow-tooltip></el-table-column>
                             <!--:filter-method="filterTag"-->
                             <!--:filters="[{text:0,value:'离职'},{text:1,value:'在职'}]" -->
                             <el-table-column align="center" label="操作" width='250'>
@@ -108,9 +109,9 @@
                                     <el-button @click="editRow(scope.row,scope,'edit')" size="small"
                                                :disabled="scope.row.status == 0?true:false">编辑
                                     </el-button>
-                                    <el-button @click="rowAction(scope.row,scope,'leave')" size="small"
-                                               :disabled="scope.row.status == 0?true:false">离职
-                                    </el-button>
+                                    <!--<el-button @click="rowAction(scope.row,scope,'leave')" size="small"-->
+                                               <!--:disabled="scope.row.status == 0?true:false">离职-->
+                                    <!--</el-button>-->
                                     <el-button @click="rowAction(scope.row,scope,'del')" size="small" type="danger">删除
                                     </el-button>
                                 </template>
@@ -121,10 +122,7 @@
             </div>
         </el-card>
         <el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center
-                   label-position="left"
-                   width="40%" append-to-body modal-append-to-body
-                   :before-close="closeDialog"
-        >
+                   label-position="left" width="50%" append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="80px">
                 <el-form-item label="用户名">
                     <el-input v-model="dialogData.personData.user_ACCOUNT" disabled></el-input>
@@ -137,20 +135,20 @@
                 </el-form-item>
                 <el-form-item label="所属部门">
                     <el-select v-model="dialogData.personData.chooseDept" clearable
-                               :placeholder="dialogOption.infoShow?'':'请选择部门'"
-                               @change="chooseDeptEvent"
-                               :disabled="dialogOption.infoShow">
+                               :placeholder="dialogOption.infoShow?'':'请选择部门'" @change="chooseDeptEvent" :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.deptRoles" :label="item.dept_name"
                                    :value="item.dept_id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="职位">
+                <el-form-item label="角色">
                     <el-select v-model="dialogData.personData.chooseRole" clearable
-                               :placeholder="dialogOption.infoShow?'':'请根据部门选择职位'"
-                               :disabled="dialogOption.infoShow">
+                               :placeholder="dialogOption.infoShow?'':'请根据部门选择职位'" :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.deptRoles_choosen" :label="item.role_NAME"
                                    :value="item.role_ID"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="职位">
+                    <el-input v-model="dialogData.personData.position"></el-input>
                 </el-form-item>
                 <el-form-item label="开发语言">
                     <el-select v-model="dialogData.personData.chooseLanguage" clearable
@@ -218,7 +216,8 @@
                         choosedeptUser: "",//直属上级的部门id
                         choosedeptUserId: "",//直属上级的姓名id
                         Days:"",//在职时间
-                        sex:""//性别
+                        sex:"",//性别
+                        position:"",//职位
                     },
                     deptData:{
                         roleDept:[],//根部门数组
@@ -246,7 +245,7 @@
         methods: {
             //加载数据
             loadData(){
-                this.$maskin(1);
+                this.$maskin();
                 let params = new URLSearchParams();
                 this.$axios.post("role/queryDept", params).then((res) => {
                     let data = res.data;
@@ -265,18 +264,32 @@
                         this.tempTableData = [];
                         let treeArr = [{"label": "全部", "users": data.result.allUser}];
                         for (let i of data.result.deptUsers) {
-                            if (!i.dept_fid) {//当前是父级
-                                let treeObj = {"label": "", "children": []};
-                                for (let j of data.result.deptUsers) {
-                                    treeObj.label = i.dept_name;//父级显示组名
-                                    treeObj.users = i.users;//父级显示成员
-                                    if (j.dept_fid && (j.dept_fid == i.dept_id)) {//判断当前不是父级且当前的父级ID和遍历的父级ID相匹配
+                            if(!i.dept_fid){
+                                let treeObj = {
+                                    "label": i.dept_name,
+                                    "children": [],
+                                    "users":i.users
+                                };
+                                treeObj.users = i.users;//父级显示成员
+                                for(let j of data.result.deptUsers){
+                                    if (j.dept_fid && j.dept_fid == i.dept_id) {
                                         //当前不是父级，则把当前的信息添加到对应fID的父级进去
                                         let obj ={
                                             'label':j.dept_name,
                                             'id':j.dept_id,
-                                            'users':j.users
+                                            'users':j.users,
+                                            "children":[]
                                         };
+                                        for(let n of data.result.deptUsers){
+                                            if(n.dept_fid && n.dept_fid == j.dept_id){
+                                                let cobj = {
+                                                    'label':n.dept_name,
+                                                    'id':n.dept_id,
+                                                    'users':n.users,
+                                                };
+                                                obj.children.push(cobj)
+                                            }
+                                        }
                                         treeObj.children.push(obj)
                                     }
                                 }
@@ -308,6 +321,7 @@
               this.dialogOption.dialog_person_visible = false;
             },
             editRow(el, scope, type){
+                this.$maskin();
                 if (type == "edit") {
                     this.dialogOption.dialogTitle = "编辑配置";
                     this.dialogOption.infoShow = false;
@@ -319,16 +333,15 @@
                 for(let i in this.dialogData.personData){
                     this.dialogData.personData[i] = "";
                 }
-                this.dialogOption.dialog_person_visible = true;
                 this.dialogData.personData.user_ACCOUNT = el.user_ACCOUNT;//回显账号
                 this.dialogData.personData.user_NAME = el.user_NAME;//回显用户名
                 this.dialogData.personData.user_ID = el.user_ID;
+                this.dialogData.personData.position = el.position//回显职位
                 let params = new URLSearchParams();
                 params.append('USER_ID', el.user_ID);
                 this.$axios.post("/role/editRoleMessage", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        //有可能出现数据不能实时更新到页面上，此处为解决方案
                         this.$set(this.dialogData.personData, "deptRoles", data.result.deptRoles);
                         this.$set(this.dialogData.personData, "languages", data.result.languages);
                         this.$set(this.dialogData.personData, "deptUsers", data.result.deptUsers);
@@ -351,6 +364,8 @@
                         }
                         this.dialogData.personData.sex = data.result.USER_SEX==0?"女":"男";
                         this.dialogData.personData.Days = data.result.Days?data.result.Days+"天":"";
+                        this.$maskoff();
+                        this.dialogOption.dialog_person_visible = true;
                     }
                 })
             },
@@ -372,12 +387,25 @@
 
             subForm(){
                 let personData = this.dialogData.personData;
+                if(!personData.chooseDept){
+                    this.$warn("请选择部门");
+                    return;
+                }
+                if(!personData.chooseRole){
+                    this.$warn("请选择角色");
+                    return;
+                }
+                if(!personData.position){
+                    this.$warn("请填写职位");
+                    return;
+                }
                 let params = new URLSearchParams();
                 params.append('USER_ID', personData.user_ID);
-                params.append('ROLE_ID', personData.chooseRole);
-                params.append('DEPT_ID', personData.chooseDept);
-                params.append('USER_FID', personData.choosedeptUserId);
-                params.append('LABEL_LANGUAGE_ID', personData.chooseLanguage);
+                params.append('ROLE_ID', personData.chooseRole);//所选角色
+                params.append('DEPT_ID', personData.chooseDept);//所选部门
+                params.append('USER_FID', personData.choosedeptUserId);//所选直属上级人员
+                params.append('LABEL_LANGUAGE_ID', personData.chooseLanguage);//所选部门
+                params.append("POSITION", personData.position);//所填 职位
                 this.$axios.post("/role/addUserRole", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {

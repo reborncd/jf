@@ -544,7 +544,6 @@
 							var res = params[0].name + "</br>"
 							var date0 = params[0].data;
 							var date1 = params[1].data;
-							console.log(params[0])
 							date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
 							date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
 							res += params[0].seriesName + ":" + date0 + "</br>"

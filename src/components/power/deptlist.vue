@@ -81,11 +81,7 @@
             </div>
         </el-card>
         <el-dialog title="新增部门" :visible="dialogOption.dialog_dep_visible" center
-                   label-position="left"
-                   width="50%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog"
-        >
+                   label-position="left" width="50%" append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-form-item label="上级部门">
                     <el-select style="width: 100%" clearable v-model="dialogData.deptData.fNewDeptId"
@@ -106,11 +102,7 @@
             </div>
         </el-dialog>
         <el-dialog title="编辑涉及系统" :visible="dialogOption.dialog_system_visible" center
-                   label-position="left"
-                   width="30%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog"
-        >
+                   label-position="left" width="30%" append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-form-item label="所选部门">
                     <el-input v-model="dialogData.systemData.dept_name" disabled></el-input>
@@ -151,8 +143,8 @@
                     infoShow: false
                 },
                 keyword: "",
-                tableData: [],
-                originTableData: [],
+                tableData: [],//展示的表格数据
+                originTableData: [],//表格的备份源数据做搜索用
                 tableHeight: "",
                 treeData: [],
                 dialogData: {
@@ -174,58 +166,9 @@
             }
         },
         mounted(){
-            this.calculate();
             this.loadData();
         },
         methods: {
-            loadData(){
-                this.dialogOption.dialog_system_visible = false;
-                this.originTableData = [];
-                let params = new URLSearchParams();
-                this.$maskin();
-                this.$axios.post("/role/queryAllDeptSystem", params,).then((res) => {
-                    let data = res.data;
-                    if (data.code == 200) {
-                        let arr = [{
-                            "label":"全部",
-                            "depts":[]
-                        }];
-                        for (let i of data.result) {
-                            let roleobj = {
-                                "label": i.dept_name,
-                                "children": [],
-                                "depts":[{
-                                    "dept_name": i.dept_name,
-                                    "id": i.dept_id,
-                                    "project": i.project,
-                                    "system_NAME": i.system_NAME
-                                }]
-                            };
-                            //将每一个数据添加进去，做搜索和全部功能备用
-                            this.originTableData.push(roleobj.depts[0]);
-                            for(let j of i.depts){
-                                let obj = {
-                                    "label":j.dept_name,
-                                    "depts":[{
-                                        "dept_name": j.dept_name,
-                                        "id": j.dept_id,
-                                        "project": j.project,
-                                        "system_NAME": j.system_NAME
-                                    }]
-                                };
-                                roleobj.children.push(obj);
-                                //将每一个数据添加进去，做搜索和全部功能备用
-                                this.originTableData.push(obj.depts[0]);
-                            }
-                            arr.push(roleobj)
-                        }
-                        arr[0].depts =  this.originTableData;
-                        this.treeData = arr;
-                        this.tableData = this.originTableData
-                    }
-                    this.$maskoff()
-                })
-            },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let leftTree = document.querySelector(".left-tree");
@@ -235,6 +178,58 @@
                 //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
                 leftTree.style.height = (height - 34) - card_header_height - 20 - 28 - 15 + "px";
                 this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 15;
+            },
+            loadData(){
+                this.calculate();
+                this.dialogOption.dialog_system_visible = false;
+                this.originTableData = [];
+                let params = new URLSearchParams();
+                this.$maskin();
+                this.$axios.post("/role/queryAllDeptSystem", params,).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        let arr = [{"label":"全部","depts":[]}];
+                        for (let i of data.result) {
+                            let roleobj = {
+                                "label": i.dept_name,
+                                "children": [],
+                                "depts":[this.SetDeptInfo(i)]
+                            };
+                            arr[0].depts.push(this.SetDeptInfo(i))
+                            for(let j of i.depts){
+                                let obj = {
+                                    "label":j.dept_name,
+                                    "depts":[this.SetDeptInfo(j)],
+                                    "children":[]
+                                };
+                                arr[0].depts.push(this.SetDeptInfo(j));
+                                if(j.depts.length){
+                                    for(let n of j.depts){
+                                        obj.children.push({
+                                            "label":n.dept_name,
+                                            "depts":[this.SetDeptInfo(n)]
+                                        })
+                                        arr[0].depts.push(this.SetDeptInfo(n));
+                                    }
+                                }
+                                roleobj.children.push(obj);
+                            }
+                            arr.push(roleobj)
+                        }
+                        this.treeData = arr;
+                        this.originTableData = arr[0].depts;//存储全部里面的部门做搜索
+                        this.tableData = arr[0].depts;//魔默认展示所有部门
+                    }
+                    this.$maskoff()
+                })
+            },
+            SetDeptInfo(data){
+                let obj = {};
+                obj.dept_name = data.dept_name;
+                obj.id = data.dept_id;
+                obj.project = data.project;
+                obj.system_NAME = data.system_NAME;
+                return obj
             },
             closeDialog(){
               this.dialogOption.dialog_system_visible = false;
@@ -281,17 +276,26 @@
                 })
             },
             createDept(){
+                this.$maskin();
                 this.dialogData.deptData.roleDept = [];
-//                this.dialogData.deptData.subDept = [];
-//                this.dialogData.deptData.subDeptID = [];
                 this.dialogData.deptData.newDeptName = "";
                 this.dialogData.deptData.fNewDeptId = "";
-                this.dialogOption.dialog_dep_visible = true;
                 let params = new URLSearchParams();
                 this.$axios.post("/role/queryAllDept", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.$set(this.dialogData.deptData, "roleDept", data.result)
+                        let arr  = [];
+                        for(let i of data.result){
+                            arr.push(i);
+                            if(i.depts.length){
+                                for(let j of i.depts){
+                                    arr.push(j)
+                                }
+                            }
+                        }
+                        this.$set(this.dialogData.deptData, "roleDept", arr);
+                        this.$maskoff();
+                        this.dialogOption.dialog_dep_visible = true;
                     }
                 })
             },

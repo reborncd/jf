@@ -905,7 +905,6 @@
                 params.append("id",this.popup.popTxt.id);	//问题ID
 
 		        params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
-		        console.log(this.popup.popTxt.id);
 	            this.$axios.post("/fault/submit", params).then((res) => {
 	                let data = res.data;
 	                if (data.code == 200) {

@@ -55,13 +55,13 @@
                         <router-link :to="{path:'addrole'}">
                             <el-button size="mini" type="primary">新建角色</el-button>
                         </router-link>
-                        <router-link to="power">
-                            <el-button size="mini">权限列表</el-button>
-                        </router-link>
-                        <div class="search fr">
-                            <el-input size="mini" v-model="search" placeholder="输入检索关键字"></el-input>
-                            <el-button size="mini" type="primary">检索</el-button>
-                        </div>
+                        <!--<router-link to="power">-->
+                            <!--<el-button size="mini">权限列表</el-button>-->
+                        <!--</router-link>-->
+                        <!--<div class="search fr">-->
+                            <!--<el-input size="mini" v-model="search" placeholder="输入检索关键字"></el-input>-->
+                            <!--<el-button size="mini" type="primary">检索</el-button>-->
+                        <!--</div>-->
                     </div>
                     <div class="table-list">
                         <div class="left-tree">
@@ -69,11 +69,11 @@
                         </div>
                         <el-table :data="tableData" border style="width: 80%" :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
-                            <el-table-column align="center" prop="role_NAME" label="所属职位"></el-table-column>
+                            <el-table-column align="center" prop="role_NAME" label="所属角色"></el-table-column>
                             <el-table-column align="center" label="操作">
                                 <template slot-scope="scope">
                                     <router-link :to="{path:'editrole',query:{id: scope.row.role_ID}}">
-                                        <el-button @click="editRow(scope.row,scope)" size="small" type="primary">编辑</el-button>
+                                        <el-button size="small" type="primary">编辑</el-button>
                                     </router-link>
                                     <el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除
                                     </el-button>
@@ -98,7 +98,6 @@
             }
         },
         mounted(){
-            this.calculate();
             this.loadData()
         },
         methods: {
@@ -113,41 +112,45 @@
                 this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 15;
             },
             loadData(){
-                this.tableData =[]
+                this.calculate();
+                this.tableData =[];
                 let params = new URLSearchParams();
                 this.$maskin();
                 this.$axios.post("/role/queryRoleMenu", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        /* [{
-                         label: '一级 1',
-                         children: [{
-                         label: '二级 1-1',
-                         children: [{
-                         label: '三级 1-1-1'
-                         }]
-                         }]
-                         }] */
                         let arr = [];
                         for (let i of data.result.deptRoles) {
-                            if (!i.dept_fid) {
-                                let obj = {
+                            if(!i.dept_fid){
+                                let treeObj = {
                                     "label": i.dept_name,
                                     "id": i.dept_id,
                                     "children": [],
                                     "roles": i.roles,
                                 };
-                                for (let j of data.result.deptRoles) {
-                                    if (j.dept_fid && (j.dept_fid == i.dept_id)) {
-                                        let childerenObj = {
-                                            "label": j.dept_name,
-                                            "id": j.dept_id,
+                                for(let j of data.result.deptRoles){
+                                    if (j.dept_fid && j.dept_fid == i.dept_id) {
+                                        //当前不是父级，则把当前的信息添加到对应fID的父级进去
+                                        let obj ={
+                                            'label':j.dept_name,
+                                            'id':j.dept_id,
                                             "roles": j.roles,
+                                            "children":[]
                                         };
-                                        obj.children.push(childerenObj)
+                                        for(let n of data.result.deptRoles){
+                                            if(n.dept_fid && n.dept_fid == j.dept_id){
+                                                let cobj = {
+                                                    'label':n.dept_name,
+                                                    'id':n.dept_id,
+                                                    "roles": n.roles,
+                                                };
+                                                obj.children.push(cobj)
+                                            }
+                                        }
+                                        treeObj.children.push(obj)
                                     }
                                 }
-                                arr.push(obj)
+                                arr.push(treeObj)
                             }
                         }
                         this.treeData = arr;
@@ -158,9 +161,6 @@
             leftTreeClick(val){
                 this.tableData = val.roles
             },
-            editRow(el, scope){
-
-            },
             deleteRow(el, scope){
                 this.$maskin();
                 let params = new URLSearchParams();
@@ -170,7 +170,6 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("操作成功！");
-                            this.$maskoff();
                             this.loadData()
                         }
                     })
