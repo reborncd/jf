@@ -82,7 +82,8 @@
                 <div class="content">
                     <div class="action clear">
                         <el-button type="danger" size="mini" @click="newneeds" v-if="addneeds.addif">新增</el-button>
-                        <el-select v-model="selectValue" filterable clearable size="mini" @change="queryTableData($event,'select')">
+                        <el-select v-model="selectValue"  placeholder="请选择状态"
+                                   filterable clearable size="mini" @change="queryTableData($event,'select')">
                             <el-option
                                     v-for="item in states"
                                     :key="item.state_ID"
@@ -128,9 +129,9 @@
                                   ref="ywxq_table"
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="work_NEET_ID" label="需求编号" width="200" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
-                            <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
                             <!--<template slot-scope="scope">-->
                             <!--<p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>-->
                             <!--</template>-->
@@ -2086,6 +2087,12 @@
                     this.$warn("请填写期望上线日期");
                     return;
                 }
+                let start = (new Date(this.addneeds.addform.shenqingdate)).getTime();
+                let end = (new Date(this.addneeds.addform.designdate)).getTime();
+                if(start>end){
+                    this.$warn("申请日期必须小于期望上线日期");
+                    return;
+                }
                 if(!this.addneeds.addform.fromdeptId){
                     this.$warn("请选择提出部门");
                     return;
@@ -2399,7 +2406,7 @@
                         this.$set(this.tabs, "genzongOrigin", data.result.records);
                         this.$set(this.tabs,"genzongArr",data.result.deptRecord);
                         //--------------------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
-                        if (data.result.systemDepts.length) {
+                        if (data.result.systemDepts && data.result.systemDepts.length) {
                             this.$set(this.split, "hasSplitTaskDataByGroupOrigin", data.result.systemDepts);
                             //在选择关联项目之前只展示当前部门的任务，如果当前人是管理层或者提出者，则默认展示所有（arr为空）
                             let arr = [];

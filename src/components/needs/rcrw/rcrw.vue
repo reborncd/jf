@@ -132,7 +132,7 @@
 							<el-table-column prop="end_DATE_STRING" label="期望上线时间" width="110"></el-table-column>
 							<el-table-column prop="user_NAME" label="申请人" width="110"></el-table-column>
 							<el-table-column prop="rriority_NAME" label="优先级" width="70"></el-table-column>
-							<el-table-column prop="state_NAME" label="状态" ></el-table-column>
+							<el-table-column prop="state_NAME" label="状态" width="130"></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
 									<el-button v-if="scope.row.check_TYPE=='check'" @click="agreeRow(scope.row,$event)" size="small" type="primary">确认
@@ -208,15 +208,18 @@
 												<el-form-item label="参会人 ">{{tabs.data_one.daliy.check_NAME}}</el-form-item>
 											</el-col>
 										</el-row>
-										<el-row :gutter="20" v-if="tabs.data_one.files.length>0">
-											<el-col :span="12">
-												<el-form-item label="下载附件">
-													<p>
-														<a style="margin-right: 20px;color: #999" v-for="(item,index) in tabs.data_one.files" @click="downfile(item.id)">{{item.name}}</a>
-													</p>
-												</el-form-item>
-											</el-col>
-										</el-row>
+										<!--需求文档-->
+										<el-col :span="24" >
+											<el-form-item label="需求文档">
+												<span @click="showDownLoadData('需求文档')" style="cursor: pointer;color: red">点击查看</span>
+											</el-form-item>
+										</el-col>
+										<!------------------------------开发手册-->
+										<el-col :span="24" >
+											<el-form-item label="开发手册" >
+												<span style="cursor: pointer;color: orangered" @click="showDownLoadData('开发手册')">点击可查看</span>
+											</el-form-item>
+										</el-col>
 									</el-form>
 								</div>
 							</el-tab-pane>
@@ -281,26 +284,18 @@
 										</el-row>
 									</el-form>
 									<el-form v-if="tabs.ifSplit" label-width="120px" label-position="right">
-										<el-row :span="24" :gutter="20" v-for="(content, index) in addneeds.addform.onlineContent">
-											<el-col :span="12">
-												<el-form-item label="系统名">
-													<el-select v-model="content.xtname" clearable placeholder="请选择系统名" style="width: 100%;">
-														<el-option v-for="item in addneeds.addform.systemArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
-													</el-select>
-												</el-form-item>
-											</el-col>
-											<el-col :span="10">
-												<el-form-item label="版本号">
-													<el-input v-model="content.ban"></el-input>
-												</el-form-item>
-											</el-col>
-											<el-col :span="2">
-												<i :class="index == 0 && addneeds.addform.onlineContent.length == 1?'el-icon-plus':index == addneeds.addform.onlineContent.length-1?'el-icon-plus':'el-icon-minus'" style="line-height: 40px;height: 40px;text-align: center;font-size: 20px;margin-left: 20px;cursor: pointer;font-weight: bold" @click="systemEvent(index,$event)">
-                                            </i></el-col>
+										<el-row :span="24">
+										<el-col :span="12" :md="12">
+											<el-form-item label="涉及系统">
+												<el-select v-model="addneeds.addform.sjxt" multiple @change="changeAbout" clearable placeholder="请选择涉及系统" style="width: 100%;">
+													<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID"></el-option>
+												</el-select>
+											</el-form-item>
+										</el-col>
 										</el-row>
 										<el-row :span="24">
 											<el-col :span="24" style="text-align: center;position: relative;"> 拆分任务：{{addneeds.addform.splitArr.length}}
-												<el-button type="primary" @click="distributionTask1" size="mini" style="position: absolute;right: 0;">分配任务</el-button>
+												<el-button type="primary" @click="distributionTask" size="mini" style="position: absolute;right: 0;">分配任务</el-button>
 											</el-col>
 										</el-row>
 										<el-row :span="24" style="margin-top: 20px;">
@@ -458,8 +453,8 @@
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
 						<el-form-item label="涉及系统">
-							<el-select v-model="addneeds.addform.sjxt" multiple clearable placeholder="请选择涉及系统" style="width: 100%;">
-								<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_NAME"></el-option>
+							<el-select v-model="addneeds.addform.sjxt" multiple @change="changeAbout" clearable placeholder="请选择涉及系统" style="width: 100%;">
+								<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -569,23 +564,36 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
-				<el-row :span="24" v-for="(content, index) in addneeds.addform.onlineContent">
-					<el-col :span="12">
-						<el-form-item label="系统名">
-							<el-select v-model="content.xtname" clearable placeholder="请选择系统名" style="width: 100%;">
-								<el-option v-for="item in addneeds.addform.systemArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
-							</el-select>
+				<!--<el-row :span="24" v-for="(content, index) in addneeds.addform.onlineContent">-->
+					<!--<el-col :span="12">-->
+						<!--<el-form-item label="系统名">-->
+							<!--<el-select v-model="content.xtname" clearable placeholder="请选择系统名" style="width: 100%;">-->
+								<!--<el-option v-for="item in addneeds.addform.systemArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>-->
+							<!--</el-select>-->
+						<!--</el-form-item>-->
+					<!--</el-col>-->
+					<!--<el-col :span="10">-->
+						<!--<el-form-item label="版本号">-->
+							<!--<el-input v-model="content.ban"></el-input>-->
+						<!--</el-form-item>-->
+					<!--</el-col>-->
+					<!--<el-col :span="2">-->
+						<!--<i :class="index == 0 && addneeds.addform.onlineContent.length == 1?'el-icon-plus':index == addneeds.addform.onlineContent.length-1?'el-icon-plus':'el-icon-minus'" style="line-height: 40px;height: 40px;text-align: center;-->
+                        <!--font-size: 20px;margin-left: 20px;cursor: pointer;font-weight: bold" @click="systemEvent(index,$event)">-->
+                    <!--</i></el-col>-->
+				<!--</el-row>-->
+				<el-row :gutter="20" STYLE="margin-top: 20px">
+					<el-col :span="12" :sm="12">
+						<el-form-item label="上传需求文档" style="position: relative;">
+
+							<el-button type="primary">上传需求文档</el-button>
+							<input type="file" @change="getFile2($event)" placeholder="上传需求文档" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
+							<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
+								<i style="margin-left: 10px;cursor: pointer;color: red;"
+								   @click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
+							</p>
 						</el-form-item>
 					</el-col>
-					<el-col :span="10">
-						<el-form-item label="版本号">
-							<el-input v-model="content.ban"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="2">
-						<i :class="index == 0 && addneeds.addform.onlineContent.length == 1?'el-icon-plus':index == addneeds.addform.onlineContent.length-1?'el-icon-plus':'el-icon-minus'" style="line-height: 40px;height: 40px;text-align: center;
-                        font-size: 20px;margin-left: 20px;cursor: pointer;font-weight: bold" @click="systemEvent(index,$event)">
-                    </i></el-col>
 				</el-row>
 				<el-row :span="24">
 					<el-col :span="24" style="text-align: center;position: relative;"> 拆分任务：{{addneeds.addform.splitArr.length}}
@@ -631,8 +639,8 @@
 						<el-table-column prop="willTime" label="预计用时(小时)" width="110"></el-table-column>
 						<el-table-column prop="taskNum" label="任务量" width="70"></el-table-column>
 					</el-table>
-
 				</div>
+
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="closeDialog" size="mini">取 消</el-button>
@@ -762,7 +770,7 @@
 					<el-col :span="12">
 						<el-form-item label="人员">
 							<el-select v-model="addneeds.addform.splitForm.name" placeholder="请选择人员">
-								<el-option-group v-for="group in addneeds.addform.fromdeptArr" :label="group.dept_name">
+								<el-option-group v-for="group in addneeds.addform.frompeopleArr" :label="group.dept_name">
 									<el-option v-for="item in group.users" :label="item.user_NAME" :value="item.user_ID+','+item.user_NAME">
 									</el-option>
 								</el-option-group>
@@ -770,9 +778,9 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="系统名">
-							<el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择系统名" style="width: 100%;">
-								<el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.value" :value="item.value"></el-option>
+						<el-form-item label="子系统名">
+							<el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择子系统" style="width: 100%;">
+								<el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_NAME"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -815,17 +823,19 @@
 			<el-form label-width="120px">
 				<el-row :span="24">
 					<el-col :span="12">
-						<el-form-item label="本部门人员">
+						<el-form-item label="人员">
 							<el-select v-model="addneeds.addform.splitForm.name" placeholder="请选择人员">
-								<el-option v-for="item in addneeds.addform.pepoleArr" :label="item.user_NAME" :value="item.user_ID+','+item.user_NAME">
-								</el-option>
+								<el-option-group v-for="group in addneeds.addform.frompeopleArr" :label="group.dept_name">
+									<el-option v-for="item in group.users" :label="item.user_NAME" :value="item.user_ID+','+item.user_NAME">
+									</el-option>
+								</el-option-group>
 							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="系统名">
-							<el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择系统名" style="width: 100%;">
-								<el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.value" :value="item.value"></el-option>
+						<el-form-item label="子系统名">
+							<el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择子系统" style="width: 100%;">
+								<el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_NAME"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -847,7 +857,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="预计用时">
+						<el-form-item label="预计用时(小时)">
 							<el-input v-model="addneeds.addform.splitForm.willTime"></el-input>
 						</el-form-item>
 					</el-col>
@@ -937,10 +947,12 @@
 				<el-button type="primary" @click="subAssign" size="mini">提交</el-button>
 			</div>
 		</el-dialog>
+		<!--下载文件-->
+		<download :download="download"></download>
 	</div>
 </template>
-
 <script>
+    import download from "../common/download.vue";//全程跟踪视图模式
 	export default {
 		data() {
 			return {
@@ -960,6 +972,7 @@
 						"sxname": "", //申请人
 						"fromdeptId": "", //选择的任务来源部门ID
 						"fromdeptArr": "", //任务来源数组
+						"frompeopleArr":"",//人员数组
 						"pepoleArr": "", //
 						"fromdeptroleId": "", //选择的需求任务人
 						"fromdeptroleArr": "", //择的需求来任务数组
@@ -1011,6 +1024,12 @@
 						splitShow: ""
 					}
 				},
+                //下载文件的数据
+                download:{
+                    visible:false,
+                    data:[],//表格数据
+                    title:"",//标题
+                },
 				split: {
 					hasSplitTaskDataByGroup: [], //展示拆分任务的分组
 					hasSplitTaskData: [], //展示当前的分组拆分任务
@@ -1151,6 +1170,9 @@
 				return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
 			},
 		},
+        components:{
+            "download":download//下载文件
+        },
 		mounted() {
 			this.loadData()
 		},
@@ -1211,6 +1233,7 @@
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				this.$maskin();
+				this.innitFrom()
 				//this.tabs.activeName = "info";
 				this.clearData()
 				this.tabs.activeTableInfo = val;
@@ -1228,6 +1251,7 @@
 				this.tabs.ifSplit = ''
 				this.tabs.ifEdit = ''
 				this.tabs.ifPing = ''
+                this.popup.popTxt.fileList=[]
 				this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -1320,6 +1344,7 @@
 				this.tabs.ifSplit = ''
 				this.tabs.ifEdit = ''
 				this.tabs.ifPing = ''
+                this.popup.popTxt.fileList=[]
 				this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -1460,7 +1485,8 @@
 						this.$set(this.addneeds.addform, "levelArr", data.result.rriority)
 						//任务来源
 						this.$set(this.addneeds.addform, "fromdeptArr", data.result.depts)
-
+                        //人员
+                        this.$set(this.addneeds.addform, "frompeopleArr", data.result.codeDepts)
 						//难易程度
 						this.$set(this.addneeds.addform, "easyArr", data.result.facility);
 						//需求划分归属
@@ -1576,6 +1602,10 @@
 					this.$warn("请添加拆分")
 					flag = "0"
 				}
+				// if(this.popup.popTxt.fileList.length==0){
+                 //    this.$warn("请上传附件")
+                 //    flag = "0"
+				// }
 				return flag
 				//TODO
 
@@ -1611,6 +1641,7 @@
 					params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu); //重要程度
 					params.append("UGENT", this.addneeds.addform.jiajireason); //加急描述
 					params.append("infos", JSON.stringify(this.addneeds.addform.splitArr)); //拆分
+                    params.append("attachmentId", this.popup.popTxt.fileList); //附件
 					this.$axios.post("/daliy/technologyAdd", params).then((res) => {
 						let data = res.data;
 						if(data.code == 200) {
@@ -1832,54 +1863,43 @@
 			},
 			//拆分任务版本拼接
 			distributionTask() {
-				if(!this.addneeds.addform.onlineContent[0].xtname) {
-					this.$warn("请选择系统");
-					return;
+
+				if(this.addneeds.addform.sjxt.length==0){
+				    this.$warn("请选择涉及系统")
+				}else {
+                    let params = new URLSearchParams();
+                    this.addneeds.addvisible = false
+                    this.addneeds.splitaddvisible = true
+                    this.addneeds.addform.splitForm.fzmoduleArr = []
+                    params.append("ids", this.addneeds.addform.sjxt);
+                    this.$axios.post("/daliy/querySystemById", params).then((res) => {
+                        let data = res.data;
+                        if(data.code == 200) {
+                            this.addneeds.addform.splitForm.fzmoduleArr=data.result
+                        } else {
+
+                        }
+
+                    })
 				}
-				if(!this.addneeds.addform.onlineContent[0].ban) {
-					this.$warn("请填写版本号");
-					return;
-				}
-				this.addneeds.addvisible = false
-				this.addneeds.splitaddvisible = true
-				this.addneeds.addform.splitForm.fzmoduleArr = []
-				for(let i of this.addneeds.addform.onlineContent) {
-					let name = (i.xtname).split(',')[1]
-					let id = (i.xtname).split(',')[0]
-					if(i.xtname && i.ban) {
-						this.addneeds.addform.splitForm.fzmoduleArr.push({
-							"value": name + i.ban,
-							"key": id
-						})
-					}
-				}
+
+
 
 			},
 			//控制台拆分任务
 			distributionTask1() {
-				if(!this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].xtname) {
-					this.$warn("请选择系统");
-					return;
-				}
-				if(!this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].ban) {
-					this.$warn("请填写版本号");
-					return;
-				}
-				if(this.addneeds.addform.onlineContent[this.addneeds.addform.onlineContent.length - 1].ban.indexOf("v") < 0) {
-					this.$warn("版本号格式有误");
-					return;
-				}
+
 				this.addneeds.addvisible = false
 				this.addneeds.splitaddvisibleN = true
 				this.addneeds.addform.splitForm.fzmoduleArr = []
-				for(let i of this.addneeds.addform.onlineContent) {
-					let name = (i.xtname).split(',')[1]
-					let id = (i.xtname).split(',')[0]
-					this.addneeds.addform.splitForm.fzmoduleArr.push({
-						"value": name + i.ban,
-						"key": id
-					})
-				}
+				// for(let i of this.addneeds.addform.onlineContent) {
+				// 	let name = (i.xtname).split(',')[1]
+				// 	let id = (i.xtname).split(',')[0]
+				// 	this.addneeds.addform.splitForm.fzmoduleArr.push({
+				// 		"value": name + i.ban,
+				// 		"key": id
+				// 	})
+				// }
 
 			},
 			//分配任务搜索功能
@@ -2067,6 +2087,7 @@
 					"ban": ''
 				}]
 				this.addneeds.addform.splitArr = []
+                this.popup.popTxt.fileList=[]
 
 			},
 			closeDialogS() {
@@ -2142,7 +2163,9 @@
 					if(data.code == 200) {
 						this.$set(this.assign, "searchData", data.result.allDept);
 						this.$set(this.assign, "leftlistdata", data.result.allDept);
-						this.$set(this.assign, "rightlistdata", data.result.dept.users);
+						if(data.result.dept){
+                            this.$set(this.assign, "rightlistdata", data.result.dept.users);
+						}
 						this.assign.chooseId = val.daliy_NEET_ID
 					} else {
 						this.$warn(data.message);
@@ -2356,50 +2379,100 @@
 				return `${date.year}-${date.mouth}-${date.day}`
 			},
 			getFile(e) {
-				//上传附件
-				let config = {
-					headers: {
-						'Content-Type': 'multipart/form-data',
+                //上传附件
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                };
+                let params = new FormData();
+                params.append("token", localStorage.getItem("token"))
+                params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
+                params.append("file", e.target.files[0]);
+                this.$axios.post("/daliy/upload", params, config).then((res) => {
+                    let data = res.data;
+                    if(data.code == 200) {
+                        if(typeof this.popup.popTxt.uploadFiles == "string") {
+                            this.$set(this.popup.popTxt, "uploadFiles", [])
+                            this.$set(this.popup.popTxt, "fileList", [])
+                        }
+                        this.popup.popTxt.uploadFiles.push(data.name)
+                        this.popup.popTxt.fileList.push(data.id)
+                    } else {
+                        this.$warn(data.message);
+                    }
+                })
+            },
+            getFile2(e) {
+                //上传需求文档
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                };
+                let params = new FormData();
+                params.append("file", e.target.files[0]);
+                params.append("token", localStorage.getItem("token"));
+                this.$axios.post("/daliy/uploadNell", params, config).then((res) => {
+                    let data = res.data;
+                    if(data.code == 200) {
+                        if(typeof this.popup.popTxt.uploadFiles == "string") {
+                            this.$set(this.popup.popTxt, "uploadFiles", [])
+                            this.$set(this.popup.popTxt, "fileList", [])
+                        }
+                        this.popup.popTxt.uploadFiles.push(data.result.name)
+                        this.popup.popTxt.fileList.push(data.result.id)
+                    } else {
+                        this.$warn(data.message);
+                    }
+                })
+            },
+            //下载文件弹窗
+            showDownLoadData(title){
+                    let type = "";
+                    if(title=="开发手册"){
+                        type = "CODE";
 					}
-				};
-				let params = new FormData();
-				params.append("token", this.$getToken())
-				params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
-				params.append("file", e.target.files[0]);
-				this.$axios.post("/daliy/upload", params, config).then((res) => {
-					let data = res.data;
-					if(data.code == 200) {
-						if(typeof this.popup.popTxt.uploadFiles == "string") {
-							this.$set(this.popup.popTxt, "uploadFiles", [])
-							this.$set(this.popup.popTxt, "fileList", [])
-						}
-						this.popup.popTxt.uploadFiles.push(data.name)
-						this.popup.popTxt.fileList.push(data.id)
-					} else {
-						this.$warn(data.message);
-					}
-				})
-			},
+                    if(title=="需求文档"){
+                    type = "NELL";
+                    }
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID);
+                    params.append("TYPE",type);
+                    this.$axios.post("/daliy/queryFileByType",params).then((res)=>{
+                        let data =res.data;
+                        if(data.code = 200){
+                            this.$set(this.download,"data",data.result);
+                            this.download.title = title;
+                            this.download.visible = true;
+                            this.$maskoff();
+                        }
+                    });
+            },
 			//下载附件
 			downfile(val) {
-				this.$axios.get(`/daliy/download?ID=${val}&token=${this.$getToken()}`)
+				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
 			},
 			tabClick(val) {
 				this.calculateTabsHeight();
-				if(val.name=="realtime"){
-					let datashow=this.tabs.data_one.nowTimeList
-					let yaxis=[]
-					let startTime=[]
-					let nowTime=[]
-					let endTime=[]
-					for(let i of datashow){
-						yaxis.push(i.deptName)
-						startTime.push(new Date(i.startTime))
-						nowTime.push(new Date(i.date))
-						endTime.push(new Date(i.endTime))
-					}
-					this.realTime(yaxis,startTime,nowTime,endTime)
-				}
+				// if(val.name=="realtime"){
+				// 	let datashow=this.tabs.data_one.nowTimeList
+				// 	let yaxis=[]
+				// 	let startTime=[]
+				// 	let nowTime=[]
+				// 	let endTime=[]
+				// 	for(let i of datashow){
+				// 		yaxis.push(i.deptName)
+				// 		startTime.push(new Date(i.startTime))
+				// 		nowTime.push(new Date(i.date))
+				// 		endTime.push(new Date(i.endTime))
+				// 	}
+				// 	this.realTime(yaxis,startTime,nowTime,endTime)
+				// }
+			},
+            changeAbout(){
+			    console.log(this.addneeds.addform.sjxt)
 			},
 			realTime(yaxis,startTime,nowTime,endTime) {
 				var echarts = require('echarts');
@@ -2423,6 +2496,7 @@
 							var res = params[0].name + "</br>"
 							var date0 = params[0].data;
 							var date1 = params[1].data;
+							console.log(params[0])
 							date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
 							date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
 							res += params[0].seriesName + ":" + date0 + "</br>"
