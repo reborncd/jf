@@ -101,15 +101,19 @@
                     let data = res.data;
                     if (data.code == 200) {
                         if (this.auto) {
+                            //选择了自动登录
                             localStorage.setItem("TYPE", 'AUTO');
-                            localStorage.setItem("PW", data.result.pwd);
+                            localStorage.setItem("token", data.result.token);
                         } else if (this.remember) {
+                            //记住密码
                             localStorage.setItem("TYPE", 'REMEMBER');
                             localStorage.setItem("PW", data.result.pwd);
+                            document.cookie = `token=${data.result.token}`;
                         } else {
+                            //什么都不选择
                             localStorage.setItem("TYPE", '');
+                            document.cookie = `token=${data.result.token}`;
                         }
-                        localStorage.setItem("token", data.result.token);
                         localStorage.setItem("ACCOUNT", this.account);
                         this.$go("/home")
                     } else if (data.result == 0) {

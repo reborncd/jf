@@ -9,8 +9,13 @@
                          width="120"></el-table-column>
         <el-table-column prop="system_NAME" label="当前系统名" show-overflow-tooltip
                          width="120"></el-table-column>
-        <el-table-column prop="base_INFO_ID" label="任务编码" show-overflow-tooltip
-                         width="200"></el-table-column>
+        <el-table-column prop="base_INFO_ID" label="任务编码" show-overflow-tooltip width="200">
+            <template slot-scope="scope">
+                <span v-if="scope.row.base_INFO_ID">{{scope.row.base_INFO_ID}}</span>
+                <span v-if="scope.row.work_INFO_ID">{{scope.row.work_INFO_ID}}</span>
+                <span v-if="scope.row.tech_INFO_ID">{{scope.row.tech_INFO_ID}}</span>
+            </template>
+        </el-table-column>
         <el-table-column prop="end_DATE" show-overflow-tooltip
                          label="完成日期" width="120"></el-table-column>
         <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120" show-overflow-tooltip></el-table-column>

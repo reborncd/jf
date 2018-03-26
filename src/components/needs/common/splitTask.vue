@@ -15,7 +15,13 @@
                 </template>
             </el-table-column>
             <el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span v-if="scope.row.base_INFO_ID">{{scope.row.base_INFO_ID}}</span>
+                    <span v-if="scope.row.work_INFO_ID">{{scope.row.work_INFO_ID}}</span>
+                    <span v-if="scope.row.tech_INFO_ID">{{scope.row.tech_INFO_ID}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
                              show-overflow-tooltip label="完成日期"></el-table-column>
             <el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>

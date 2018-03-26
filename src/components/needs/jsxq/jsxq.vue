@@ -850,9 +850,7 @@
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
-                                <div class="console-tab-content">
-                                    aa
-                                </div>
+                                <realtime :sstj="sstj"></realtime>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -1462,6 +1460,7 @@
     import allbug from "../common/allbug.vue";//详情页的所有BUG
     import upload from "../common/upload.vue";//上传附件组件
     import uploadReport from "../common/upload-report.vue";//上传附件组件
+    import realtime from "../common/realtime.vue";//实时统计组件
     export default {
         data(){
             return {
@@ -1804,6 +1803,16 @@
                     fileIds:[],
                     type:"",
                     neel_id:""
+                },
+                sstj:{
+                    info:'',//信息
+                    allTime:'',//总工时
+                    bugCount:'',//bug数
+                    activeName:'first',
+                    deptName:"",
+                    len:"",
+                    requiredTime:"",
+                    leaveTime:"",
                 }
             }
         },
@@ -1836,6 +1845,7 @@
             "all-bug":allbug,//所有bug
             "upload":upload,//上传文件
             "upload-report":uploadReport,//上传测试报告
+            "realtime":realtime,//实时统计
         },
         mounted(){
             this.loadData();
@@ -2482,10 +2492,52 @@
                         this.setStateAction(data.result);
 
                         //加载实时统计数据
+                        if(data.result.systemDepts && data.result.currentTime){
+//                            this.setRealTime(data.result.systemDepts,data.result.currentTime)
+                        }
 
                         this.$maskoff();
                     }
                 })
+            },
+            //设置实时统计数据
+            setRealTime(systemDepts,currentTime){
+                let datashow = systemDepts;
+                let nowTime = currentTime;
+                let yaxis = []; //y轴显示
+                let startTime = []; //预期开始时间
+                let endTime = []; //预期结束时间
+                let actualTime = []; //实际完成时间
+                let timeInfo=[]; //所有信息
+                let deptName=[];//部门
+                let allTime=[];//总用时
+                let requiredTime=[];//实际用时
+                let leaveTime=[];//剩余用时
+                for(let i of datashow) {
+                    timeInfo.push(i);
+                    yaxis.push(i.DEPT_NAME);
+                    startTime.push(new Date(i.EXPECT_START));
+                    endTime.push(new Date(i.EXPECT_END));
+                    if(!i.lastCompleteTime) {
+                        i.lastCompleteTime=nowTime
+                    }
+                    if(i.lastCompleteTime<=i.EXPECT_END){
+                        i.lastCompleteTime=i.EXPECT_END
+                    }
+                    if(i.allTime){
+                        allTime.push(i.allTime);
+                        deptName.push(i.DEPT_NAME);
+                        requiredTime.push(i.requiredTime);
+                        leaveTime.push(i.allTime-i.requiredTime)
+                    }
+                    actualTime.push(new Date(i.lastCompleteTime));
+                    this.$set(this.sstj, "info", timeInfo);
+                }
+                let len=requiredTime.length;
+                this.sstj.deptName = deptName;
+                this.sstj.len = len;
+                this.sstj.requiredTime = requiredTime;
+                this.sstj.leaveTime = leaveTime;
             },
             //-----------------------------------添加开发任务和测试任务的和合计
             setCodeAndTestTaskTotal(origin,view){

@@ -8,7 +8,13 @@
                :before-close="closeDialog">
         <div class="table-list">
             <el-table :data="data.allBugs" border style="width: 100%">
-                <el-table-column prop="base_BUG_ID" label="序号" width="190" show-overflow-tooltip></el-table-column>
+                <el-table-column label="序号" width="190" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.base_BUG_ID">{{scope.row.base_BUG_ID}}</span>
+                        <span v-if="scope.row.work_BUG_ID">{{scope.row.work_BUG_ID}}</span>
+                        <span v-if="scope.row.tech_BUG_ID">{{scope.row.tech_BUG_ID}}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="start_DATE" label="提交日期" width="110" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="start_TIME" label="提交时间" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="assignor_NAME" label="提交人" show-overflow-tooltip></el-table-column>

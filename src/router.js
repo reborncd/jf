@@ -38,6 +38,9 @@ let option = {
                     path: 'userCenter',
                     component: resolve => require(['./components/account/userCenter.vue'], resolve)
                 }, {
+                    path: 'czrz',
+                    component: resolve => require(['./components/account/czrz.vue'], resolve)
+                }, {
                     path: 'index',
                     component: resolve => require(['./components/home/homeIndex.vue'], resolve)
                 },{
@@ -131,6 +134,10 @@ let option = {
                     path: "xtlb",
                     name:"系统列表",
                     component: resolve => require(['./components/version/xtlb.vue'], resolve)
+                },{
+                    path: "sstj",
+                    name:"实时统计",
+                    component: resolve => require(['./components/sstj/sstj-备份.vue'], resolve)
                 }
             ]
         }/*, {
