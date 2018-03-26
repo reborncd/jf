@@ -32,7 +32,7 @@
             <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
             <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
             <el-table-column prop="test_RESULT" label="完成结果" width="100" show-overflow-tooltip></el-table-column>
-            <el-table-column label="状态" width="80" show-overflow-tooltip>
+            <el-table-column label="状态" width="120" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <div v-if="tabs.state_ID != 320">
                         <span v-if="scope.row.state_ID ==306" style="color: red">待开发</span>

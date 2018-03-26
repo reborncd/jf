@@ -2430,21 +2430,30 @@
                         this.tabs.tabsData.success =
                             base.success ? base.success : "";
 
+
+                        //新建变更后    在原需求上展示新需求信息
+                        if(base.base_NEW_ID){
+                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                        }
+
                         //--------------------------新建变更的判断
-                        if(base.work_NEET_FID){
+                        //DEMAND_SIGN   1：需求内变更 2：新建变更,
+                        if(base.demand_SIGN  == 2){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.oldcode = base.work_NEET_FID;//原需求ID
+                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
                             this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
                             this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
                         }
 
-                        //当前是被变更的需求信息
-                        if(base.work_NEW_ID){
+                        //--------------------------当前是被变更的需求信息
+                        if(base.demand_SIGN == 1){
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
-                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品产品改造点
-                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+//                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.oldchangepoint = base.old_NEEL_DESCRIPTION;//新产品产品改造点
+                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//新需求描述
                         }
 
                         //-------------------判断是否有完成时间，有则展示
@@ -3038,9 +3047,9 @@
                         this.prompt("验收通过","请填写验收通过理由",(value)=> {
                             this.$maskin();
                             let params = new URLSearchParams();
-                            params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                            params.append("WORK_NEEL_ID", info.work_NEET_ID);
                             params.append("OPER", "OK");
-                            params.append("REJECT_RESON", value.value)
+                            params.append("REJECT_RESON", value.value);
                             this.$axios.post("/work/baseAccept", params).then((res) => {
                                 let data = res.data;
                                 if (data.code == 200) {
@@ -3054,7 +3063,7 @@
                     }
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("WORK_NEEL_ID", info.work_NEET_ID);
                     params.append("OPER","OK");
                     this.$axios.post("/work/baseAccept", params).then((res) => {
                         let data = res.data;
@@ -3074,7 +3083,7 @@
                         let info = this.tabs.activeTableInfo;
                         this.$maskin();
                         let params = new URLSearchParams();
-                        params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                        params.append("WORK_NEEL_ID", info.work_NEET_ID);
                         params.append("OPER","FAIL");
                         params.append("REJECT_RESON",value.value);
                         this.$axios.post("/work/baseAccept", params).then((res) => {
@@ -3116,7 +3125,7 @@
                     this.addneeds.addType = "changeInset";//当前是需求内变更
                 }
                 let params = new URLSearchParams();
-                params.append("BASE_NELL_ID",this.tabs.activeTableInfo.work_NEET_ID);
+                params.append("WORK_NELL_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 this.$axios.post("/work/baseSaveFront",params).then((res)=>{
                     let data = res.data;
                     if(data.code == 200){
@@ -3728,7 +3737,7 @@
                     }
                 }
                 if (arr.length == 0) {
-                    this.$warn("请添加步骤");
+                    this.$warn("请添加用例后再提交");
                     return;
                 }
                 this.$maskin();

@@ -55,7 +55,7 @@
 	width: 96%;
 	border-bottom: 3px solid #666;
 	position: absolute;
-    top: 50%;
+    top: 30%;
     margin-top: -1px;
     left: 12px;
     
@@ -64,10 +64,10 @@
 	margin: 0 auto;
 }
 .edition-line ul{
-	height: 60px;
+	height: 50px;
 }
 .edition-line ul li{
-	height: 60px;
+	height: 50px;
 	position: relative;
 	float: left;
 }
@@ -75,12 +75,13 @@
 	width: 16px;
 	float: left;
 	height: 16px;
-	background:white url(../../static/image/circular-icon.png) -2px center no-repeat;
+	background:white;
 	background-size: 20px 19px;
 	position: absolute;
-	left: -1px;
-	top: 20px;
+	left: -2px;
+	top: 30%;
 	cursor: pointer;border-radius: 50px;
+    border: 1px solid #333333;
 }
 .edition-line li span{
 	left: 20px;
@@ -89,7 +90,7 @@
 }
 .edition-line li p.banP{
 	position: absolute;
-	top: 35px;
+	top: 54%;
 	left: 0px;
     width: 100%;
     text-align: left;
@@ -124,6 +125,16 @@
 .el-table .cell,{
 	text-align: center!important;
 }
+	.tab-opt{
+		color: orange;
+		text-decoration: underline;
+		display: inline-block;
+		width: 90px;
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 </style>
 
 <template>
@@ -132,16 +143,6 @@
             <div class="text item">
                 <div class="content">
                     <div class="action clear">
-                        <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
-                        <!--<el-select v-model="selectValue" clearable
-                                   size="mini">
-                            <el-option
-                                    v-for="item in options"
-                                    :label="item.key"
-                                    :value="item.value"
-                            >
-                            </el-option>
-                        </el-select>-->
                         <div class="fr">                           
                             <div class="search i-b" @keyup="searchKeyword($event)">
                                 <el-input
@@ -153,6 +154,9 @@
                                 </el-input>
                             </div>
                         </div>
+                    </div>
+                    <div class="action">
+                        <el-button type="danger" @click="showdialog" size="mini">添加版本</el-button>
                     </div>
                     <div class="table-list">
                         <el-table :data="table.tableData" border style="width: 100%"
@@ -166,7 +170,7 @@
                             <el-table-column prop="start_TIME" label="启用时间"></el-table-column>
                             <el-table-column label="需求描述">
                             	<template slot-scope="scope">
-                            		<span @click="goneeds($event,scope.row)" style="color: orange;text-decoration: underline;">{{scope.row.neel_DESCRIPTION}}</span>
+                            		<span @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION class="tab-opt" style="">{{scope.row.neel_DESCRIPTION}}</span>
                             	</template>
                             </el-table-column>                     	
                         </el-table>
@@ -174,7 +178,7 @@
                     <!--详情表格-->
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
                     	<div class="console-action-wrapper">
-                            <i class="el-icon-close close" @click="tabs.consoleWrapperVisible=false"></i>
+                            <i class="el-icon-close close" @click="tabClick"></i>
                         </div>
                         <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
 				              <el-tab-pane label="详情页" name="info">
@@ -205,47 +209,52 @@
 				                </div>
 				              </el-tab-pane>
 				        </el-tabs>
-                       </div>                                                                    
+                       </div>
+                    <el-dialog title="添加版本" :visible="dialog.dialogVisible" append-to-body modal-append-to-body :before-close="closeAddDialog">
+                        <el-form label-width="80px">
+                            <el-row>
+                                <el-col>
+                                    <el-form-item label="系统">
+                                        <el-select v-model="dialog.systemValue" placeholder="请选择"  @change="systemOpt"">
+                                            <el-option
+                                                    v-for="item in dialog.systemSelect"
+                                                    :label="item.system_NAME"
+                                                    :value="item.system_ID+'-'+item.system_NAME"
+                                            ></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col>
+                                    <el-form-item label="子系统">
+                                        <el-select v-model="dialog.subsystemValue" placeholder="请选择">
+                                            <el-option
+                                                    v-for="item in dialog.subSystemSelect"
+                                                    :label="item.system_NAME"
+                                                    :value="item.system_ID+'-'+item.system_NAME"
+                                            ></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col class="" :span='24' style='position: relative;'>
+                                    <el-form-item label="版本" class=''>
+                                        v&nbsp;<el-input v-model="dialog.banben" placeholder="请填写版本号,格式1.2.0" style="width: 88%;"></el-input>
+
+                                    </el-form-item>
+                                </el-col>
+                                <el-col style="text-align: center;">
+                                    <el-button type="primary" @click="postSystem" size="medium">提交</el-button>
+                                    <el-button @click="backPage" size="medium">返回</el-button>
+                                </el-col>
+                            </el-row>
+                            <div slot="footer" class="dialog-footer" :visible="dialog.dialogVisible">
+
+                            </div>
+                        </el-form>
+
+                    </el-dialog>
                 </div>
             </div>
         </el-card>
-		<!--新增系统弹窗-->
-    	<el-dialog title="新建系统" :visible="dialog.dialogVisible" append-to-body modal-append-to-body :before-close="closeAddDialog">
-    		 <el-form label-width="80px">
-	    		<el-row>
-	    			 <el-col>
-                        <el-form-item label="系统">
-                        	<el-select v-model="dialog.system" placeholder="请选择"  filterable allow-create>
-	                        	<el-option 
-	                                    v-for="item in dialog.systemSelect"
-	                                    :label="item.system_NAME"
-	                                    :value="item.system_ID"
-	                            ></el-option>
-                        	</el-select>                        	
-                        </el-form-item>
-                    </el-col>
-                    <el-col class="subsystem" :span='24' style='position: relative;'>
-                        <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
-                        	<el-input v-model="item.csty" placeholder="请填写子系统" style="width: 88%;"></el-input>
-                          <i
-                            :class="index == 0 && dialog.systemAll.length ==1?'el-icon-plus':index == dialog.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
-                            @click="addsubStystem(index,$event)"
-                            style="line-height: 40px;height: 40px;text-align: right; font-size: 20px;cursor: pointer;font-weight: bold;width: 9%;top: 0;right: -35px;">
-                          </i>
-
-                        </el-form-item>
-                    </el-col>                    
-                     <el-col style="text-align: center;">                     	
-                     	<el-button type="primary" @click="postSystem" size="medium">提交</el-button>
-                        <el-button @click="backPage" size="medium">返回</el-button>
-                    </el-col>
-	    		</el-row>
-	    		<div slot="footer" class="dialog-footer" :visible="dialog.dialogVisible">
-	                
-	            </div>
-    		</el-form>
-    		
-    	</el-dialog>
     </div>
     	
 </template>
@@ -256,11 +265,13 @@
             return {
             	dialog:{
             		name:'',
-            		system:'',
+            		systemValue:'',
+                    subsystemValue:'',
             		dialogVisible: false,
             		classic:[],
             		systemSelect:[],
-			        systemAll: [{"csty": ""}],
+                    subSystemSelect:[],
+                    banben:'',
             	},
                 errorVisible: false,
                 table: {
@@ -349,13 +360,15 @@
                 }
             },
             //表格渲染
-            loadData(){   
+            loadData(){
+                this.$maskin();
             	this.calculate()
             	let params = new URLSearchParams();
                 this.$axios.post('/version/versionlist', params).then((res) => {
                 	if(res.code=200){
                 		let data = res.data.result
                     	this.setTableData(data);
+                        this.$maskoff();
                 	}
                 	else{
                 		this.warn(message);
@@ -375,11 +388,15 @@
                         this.calculate()
                     }, 0);
                 }
-                if(val.neel_ID){
                 	let params = new URLSearchParams();
-                	params.append("NEEL_ID", val.neel_ID);
-                	params.append("SYSTEM_ID", val.system_ID);
-                	params.append("SUBSYSTEM", val.subsystem);
+            	    if(val.neel_ID){
+                        params.append("NEEL_ID", val.neel_ID);
+                        params.append("SYSTEM_ID", val.system_ID);
+                        params.append("SUBSYSTEM", val.subsystem);
+                    }else{
+                        params.append("SYSTEM_ID", val.system_ID);
+                        params.append("SUBSYSTEM", val.subsystem);
+                    }
                     this.$axios.post("/version/sonversionlist", params).then((res) => {                      	
                     	 if (res.data.code == 200) {
 	                    	let data=res.data.result;
@@ -407,7 +424,6 @@
 	                    	
                        }
                     })
-                }
                 return false;
             },
             //版本轴信息显示
@@ -420,95 +436,89 @@
            	 	this.tabs.infoshowVisible=false;
             	this.tabs.activeLineIndex = ""
            },
-            //新建系统的系统选择
+            //添加版本
             showdialog(){
 	           	this.dialog.dialogVisible=true;
 	           	this.calculate()
-            	let params = new URLSearchParams();
-                this.$axios.post('/golive/systemlists', params).then((res) => {
-                	if(res.data.code=200){    
+                let params = new URLSearchParams();
+                this.$axios.post('/golive/systemlist', params).then((res) => {
+                    if(res.data.code=200){
                 		let systems=[];
                 		let data = res.data.result;
                 		for(let i of data){
                 			systems.push(i);
                 		}
                 		this.$set(this.dialog, "systemSelect", systems);//系统
+                    }
+                })
+//                })
+           },
+            systemOpt(){
+                let params = new URLSearchParams();
+                let systemId=this.dialog.systemValue.split("-")[0]
+                params.append("SYSTEM_ID",systemId);
+                this.$axios.post('/golive/systemson', params).then((res) => {
+                	if(res.data.code=200){
+                		let subsystems=[];
+                		let data = res.data.result;
+                		for(let i of data){
+                            subsystems.push(i);
+                		}
+                		this.$set(this.dialog, "subSystemSelect", subsystems);//子系统
                 	}
                 })
-           },
-           
-           //新建系统提交
-           postSystem(){
-           		let subSystem=[]
-           		let params = new URLSearchParams();
-           		let systemList=[];
-           		if(!this.dialog.system){
-           			this.$warn('涉及系统不能为空');
-           			return;
-           		}
-           		else{
-           			for(let i of this.dialog.systemSelect){
-	           			systemList.push(i.system_ID)
-	           		}
-           			if(systemList.indexOf(this.dialog.system)==-1){
-	           			params.append("SYSTEM_NAME",this.dialog.system);
-	           		}
-	           		else{
-	           			params.append("SYSTEM_ID",this.dialog.system);
-	           		}
-           		}
-           		for(let i of this.dialog.systemAll){           			
-           			if(!i.csty){
-           				this.$warn('请填写子系统')
-           				return
-           			}
-           			else if(subSystem.indexOf(i.csty)==-1){
-				      subSystem.push(i.csty)
-				    }
-           		}
-           		params.append("SYSTEM_NAMES",subSystem);
-           		 this.$axios.post('/version/addSystem ', params).then((res) => {
-                	if(res.data.code=200){    
-                		let data=res.data.result;
-                		this.loadData();
-                	}
-                	else{
-                		this.$warn(message);
-                	}
-               })
-           		 
-           		this.dialog.dialogVisible = false;
-           		return;
-           },
-           //追加子系统
-            addsubStystem(index, e){
-		        let type = e.target.className
-		        if (type == "el-icon-plus") {
-		          if (!this.dialog.systemAll[index].csty) {
-		            this.$warn("请先填写子系统");
-		            return
-		          }
-		          else{ 
-		          	let subSystem=[];
-		          	for(let i of this.dialog.systemAll){
-		          		let csty=i.csty;
-		          		if(subSystem.indexOf(csty)==-1){
-		          			subSystem.push(csty);
-		          		}
-		          		else{
-		          			this.dialog.systemAll[index].csty=''
-		          			this.$warn("请填写不同的子系统");
-		          			return
-		          		}
-		          	}
-		          	this.dialog.systemAll.push({"csty": ""});
-		          }
-		       }
-		        else {
-		          this.dialog.systemAll.splice(index, 1)
-		        }
-		        
-      		},
+            },
+            //添加版本提交
+            postSystem(){
+                let params = new URLSearchParams();
+                let subSystem=[]
+                let systemList=[];
+                if(!this.dialog.systemValue){
+//                    this.$warn('涉及系统不能为空');
+                    this.$warn('请填写完整信息');
+                    return;
+                }
+                if(!this.dialog.subsystemValue){
+//                    this.$warn('子系统系统不能为空');
+                    this.$warn('请填写完整信息');
+                    return;
+                }
+                if(!this.dialog.banben){
+//                    this.$warn('版本不能为空');
+                    this.$warn('请填写完整信息');
+                    return;
+                }
+//                let  reg = /^[0-9]\.[0-9]\.[0-9]{3}$/;
+                let  reg =/^\d+\.\d+\.\d+$/;
+                if (!reg.test(this.dialog.banben)) {
+                    this.$warn("版本号格式有误");
+                    return;
+                }
+                params.append("SYSTEM_ID",this.dialog.systemValue.split("-")[0])//涉及系统id
+                params.append("SYSTEM_NAME",this.dialog.systemValue.split("-")[1])//涉及系统名称
+                params.append("SYSTEM_SID",this.dialog.subsystemValue.split("-")[0])//子系统id
+                params.append("SYSTEM_SNAME",this.dialog.subsystemValue.split("-")[1])//子系统名称
+                params.append("NEW_VERSION",'v'+this.dialog.banben)//版本号
+                this.$axios.post('/version/addversion ', params).then((res) => {
+                    if(res.data.code=200){
+                        let data=res.data.result;
+                        this.loadData();
+                        this.clearAddData();
+                    }
+                    else{
+                        this.$warn(message);
+                    }
+                })
+
+                this.dialog.dialogVisible = false;
+                this.loadData();
+                this.clearAddData();
+                return
+            },
+            closeAddDialog(){
+                this.clearAddData();
+                this.dialog.dialogVisible = false
+            },
       		//搜索
            searchKeyword(e){
            	this.setConsoleVisible()
@@ -517,8 +527,10 @@
                 	params.append("SOUSS", this.keyword);
 	                this.$axios.post('/version/versionlist', params).then((res) => {
 	                	if(res.code=200){
+
 	                		let data = res.data.result
 	                    	this.setTableData(data);
+
 	                	}
 	                	else{
 	                		this.warn(message);
@@ -537,15 +549,15 @@
             },
             //清除新增新增的表单
 		    clearAddData(){
-		    	let len=this.dialog.systemAll.length-1;
-		        for (let i of this.dialog.systemAll) {
-		        	i.csty=''		         
-		        }
-		        this.dialog.systemAll.splice(0,len)
 		        this.dialog.system='';
+                this.dialog.subsystem='';
+                this.dialog.banben='';
 		    },
 			 tabClick(val){
+                this.tabs.consoleWrapperVisible=false
                 this.calculateTabsHeight();
+                this.calculate();
+                this.calculateTableHeight();
            },
              //返回
 		      backPage(val){

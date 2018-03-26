@@ -137,7 +137,7 @@ let option = {
                 },{
                     path: "sstj",
                     name:"实时统计",
-                    component: resolve => require(['./components/sstj/sstj-备份.vue'], resolve)
+                    component: resolve => require(['./components/sstj/sstj.vue'], resolve)
                 }
             ]
         }/*, {

@@ -40,7 +40,7 @@
     }
 
     .rolemanage .el-table td {
-        padding: 6px 0 !important;
+        padding: 6px 0!important;
     }
 </style>
 <template>
@@ -49,16 +49,7 @@
             <div class="text item">
                 <div class="content">
                     <div class="action">
-                        <router-link :to="{path:'addrole'}">
-                            <el-button size="mini" type="primary">新建角色</el-button>
-                        </router-link>
-                        <router-link to="power">
-                            <el-button size="mini">权限列表</el-button>
-                        </router-link>
-                        <div class="search fr">
-                            <el-input size="mini" v-model="search" placeholder="输入检索关键字"></el-input>
-                            <el-button size="mini" type="primary">检索</el-button>
-                        </div>
+                        <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
                     </div>
                     <div class="table-list">
                         <div class="left-tree">
@@ -66,21 +57,49 @@
                         </div>
                         <el-table :data="tableData" border style="width: 80%" :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
-                            <el-table-column align="center" prop="role_NAME" label="所属职位"></el-table-column>
-                            <!--<el-table-column align="center" label="操作">-->
-                                <!--<template slot-scope="scope">-->
-                                    <!--<router-link :to="{path:'editrole',query:{id: scope.row.role_ID}}">-->
-                                        <!--<el-button @click="editRow(scope.row,scope)" size="small" type="primary">编辑</el-button>-->
-                                    <!--</router-link>-->
-                                    <!--<el-button @click="deleteRow(scope.row,scope)" size="small" type="danger">删除-->
-                                    <!--</el-button>-->
-                                <!--</template>-->
-                            <!--</el-table-column>-->
+                            <el-table-column align="center" prop="system_NAME" label="子系统"></el-table-column>
                         </el-table>
                     </div>
                 </div>
             </div>
         </el-card>
+        <!--新增系统弹窗-->
+        <el-dialog title="新建系统" :visible="dialog.dialogVisible" append-to-body modal-append-to-body :before-close="closeAddDialog">
+            <el-form label-width="80px">
+                <el-row>
+                    <el-col>
+                        <el-form-item label="系统">
+                            <el-select v-model="dialog.system" placeholder="请选择"  filterable allow-create>
+                                <el-option
+                                        v-for="item in dialog.systemSelect"
+                                        :label="item.system_NAME"
+                                        :value="item.system_ID"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col class="subsystem" :span='24' style='position: relative;'>
+                        <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
+                            <el-input v-model="item.csty" placeholder="请填写子系统" style="width: 88%;"></el-input>
+                            <i
+                                    :class="index == 0 && dialog.systemAll.length ==1?'el-icon-plus':index == dialog.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
+                                    @click="addsubStystem(index,$event)"
+                                    style="line-height: 40px;height: 40px;text-align: right; font-size: 20px;cursor: pointer;font-weight: bold;width: 9%;top: 0;right: -35px;">
+                            </i>
+
+                        </el-form-item>
+                    </el-col>
+                    <el-col style="text-align: center;">
+                        <el-button type="primary" @click="postSystem" size="medium">提交</el-button>
+                        <el-button @click="backPage" size="medium">返回</el-button>
+                    </el-col>
+                </el-row>
+                <div slot="footer" class="dialog-footer" :visible="dialog.dialogVisible">
+
+                </div>
+            </el-form>
+
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -91,7 +110,15 @@
                 tableData: [],
                 tableHeight: "auto",
                 treeData: [],
-                leftTreeData: []
+                leftTreeData: [],
+                dialog:{
+                    name:'',
+                        system:'',
+                        dialogVisible: false,
+                        classic:[],
+                        systemSelect:[],
+                        systemAll: [{"csty": ""}],
+                },
             }
         },
         mounted(){
@@ -112,35 +139,29 @@
                 this.tableData =[]
                 let params = new URLSearchParams();
                 this.$maskin();
-                this.$axios.post("/role/queryRoleMenu", params).then((res) => {
+                this.$axios.post("golive/systeml", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        /* [{
-                         label: '一级 1',
-                         children: [{
-                         label: '二级 1-1',
-                         children: [{
-                         label: '三级 1-1-1'
-                         }]
-                         }]
-                         }] */
                         let arr = [];
-                        for (let i of data.result.deptRoles) {
-                            if (!i.dept_fid) {
+                        for (let i of data.result) {
+                            if (!i.system_FID) {
                                 let obj = {
-                                    "label": i.dept_name,
-                                    "id": i.dept_id,
+                                    "label": i.system_NAME,
+                                    "id": i.system_ID,
                                     "children": [],
-                                    "roles": i.roles,
+                                    "subsystem": i.systemlist,
                                 };
-                                for (let j of data.result.deptRoles) {
-                                    if (j.dept_fid && (j.dept_fid == i.dept_id)) {
+                                for (let j of data.result) {
+                                    if (j.system_FID && (j.system_FID == i.system_ID)) {
                                         let childerenObj = {
-                                            "label": j.dept_name,
-                                            "id": j.dept_id,
-                                            "roles": j.roles,
+                                            "label": j.system_NAME,
+                                            "id": j.system_ID,
+                                            "subsystem": j.systemlist,
                                         };
+
                                         obj.children.push(childerenObj)
+                                    }
+                                    else{
                                     }
                                 }
                                 arr.push(obj)
@@ -151,27 +172,128 @@
                     }
                 })
             },
+            //新建系统的系统选择
+            showdialog(){
+                this.dialog.dialogVisible=true;
+                this.calculate()
+                let params = new URLSearchParams();
+                this.$axios.post('/golive/systemlists', params).then((res) => {
+                    if(res.data.code=200){
+                        let systems=[];
+                        let data = res.data.result;
+                        for(let i of data){
+                            systems.push(i);
+                        }
+                        this.$set(this.dialog, "systemSelect", systems);//系统
+                    }
+                })
+            },
+            //新建系统提交
+            postSystem(){
+                let params = new URLSearchParams();
+                let subSystem=[]
+                let systemList=[];
+                if(!this.dialog.system){
+                    this.$warn('涉及系统不能为空');
+                    return;
+                }
+                else{
+                    for(let i of this.dialog.systemSelect){
+                        systemList.push(i.system_ID)
+                    }
+                    if(systemList.indexOf(this.dialog.system)==-1){
+                        params.append("SYSTEM_NAME",this.dialog.system);//如果是新的涉及系统就传值新的系统name
+                    }
+                    else{
+
+                        params.append("SYSTEM_ID",this.dialog.system);//如果是已存在的涉及系统 就传值系统id
+                    }
+                }
+                for(let i of this.dialog.systemAll){
+                    if(systemList.indexOf(this.dialog.system) >=0 ){  //如果不是新的涉及系统
+                        if(!i.csty){
+                            this.$warn('请填写子系统')
+                            return
+                        }
+                    }
+                    if( subSystem.indexOf(i.csty)==-1){
+                        subSystem.push(i.csty)
+                    }
+                    else{
+                        this.$warn('请填写不同的子系统')
+                        return
+                    }
+                }
+                params.append("SYSTEM_NAMES",subSystem);
+                this.$axios.post('/version/addSystem ', params).then((res) => {
+                    if(res.data.code=200){
+                        let data=res.data.result;
+                        this.loadData();
+                        this.clearAddData();
+                    }
+                    else{
+                        this.$warn(message);
+                    }
+                })
+
+                this.dialog.dialogVisible = false;
+                this.loadData();
+                return;
+            },
+            //追加子系统
+            addsubStystem(index, e){
+                let type = e.target.className
+                if (type == "el-icon-plus") {
+                    if (!this.dialog.systemAll[index].csty) {
+                        this.$warn("请先填写子系统");
+                        return
+                    }
+                    else{
+                        let subSystem=[];
+                        for(let i of this.dialog.systemAll){
+                            let csty=i.csty;
+                            if(subSystem.indexOf(csty)==-1){
+                                subSystem.push(csty);
+                            }
+                            else{
+                                this.dialog.systemAll[index].csty=''
+                                this.$warn("请填写不同的子系统");
+                                return
+                            }
+                        }
+                        this.dialog.systemAll.push({"csty": ""});
+                    }
+                }
+                else {
+                    this.dialog.systemAll.splice(index, 1)
+                }
+
+            },
+            closeAddDialog(){
+                this.clearAddData();
+                this.dialog.dialogVisible = false
+            },
+            //清除新增新增的表单
+            clearAddData(){
+                let len=this.dialog.systemAll.length-1;
+                for (let i of this.dialog.systemAll) {
+                    i.csty=''
+                }
+                this.dialog.systemAll.splice(0,len)
+                this.dialog.system='';
+            },
+            //返回
+            backPage(val){
+                this.loadData();
+                this.clearAddData();
+                this.dialog.dialogVisible = false
+            },
             leftTreeClick(val){
-                this.tableData = val.roles
+                this.tableData = val.subsystem
             },
             editRow(el, scope){
 
             },
-            deleteRow(el, scope){
-                this.$maskin();
-                let params = new URLSearchParams();
-                params.append("ROLE_ID", el.role_ID)
-                this.confirm("确定删除该角色？", () => {
-                    this.$axios.post("/role/deleteRole", params).then((res) => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            this.$success("操作成功！");
-                            this.$maskoff();
-                            this.loadData()
-                        }
-                    })
-                })
-            }
         }
     }
 </script>

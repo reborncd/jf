@@ -2363,7 +2363,7 @@
 					}
 				};
 				let params = new FormData();
-				params.append("token", localStorage.getItem("token"))
+				params.append("token", this.$getToken())
 				params.append("DALIY_NEET_ID", this.handle.daliy_NEET_ID)
 				params.append("file", e.target.files[0]);
 				this.$axios.post("/daliy/upload", params, config).then((res) => {
@@ -2382,7 +2382,7 @@
 			},
 			//下载附件
 			downfile(val) {
-				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
+				this.$axios.get(`/daliy/download?ID=${val}&token=${this.$getToken()}`)
 			},
 			tabClick(val) {
 				this.calculateTabsHeight();

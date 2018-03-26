@@ -36,7 +36,7 @@
             },
             //-----------------------------------下载用例模板和手册
             downloadModel(val){
-                this.$axios.get(`/base/download/?ID=${val.id}&token=${localStorage.getItem('token')}`);
+                this.$axios.get(`/base/download/?ID=${val.id}&token=${this.$getToken()}`);
             },
             //大小过滤器
             sizeFormat(row){

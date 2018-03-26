@@ -1173,7 +1173,7 @@
 					}
 				};
 				let params = new FormData();
-				params.append("token", localStorage.getItem("token"))
+				params.append("token", this.$getToken());
 				params.append("file", e.target.files[0]);
 				if(!this.popup.popTxt.down_id) {
 					this.popup.popTxt.down_id = "1"
@@ -1196,7 +1196,7 @@
 			},
 			//下载附件
 			downfile(val) {
-				this.$axios.get(`/golive/download?ID=${val}&token=${localStorage.getItem("token")}`)
+				this.$axios.get(`/golive/download?ID=${val}&token=${this.$getToken()}`)
 			},
 			tabClick(val){
                 this.calculateTabsHeight();
