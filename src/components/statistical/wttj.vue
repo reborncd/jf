@@ -77,23 +77,23 @@
 
 <template>
 	<div class="workreport common-card-wrap" style="height: 100%;">
-		<el-card class="box-card">
+		<el-card class="box-card" >
 			<div slot="header" class="clearfix">
 				<span class="card-title">问题统计</span>
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
-				<div class="fr">
-					<!--<div style="margin-right: 10px;" class="i-b">
-						<el-date-picker v-model="dateRange" @change="pickDate(dateRange)" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right" size="mini" :picker-options="dateComp">
-						</el-date-picker>
-					</div>
+				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
-						<el-button size="mini" type="primary">生成报告
+						<el-button size="mini" type="primary" @click="getPdf('问题统计')">生成报告
 						</el-button>
-					</div>-->
+					</div>
+				</div>
+				<div class="i-b" style="float: right;">
+					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="loadCharData" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+					</el-date-picker>
 				</div>
 			</div>
-			<div class="text item workreport-wrapper">
+			<div class="text item workreport-wrapper" id="pdfDom">
 				<div class="report-statistics clear">
 					<el-form label-width="100px" label-position="right">
 						<el-row :gutter="20">
@@ -112,18 +112,14 @@
 						</el-form>
 						<div class="table-list">
 							<el-table :data="showData" style="width: 100%">
-								<el-table-column prop="systemName" label="系统名称"></el-table-column>
+								<el-table-column prop="systemName" label="系统名称" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="bug" label="BUG"></el-table-column>
 								<el-table-column prop="fault" label="故障"></el-table-column>
-								<el-table-column prop="cxnum" label="程序"></el-table-column>
-								<el-table-column prop="st_NEELSOURCE" label="硬件"></el-table-column>
-								<el-table-column prop="st_DESIGNSYSTEM" label="网络"></el-table-column>
-								<el-table-column prop="st_RRIORITY" label="人为"></el-table-column>
-								<el-table-column prop="st_PLANHOURS" label="A类时间"></el-table-column>
-								<el-table-column prop="st_WORKHOURS" label="B类时间"></el-table-column>
-								<el-table-column prop="st_SCHEDULE" label="C类时间"></el-table-column>
-								<el-table-column prop="st_WORKHOURS" label="统计天数"></el-table-column>
-								<el-table-column prop="percentage" label="期内正常运转率"></el-table-column>
+								<el-table-column prop="A1" label="程序"></el-table-column>
+								<el-table-column prop="A2" label="硬件"></el-table-column>
+								<el-table-column prop="A3" label="网络"></el-table-column>
+								<el-table-column prop="A4" label="人为"></el-table-column>
+								<el-table-column prop="percentage" label="期内正常运转率" width="150"></el-table-column>
 							</el-table>
 						</div>
 
@@ -138,7 +134,7 @@
 	export default {
 		data() {
 			return {
-				select_value: "day",
+				select_value: "orther",
 				select: [{
 					label: "日报",
 					value: "day"
@@ -154,7 +150,42 @@
 				}],
 				showData: [],
 				dateComp: {},
-				dateRange: '',
+				dateRange: [], //时间区间
+				pickerOptions2: {
+					shortcuts: [{
+						text: '日报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '周报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * start.getDay());
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '月报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '年报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							start.setMonth(0);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
 				workHoursArr: [],
 				keyWord: ''
 			}
@@ -166,11 +197,18 @@
 			loadCharData() {
 				this.$maskin();
 				let params = new URLSearchParams();
-				//				params.append("TYPE", this.select_value);
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					
+				}
 				this.$axios.post("/statistical/getProblemStatisticalData", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-						
 						let xaxis = []
 						let normal = []
 						let bug = []
@@ -184,20 +222,12 @@
 						this.loadsystemChart(xaxis, normal, bug, fault)
 						//数据啊
 						for(let j of data.result.resultLists2){
-							j.cxnum="0"
-							j.st_NEELSOURCE="0"
-							j.st_DESIGNSYSTEM="0"
-							j.st_RRIORITY="0"
-							j.st_PLANHOURS="0"
-							j.st_WORKHOURS="0"
-							j.st_SCHEDULE="0"
-							j.st_WORKHOURS="0"
 							this.showData.push(j)
 						}
 					} else {
 						this.$warn(data.message);
 					}
-					this.$maskoff();
+					
 
 				})
 			},
@@ -241,6 +271,9 @@
 					},
 					xAxis: [{
 						type: 'category',
+						axisLabel: {
+							rotate: -45,
+						},
 						axisTick: {
 							alignWithLabel: true
 						},
@@ -309,6 +342,7 @@
 				};
 
 				proBar.setOption(option);
+				this.$maskoff();
 			}
 
 		}

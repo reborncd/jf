@@ -556,7 +556,6 @@
 		      //跳转到需求页面
 		      goneeds(e,val){
 		          e.stopPropagation();
-		          console.log(val)
 		      	let path = "";
 		      	if(val.bs == "TECH"){
 		      		path = "技术需求"

@@ -80,10 +80,14 @@
 			<div class="text item workreport-wrapper">
 				<div class="report-header">
 					<strong class="name">{{showData.USERNAME}}</strong>
-					<el-select v-model="select_value" clearable @change="loadData">
+					<!--<el-select v-model="select_value" clearable @change="loadData">
 						<el-option v-for="item in select" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
-					</el-select>
+					</el-select>-->
+					<div class="i-b" style="float: right;">
+						<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']" @change="loadData" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+						</el-date-picker>
+					</div>
 					<p class="group">
 						<span>所在组别：</span>
 						<span>{{showData.DEPT}}</span>
@@ -105,7 +109,7 @@
 										<el-form-item label="业务需求"><span style="color: red;">{{showData.busiSize}}</span></el-form-item>
 									</el-col>
 									<el-col :span="6">
-										<el-form-item label="基础需求任务"><span style="color: red;">{{showData.baseSize}}</span></el-form-item>
+										<el-form-item label="基础建设"><span style="color: red;">{{showData.baseSize}}</span></el-form-item>
 									</el-col>
 									<el-col :span="6">
 										<el-form-item label="日常任务"><span style="color: red;">{{showData.daliySize}}</span></el-form-item>
@@ -123,7 +127,7 @@
 										<el-form-item label="业务需求"><span style="color: red;">{{showData.busiTime}}</span></el-form-item>
 									</el-col>
 									<el-col :span="6">
-										<el-form-item label="基础需求任务"><span style="color: red;">{{showData.baseTime}}</span></el-form-item>
+										<el-form-item label="基础建设"><span style="color: red;">{{showData.baseTime}}</span></el-form-item>
 									</el-col>
 									<el-col :span="6">
 										<el-form-item label="日常任务"><span style="color: red;">{{showData.daliyTime}}</span></el-form-item>
@@ -146,14 +150,18 @@
 							</el-col>
 						</el-row>
 						<div class="table-list">
-							<el-table :data="showData.workList" border style="width: 100%">
-								<el-table-column prop="TASK_DESC" label="涉及系统"></el-table-column>
-								<el-table-column prop="TASK_FINAL" label="负责模块"></el-table-column>
-								<el-table-column prop="START_DATE" label="开始时间"></el-table-column>
-								<el-table-column prop="REALY_DATE" label="完成时间"></el-table-column>
-								<el-table-column prop="DESCRIPTION" label="故障描述"></el-table-column>
-								<el-table-column prop="SOLUTION" label="解决方案"></el-table-column>
-								<el-table-column prop="TYPE" label="任务类型"></el-table-column>
+							<el-table :data="showData.workList" border style="width: 100%"  @row-click="goneeds">
+								<el-table-column prop="TASK_NAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="TASK_DESC" label="需求描述" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="DESIGN_SYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="MODULE_NAME" label="负责模块"></el-table-column>
+								<el-table-column prop="START_DATE" label="开始时间" width="110"></el-table-column>
+								<el-table-column prop="REALY_DATE" label="完成时间" width="110"></el-table-column>
+								<el-table-column prop="USER_NAME" label="开发负责人" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="TYPE" label="需求类型" width="100"></el-table-column>
+
+								<!--<el-table-column prop="DESCRIPTION" label="故障描述"></el-table-column>
+								<el-table-column prop="SOLUTION" label="解决方案"></el-table-column>-->
 							</el-table>
 						</div>
 					</div>
@@ -167,7 +175,7 @@
 	export default {
 		data() {
 			return {
-				select_value: "day",
+				select_value: "other",
 				select: [{
 					label: "日报",
 					value: "day"
@@ -181,6 +189,42 @@
 					label: "年报",
 					value: "year"
 				}],
+				dateRange: [], //时间区间
+				pickerOptions2: {
+					shortcuts: [{
+						text: '日报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '周报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * start.getDay());
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '月报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '年报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							start.setMonth(0);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
 				showData: ""
 			}
 		},
@@ -190,12 +234,32 @@
 		},
 		methods: {
 			loadData() {
+				this.$maskin()
 				let params = new URLSearchParams();
 				params.append("TYPE", this.select_value);
+				if(this.dateRange.length==0){
+					params.append("START_DATE","");
+					params.append("END_DATE", "");
+				}else{
+					params.append("START_DATE", this.dateRange[0]);
+				    params.append("END_DATE", this.dateRange[1]);
+				}
+				
 				this.$axios.post("/user/userWorkReport", params).then((res) => {
-					this.$set(this, "showData", res.data.result);
-					this.loadChart()
+					let data = res.data;
+					if(data.code == 200) {
+						this.$set(this, "showData", data.result);
+						this.loadChart()
+					} else {
+						this.$warn(data.message);
+					}
+					this.$maskoff()
 				})
+			},
+			FormatDate(strTime) {
+				var date = new Date(strTime);
+				
+				return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 			},
 			loadChart() {
 				var echarts = require('echarts');
@@ -219,7 +283,7 @@
 					legend: {
 						orient: 'vertical',
 						x: 'left',
-						data: ['日常任务', '业务需求', '技术需求', '基础需求任务', '问题管理', '日常任务', '业务需求', '技术需求', '基础需求任务']
+						data: ['日常任务', '业务需求', '技术需求', '基础建设', '问题管理', '日常任务', '业务需求', '技术需求', '基础建设']
 					},
 					series: [{
 							name: '工时统计',
@@ -251,7 +315,7 @@
 								},
 								{
 									value: this.showData.baseTime,
-									name: '基础需求任务'
+									name: '基础建设'
 								}
 							]
 						},
@@ -274,7 +338,7 @@
 								},
 								{
 									value: this.showData.baseSize,
-									name: '基础需求任务'
+									name: '基础建设'
 								},
 								{
 									value: this.showData.faultSize,
@@ -285,23 +349,12 @@
 					]
 				};
 				myChart.setOption(option);
-			},
-			calculate() {
-				let height = document.querySelector(".mainr").offsetHeight;
-				//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
-				let card_body = document.querySelector(".box-card .el-card__body");
-				card_body.style.height = height - 36 + "px";
-				//表格高度
-				this.calculateTableHeight(this.tabs.consoleWrapperVisible);
-				//tab高度
-				if(this.tabs.consoleWrapperVisible) {
-					this.calculateTabsHeight();
-				}
-				//控制台的内容区域高度
-			},
-			tabClick(val){
-                this.calculateTabsHeight();
-            }
+			},//跳转到需求页面
+			goneeds(val) {
+				this.$go("", "", {
+					"neelId": val.ID
+				}, val.TYPE);
+			}
 
 		}
 	}

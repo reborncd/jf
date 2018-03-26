@@ -137,7 +137,7 @@
             //下载
             download(row){
                 let id = row.at_ID;
-                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${localStorage.getItem("token")}`)
+                this.$axios.get(`/datum/download?type=2&fileId=${id}&token=${this.$getToken()}`)
             }
         }
     }

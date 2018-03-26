@@ -82,22 +82,18 @@
 				<span class="card-title">项目统计</span>
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
-				<el-select v-model="select_value" clearable size="mini" @change="loadChange">
-					<el-option v-for="(item, index) in select" :label="item.label" :value="item.value">
-					</el-option>
-				</el-select>
-				<!--<div class="fr">
-					<div style="margin-right: 10px;" class="i-b">
-						<el-date-picker v-model="dateRange" @change="pickDate(dateRange)" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right" size="mini" :picker-options="dateComp">
-						</el-date-picker>
-					</div>
+				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
-						<el-button size="mini" type="primary">生成报告
+						<el-button size="mini" type="primary" @click="getPdf('项目统计')">生成报告
 						</el-button>
 					</div>
-				</div>-->
+				</div>
+				<div class="i-b" style="float: right;">
+					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="changeLoad" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+					</el-date-picker>
+				</div>
 			</div>
-			<div class="text item workreport-wrapper">
+			<div class="text item workreport-wrapper" id="pdfDom">
 				<div class="report-statistics clear">
 					<el-form label-width="100px" label-position="right">
 						<el-row :gutter="20">
@@ -110,33 +106,41 @@
 					<div class="report-list" style="margin-top: 10px;">
 						<el-form label-width="100px" label-position="right">
 							<el-row :gutter="20">
-								<el-col :span="12">
+								<el-col :span="12" v-if="selectDate">
+									<h5><i class="iconfont icon-iconfontzhizuobiaozhun0261 i-b"></i><span class="i-b">{{selectDate}}{{selectNew}}任务</span></h5>
+								</el-col>
+								<el-col :span="12" v-if="!selectDate">
 									<h5><i class="iconfont icon-iconfontzhizuobiaozhun0261 i-b"></i><span class="i-b">当前开发项目</span></h5>
 								</el-col>
-								<!--<el-col :span="12">
+								<el-col :span="12">
 									<el-form-item label="" class="search i-b" style="margin-top: 20px;">
-										<el-input placeholder="请输入检索关键字" suffix-icon="icon-sousuo iconfont" v-model="keyWord" size="mini" clearable>
+										<el-input placeholder="请输入检索关键字" suffix-icon="icon-sousuo iconfont" v-model="keyWord" @change="searchKeyword($event)" size="mini" clearable>
 										</el-input>
 									</el-form-item>
-								</el-col>-->
+								</el-col>
 							</el-row>
 						</el-form>
 						<div class="table-list">
 							<el-table ref="multipleTable" :data="showData" @selection-change="handleSelectionChange" style="width: 100%">
-								<el-table-column label="全部"  type="selection" width="55"></el-table-column>
-								<el-table-column prop="st_NEELID" label="需求编号"></el-table-column>
-								<el-table-column prop="st_STARTDATE" label="提交日期"></el-table-column>
-								<el-table-column prop="st_ENDDATE" label="期望日期"></el-table-column>
-								<el-table-column prop="st_NEELNAME" label="需求名称"></el-table-column>
-								<el-table-column prop="st_NEELSOURCE" label="需求来源"></el-table-column>
-								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统"></el-table-column>
-								<el-table-column prop="st_RRIORITY" label="优先级"></el-table-column>
-								<el-table-column prop="st_PLANHOURS" label="计划工时"></el-table-column>
-								<el-table-column prop="st_WORKHOURS" label="投入工时"></el-table-column>
+								<el-table-column label="全部" type="selection" width="55"></el-table-column>
+								<el-table-column label="需求编号" width="200">
+									<template slot-scope="scope">
+										<span @click="goneeds($event,scope.row)" class="tab-opt">{{scope.row.st_NEELID}}</span>
+									</template>
+								</el-table-column>
+								<!--<el-table-column prop="st_NEELID" label="需求编号" ></el-table-column>-->
+								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
+								<el-table-column prop="st_ENDDATE" label="期望日期" width="110"></el-table-column>
+								<el-table-column prop="st_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>
+								<el-table-column prop="st_PLANHOURS" label="计划工时" width="110"></el-table-column>
+								<el-table-column prop="st_WORKHOURS" label="投入工时" width="110"></el-table-column>
 								<el-table-column prop="st_SCHEDULE" label="进度">
 									<template slot-scope="scope" class="action-wrap">
-									<el-progress :text-inside="true" :stroke-width="18" :percentage="scope.row.st_SCHEDULE | percent"></el-progress>
-								    </template>
+										<el-progress :text-inside="true" :stroke-width="18" :percentage="scope.row.st_SCHEDULE | percent"></el-progress>
+									</template>
 								</el-table-column>
 							</el-table>
 						</div>
@@ -159,7 +163,7 @@
 	export default {
 		data() {
 			return {
-				select_value: "week",
+				select_value: "orther",
 				select: [{
 					label: "日报",
 					value: "day"
@@ -174,18 +178,57 @@
 					value: "year"
 				}],
 				showData: "",
+				OriginData: "",
+				classType: "", // 传值（分别对应 A 新增 B 完成 C留存 D执行）
+				selectDate: "", //传值 （点击对象对应的时间） 
+				selectNew: "", //传值标签
 				dateComp: {},
-				dateRange: '',
+				dateRange: [], //时间区间
 				workHoursArr: [],
-				keyWord: ''
+				keyWord: '',
+				pickerOptions2: {
+					shortcuts: [{
+						text: '日报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '周报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * start.getDay());
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '月报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '年报',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setDate(1);
+							start.setMonth(0);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				}
 			}
 		},
 		filters: {
 			percent: function(val) {
-				if(val.indexOf('%')>0){
-					val=val.split('%')[0]
-					if(parseInt(val)>=100){
-						val=100
+				if(val.indexOf('%') > 0) {
+					val = val.split('%')[0]
+					if(parseInt(val) >= 100) {
+						val = 100
 					}
 				}
 				return val;
@@ -193,13 +236,28 @@
 		},
 		mounted() {
 			this.loadChartsData()
-			this.loadData()
-			//			this.loadChart()
 		},
 		methods: {
+			changeLoad() {
+				this.classType = "", // 传值（分别对应 A 新增 B 完成 C留存 D执行）
+					this.selectDate = "", //传值 （点击对象对应的时间） 
+					this.selectNew = "", //传值标签
+					this.loadChartsData()
+			},
 			loadChartsData() {
 				this.$maskin();
 				let params = new URLSearchParams();
+
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					this.select_value = "day"
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					this.select_value = "orther"
+				}
+
 				params.append("TYPE", this.select_value);
 				this.$axios.post("/statistical/getChartsData", params).then((res) => {
 					let data = res.data;
@@ -273,7 +331,8 @@
 
 						}
 						this.loadChart(data.result.rriorityNames, data.result.dateX, data.result.resultList)
-
+						this.loadPlanhours(data.result.delayMap)
+						this.loadData()
 					} else {
 						this.$warn(data.message);
 					}
@@ -282,45 +341,127 @@
 			loadData() {
 				this.$maskin();
 				let params = new URLSearchParams();
+
+				if(this.dateRange.length == 0) {
+					params.append("startDate", "");
+					params.append("endDate", "");
+					this.select_value = "day"
+				} else {
+					params.append("startDate", this.dateRange[0]);
+					params.append("endDate", this.dateRange[1]);
+					this.select_value = "orther"
+				}
+
 				params.append("TYPE", this.select_value);
+				params.append("classType", this.classType);
+				params.append("SELECTDATE", this.selectDate);
 				this.$axios.post("/statistical/getStatisticalProjectAll", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
 						this.$set(this, "showData", res.data.result);
+						this.$set(this, "OriginData", res.data.result);
 					} else {
 						this.$warn(data.message);
 					}
-
+					this.$maskoff();
 				})
-			},
-			loadChange() {
-				this.loadChartsData()
-				this.loadData()
 			},
 			handleSelectionChange(val) {
 				let arr = [] //工时投入数组
 				let name = [] //工时标题
 				let planArr = [] //计划工时（暂时）
 				let plan = []
-				
+
 				for(let i of val) {
 					arr.push({
 						value: parseInt(i.st_WORKHOURS),
 						name: i.st_NEELNAME
 					})
 					name.push(i.st_NEELNAME)
-					
+
 				}
-				this.loadWorkhours(arr,name)
+				this.loadWorkhours(arr, name)
 			},
-			loadPlanhours() {
+			loadPlanhours(data) {
 				//右下角的图标
+				var echarts = require('echarts');
+				var planhours = echarts.init(document.getElementById("planhours")); //延迟率
+				let option = {}
+				planhours.clear()
+				option = {
+					title: {
+						text: '延期率',
+						x: 'right'
+					},
+					tooltip: {
+						trigger: 'item',
+						formatter: "{a} <br/>{b}: {c} ({d}%)"
+					},
+					legend: {
+						orient: 'vertical',
+						show: true,
+						x: 'left',
+						data: ['期内', '延期']
+					},
+					series: [
+						{
+							name: '访问来源',
+							type: 'pie',
+							radius: ['30%', '55%'],
+							labelLine: {
+								normal: {
+									length: 20,
+									length2: 50,
+									lineStyle: {
+										color: '#333'
+									}
+								}
+
+							},
+							label: {
+								normal: {
+									formatter: '{a|{d}%}\n{b|{b}}',
+									borderWidth: 0,
+									borderRadius: 4,
+									padding: [0, -50],
+									rich: {
+										a: {
+											color: '#333',
+											fontSize: 16,
+											lineHeight: 20
+										},
+										hr: {
+											borderColor: '#333',
+											width: '100%',
+											borderWidth: 0.5,
+											height: 0
+										},
+										b: {
+											fontSize: 16,
+											lineHeight: 20,
+											color: '#333'
+										}
+									}
+								}
+							},
+							data: [{
+								value: data.during,
+								name: '期内'
+							}, {
+								value: data.delay,
+								name: '延期'
+							}]
+						}
+					]
+				};
+				planhours.setOption(option);
+				this.$maskoff();
 			},
 			loadWorkhours(arr, name) {
 				var echarts = require('echarts');
 				var workHours = echarts.init(document.getElementById("workhours")); //工时投入
 				let option = {}
-                workHours.clear()
+				workHours.clear()
 				option = {
 					title: {
 						text: '工时投入统计',
@@ -408,8 +549,65 @@
 
 				proBar.setOption(option);
 				this.$maskoff();
-				
-			}
+				var self = this
+				proBar.on('click', function(params, event) {
+					let type = params.seriesId
+					self.selectDate = params.name
+					if(type.indexOf("0") > 0) {
+						self.classType = "A"
+						self.selectNew = "新增"
+					}
+					if(type.indexOf("1") > 0) {
+						self.classType = "B"
+						self.selectNew = "完成"
+					}
+					if(type.indexOf("2") > 0) {
+						self.classType = "C"
+						self.selectNew = "留存"
+					}
+					if(type.indexOf("3") > 0) {
+						self.classType = "D"
+						self.selectNew = "执行"
+					}
+					self.loadData()
+				});
+			},
+			//跳转到需求页面
+			goneeds(e, val) {
+				e.cancelBubble = true;
+				let path = "";
+				if(val.st_RETURNTYPE == "TECH") {
+					path = "技术需求"
+				}
+				if(val.st_RETURNTYPE == "WORK") {
+					path = "业务需求"
+				}
+				if(val.st_RETURNTYPE == "BASE") {
+					path = "基础建设"
+				}
+				if(val.st_RETURNTYPE == "DALIY") {
+					path = "日常任务"
+				}
+
+				this.$go("", "", {
+					"neelId": val.st_NEELID
+				}, path);
+			}, //搜索关键字
+			searchKeyword() {
+				this.$maskin();
+				if(this.keyWord != "") {
+					let arr = [];
+					for(let i of this.OriginData) {
+						if(JSON.stringify(i).indexOf(this.keyWord) >= 0) {
+							arr.push(i)
+						}
+					}
+					this.$set(this, "showData", arr)
+				} else {
+					this.$set(this, "showData", this.OriginData)
+				}
+				this.$maskoff();
+			},
 
 		}
 	}

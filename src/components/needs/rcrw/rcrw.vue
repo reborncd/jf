@@ -100,8 +100,7 @@
 	}
 </style>
 <template>
-	<div class="jcjs common-card-wrap"
-		 @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
+	<div class="jcjs common-card-wrap" @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
 		<el-card class="box-card">
 			<div class="text item">
 				<div class="content">
@@ -126,14 +125,14 @@
 					<!--表格部分-->
 					<div class="table-list">
 						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
-							<el-table-column prop="daliy_NEET_ID" label="任务编号"></el-table-column>
+							<el-table-column prop="daliy_NEET_ID" label="任务编号" width="200"></el-table-column>
+							<el-table-column prop="task_NAME" label="任务名称" show-overflow-tooltip></el-table-column>
 							<el-table-column prop="start_DATE" label="申请日期" width="110"></el-table-column>
 							<el-table-column prop="start_TIME" label="申请时间" width="110"></el-table-column>
-							<el-table-column prop="task_NAME" label="任务名称"></el-table-column>
-							<el-table-column prop="user_NAME" label="申请人"></el-table-column>
-							<el-table-column prop="rriority_NAME" label="优先级"></el-table-column>
-							<el-table-column prop="end_DATE_STRING" label="期望上线时间"></el-table-column>
-							<el-table-column prop="state_NAME" label="状态"></el-table-column>
+							<el-table-column prop="end_DATE_STRING" label="期望上线时间" width="110"></el-table-column>
+							<el-table-column prop="user_NAME" label="申请人" width="110"></el-table-column>
+							<el-table-column prop="rriority_NAME" label="优先级" width="70"></el-table-column>
+							<el-table-column prop="state_NAME" label="状态" ></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
 									<el-button v-if="scope.row.check_TYPE=='check'" @click="agreeRow(scope.row,$event)" size="small" type="primary">确认
@@ -336,12 +335,12 @@
 										<div class="table-list">
 											<el-table :data="addneeds.addform.splitArr" border style="width: 100%" height="200" show-summary highlight-current-row>
 												<el-table-column prop="USER_NAME" label="人员"></el-table-column>
-												<el-table-column prop="xtname" label="系统名" width="110"></el-table-column>
-												<el-table-column prop="fzmk" label="负责模块" width="110"></el-table-column>
-												<el-table-column prop="easy" label="难易度"></el-table-column>
-												<el-table-column prop="finishDate" label="完成日期"></el-table-column>
-												<el-table-column prop="willTime" label="预计用时(小时)"></el-table-column>
-												<el-table-column prop="taskNum" label="任务量"></el-table-column>
+												<el-table-column prop="xtname" label="系统名" show-overflow-tooltip></el-table-column>
+												<el-table-column prop="fzmk" label="负责模块" show-overflow-tooltip></el-table-column>
+												<el-table-column prop="easy" label="难易度" width="70"></el-table-column>
+												<el-table-column prop="finishDate" label="完成日期" width="110"></el-table-column>
+												<el-table-column prop="willTime" label="预计用时(小时)" width="110"></el-table-column>
+												<el-table-column prop="taskNum" label="任务量" width="70"></el-table-column>
 											</el-table>
 
 										</div>
@@ -625,12 +624,12 @@
 				<div class="table-list">
 					<el-table :data="addneeds.addform.splitArr" border style="width: 100%" height="200" show-summary highlight-current-row>
 						<el-table-column prop="USER_NAME" label="人员"></el-table-column>
-						<el-table-column prop="xtname" label="系统名" width="110"></el-table-column>
-						<el-table-column prop="fzmk" label="负责模块" width="110"></el-table-column>
-						<el-table-column prop="easy" label="难易度"></el-table-column>
-						<el-table-column prop="finishDate" label="完成日期"></el-table-column>
-						<el-table-column prop="willTime" label="预计用时(小时)"></el-table-column>
-						<el-table-column prop="taskNum" label="任务量"></el-table-column>
+						<el-table-column prop="xtname" label="系统名" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="fzmk" label="负责模块" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="easy" label="难易度" width="70"></el-table-column>
+						<el-table-column prop="finishDate" label="完成日期" width="110"></el-table-column>
+						<el-table-column prop="willTime" label="预计用时(小时)" width="110"></el-table-column>
+						<el-table-column prop="taskNum" label="任务量" width="70"></el-table-column>
 					</el-table>
 
 				</div>
@@ -885,12 +884,12 @@
 			</el-form>
 			<div class="table-list">
 				<el-table :data="split.hasSplitTaskData" height="280" border show-summary style="width: 100%">
-					<el-table-column prop="user_NAME" label="人员" width="150"></el-table-column>
-					<el-table-column prop="system_NAME" label="系统名"></el-table-column>
-					<el-table-column prop="responsible_MODULE" label="负责模块"></el-table-column>
-					<el-table-column prop="''+end_DATE" :formatter="splitDataFormatter" label="完成日期"></el-table-column>
-					<el-table-column prop="expect_TIME" label="预计用时" width="100"></el-table-column>
-					<el-table-column prop="workload" label="任务量" width="100"></el-table-column>
+					<el-table-column prop="user_NAME" label="人员" ></el-table-column>
+					<el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="''+end_DATE" :formatter="splitDataFormatter" label="完成日期" width="110"></el-table-column>
+					<el-table-column prop="expect_TIME" label="预计用时" width="110"></el-table-column>
+					<el-table-column prop="workload" label="任务量"  width="70"></el-table-column>
 				</el-table>
 			</div>
 		</el-dialog>

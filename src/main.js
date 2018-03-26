@@ -7,6 +7,10 @@ import App from './App.vue'
 import router from "./router.js";
 import axios from "axios";
 import echarts from  'echarts'
+//3.22 start
+import html2Canvas from 'html2canvas'
+import JsPDF from 'jspdf'
+//3.22 end
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -14,19 +18,71 @@ Vue.config.productionTip = false;
 //路由跳转
 //----------------------------------------------------
 Vue.prototype.$go = function (route, query, params,name) {
-    this.$router.push({"name":name,'path': route, "query": query, "params": params});
+    this.$router.push({
+        'path': route,
+        "query": query,
+        "params": params,
+        "name":name
+    });
 };
 Vue.prototype.$back = function (route) {
     this.$router.go(-1)
 };
 
-//验证token返回登录----------------------------------------------------
-Vue.prototype.$goLogin = function () {
-    this.alert("登录失效，请重新登录");
-    setTimeout(() => {
-        this.$go("/login")
-    }, 2000)
+//----------------------------------------------------
+//pdf生成 3.22 start
+//----------------------------------------------------
+Vue.prototype.getPdf= function(val) {
+    let title =val+(new Date()).Format("yyyy-MM-dd")
+    html2Canvas(document.querySelector('#pdfDom'), {
+        allowTaint: true
+    }).then(function(canvas) {
+        let contentWidth = canvas.width
+        let contentHeight = canvas.height
+        let pageHeight = contentWidth / 592.28 * 841.89
+        let leftHeight = contentHeight
+        let position = 0
+        let imgWidth = 595.28
+        let imgHeight = 592.28 / contentWidth * contentHeight
+        let pageData = canvas.toDataURL('image/jpeg', 1.0)
+        let PDF = new JsPDF('', 'pt', 'a4')
+        if(leftHeight < pageHeight) {
+            PDF.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
+        } else {
+            while(leftHeight > 0) {
+                PDF.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+                leftHeight -= pageHeight
+                position -= 841.89
+                if(leftHeight > 0) {
+                    PDF.addPage()
+                }
+            }
+        }
+        PDF.save(title + '.pdf')
+    })
 };
+//----------------------------------------------------
+//日期格式  3.23 start
+//----------------------------------------------------
+Date.prototype.Format = function(fmt)
+{
+    let o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt))
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    for(let k in o)
+        if(new RegExp("("+ k +")").test(fmt))
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    return fmt;
+};
+
 //----------------------------------------------------
 //定义弹窗----------------------------------------------------
 //----------------------------------------------------
@@ -65,7 +121,7 @@ Vue.prototype.prompt = function (title, msg, success, cancel) {
     }).then(({value}) => {
         success({value})
     }).catch(() => {
-        cancel()
+        cancel ? cancel() : ""
     });
 };
 //数组去重
@@ -138,14 +194,14 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    //baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
+    baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
     //baseURL:"http://172.16.2.124:8082",//欧
-    //baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+    // baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
     //baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
     //baseURL:"http://127.0.0.1:8082",
-    baseURL:"http://192.180.4.150:8082",
+    //baseURL:"http://192.180.4.150:8082",
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
@@ -188,18 +244,16 @@ instance.interceptors.response.use(function (response) {
 
     //验证token是否失效
     if (response.data.token) {
-        console.log(response.data.token);
-        Vue.prototype.$warn("登录失效，请重新登陆");
-        Vue.prototype.$goLogin();
+        location.href = "";
+        Vue.prototype.$warn("登录失效，请重新登录");
         Vue.prototype.$maskoff();
     }
     if (response.data.code == 205) {
         Vue.prototype.$warn(response.data.message);
         Vue.prototype.$maskoff();
     }
-    console.log(response.data.code);
     if (response.data.code == 210) {
-        Vue.prototype.$warn("您当前无权限操作，请重新登录尝试");
+        Vue.prototype.$warn("您当前无权限操作，请重新登录或联系有关部门");
         Vue.prototype.$maskoff();
     }
     return response;
@@ -209,14 +263,19 @@ instance.interceptors.response.use(function (response) {
 });
 Vue.prototype.$axios = instance;
 
+//-----------获取token
+Vue.prototype.$getToken = ()=>{
+    let token = localStorage.getItem("token");
+    return token?token:"";
+}
 //--------正则匹配
 Vue.prototype.$reg = {
-        "email": /^[a-z]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/i,
-        "en": /[a-zA-Z]/,
-        "cn": /[\u4e00-\u9fa5]/,
-        "number": /^[0-9]*$/,
-        "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
-        "en_num": /^[A-Za-z0-9]+$/,
+    "email": /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/,
+    "en": /[a-zA-Z]/,
+    "cn": /[\u4e00-\u9fa5]/,
+    "number": /^[0-9]*$/,
+    "phone": /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
+    "en_num": /^[A-Za-z0-9]+$/,
 };
 new Vue({
     el: '#app',
