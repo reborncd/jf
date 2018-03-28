@@ -51,8 +51,8 @@
             return {
                 account: "",
                 password: "",
-                remember: "",
-                auto: ""
+                remember:true,
+                auto: true
             }
         },
         created(){
@@ -100,6 +100,7 @@
                 this.$axios.post("/user/login", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        localStorage.clear();
                         if (this.auto) {
                             //选择了自动登录
                             localStorage.setItem("TYPE", 'AUTO');

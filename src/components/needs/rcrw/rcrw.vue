@@ -107,7 +107,7 @@
 					<div class="action clear">
 						<el-button type="danger" v-if='ifMANAGER_SAVE' size="mini" @click="newneeds">技术经理提需求</el-button>
 						<el-button type="danger" v-if='ifPRODUCT_SAVE' size="mini" @click="newneedsP">产品经理提需求</el-button>
-						<el-select v-model="selectValueOn" @change="selectStatOn" clearable size="mini">
+						<el-select v-model="selectValueOn" placeholder="请选择状态" @change="selectStatOn" clearable size="mini">
 							<el-option v-for="(item, index) in optionsOn" :label="item.STATE_NAME" :value="item.STATE_ID">
 							</el-option>
 						</el-select>
@@ -287,28 +287,28 @@
 										<el-row :span="24">
 										<el-col :span="12" :md="12">
 											<el-form-item label="涉及系统">
-												<el-select v-model="addneeds.addform.sjxt" multiple @change="changeAbout" clearable placeholder="请选择涉及系统" style="width: 100%;">
-													<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID"></el-option>
+												<el-select v-model="addneeds.addform.sjxt" multiple  clearable placeholder="请选择涉及系统" style="width: 100%;">
+													<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
 												</el-select>
 											</el-form-item>
 										</el-col>
 										</el-row>
 										<el-row :span="24">
-											<el-col :span="24" style="text-align: center;position: relative;"> 拆分任务：{{addneeds.addform.splitArr.length}}
-												<el-button type="primary" @click="distributionTask" size="mini" style="position: absolute;right: 0;">分配任务</el-button>
+											<el-col :span="24" style="text-align: center;position: relative;margin-bottom: 20px"> 拆分任务：{{addneeds.addform.splitArr.length}}
+												<el-button type="primary" @click="distributionTask1" size="mini" style="position: absolute;right: 0;">分配任务</el-button>
 											</el-col>
 										</el-row>
-										<el-row :span="24" style="margin-top: 20px;">
-											<el-col :span="12" :md="12">
-												<el-form-item label="预计开始时间">
-													<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.startTime" style="width: 100%;"></el-date-picker>
-												</el-form-item>
-											</el-col>
-											<el-col :span="12" :md="12">
-												<el-form-item label="预计完成时间">
-													<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
-												</el-form-item>
-											</el-col>
+										<el<el-col :span="12" :md="12">
+										<el-form-item label="预计开始时间">
+											<el-date-picker type="date" placeholder="选择日期" @change="changeEnd" v-model="addneeds.addform.startTime" style="width: 100%;"></el-date-picker>
+										</el-form-item>
+									</el-col>
+										<el-col :span="12" :md="12">
+											<el-form-item label="预计完成时间">
+												<el-date-picker type="date" v-if="!addneeds.addform.startTime"  disabled :picker-options="pickerOptions" placeholder="选择日期"  v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
+												<el-date-picker type="date" v-if="addneeds.addform.startTime"   :picker-options="pickerOptions" placeholder="选择日期"  v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
+											</el-form-item>
+										</el-col>
 											<el-col :span="12" :md="12">
 												<el-form-item label="分析时间">
 													<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.analysisTime" style="width: 100%;"></el-date-picker>
@@ -351,15 +351,18 @@
 
 							<el-tab-pane label="开发任务" name="console2" v-if="tabs.data_one.infos">
 								<div class="console-tab-content">
-									<el-form label-width="90px" label-position="left">
+									<el-form label-width="0px" label-position="left">
 										<el-row :gutter="20">
 											<el-col :span="12" :sm="12">
-												<el-form-item label="上传附件" style="position: relative;">
-													<!--<el-input v-model="popup.popTxt.description" type="textarea"></el-input>-->
-													<el-button type="primary">上传附件</el-button>
-													<input type="file" @change="getFile($event)" placeholder="上传附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
-													<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
-													</p>
+												<el-form-item  style="position: relative;">
+													<!--<el-button type="primary">请选择附件</el-button>-->
+													<!--<input type="file" @change="getFile($event)" placeholder="请选择附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">-->
+													<!--<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}-->
+														<!--<i style="margin-left: 10px;cursor: pointer;color: red;"-->
+														   <!--@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>-->
+													<!--</p>-->
+													<!--<el-button type="primary" >确认上传附件</el-button>-->
+													<el-button style="float: left;margin: 10px" type="primary" size="mini" @click="startUpload('上传手册')">上传手册</el-button>
 												</el-form-item>
 											</el-col>
 										</el-row>
@@ -413,11 +416,17 @@
 													{{tabs.user_NAME}}
 												</el-form-item>
 											</el-col>
+
 											<el-col :span="8" :sm="8" v-if="tabs.chooseDeptArr">
 												<el-form-item label-width="100px">
 													<el-select v-model="tabs.chooseDept" @change="chooseDeptF" clearable placeholder="请选择部门" style="float: right;">
 														<el-option v-for="item in tabs.chooseDeptArr" :label="item.DEPT_NAME" :value="item.DEPT_ID"></el-option>
 													</el-select>
+												</el-form-item>
+											</el-col>
+											<el-col :span="6" :sm="6">
+												<el-form-item>
+													<el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
 												</el-form-item>
 											</el-col>
 											<el-col :span="24" :sm="24">
@@ -429,17 +438,17 @@
 									</el-form>
 								</div>
 							</el-tab-pane>
-							<el-tab-pane label="实时统计" name="realtime" v-if="tabs.data_one.nowTimeList">
-								<div class="console-tab-content" style="width: 100% !important;height: 250px !important;">
-									<el-form label-width="100px" label-position="right">
-										<el-row :gutter="20">
-											<el-col :span="24" style="border: 1px solid #ebeef5;">
-												<div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-											</el-col>
-										</el-row>
-									</el-form>
-								</div>
-							</el-tab-pane>
+							<!--<el-tab-pane label="实时统计" name="realtime" v-if="tabs.data_one.nowTimeList">-->
+								<!--<div class="console-tab-content" style="width: 100% !important;height: 250px !important;">-->
+									<!--<el-form label-width="100px" label-position="right">-->
+										<!--<el-row :gutter="20">-->
+											<!--<el-col :span="24" style="border: 1px solid #ebeef5;">-->
+												<!--<div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>-->
+											<!--</el-col>-->
+										<!--</el-row>-->
+									<!--</el-form>-->
+								<!--</div>-->
+							<!--</el-tab-pane>-->
 						</el-tabs>
 					</div>
 
@@ -453,8 +462,8 @@
 				<el-row :md="24" :gutter="20">
 					<el-col :span="12" :md="12">
 						<el-form-item label="涉及系统">
-							<el-select v-model="addneeds.addform.sjxt" multiple @change="changeAbout" clearable placeholder="请选择涉及系统" style="width: 100%;">
-								<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID"></el-option>
+							<el-select v-model="addneeds.addform.sjxt" multiple  clearable placeholder="请选择涉及系统" style="width: 100%;">
+								<el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
@@ -603,12 +612,13 @@
 				<el-row :span="24" style="margin-top: 20px;">
 					<el-col :span="12" :md="12">
 						<el-form-item label="预计开始时间">
-							<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.startTime" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" placeholder="选择日期" @change="changeEnd" v-model="addneeds.addform.startTime" style="width: 100%;"></el-date-picker>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
 						<el-form-item label="预计完成时间">
-							<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" v-if="!addneeds.addform.startTime"  disabled :picker-options="pickerOptions" placeholder="选择日期"  v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" v-if="addneeds.addform.startTime"   :picker-options="pickerOptions" placeholder="选择日期"  v-model="addneeds.addform.endTime" style="width: 100%;"></el-date-picker>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
@@ -893,7 +903,7 @@
 				</el-row>
 			</el-form>
 			<div class="table-list">
-				<el-table :data="split.hasSplitTaskData" height="280" border show-summary style="width: 100%">
+				<el-table :data="split.hasSplitTaskData"  border show-summary style="width: 100%">
 					<el-table-column prop="user_NAME" label="人员" ></el-table-column>
 					<el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
 					<el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
@@ -947,12 +957,24 @@
 				<el-button type="primary" @click="subAssign" size="mini">提交</el-button>
 			</div>
 		</el-dialog>
+		<!--全程跟踪视图模式-->
+		<el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"
+				   append-to-body modal-append-to-body
+				   :before-close="closeDialog">
+			<tracking :tracking="tracking"></tracking>
+		</el-dialog>
 		<!--下载文件-->
 		<download :download="download"></download>
+		<!--上传附件弹窗-->
+		<uploadN :data="uploadAction"></uploadN>
 	</div>
 </template>
+
 <script>
-    import download from "../common/download.vue";//全程跟踪视图模式
+    import download from "../common/download.vue";//下载弹窗
+    import tracking from "../common/tracking.vue";//全程跟踪视图模式
+    import uploadN from  "../common/uploadN.vue";//上传
+    //上传附件组件
 	export default {
 		data() {
 			return {
@@ -1024,11 +1046,24 @@
 						splitShow: ""
 					}
 				},
+                uploadAction:{
+                    uploadvisible:false,
+                    uploadFiles:[],
+                    fileIds:[],
+                    type:"",
+                    neel_id:""
+                },
                 //下载文件的数据
                 download:{
                     visible:false,
                     data:[],//表格数据
                     title:"",//标题
+                },//全程跟踪视图模式
+                tracking:{
+                    trackingvisiible:false,
+                    data:[],//数据
+                    hoverIndex:"",//移动上去的索引
+                    hoverData:[],//鼠标悬浮的信息
                 },
 				split: {
 					hasSplitTaskDataByGroup: [], //展示拆分任务的分组
@@ -1086,10 +1121,7 @@
 					"START_DATE": "",
 					"END_DATE": ""
 				},
-				optionsOn: [{
-					"STATE_NAME": "全部",
-					"STATE_ID": ""
-				}],
+				optionsOn: [],
 				selectValueOn: "",
 				dateComp: {},
 				dateRange: '',
@@ -1145,7 +1177,8 @@
 				ifMANAGER_SAVE: "", //是否技术经理新增
 				ifPRODUCT_SAVE: "", //是否产品经理新增
 				errorVsetTableDataisible: false,
-				addOneTaskSuccess: false
+				addOneTaskSuccess: false,
+                pickerOptions:""//结束时间限制
 			}
 		},
 		filters: {
@@ -1171,18 +1204,29 @@
 			},
 		},
         components:{
-            "download":download//下载文件
+            "tracking":tracking,//全程跟踪视图模式
+            "download":download,//下载文件
+            "uploadN":uploadN//上传文件
+
         },
 		mounted() {
 			this.loadData()
 		},
 		methods: {
+		    changeEnd(val){
+		            this.addneeds.addform.endTime=''
+                    this.pickerOptions={}
+                    console.log(val)
+                    this.pickerOptions= {
+                        disabledDate(time) {
+                            return time.getTime() < val - 8.64e7
+                        }
+                    }
+
+			},
 			loadData() {
 				this.$maskin()
-				this.optionsOn = [{
-					"STATE_NAME": "全部",
-					"STATE_ID": ""
-				}]
+				this.optionsOn = []
 				//初始化当前活动的控制台
 				this.tabs.activeName = "info";
 				//初始化控制台的可视情况
@@ -1526,10 +1570,10 @@
 					this.$warn("请填写需求描述")
 					flag = "0"
 				}
-				if(!this.addneeds.addform.jihuadate) {
-					this.$warn("请选择期望上线时间")
-					flag = "0"
-				}
+				// if(!this.addneeds.addform.jihuadate) {
+				// 	this.$warn("请选择期望上线时间")
+				// 	flag = "0"
+				// }
 				if(!this.addneeds.addform.fromdeptId) {
 					this.$warn("请选择需求提出部门")
 					flag = "0"
@@ -1614,7 +1658,11 @@
 				if(this.filterParam() == "1") {
 					this.$maskin();
 					let params = new URLSearchParams();
-					params.append("DESIGN_SYSTEM", this.addneeds.addform.sjxt); //涉及系统
+					let did=[]
+					for(let i of this.addneeds.addform.sjxt){
+					    did.push(i.split(',')[1])
+					}
+					params.append("DESIGN_SYSTEM", did); //涉及系统
 					params.append("DALIY_NEET_ID", this.addneeds.addform.code); //任务编号
 					params.append("USER_NAME", this.addneeds.addform.sxname); //任务申请人
 					params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
@@ -1723,10 +1771,10 @@
 					this.$warn("请填写需求描述")
 					flag = "0"
 				}
-				if(!this.addneeds.addform.jihuadate) {
-					this.$warn("请选择期望上线时间")
-					flag = "0"
-				}
+				// if(!this.addneeds.addform.jihuadate) {
+				// 	this.$warn("请选择期望上线时间")
+				// 	flag = "0"
+				// }
 				if(!this.addneeds.addform.fromdeptId) {
 					this.$warn("请选择需求提出部门")
 					flag = "0"
@@ -1863,19 +1911,22 @@
 			},
 			//拆分任务版本拼接
 			distributionTask() {
-
+				console.log(this.addneeds.addform.sjxt)
 				if(this.addneeds.addform.sjxt.length==0){
 				    this.$warn("请选择涉及系统")
 				}else {
                     let params = new URLSearchParams();
                     this.addneeds.addvisible = false
                     this.addneeds.splitaddvisible = true
-                    this.addneeds.addform.splitForm.fzmoduleArr = []
-                    params.append("ids", this.addneeds.addform.sjxt);
+                    let ids=[]
+					for (let i of this.addneeds.addform.sjxt){
+                        ids.push(i.split(',')[0])
+					}
+                    params.append("ids", ids);
                     this.$axios.post("/daliy/querySystemById", params).then((res) => {
                         let data = res.data;
                         if(data.code == 200) {
-                            this.addneeds.addform.splitForm.fzmoduleArr=data.result
+                            this.$set(this.addneeds.addform.splitForm, "fzmoduleArr", data.result);
                         } else {
 
                         }
@@ -1888,18 +1939,28 @@
 			},
 			//控制台拆分任务
 			distributionTask1() {
+                if(this.addneeds.addform.sjxt.length==0){
+                    this.$warn("请选择涉及系统")
+                }else {
+                    let params = new URLSearchParams();
+                    this.addneeds.addvisible = false
+                    this.addneeds.splitaddvisibleN = true
 
-				this.addneeds.addvisible = false
-				this.addneeds.splitaddvisibleN = true
-				this.addneeds.addform.splitForm.fzmoduleArr = []
-				// for(let i of this.addneeds.addform.onlineContent) {
-				// 	let name = (i.xtname).split(',')[1]
-				// 	let id = (i.xtname).split(',')[0]
-				// 	this.addneeds.addform.splitForm.fzmoduleArr.push({
-				// 		"value": name + i.ban,
-				// 		"key": id
-				// 	})
-				// }
+                    let ids=[]
+                    for (let i of this.addneeds.addform.sjxt){
+                        ids.push(i.split(',')[0])
+                    }
+                    params.append("ids", ids);
+                    this.$axios.post("/daliy/querySystemById", params).then((res) => {
+                        let data = res.data;
+                        if(data.code == 200) {
+                            this.$set(this.addneeds.addform.splitForm, "fzmoduleArr", data.result);
+                        } else {
+
+                        }
+
+                    })
+                }
 
 			},
 			//分配任务搜索功能
@@ -2048,6 +2109,27 @@
 				}
 				this.$set(this.addneeds.addform, "fromdeptroleArr", deptroleArr);
 			},
+            //-----------------------------------加载视图模式数据
+            loadtrack(){
+                let params = new URLSearchParams();
+                params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
+                this.$axios.post("/daliy/queryView",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        let res = data.result;
+                        let arr = [];
+                        let infos = [];
+                        for(let i of res){
+                            if(i.view_DESC){
+                                i.view_DESC = i.view_DESC.split(",");
+                            }
+                            arr.push(i)
+                        }
+                        this.$set(this.tracking, "data",arr);
+                        this.tracking.trackingvisiible = true;
+                    }
+                });
+            },
 			closeDialog() {
 				this.addneeds.addvisible = false; //新建项目的弹窗
 				this.addneeds.splitaddvisible = false; //拆分任务弹窗
@@ -2058,6 +2140,7 @@
 				this.tabs.ifEdit = ''
 				this.addneeds.addform.code = ''
 				this.tabs.ifcanEdit = '0'
+                this.tracking.trackingvisiible = false;//全程跟踪视图模式的弹窗
 			},
 			clearData() {
 				this.tabs.chooseDept = ''
@@ -2087,8 +2170,7 @@
 					"ban": ''
 				}]
 				this.addneeds.addform.splitArr = []
-                this.popup.popTxt.fileList=[]
-
+                this.popup.popTxt.uploadFiles=[]
 			},
 			closeDialogS() {
 				this.addneeds.splitaddvisible = false; //拆分任务弹窗
@@ -2450,6 +2532,14 @@
                         }
                     });
             },
+            //上传测试报告和用例模板
+            startUpload(type){
+                this.$set(this.uploadAction,"uploadFiles",[]);
+                this.$set(this.uploadAction,"fileIds",[]);
+                this.uploadAction.neel_id = this.handle.daliy_NEET_ID;
+                this.uploadAction.type=type;
+                this.uploadAction.uploadvisible = true;
+            },
 			//下载附件
 			downfile(val) {
 				this.$axios.get(`/daliy/download?ID=${val}&token=${localStorage.getItem("token")}`)
@@ -2470,9 +2560,6 @@
 				// 	}
 				// 	this.realTime(yaxis,startTime,nowTime,endTime)
 				// }
-			},
-            changeAbout(){
-			    console.log(this.addneeds.addform.sjxt)
 			},
 			realTime(yaxis,startTime,nowTime,endTime) {
 				var echarts = require('echarts');
@@ -2561,6 +2648,7 @@
 				};
 				proBar.setOption(option);
 			}
+
 		}
 	}
 </script>

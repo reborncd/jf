@@ -94,11 +94,7 @@
                         <el-button @click="backPage" size="medium">返回</el-button>
                     </el-col>
                 </el-row>
-                <div slot="footer" class="dialog-footer" :visible="dialog.dialogVisible">
-
-                </div>
             </el-form>
-
         </el-dialog>
     </div>
 </template>

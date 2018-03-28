@@ -32,14 +32,16 @@
             <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
             <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
             <el-table-column prop="test_RESULT" label="完成结果" width="100" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="fail_REAMRK" label="超时原因" show-overflow-tooltip></el-table-column>
             <el-table-column label="状态" width="120" show-overflow-tooltip>
                 <template slot-scope="scope">
+
                     <div v-if="tabs.state_ID != 320">
-                        <span v-if="scope.row.state_ID ==306" style="color: red">待开发</span>
-                        <span v-if="scope.row.state_ID ==307" style="color: red">开发中</span>
-                        <span v-if="scope.row.state_ID ==308" style="color: red">待测试</span>
-                        <span v-if="scope.row.state_ID ==309" style="color: red">测试中</span>
-                        <span v-if="scope.row.state_ID == 319" style="color: green">已完成</span>
+                        <span v-if="scope.row.sign == 0" style="color: red">已挂起</span>
+                        <span v-if="scope.row.state_ID ==307 && scope.row.sign == 1" style="color: red">开发中</span>
+                        <span v-if="scope.row.state_ID ==309 && scope.row.sign == 1" style="color: red">测试中</span>
+                        <span v-if="scope.row.state_ID ==319  && scope.row.sign == 1" style="color: green">已完成</span>
+                        <span v-if="scope.row.state_ID == 319 && scope.row.sign == 2" style="color: red">已转接</span>
                         <span v-if="scope.row.state_ID == 321" style="color: red">已需求内变更</span>
                     </div>
                     <span v-if="tabs.state_ID == 320" style="color: red">已新建变更</span>

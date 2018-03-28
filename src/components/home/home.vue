@@ -177,8 +177,7 @@
                 <ul class="clear fl">
                     <li v-for="(item,index) in mainMenu"
                         :class="menuActive == item.menu_id?'active':''"
-                        @click="changeMainMenu(item)">
-                        {{item.menu_name}}
+                        @click="changeMainMenu(item)">{{item.menu_name}}
                     </li>
                 </ul>
                 <div class="fr user">

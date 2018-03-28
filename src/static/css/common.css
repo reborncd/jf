@@ -40,6 +40,18 @@ td,th{vertical-align:top}
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/*浮框宽度*/
+.el-tooltip__popper.is-dark{
+  max-width: 1000px;
+}
+/*富文本框隐藏toolbar*/
+/*.ql-toolbar.ql-snow{*/
+  /*display: none;*/
+/*}*/
+/*.ql-container.ql-snow{*/
+  /*border-top:1px solid #ccc;*/
+/*}*/
 #mask {
   display: none;
   position: fixed;
@@ -66,4 +78,25 @@ td,th{vertical-align:top}
   margin: auto;
   color: #ff6700;
   z-index: 10000;
+}
+
+/*需求页面实时统计和工时统计样式*/
+.workHours div{
+  width: 100%!important;
+}
+.workHours div canvas{
+  width: 100%!important;
+}
+.sstabs .el-tabs__nav-scroll{
+  background: white!important;
+  color: black;
+  width: 200px;
+  text-align: center;
+  float: right;
+}
+.sstabs .el-tabs__active-bar{
+  height: 0;
+}
+.sstabs .el-tabs__nav-wrap::after{
+  height: 0!important;
 }

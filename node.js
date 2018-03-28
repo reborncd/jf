@@ -15,4 +15,5 @@ app.get("/add",function (req,res) {
 app.post("/b",function (req,res) {
     res.send({"a":"a"})
 });
-app.listen("1234")
+app.listen("1234");
+console.log("启动成功")

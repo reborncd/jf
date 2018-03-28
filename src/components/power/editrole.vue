@@ -458,10 +458,9 @@
                 //roleId存在表示编辑否则是新增
                 if (roleId) {
                     params.append("role_ID", roleId);
-                } else {
-                    params.append("ROLE_NAME", ROLE_NAME);
-                    params.append("DEPT_ID", DEPT_ID);
                 }
+                params.append("ROLE_NAME", ROLE_NAME);
+                params.append("DEPT_ID", DEPT_ID);
                 params.append("menus", menus);
                 this.$axios.post(roleId ? "/role/editRole" : "/role/addRole", params).then((res) => {
                     let data = res.data;

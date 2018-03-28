@@ -21,7 +21,9 @@
                         <h2 class="title">操作日志</h2>
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight">
-                            <el-table-column prop="a" label="需求编号" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="record_DESC" label="操作描述" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="record_START" :formatter="data" label="操作时间" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="record_SUBJECT" label="操作类型" show-overflow-tooltip></el-table-column>
 
                         </el-table>
                     </div>
@@ -65,16 +67,21 @@
                 let height = document.querySelector(".mainr").offsetHeight;
                 this.table.tableHeight = height -36-130;
             },
+            data(val){
+                console.log(val);
+                let time = this.$format(val.record_START);
+                return `${time.year}-${time.mouth}-${time.day} ${time.hour}:${time.min}:${time.second}`
+            },
             loadData(){
                 this.calculate();
                 let params = new URLSearchParams();
-//                this.$axios.post("",params).then((res)=>{
-//                    let data = res.data;
-//                    if(data.code == 200){
-//                        this.$set(this.table,"tableData",data.result.slice(0,this.table.pageBy));
-//                        this.$set(this.table,"tableOriginData",data.result);
-//                    }
-//                })
+                this.$axios.post("/user/queryRecord",params).then((res)=>{
+                    let data = res.data;
+                    if(data.code == 200){
+                        this.$set(this.table,"tableData",data.result.slice(0,this.table.pageBy));
+                        this.$set(this.table,"tableOriginData",data.result);
+                    }
+                })
             },
             handleCurrentChange(val){
                 let page = val;//当前页数
