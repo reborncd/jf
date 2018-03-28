@@ -153,19 +153,19 @@
                               highlight-current-row
                                   ref="ywxq_table"
                               @row-click="handleCurrentChange">
-                            <el-table-column prop="id" label="编号"></el-table-column>
-                            <el-table-column prop="description" label="描述">
+                            <el-table-column prop="id" label="编号" width="200" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="description" label="描述" show-overflow-tooltip>
                                 <template slot-scope="scope">
                                     <span :title=scope.row.description class="tab-opt" style="">{{scope.row.description}}</span>
                                 </template>
                             </el-table-column>
                             <!--<el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>-->
-                            <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
-                            <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
-                            <el-table-column prop="aa" label="版本号"></el-table-column>
-                            <el-table-column prop="priperty" label="优先级"></el-table-column>
-                            <el-table-column prop="status" label="状态"></el-table-column>
-                            <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
+                            <el-table-column prop="system_TYPE" label="子系统" width="110" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="create_TIME" label="提交日期" width="110" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="aa" label="版本号" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="priperty" label="优先级" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="status" label="状态" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="update_TIME" label="更新时间" show-overflow-tooltip></el-table-column>
                         </el-table>
                     </div>
                     <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">

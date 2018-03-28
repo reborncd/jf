@@ -312,7 +312,9 @@
             },
             calculate(){
                 let height = window.innerHeight;
+                let width=window.innerWidth
                 this.content = {
+//                    'width':`${width-224-34}px`,
                     'height': `${height - 50}px`
                 };
             },
