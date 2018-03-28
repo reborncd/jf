@@ -169,7 +169,7 @@
 	export default {
 		data() {
 			return {
-				select_value: "group",
+				 select_value: "group",
 				select: [{
 					label: "开发组",
 					value: "group"
