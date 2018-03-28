@@ -80,9 +80,9 @@
                             <el-checkbox v-model="configChecked" @change="filterChangeEvent"
                                          style="margin-right: 10px;">只显示未配置人员
                             </el-checkbox>
-                            <el-checkbox v-model="leaveChecked" @change="filterChangeEvent" style="margin-right: 10px;">
-                                显示离职人员
-                            </el-checkbox>
+                            <!--<el-checkbox v-model="leaveChecked" @change="filterChangeEvent" style="margin-right: 10px;">-->
+                                <!--显示离职人员-->
+                            <!--</el-checkbox>-->
                             <el-input size="mini" v-model="keyword" placeholder="输入检索关键字" clearable @change="searchKeyword"
                                       @keyup.13="searchKeyword"></el-input>
                             <el-button size="mini" type="primary" @click="searchKeyword">检索</el-button>

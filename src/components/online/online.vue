@@ -160,6 +160,7 @@
 											</el-col>-->
 											<el-col :span="24">
 												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}
+													<!--<div>{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}</div>-->
 												</el-form-item>
 											</el-col>
 											<el-col :span="24">
@@ -207,7 +208,7 @@
 								</div>
 							</el-tab-pane>
 
-							<el-tab-pane label="操作台" name="console" v-if="state.id!=5 && state.id!=6">
+							<el-tab-pane label="操作台" name="console" v-if="state.id!=13">
 								<div class="console-tab-content">
 									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_ZLGT">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
@@ -359,7 +360,7 @@
 									<!--</el-form>-->
 								</div>
 							</el-tab-pane>
-							<el-tab-pane label="全程跟踪" name="log" v-if="state.id!=5 && state.id!=6">
+							<el-tab-pane label="全程跟踪" name="log" v-if="state.id!=13">
 								<div class="console-tab-content">
 									<el-form label-width="60px" label-position="left">
 										<el-row :gutter="20">
@@ -716,7 +717,6 @@
                     params.append("DESIRED_START_DATETIME", this.consoleForm.expectDate); //预计上线日期
 					params.append("DOWN_ID",this.popup.popTxt.down_id); //上传文件ID
 					if(!this.tabs.data_one.GOLIVEUP){
-
                         params.append("NEEL_ID", this.mainId); //id
                         this.$axios.post("/golive/addgoliveproject", params).then((res) => {
                             let data = res.data;
@@ -1234,7 +1234,6 @@
 					this.popup.popTxt.down_id = "1"
 				}
 				params.append("down", this.popup.popTxt.down_id);
-                // localStorage.setItem("DOWN_ID",this.popup.popTxt.down_id)
 				this.$axios.post("/golive/upload", params, config).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {

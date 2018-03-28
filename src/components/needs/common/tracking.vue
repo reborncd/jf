@@ -3,53 +3,60 @@
     .tracking-wrapper li{
         margin-top:20px;
         position: relative;
-        width: 20%;
+        width: 25%;
     }
     .tracking-wrapper li .content{
         width: 85%;
-        border:2px solid #ccc;
+        /* border: 2px solid #ccc; */
         text-align: center;
         line-height: 30px;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 3px 5px 14px #ccc;
     }
     .tracking-wrapper li .content .action{
-        background:#ccccff;
+        background: #404d5d;
+        color: white;
     }
-    .tracking-wrapper li .content .action,
     .tracking-wrapper li .content .date{
-        padding: 0 10px;
-        border-bottom:2px solid #ccc;
+        border-bottom:1px solid #ccc;
+        background: #ecf5ff;
     }
     .tracking-wrapper li .info-wrapper{
-        height: 250px;
+        height: 100px;
         overflow-y: auto;
+        background: #ecf5ff;
     }
     .tracking-wrapper li .content .info{
-        width:90%;
+        width: 90%;
         margin: 0 auto;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        font-size: 13px;
+        line-height: 1;
+        padding: 5px;
     }
     .tracking-wrapper li .content.border-dashed{
-        border:2px dashed #cecece;
-    }
-    .tracking-wrapper li .content.border-dashed .action,
-    .tracking-wrapper li .content.border-dashed .date{
-        border-bottom:2px dashed #ccc;
+        border:1px dashed #cecece;
     }
     .tracking-wrapper li .icon-wrapper{
         width: 15%;
-        line-height: 300px;
+        line-height: 160px;
         text-align: center
     }
     .tracking-wrapper li i{
-        color: red;
+        color: #409eff;
         font-size: 25px;
         -webkit-transform: rotateY(180deg);
         -moz-transform: rotateY(180deg);
         -ms-transform: rotateY(180deg);
         -o-transform: rotateY(180deg);
         transform: rotateY(180deg);
+    }
+    .tracking-wrapper li .date{
+        font-size: 13px;
+        line-height: 30px;
     }
     .hover-wrap{
         position: absolute;
@@ -59,8 +66,11 @@
         padding:20px;
         background: white;
         z-index: 8888;
-        border: 2px solid #f4f4f4;
+        border: 1px solid #f4f4f4;
         box-shadow:  0 0 10px #f4f4f4;
+    }
+    .tracking-wrapper li.not{
+        opacity: 0.5;
     }
 </style>
 
@@ -68,8 +78,9 @@
     <div>
         <ul class="tracking-wrapper clear">
             <li class="fl clear" v-for="(item, index) in tracking.data"
-                @mouseover="tracking.hoverIndex = index;" @mouseleave="tracking.hoverIndex = ''">
-                <div class="content fl" :class="{'border-dashed':item.view_TYPE == 2}">
+                @mouseover="tracking.hoverIndex = index;" @mouseleave="tracking.hoverIndex = ''"
+                :class="{'not':item.view_TYPE == 2}">
+                <div class="content fl">
                     <p class="action">{{item.view_SUBJECT}}</p>
                     <p class="date">{{item.view_DATE}}</p>
                     <div class="info-wrapper">

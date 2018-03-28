@@ -304,14 +304,14 @@
                                                 <el-form-item label="评审结果">{{tabs.tabsData.pingResult}}</el-form-item>
                                             </el-col>
 
-                                            <!------------------------------当前用例模板-->
-                                            <el-col :span="24" v-if="tabs.testtask">
-                                                <el-form-item label="当前用例模板" >
-                                                    <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','当前用例模板')">点击可查看</span>
+                                            <!------------------------------当前用例-->
+                                            <el-col :span="24">
+                                                <el-form-item label="当前用例" >
+                                                    <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','当前用例')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------开发手册-->
-                                            <el-col :span="24" v-if="tabs.codetask">
+                                            <el-col :span="24">
                                                 <el-form-item label="开发手册" >
                                                     <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','开发手册')">点击可查看</span>
                                                 </el-form-item>
@@ -319,21 +319,21 @@
 
 
                                             <!------------------------------生产环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="生产环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','生产环境附件')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------测试环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="测试环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','测试环境附件')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------准生产环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="准生产环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','准生产环境附件')">点击可查看</span>
@@ -866,10 +866,13 @@
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" :sm="24">
+                                            <el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
                                                 </p>
+                                            </el-col>
+                                            <el-col :span="24" :sm="24" v-if="tracking.trackingvisiible">
+                                                <tracking :tracking="tracking"></tracking>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -877,29 +880,28 @@
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
                                 <!--<realtime :sstj="sstj"></realtime>-->
-                                <template style="width: 100%">
-                                    <el-tabs v-model="sstj.activeName" @tab-click="" class="sstabs" style="width: 100%">
-                                        <el-tab-pane label="周期" name="first">
+                                <div class="console-tab-content">
+                                    <el-tabs v-model="sstj.activeName" class="sstabs" style="width: 100%;height: 100%">
+                                        <el-tab-pane label="周期" name="first" clearable>
                                             <!--周期-->
-                                            <el-row :gutter="20">
-                                                <el-col :span="24" :md="24" >
-                                                    <div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-                                                </el-col>
-                                            </el-row>
+                                            <h1 v-if="sstj.hidezqvisible"
+                                                style="text-align: center; font-weight: bold; color: #b5b5b5;font-size: 22px">周期信息为空</h1>
+                                            <div v-show="!sstj.hidezqvisible" id="system" clearable style="width:1000px;height: 200px;margin: 20px 0;"></div>
                                         </el-tab-pane>
-                                        <el-tab-pane label="工时" name="second">
-                                            <ul style="margin-bottom: 10px">
+                                        <el-tab-pane label="工时" name="second" clearable>
+                                            <h1 v-if="sstj.hidegsvisible"
+                                                style="text-align: center;font-weight: bold; color: #b5b5b5;font-size: 22px">工时进度为空</h1>
+                                            <ul v-if="!sstj.hidegsvisible" style="margin-bottom: 10px">
                                                 <li v-for="item in sstj.info" style="width: 30%;display: inline-block">
-                                                    {{item.DEPT_NAME}}总工时:{{item.allTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
+                                                    {{item.DEPT_NAME}}总工时:{{item.requiredTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
                                                 </li>
                                             </ul>
-                                            <div style="width: 1000px;" class="clear" id="hours-div">
+                                            <div  v-show="!sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div">
                                                 <h1 style="text-align: center; font-weight: 900;font-size: 22px">工时统计</h1>
-                                                <!--<div id="workHours" style="width: 100%;height: 300px;float: left;margin-left: 30px"></div>-->
                                             </div>
                                         </el-tab-pane>
                                     </el-tabs>
-                                </template>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -931,7 +933,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求类型">
-                            <el-select filterable clearable :disabled="addneeds.notAllowChooseType || addneeds.addType == 'changeInset'"
+                            <el-select filterable clearable :disabled="addneeds.addType == 'changeInset'"
                                        v-model="addneeds.addform.needstype"
                                        placeholder="请选择需求类型"
                                        style="width: 100%">
@@ -1050,7 +1052,8 @@
                                     v-if="addneeds.addType != 'changeInset'"
                                     :reform="addneeds.addform.reform" @setValue="setValue_reform">
                             </v-vueQuillEditor-reform>
-                            <p v-if="addneeds.addType == 'changeInset'">{{addneeds.addform.reform}}</p>
+                            <div v-if="addneeds.addType == 'changeInset'" class="reform_change"></div>
+                            <!--{{addneeds.addform.reform}}-->
                         </el-form-item>
                     </el-col>
 
@@ -1065,7 +1068,8 @@
                     </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldchangepoint">
                         <el-form-item label="原产品改造点">
-                            {{addneeds.addform.oldchangepoint}}
+                            <div class="oldchangepoint_change"></div>
+                            <!--{{addneeds.addform.oldchangepoint}}-->
                         </el-form-item>
                     </el-col>
                     <!--产品改造点-->
@@ -1081,7 +1085,8 @@
                     </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldneedsname">
                         <el-form-item label="原需求描述">
-                            {{addneeds.addform.oldneedsname}}
+                            <div class="oldneedsname_change"></div>
+                            <!--{{addneeds.addform.oldneedsname}}-->
                         </el-form-item>
                     </el-col>
                     <!--需求描述-->
@@ -1491,17 +1496,27 @@
             </div>
         </el-dialog>
         <!--全程跟踪视图模式-->
-        <el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog">
-            <tracking :tracking="tracking"></tracking>
-        </el-dialog>
+        <!--<el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"-->
+                   <!--append-to-body modal-append-to-body-->
+                   <!--:before-close="closeDialog">-->
+            <!--<tracking :tracking="tracking"></tracking>-->
+        <!--</el-dialog>-->
         <!--下载文件-->
         <download :download="download"></download>
         <!--上传附件弹窗-->
         <upload :data="uploadAction"></upload>
         <!--上传测试报告弹窗-->
         <upload-report :report="testReport"></upload-report>
+        <!--验收-->
+        <el-dialog title="验收" :visible="accept.visible" width="40%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <p class="text-center" style="font-size: 16px">请选择验收结果</p>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="accept_not" type="danger" size="mini" v-if="accept.ifshow_n">不通过</el-button>
+                <el-button @click="accept_allow" type="primary" size="mini" v-if="accept.ifshow_t">通过</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1871,6 +1886,12 @@
                     len:"",
                     requiredTime:"",
                     leaveTime:"",
+                },
+                //验收通过和不通过
+                accept:{
+                    visible:false,
+                    ifshow_t:true,//判断显
+                    ifshow_n:true
                 }
             }
         },
@@ -2084,6 +2105,7 @@
                         this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
                         this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
+                        this.addneeds.addform.shenqingdate = new Date();
                         this.addneeds.addform.title = "新增";
                         this.addneeds.addvisible = true;
                         this.$maskoff();
@@ -2413,6 +2435,7 @@
                         this.tabs.tabsData.apply_NAME = base.apply_NAME;//产品负责人
                         this.tabs.tabsData.importance_NAME = base.importance_NAME;//重要程度
                         //判断加急
+                        //判断加急
                         if(!base.urgent){
                             this.tabs.tabsData.urgentOrNot = "否";
                             this.tabs.tabsData.urgent = "";
@@ -2420,12 +2443,14 @@
                             this.tabs.tabsData.urgentOrNot = "是";
                             this.tabs.tabsData.urgent = base.urgent;
                         }
-//                        this.tabs.tabsData.background = base.background;//需求背景
-//                        this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
-//                        this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
-                        this.setBrInfo(document.querySelector(".background"),base.background);
-                        this.setBrInfo(document.querySelector(".product_FUNCTION"),base.product_FUNCTION);
-                        this.setBrInfo(document.querySelector(".neel_DESCRIPTION"),base.neel_DESCRIPTION);
+                        //this.tabs.tabsData.background = base.background;//需求背景
+                        //this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
+                        //this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
+                        setTimeout(()=>{
+                            this.setBrInfo(document.querySelector(".background"),base.background);
+                            this.setBrInfo(document.querySelector(".product_FUNCTION"),base.product_FUNCTION);
+                            this.setBrInfo(document.querySelector(".neel_DESCRIPTION"),base.neel_DESCRIPTION);
+                        },0);
 
                         //--------------------------判断需求评审结果--------------------------
                         if(base.check_TIME){
@@ -2518,38 +2543,53 @@
                         this.tabs.tabsData.success =
                             base.success ? base.success : "";
 
+                        //被新建变更后的数据
+                        if(base.state_ID == 320){
+                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);//新产品改造点
+                                this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);//新需求描述
+                            },0)
+
+                        }
 
                         //新建变更后    在原需求上展示新需求信息
-                        if(base.base_NEW_ID){
-                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
-//                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
-//                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
-
-                            this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);
-                            this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);
+                        if(base.demand_SIGN == 2 && base.work_NEW_ID){
+                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);
+                                this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);
+                            },0)
                         }
 
                         //--------------------------新建变更的判断
                         //DEMAND_SIGN   1：需求内变更 2：新建变更,
-                        if(base.demand_SIGN  == 2){
+                        if(base.demand_SIGN == 2 && base.work_OLD_ID){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
-//                            this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
-//                            this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
-
-                            this.setBrInfo(document.querySelector(".oldchangepoint"),base.product_OLD_FUNCTION);
-                            this.setBrInfo(document.querySelector(".oldneedsname"),base.neel_OLD_DESCRIPTION);
+                            this.tabs.tabsData.oldcode = base.work_NEET_FID;//原需求ID
+                            this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
+                            this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint"),base.product_OLD_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname"),base.neel_OLD_DESCRIPTION);
+                            },0)
                         }
 
                         //--------------------------当前是被变更的需求信息
                         if(base.demand_SIGN == 1){
                             //当前是变更前的数据当前要展示新需求ID描述的等
-//                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
-//                            this.tabs.tabsData.oldchangepoint = base.old_NEEL_FUNCTION;//新产品产品改造点
-//                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//新需求描述
-                            this.setBrInfo(document.querySelector(".oldchangepoint"),base.old_NEEL_FUNCTION);
-                            this.setBrInfo(document.querySelector(".oldneedsname"),base.old_NEEL_DESCRIPTION);
+//                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
+                            this.tabs.tabsData.oldchangepoint = base.old_PRODUCT_FUNCTION;//原产品产品改造点
+                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//原需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint"),base.old_PRODUCT_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname"),base.old_NEEL_DESCRIPTION);
+                            },0)
                         }
 
                         //-------------------判断是否有完成时间，有则展示
@@ -2566,6 +2606,21 @@
 
                         //加载实时统计数据
                         if(data.result.systemDepts && data.result.currentTime){
+                            if(data.result.systemDepts.length){
+                                //技术经理分析过后显示周期统计模块
+                                this.sstj.hidezqvisible = false
+                                let bool = false;
+                                for(let i of data.result.systemDepts){
+                                    if(i.infos){
+                                        bool = true
+                                    }
+                                }
+                                bool?this.sstj.hidegsvisible = false:this.sstj.hidegsvisible = true
+                            }else{
+                                //没有进行分析取消所有展示
+                                this.sstj.hidezqvisible = true
+                                this.sstj.hidegsvisible = true
+                            }
                             this.setRealTime(data.result.systemDepts,data.result.currentTime)
                         }
 
@@ -2578,10 +2633,14 @@
             },
             //设置换行数据
             setBrInfo(dom,info){
-                dom.insertAdjacentHTML("beforeend",info);
+                if(dom){
+                    dom.innerHTML = "";
+                    dom.insertAdjacentHTML("beforeend",info);
+                }
             },
             //设置实时统计数据
             setRealTime(systemDepts,currentTime){
+//                this.$set(this, "selectValue", statusArr);
                 let datashow = systemDepts;
                 let nowTime = currentTime;
                 let yaxis = []; //y轴显示
@@ -2590,8 +2649,8 @@
                 let actualTime = []; //实际完成时间
                 let timeInfo=[]; //所有信息
                 let deptName=[];//部门
-                let allTime=[];//总用时
-                let requiredTime=[];//实际用时
+                let allTime=[];//实际用时
+                let requiredTime=[];//总用时
                 let leaveTime=[];//剩余用时
                 for(let i of datashow) {
                     timeInfo.push(i);
@@ -2599,19 +2658,23 @@
                     startTime.push(new Date(i.EXPECT_START));
                     endTime.push(new Date(i.EXPECT_END));
                     if(!i.lastCompleteTime) {
+                        //如果没有完成事件，设置完成时间为当前时间
                         i.lastCompleteTime = nowTime
                     }
                     if(i.lastCompleteTime<=i.EXPECT_END){
+                        //如果完成时间在计划时间之内，完成时间等于预计时间
                         i.lastCompleteTime=i.EXPECT_END
                     }
+                    //所有人员的实际用时
                     if(i.allTime){
                         allTime.push(i.allTime);
                         deptName.push(i.DEPT_NAME);
                         requiredTime.push(i.requiredTime);
-                        leaveTime.push(i.allTime-i.requiredTime)
+                        leaveTime.push(i.requiredTime-i.allTime)
                     }
                     actualTime.push(new Date(i.lastCompleteTime));
-                    this.$set(this.sstj, "info", timeInfo);
+
+                    this.$set(this.sstj, "gsinfo", timeInfo);
                 }
                 let len=requiredTime.length;
                 this.$set(this.sstj,"yaxis",yaxis);
@@ -2624,13 +2687,13 @@
                 this.$set(this.sstj,"leaveTime",leaveTime);
                 this.$set(this.sstj,"allTime",allTime);
                 this.sstj.len = len;
-                this.realTime(yaxis,startTime,endTime,actualTime)
-                this.workTime(deptName,leaveTime,requiredTime);
+                this.realTime(yaxis,startTime,endTime,actualTime);
+                this.workTime(deptName,leaveTime,requiredTime,allTime);
+
             },
 //            实时统计周期
             realTime(yaxis,startTime,endTime,actualTime) {
-                let echarts = require('echarts');
-                let proBar = echarts.init(document.getElementById("system")); //实时统计
+                let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
                 proBar.clear()
                 let option = {
                     title : {
@@ -2702,44 +2765,59 @@
                 };
                 proBar.setOption(option);
             },
-//            工时
-            workTime(deptName,leaveTime,requiredTime){
-                for(let i=0;i<deptName.length;i++){
-                    let father = document.getElementById("hours-div");
-                    let div = '<div id="workHours'+i+'"  style="height: 150px;width: 300px;float: left;"></div>';
-                    father.insertAdjacentHTML("beforeend",div)
-                    let option = {
-                        axisLabel: {
-                            interval:0//横轴信息全部显示
-                        },
-                        tooltip : {
-                            trigger: 'item',
-                            formatter: "{a} <br/>{b} : {c} ({d}%)"
-                        },
-                        series : [
-                            {
-                                name: deptName[i],
-                                type: 'pie',
-                                radius : "60%",
-                                center: ['60%', '50%'],
-                                data:[
-                                    {value:leaveTime[i], name:'剩余工时'},
-                                    {value:requiredTime[i], name:'实际工时'}
-                                ],
-                                itemStyle: {
-                                    emphasis: {
-                                        shadowBlur: 10,
-                                        shadowOffsetX: 0,
-                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+            //工时
+            workTime(deptName,leaveTime,requiredTime,allTime){
+                let father = document.getElementById("hours-div");
+                if(father){
+                    let allChild = document.querySelectorAll("#hours-div .hour-child");
+                    for(let i of allChild){
+                        father.removeChild(i)
+                    }
+                    setTimeout(()=>{
+                        for(let i=0;i<deptName.length;i++){
+                        let txtName
+                        if(leaveTime[i]>=0){
+                            txtName='剩余工时'
+                        }
+                        else{
+                            txtName='超出工时'
+                            leaveTime[i]=-leaveTime[i]
+                        }
+                        let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
+                        father.insertAdjacentHTML("beforeend",div);
+                        let option = {
+                            axisLabel: {
+                                interval:0//横轴信息全部显示
+                            },
+                            tooltip : {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {c} ({d}%)"
+                            },
+                            series : [
+                                {
+                                    name: deptName[i],
+                                    type: 'pie',
+                                    radius : "60%",
+                                    center: ['60%', '50%'],
+                                    data:[
+                                        {value:leaveTime[i], name:txtName},
+                                        {value:allTime[i], name:'实际工时'}
+                                    ],
+                                    itemStyle: {
+                                        emphasis: {
+                                            shadowBlur: 10,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        }
                                     }
                                 }
-                            }
-                        ]
-                    };
-                    var echarts = require('echarts');
-                    var proBar= echarts.init(document.getElementById("workHours"+i)); //实时统计
-                    proBar.clear()
-                    proBar.setOption(option);
+                            ]
+                        };
+                        let proBar= this.$echarts.init(document.getElementById("workHours"+i)); //实时统计
+                        proBar.setOption(option);
+                    }
+                },0)
+
                 }
             },
             //-----------------------------------添加开发任务和测试任务的和合计
@@ -2750,11 +2828,11 @@
                 let work_TIME = 0;//实际用时
                 let actual_TIME = 0;//总工时
                 for(let i of origin){
-                    i.old_REQUIRED_TIME?old_REQUIRED_TIME+=i.old_REQUIRED_TIME:"";
-                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                    i.old_ACTUAL_TIME?old_ACTUAL_TIME+=i.old_ACTUAL_TIME:"";
-                    i.work_TIME?work_TIME+=i.work_TIME:"";
-                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
+                    old_REQUIRED_TIME+= i.old_REQUIRED_TIME?i.old_REQUIRED_TIME:0;
+                    required_TIME+= i.required_TIME?i.required_TIME:0;
+                    old_ACTUAL_TIME+= i.old_ACTUAL_TIME?i.old_ACTUAL_TIME:0;
+                    work_TIME+= i.work_TIME?i.work_TIME:0;
+                    actual_TIME+= i.actual_TIME?i.actual_TIME:0;
                 }
                 view.push({
                     "user_NAME":"合计",
@@ -2866,7 +2944,7 @@
                         case "开发手册":
                             type = "CODE";
                             break;
-                        case "当前用例模板":
+                        case "当前用例":
                             type = "TEST";
                             break;
                         case "准生产环境附件":
@@ -3270,64 +3348,75 @@
             },
             //-----------------------------------验收操作
             acceptance(){
-                //判断是否曾经未通过过，如果曾经未通过过，则通过时要填写通过理由
+                this.accept.visible = true;
+                let state = this.tabs.activeTableInfo.state_ID;
+                //311  已验收状态 只给不通过
+                //322 只给通过
+                if(state != 311 && state != 322){
+                    this.accept.ifshow_t = true;
+                    this.accept.ifshow_n = true
+                } else if(state == 311){
+                    this.accept.ifshow_t = false;
+                    this.accept.ifshow_n = true
+                }else if(state == 322){
+                    this.accept.ifshow_t = true;
+                    this.accept.ifshow_n = false
+                }
+            },
+            //验收通过事件
+            accept_allow(){
                 let reason =  this.tabs.tabsData.fail;
-                this.confirm("请选择验收结果",()=>{
-                    //验收通过
-                    let info = this.tabs.activeTableInfo;
-                    if(reason){
-                        this.prompt("验收通过","请填写验收通过理由",(value)=> {
-                            this.$maskin();
-                            let params = new URLSearchParams();
-                            params.append("WORK_NEEL_ID", info.work_NEET_ID);
-                            params.append("OPER", "OK");
-                            params.append("REJECT_RESON", value.value);
-                            this.$axios.post("/work/baseAccept", params).then((res) => {
-                                let data = res.data;
-                                if (data.code == 200) {
-                                    this.$success("操作成功！");
-                                    this.$maskoff();
-                                    this.loadData();
-                                }
-                            })
-                        })
-                        return;
-                    }
-                    this.$maskin();
-                    let params = new URLSearchParams();
-                    params.append("WORK_NEEL_ID", info.work_NEET_ID);
-                    params.append("OPER","OK");
-                    this.$axios.post("/work/baseAccept", params).then((res) => {
-                        let data = res.data;
-                        if (data.code == 200) {
-                            this.$success("操作成功！");
-                            this.$maskoff();
-                            this.loadData();
-                        }
-                    })
-                },()=>{
-                    //验收不通过
-                    this.prompt("验收不通过","请填写不通过理由",(value)=>{
+                let info = this.tabs.activeTableInfo;
+                if(reason){
+                    //曾经验收不通过过
+                    this.prompt("验收通过","请填写验收通过理由",(value)=> {
                         if(!value.value){
-                            this.$warn("请填写不通过理由");
+                            this.$warn("请填写理由");
                             return;
                         }
-                        let info = this.tabs.activeTableInfo;
                         this.$maskin();
                         let params = new URLSearchParams();
-                        params.append("WORK_NEEL_ID", info.work_NEET_ID);
-                        params.append("OPER","FAIL");
-                        params.append("REJECT_RESON",value.value);
-                        this.$axios.post("/work/baseAccept", params).then((res) => {
-                            let data = res.data;
-                            if (data.code == 200) {
-                                this.$success("操作成功！");
-                                this.$maskoff();
-                                this.loadData();
-                            }
-                        })
-                    })
-                },["通过","不通过"])
+                        params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                        params.append("OPER", "OK");
+                        params.append("REJECT_RESON", value.value);
+                        this.acceptSub(params);
+                    });
+                }else{
+                    //y验收通过
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("OPER","OK");
+                    this.acceptSub(params);
+                }
+            },
+            //验收不通过实践
+            accept_not(){
+                this.prompt("验收不通过","请填写不通过理由",(value)=>{
+                    if(!value.value){
+                        this.$warn("请填写不通过理由");
+                        return;
+                    }
+                    let info = this.tabs.activeTableInfo;
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("OPER","FAIL");
+                    params.append("REJECT_RESON",value.value);
+                    this.acceptSub(params);
+                })
+            },
+            //请求接口
+            acceptSub(params){
+                this.$axios.post("/base/baseAccept", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        this.$success("操作成功！");
+                        this.accept.visible =false;
+                        this.$maskoff();
+                        this.loadData();
+                    }
+                })
             },
             //-----------------------------------撤回需求的操作
             back(){
@@ -3350,6 +3439,7 @@
             newchange(type){
                 this.$maskin();
                 if(type=="change"){
+                    this.clearAddData();
                     this.addneeds.addform.title = "新建变更";
                     this.addneeds.addType = "change";//当前是新建变更
                 }else{
@@ -3375,10 +3465,16 @@
                             this.addneeds.addform.code = base.work_NEET_ID;//当前的新需求ID
                             this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
                             this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                            //操作过快导致dom没加载出来会出现null，暂时用settimeout替代下
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint_change"),base.product_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname_change"),base.neel_DESCRIPTION);
+                            },0)
                         }else{
                             //新建变更展示原需求编号
                             this.addneeds.addform.code = data.result.WORK_NEET_ID;//当前的新需求ID
                             this.addneeds.addform.oldcode = base.work_NEET_ID;
+                            this.addneeds.addform.shenqingdate = new Date();
                             this.addneeds.addform.oldgongneng = "";
                             this.addneeds.addform.oldneedsname = "";
                         }
@@ -3411,6 +3507,9 @@
                 this.addneeds.addform.jiaji = info.urgent?"1":"0";//是否加急
                 this.addneeds.addform.jiajireason = info.urgent?info.urgent:"";//加急原因
                 this.addneeds.addform.reform = info.background;//需求背景
+                setTimeout(()=> {
+                    this.setBrInfo(document.querySelector(".reform_change"), info.background);
+                },0)
 //                this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
 //                this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
             },
@@ -3730,11 +3829,11 @@
                 let work_TIME = 0;//现实际用时
                 let actual_TIME = 0;//总工时
                 for(let i of val.infos){
-                    i.old_REQUIRED_TIME?old_REQUIRED_TIME+=i.old_REQUIRED_TIME:"";
-                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                    i.old_ACTUAL_TIME?required_TIME+=i.old_ACTUAL_TIME:"";
-                    i.work_TIME?required_TIME+=i.work_TIME:"";
-                    i.actual_TIME?required_TIME+=i.actual_TIME:"";
+                    old_REQUIRED_TIME += i.old_REQUIRED_TIME?i.old_REQUIRED_TIME:0;
+                    required_TIME += i.required_TIME?i.required_TIME:0;
+                    old_ACTUAL_TIME += i.old_ACTUAL_TIME?i.old_ACTUAL_TIME:0;
+                    work_TIME += i.work_TIME?i.work_TIME:0;
+                    actual_TIME += i.actual_TIME?i.actual_TIME:0;
                 }
                 this.split.hasSplitvisible = true;
                 this.$set(this.split, "hasSplitTaskData", val.infos);
@@ -4012,7 +4111,7 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("操作成功！");
-                            this.$set(this.testTask.tableData[index], "TEST_STATE", 1);
+                            this.$set(this.testTask.tableData[index], "TEST_STATE", 2);
                             this.$maskoff();
                         }
                     })
@@ -4405,6 +4504,8 @@
             },
             //-----------------------------------加载视图模式数据
             loadtrack(){
+                this.tracking.trackingvisiible? this.tracking.trackingvisiible = false:
+                    this.tracking.trackingvisiible = true
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 this.$axios.post("/work/queryView",params).then((res)=>{
@@ -4420,7 +4521,6 @@
                             arr.push(i)
                         }
                         this.$set(this.tracking, "data",arr);
-                        this.tracking.trackingvisiible = true;
                     }
                 });
             },

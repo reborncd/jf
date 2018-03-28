@@ -61,6 +61,40 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .assign-wrapper li {
+        margin-bottom: 6px;
+        padding: 0 10px;
+        min-height: 70px;
+    }
+    .assign-wrapper li .deptTitle {
+        display: block;
+        width: 100%;
+        line-height: 34px;
+        border: 1px solid #ccc;
+        text-align: center;
+        font-size: 14px;
+        margin: 5px auto;
+    }
+    .assign-wrapper .check-item {
+        margin: 5px 0;
+        display: block;
+    }
+    .genzong span {
+        color: #4f4f4f;
+        margin: 0 8px;
+    }
+    .assgin-dialog h2 {
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+    .assgin-dialog .tab span {
+        float: left;
+        width: 50%;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        cursor: pointer;
+    }
 </style>
 
 <template>
@@ -79,7 +113,7 @@
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
                         <el-button type="danger" @click="shouBug" size="mini">提交BUG</el-button>
-                        <el-select v-model="selectValues" @change="statusOpt"  clearable
+                        <el-select v-model="selectValues" placeholder="请选择状态" @change="statusOpt"  clearable
                                    size="mini">
                             <el-option
                                     v-for="item in selectValue"
@@ -117,17 +151,18 @@
                         <el-table :data="table.tableData" border style="width: 100%"
                               :height="table.tableHeight"
                               highlight-current-row
+                                  ref="ywxq_table"
                               @row-click="handleCurrentChange">
                             <el-table-column prop="id" label="编号"></el-table-column>
-                            <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
-                            <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
-                            <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
-                            <el-table-column prop="aa" label="版本号"></el-table-column>
                             <el-table-column prop="description" label="描述">
                                 <template slot-scope="scope">
                                     <span :title=scope.row.description class="tab-opt" style="">{{scope.row.description}}</span>
                                 </template>
                             </el-table-column>
+                            <!--<el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>-->
+                            <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
+                            <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
+                            <el-table-column prop="aa" label="版本号"></el-table-column>
                             <el-table-column prop="priperty" label="优先级"></el-table-column>
                             <el-table-column prop="status" label="状态"></el-table-column>
                             <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
@@ -161,7 +196,7 @@
                                                 <el-form-item label="BUG说明">
                                                      {{tabs.form.description}}
                                                     <p>
-										               	<a style="margin-right: 20px; color: #999;" v-for="(item,index) in tabs.form.downName" @click="downfile(item.id)" >{{item.name}}</a>
+										               	<a style="margin-right: 20px; color: #66b1ff;" v-for="(item,index) in tabs.form.downName" @click="downfile(item.id)" >{{item.name}}</a>
 										            </p>
                                                 </el-form-item>
                                             </el-col>
@@ -182,17 +217,22 @@
                                     </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                        	<el-col :span="24" :sm="24" v-if="operate.glvisibble" style="float: right;width: 51%;margin-bottom: 20px;">
-                                        		<el-form-item label="关联的缺陷号">
-                                                	<el-select v-model="operate.relationValue" placeholder="" filterable  clearable style='width: 50%;'>
+                                            <el-col :span="12" :sm="12" v-if="operate.glvisibble" style="width: 51%;float: right">
+                                                <el-form-item label="关联的缺陷号">
+                                                    <el-select v-model="operate.relationValue" placeholder="" filterable  clearable style="width: 100%">
                                                         <el-option
-                                                        	v-for="_item in operate.relation"
-						                                    :label="_item.technology_NEEL_ID"
-						                             		:value="_item.technology_NEEL_ID"
-                                                        	></el-option>
+                                                                v-for="_item in operate.relation"
+                                                                :label="_item.technology_NEEL_ID"
+                                                                :value="_item.technology_NEEL_ID"
+                                                        ></el-option>
                                                     </el-select>
+                                                    <!--<el-button style="margin-left: 50px"  type="primary"-->
+                                                                <!--v-if="operate.fpvisible"-->
+                                                                <!--@click="tableAction($event)">分配-->
+                                                    <!--</el-button>-->
                                                 </el-form-item>
                                             </el-col>
+
                                             <el-col :span="12" :sm="12">
                                                 <el-form-item label="状态">
                                                     <el-form-item label="">{{operate.status}}</el-form-item>
@@ -258,14 +298,14 @@
                             </el-tab-pane>
                             <el-tab-pane label="全程跟踪" name="project">
                                 <div class="console-tab-content">
-                                    <el-form :model="form" label-width="180px" label-position="left">
+                                    <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="待技术管理部审核：">
-                                                    <el-form-item label="">{{way.status}}</el-form-item>
+                                            <el-col :span="12" :sm="12">
+                                                <el-form-item label="状态：">
+                                                    <el-form-item label="">{{operate.status}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="8" :sm="8">
+                                            <el-col :span="12" :sm="12">
                                                 <el-form-item label="发送人：" label-width="100px">
                                                     <el-form-item label="">{{way.sender}}</el-form-item>
                                                 </el-form-item>
@@ -304,17 +344,31 @@
                             </el-col>
                         </el-row>
                         <el-row :gutter="24">
-                        	  <el-col>
+                        	  <el-col :span="24" :sm="24" >
 	                            <el-form-item label="故障等级">
-	                                <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
+	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
 	                                    <el-option
 	                                    	v-for="item in popup.priperty"
 		                                    :label="item.name"
 		                                    :value="item.value"
 	                                    	></el-option>
 	                                </el-select>
+                                    <el-button style="margin-left: 100px"  type="primary"
+                                                v-if="operate.fpvisible"
+                                                @click="tableAction($event)">分配人员
+                                    </el-button>
 	                            </el-form-item>
+
+
                              </el-col>
+                                <!--<el-col :span="12" :sm="12">-->
+                                    <!--<el-form-item label="">-->
+                                        <!--<el-button  type="primary"-->
+                                                    <!--v-if="operate.fpvisible"-->
+                                                    <!--@click="tableAction($event)">分配-->
+                                        <!--</el-button>-->
+                                    <!--</el-form-item>-->
+                                <!--</el-col>-->
                         </el-row>
                         <el-row :gutter="24">
                         	  <el-col>
@@ -343,6 +397,48 @@
                         <el-button type="danger" @click="subForm">确 定</el-button>
                     </div>
                 </div>
+                <!--分配-->
+                <el-dialog title="分配" :visible="assign.assignvisible" width="40%"
+                           append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
+                    <div slot="title">
+                        <h2>分配</h2>
+                        <el-input
+                                class="search-input"
+                                placeholder="请输入姓名"
+                                v-model="assign.keyword"
+                                @keyup.13="assignSearch($event)"
+                                @change="assignSearch" clearable>
+                            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                        </el-input>
+                    </div>
+                    <!--左侧选择全部部门-->
+                    <div class="assign-wrapper" v-if="assign.left">
+                        <!--正常状态下展示部门-->
+                        <ul v-if="!assign.leftSearch">
+                            <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
+                                <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
+                                <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
+                                    <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                                        {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
+                                    </el-checkbox>
+                                </el-checkbox-group>
+                            </li>
+                        </ul>
+                        <!--搜索状态下不展示部门-->
+                        <div v-if="assign.leftSearch">
+                            <el-checkbox-group v-model="assign.checkList">
+                                <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                                             class="check-item">
+                                    {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                    </div>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="assign.assignvisible = false" size="mini">取 消</el-button>
+                        <el-button type="primary" @click="subAssign" size="mini">提交</el-button>
+                    </div>
+                </el-dialog>
             </div>
         </el-card>
     </div>
@@ -372,6 +468,9 @@
                     relation:'',//关联
                     relationValue:'',
                     glvisibble:false,
+                      topeople:'',//指派人
+                      topeopleSelect:'',
+                      fpvisible:true//分配弹窗显示
                     
                   },
               way:{
@@ -392,17 +491,9 @@
                 	"value":'已完成'
                 },
                 {
-                	'id':'3',
-                	"value":'已作废'
-                },
-                {
                 	'id':'4',
                 	"value":'已驳回'
                 },
-                {
-                	'id':'',
-                	'value':'全部'
-                }
                 ],
                 page: {},
                 form: {},
@@ -460,6 +551,7 @@
                 },
                 popup:{
                 	id:'',
+                    fppeople:'',
                 	priperty:[
                     {
                       'name':'紧急',
@@ -483,9 +575,23 @@
 			          'sumEffect': "",				//交易量影响
 			          'uploadFiles':[],              // 上传成功的文件数组
 			          'fileList':[],                //上传附件
-		         }
-                 
-                }
+		         },
+                },
+                split:{
+                    splitaddvisible:false
+                },
+                assign: {
+                    assignvisible: false,//分配的弹窗
+                    keyword: "",//分配的搜索人员
+                    left: true,//左侧的显示
+                    right: false,//右侧的显示
+                    checkList: [],//选择的数据
+                    leftOriginData: [],//左侧显示的数据
+//                    rightlistdata: [],//右侧显示的数据
+                    leftSearch: false,//左侧搜索出来的结构展示
+                    searchData: [],//左侧特殊结构，显示出来的搜索结果存放处
+                    assignDeptIndex:"",//当前选中的部门索引
+                },
             }
         },
         filters: {
@@ -775,6 +881,9 @@
                 
             },
             loadTabsData(val){
+                    if(val.status=='待审核'){
+                        this.operate.glvisibble=true
+                    }
                     this.$maskin();
                 	let params = new URLSearchParams();
                     params.append("id", val.id);
@@ -832,8 +941,180 @@
                         }
                     })
             },
-            optChoice(){
+            tableAction(e){
+                this.operate.fpvisible=true
+//                this.$refs.ywxq_table.setCurrentRow(row);
+                //阻止事件冒泡
+                e.stopPropagation();
+                this.getAssign();
+            },
+            getAssign(){
+//                let info = this.tabs.activeTableInfo;
+                this.assign.keyword = "";//初始化关键字
+                this.assign.checkList = [];//初始化选中的数据
+                this.assign.assignDeptIndex = "";//初始化选中的索引
+                this.assign.leftSearch = false;//关闭搜索结果的展示
+                this.assign.assignvisible = true;
+                let params = new URLSearchParams();
+////                if (info.state_ID == 304) {
+//                    params.append("TASK_ID", info.work_NEET_ID);
+////                }
+                this.$axios.post("/work/queryUserByDemand", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        this.$set(this.assign, "searchData", data.result.users);
+//                        let all = data.result.users;
+//                        let dept = [];
+//                        for(let i of all){
+//                            for(let j of i.DEPT_ID){
+//                              if(j.DEPT_ID == i.DEPT_ID)
+//                                dept.push({
+//                                    "DEPT_NAME":i.DEPT_NAME,
+//                                    "DEPT_ID":i.DEPT_ID,
+//                                    "USER_NAME":j.USER_NAME
+//                                })
+//                            }
+//                        }
+                        this.$set(this.assign, "leftOriginData", data.result.users);
+//                        this.$set(this.assign, "rightlistdata", data.result.dept.users);
+                    }
+                })
+            },
+            //-----------------------------------分配任务搜索功能
+            assignSearch(){
+                let keyword = this.assign.keyword;
+//                let type;
+//                if (this.assign.left) {
+//                    type = "left"
+//                } else {
+//                    type = "right"
+//                }
+                //搜索关键字判断
+                if (keyword == "") {
+                    //为空
+                    this.assign.leftSearch = false;
+//                    this.$set(this.assign, "searchData", type == "left" ? this.assign.leftOriginData : this.assign.rightlistdata)
+                    this.$set(this.assign, "searchData",this.assign.leftOriginData)
+                } else {
+                    //不为空
+                    let arr = [];
+//                    if (type == "left") {
+                    for (let i of this.assign.leftOriginData) {
+                        for (let j of i.users) {
+                            if (j.user_NAME.indexOf(keyword) >= 0) {
+                                arr.push(j)
+                            }
+                        }
+                    }
+                    this.assign.leftSearch = true;
+//                    } else {
+//                        for (let i of this.assign.rightlistdata) {
+//                            if (i.user_NAME.indexOf(keyword) >= 0) {
+//                                arr.push(i)
+//                            }
+//                        }
+//                    }
+                    this.$set(this.assign, "searchData", arr);
+                }
+            },
+            //-----------------------------------提交分配任务
+            subAssign(){
+                let result = this.assign.checkList;
+                if (result.length == 0) {
+                    this.$warn("当前没有选择任何人员");
+                } else {
+                    let temp = [];
+                    let idArr = [];
+                    let nameArr = [];
+                    for (let i of result) {
+                        temp.push(i.split("-"))
+                    }
+                    for (let i of temp) {
+                        idArr.push(i[0]);
+                        nameArr.push(i[1]);
+                    }
+                    this.$set(this.popup,"fppeople",idArr);
+                    this.assign.assignvisible = false;
+                }
+            },
+            //驳回 确认操作
+            consoleActionEvent(val, f){
+                if(val=='确认'){
+                    if(!this.operate.reasonValue){
+//	          			this.$warn("请填写成因")
+                        this.$warn('请填写完整信息');
+                        return
+                    }
+                    if(!this.operate.effectScope){
+//	          			this.$warn("请填写影响范围")
+                        this.$warn('请填写完整信息');
+                        return
+                    }
+                    let nameArr=[]
+                    let idArr=[]
+                    for(let i of this.operate.systemAll){
+                        let idTxt=i.csty.split(",")[0];//子系统id
+                        if(idArr.indexOf(idTxt)==-1){
+                            idArr.push(i.csty.split(",")[0])
+                            nameArr.push(i.csty.split(",")[1])
+                        }
+                        else{
+                            this.$warn('请选择不同的子系统')
+                            return
+                        }
+                    }
+                    if(idArr[0]==''){
+                        this.$warn('请选择子系统')
+                        return
+                    }
+                    if(!this.operate.solution){
+//	                  this.$warn("请填写解决方案")
+                        this.$warn('请填写完整信息');
+                        return
+                    }
+                    let params = new URLSearchParams();
+                    params.append("id", this.tabs.form.id);	//id
+                    params.append("reason", this.operate.reasonValue);	//成因
+                    params.append("effectScope", this.operate.effectScope);	//影响范围
+                    params.append("solution", this.operate.solution);//解决方案
+                    params.append("systemTypeId", idArr);//子系统id
+                    params.append("systemType", nameArr);//子系统名称
+                    params.append("type", 2);//
+                    params.append("technology_NEEL_ID", this.operate.relationValue);//故障ID
 
+                    this.$axios.post("/fault/audit", params).then((res) => {
+                        if(res.status==200){
+                            this.$success("操作成功！");
+                            this.errorVisible=false;
+                            this.operate.status='已完成'
+                            this.loadData();
+                        }
+                        else{
+                            this.$warn(message);
+                        }
+                    })
+
+                }
+                if(val=='驳回'){
+                    let params = new URLSearchParams();
+                    params.append("id", this.tabs.form.id);
+                    this.$axios.post("/fault/reject", params).then((res) => {
+                        if(res.status==200){
+                            this.$success("操作成功！");
+                            this.errorVisible=false;
+                            this.operate.status='已驳回'
+                            this.clearAddData();
+                            this.loadData();
+                        }
+                        else{
+                            this.warn(data.message);
+                        }
+                    })
+                }
+
+            },
+            closeDialog(){
+                this.split.splitaddvisible = false;//拆分任务添加人员的弹窗
             },
            getFile(e){
 	        //上传附件
@@ -869,7 +1150,7 @@
 	      /*	let params = new URLSearchParams();
 				params.append("status",2);
 				this.$axios.post("/fault/getNo", params).then((res) => {
-					 let data = res.data;				
+					 let data = res.data;
 						this.$set(this.popup, "id",data.id);
 				})*/
               let params = new FormData();
@@ -916,7 +1197,7 @@
 		        params.append("type",2);//类型
                 params.append("priperty",this.popup.popTxt.priperty2);	//故障等级
                 params.append("id",this.popup.popTxt.id);	//问题ID
-
+                params.append("userId", this.popup.fppeople);//分配人id
 		        params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
 	            this.$axios.post("/fault/submit", params).then((res) => {
 	                let data = res.data;
@@ -968,81 +1249,7 @@
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false)
             },
-            //驳回 确认操作
-            consoleActionEvent(val, f){
-            	if(val=='确认'){
-	          		if(!this.operate.reasonValue){
-//	          			this.$warn("请填写成因")
-						this.$warn('请填写完整信息');
-	          			return
-	          		}
-	          		if(!this.operate.effectScope){
-//	          			this.$warn("请填写影响范围")
-						this.$warn('请填写完整信息');
-	          			return
-	          		}
-	                let nameArr=[]
-	                let idArr=[]
-	                for(let i of this.operate.systemAll){
-	                  let idTxt=i.csty.split(",")[0];//子系统id                  
-	                  if(idArr.indexOf(idTxt)==-1){
-	                  	idArr.push(i.csty.split(",")[0])
-	                    nameArr.push(i.csty.split(",")[1])                         
-	                  }
-	                  else{
-	                    this.$warn('请选择不同的子系统')
-	                    return
-	                  }
-	                }
-	                if(idArr[0]==''){
-	                  this.$warn('请选择子系统')
-	                  return
-	                }
-	                if(!this.operate.solution){
-//	                  this.$warn("请填写解决方案")
-						this.$warn('请填写完整信息');
-	                  return
-	                }
-            		let params = new URLSearchParams();
-            		params.append("id", this.tabs.form.id);	//id
-	                params.append("reason", this.operate.reasonValue);	//成因
-	                params.append("effectScope", this.operate.effectScope);	//影响范围
-	                params.append("solution", this.operate.solution);//解决方案
-	                params.append("systemTypeId", idArr);//子系统id
-	                params.append("systemType", nameArr);//子系统名称
-	                params.append("type", 2);//
-	                params.append("technology_NEEL_ID", this.operate.relationValue);//故障ID
-            		this.$axios.post("/fault/audit", params).then((res) => {
-            			if(res.status==200){
-            				this.$success("操作成功！");
-	                        this.errorVisible=false;
-                            this.operate.status='已完成'
-	                        this.loadData();
-            			}
-            			else{
-            				this.$warn(message);
-            			}
-            		})
 
-            	}
-            	if(val=='驳回'){
-            		let params = new URLSearchParams();
-	                params.append("id", this.tabs.form.id);
-	                this.$axios.post("/fault/reject", params).then((res) => {
-            			if(res.status==200){
-            				this.$success("操作成功！");
-	                        this.errorVisible=false;
-                        this.operate.status='已驳回'
-	                        this.clearAddData();
-	                        this.loadData();
-            			}
-            			else{
-            				this.warn(data.message);
-            			}
-            		})
-            	}
-
-           },  
            backPage(val){
              	this.loadData();       
              	this.clearAddData();

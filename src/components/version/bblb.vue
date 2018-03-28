@@ -431,11 +431,13 @@
                         let data = res.data.result;
                         let versionNum = data.length;
                         let arr = [];
+                        let nowArr
                         let versionP = []
                         for (let i of data) {
                             versionP.push(i);
                             if (i.current_STATE == 1) {
                                 i.current_STATE = '是'
+                                nowArr=i
                             }
                             else {
                                 i.current_STATE = '';
@@ -443,13 +445,22 @@
 
                             arr.push(i);
                         }
+
                         this.$set(this.table, "tableDetail", arr);
-                        this.$set(this.tabs, "versionLine", versionP);
                         for (let i = 0; i < versionNum; i++) {
                             this.tabs.versionLine.push();
                             let width = 100 / (versionNum + 1) + "%"
                             this.$set(this.tabs, "width", width);
                         }
+//                        最后一个不是当前版本
+                        if(versionP[versionNum-1].current_STATE==''){  //如果最后一个不是当前版本
+                            if(nowArr){
+                                versionP.push(nowArr);
+                            }
+
+                        }
+
+                        this.$set(this.tabs, "versionLine", versionP);
 
                     }
                 })
