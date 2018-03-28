@@ -55,7 +55,7 @@
                                     <el-table-column prop="file_DESCRIPTIOON" label="文档简介"></el-table-column>
                                     <el-table-column prop="date_TIME" :formatter="dataFormatter" width="120"
                                                      label="录入时间"></el-table-column>
-                                    <el-table-column prop="rriority_NAME" label="录入人员"></el-table-column>
+                                    <el-table-column prop="user_NAME" label="录入人员"></el-table-column>
                                     <el-table-column label="操作" width="150">
                                         <template slot-scope="scope">
                                             <el-button size="mini" type="primary"
@@ -183,7 +183,17 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
-                        <el-form-item label="上传文档">
+                        <el-form-item label="录入人员" >
+                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" :md="24">
+                        <el-form-item label="录入人员" :span="12" :md="12">
+                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="上传文档" :span="12" :md="12">
                             <div style="position: relative;overflow: hidden">
                                 <el-button type="primary" size="mini">上传附件</el-button>
                                 <input type="file" @change="getFile($event)" multiple="multiple" placeholder="上传附件"
@@ -226,6 +236,9 @@
 
 <script>
     export default {
+        props: {
+            username: ''
+        },
         data(){
             return {
                 download: {
@@ -251,6 +264,7 @@
                         wordname: "",//文档名称
                         version: "",//文件版本
                         intro: "",//文档简介
+                        write_user: this.username,// 录入人员
                         uploadFiles: [],//选中的文件
                         fileIds: [],//要上传的文件ID
                         dirFather: [],//目录位置的父位置
@@ -335,6 +349,7 @@
                             }
                             arr.push(fobj)
                         }
+                        arr.map(item=>item.children=null);
                         this.$set(this, "leftData", arr)
                     }
                 });
@@ -492,6 +507,10 @@
                 }
                 if (!subform.intro) {
                     this.$warn("请填写文档简介");
+                    return;
+                }
+                if (!subform.write_user) {
+                    this.$warn("请填写录入人员");
                     return;
                 }
                 if (!subform.fileIds.length) {
