@@ -865,10 +865,13 @@
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" :sm="24">
+                                            <el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
                                                 </p>
+                                            </el-col>
+                                            <el-col :span="24" :sm="24" v-if="tracking.trackingvisiible">
+                                                <tracking :tracking="tracking"></tracking>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -876,29 +879,28 @@
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
                                 <!--<realtime :sstj="sstj"></realtime>-->
-                                <template style="width: 100%">
-                                    <el-tabs v-model="sstj.activeName" @tab-click="" class="sstabs" style="width: 100%">
-                                        <el-tab-pane label="周期" name="first">
+                                <div class="console-tab-content">
+                                    <el-tabs v-model="sstj.activeName" class="sstabs" style="width: 100%;height: 100%">
+                                        <el-tab-pane label="周期" name="first" clearable>
                                             <!--周期-->
-                                            <el-row :gutter="20">
-                                                <el-col :span="24" :md="24" >
-                                                    <div id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-                                                </el-col>
-                                            </el-row>
+                                            <h1 v-if="sstj.hidezqvisible"
+                                                style="text-align: center; font-weight: bold; color: #b5b5b5;font-size: 22px">周期信息为空</h1>
+                                            <div v-show="!sstj.hidezqvisible" id="system" clearable style="width:1000px;height: 200px;margin: 20px 0;"></div>
                                         </el-tab-pane>
-                                        <el-tab-pane label="工时" name="second">
-                                            <ul style="margin-bottom: 10px">
+                                        <el-tab-pane label="工时" name="second" clearable>
+                                            <h1 v-if="sstj.hidegsvisible"
+                                                style="text-align: center;font-weight: bold; color: #b5b5b5;font-size: 22px">工时进度为空</h1>
+                                            <ul v-if="!sstj.hidegsvisible" style="margin-bottom: 10px">
                                                 <li v-for="item in sstj.info" style="width: 30%;display: inline-block">
-                                                    {{item.DEPT_NAME}}总工时:{{item.allTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
+                                                    {{item.DEPT_NAME}}总工时:{{item.requiredTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
                                                 </li>
                                             </ul>
-                                            <div style="width: 1000px;" class="clear" id="hours-div">
+                                            <div  v-show="!sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div">
                                                 <h1 style="text-align: center; font-weight: 900;font-size: 22px">工时统计</h1>
-                                                <!--<div id="workHours" style="width: 100%;height: 300px;float: left;margin-left: 30px"></div>-->
                                             </div>
                                         </el-tab-pane>
                                     </el-tabs>
-                                </template>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -1498,11 +1500,11 @@
             </div>
         </el-dialog>
         <!--全程跟踪视图模式-->
-        <el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"
-                   append-to-body modal-append-to-body
-                   :before-close="closeDialog">
-            <tracking :tracking="tracking"></tracking>
-        </el-dialog>
+        <!--<el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"-->
+                   <!--append-to-body modal-append-to-body-->
+                   <!--:before-close="closeDialog">-->
+            <!--<tracking :tracking="tracking"></tracking>-->
+        <!--</el-dialog>-->
         <!--下载文件-->
         <download :download="download"></download>
         <!--上传附件弹窗-->
@@ -1881,14 +1883,19 @@
                     neel_id:""
                 },
                 sstj:{
-                    info:'',//信息
-                    allTime:'',//总工时
-                    bugCount:'',//bug数
-                    activeName:'first',
-                    deptName:"",
-                    len:"",
-                    requiredTime:"",
-                    leaveTime:"",
+                    activeName:"first",//当前显示
+                    hidezqvisible:false,//周期
+                    hidegsvisible:false,//工时
+                    yaxis:[], //y轴显示
+                    startTime : [], //预期开始时间
+                    endTime : [], //预期结束时间
+                    actualTime: [], //实际完成时间
+                    timeInfo:[], //所有信息
+                    deptName:[],//部门
+                    allTime:[],//实际用时
+                    requiredTime:[],//总用时
+                    leaveTime:[],//剩余用时
+                    len:"",//工时统计的小圆圈的个数
                 },
                 //验收通过和不通过
                 accept:{
@@ -2637,8 +2644,23 @@
                         //----------------------加载权限
                         this.setStateAction(data.result);
 
-                        //----------------------加载实时统计数据
+                        //加载实时统计数据
                         if(data.result.systemDepts && data.result.currentTime){
+                            if(data.result.systemDepts.length){
+                                //技术经理分析过后显示周期统计模块
+                                this.sstj.hidezqvisible = false
+                                let bool = false;
+                                for(let i of data.result.systemDepts){
+                                    if(i.infos){
+                                        bool = true
+                                    }
+                                }
+                                bool?this.sstj.hidegsvisible = false:this.sstj.hidegsvisible = true
+                            }else{
+                                //没有进行分析取消所有展示
+                                this.sstj.hidezqvisible = true
+                                this.sstj.hidegsvisible = true
+                            }
                             this.setRealTime(data.result.systemDepts,data.result.currentTime)
                         }
 
@@ -2655,6 +2677,7 @@
             },
             //设置实时统计数据
             setRealTime(systemDepts,currentTime){
+//                this.$set(this, "selectValue", statusArr);
                 let datashow = systemDepts;
                 let nowTime = currentTime;
                 let yaxis = []; //y轴显示
@@ -2663,8 +2686,8 @@
                 let actualTime = []; //实际完成时间
                 let timeInfo=[]; //所有信息
                 let deptName=[];//部门
-                let allTime=[];//总用时
-                let requiredTime=[];//实际用时
+                let allTime=[];//实际用时
+                let requiredTime=[];//总用时
                 let leaveTime=[];//剩余用时
                 for(let i of datashow) {
                     timeInfo.push(i);
@@ -2672,19 +2695,23 @@
                     startTime.push(new Date(i.EXPECT_START));
                     endTime.push(new Date(i.EXPECT_END));
                     if(!i.lastCompleteTime) {
+                        //如果没有完成事件，设置完成时间为当前时间
                         i.lastCompleteTime = nowTime
                     }
                     if(i.lastCompleteTime<=i.EXPECT_END){
+                        //如果完成时间在计划时间之内，完成时间等于预计时间
                         i.lastCompleteTime=i.EXPECT_END
                     }
+                    //所有人员的实际用时
                     if(i.allTime){
                         allTime.push(i.allTime);
                         deptName.push(i.DEPT_NAME);
                         requiredTime.push(i.requiredTime);
-                        leaveTime.push(i.allTime-i.requiredTime)
+                        leaveTime.push(i.requiredTime-i.allTime)
                     }
                     actualTime.push(new Date(i.lastCompleteTime));
-                    this.$set(this.sstj, "info", timeInfo);
+
+                    this.$set(this.sstj, "gsinfo", timeInfo);
                 }
                 let len=requiredTime.length;
                 this.$set(this.sstj,"yaxis",yaxis);
@@ -2697,13 +2724,13 @@
                 this.$set(this.sstj,"leaveTime",leaveTime);
                 this.$set(this.sstj,"allTime",allTime);
                 this.sstj.len = len;
-                this.realTime(yaxis,startTime,endTime,actualTime)
-                this.workTime(deptName,leaveTime,requiredTime);
+                this.realTime(yaxis,startTime,endTime,actualTime);
+                this.workTime(deptName,leaveTime,requiredTime,allTime);
+
             },
 //            实时统计周期
             realTime(yaxis,startTime,endTime,actualTime) {
-                let echarts = require('echarts');
-                let proBar = echarts.init(document.getElementById("system")); //实时统计
+                let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
                 proBar.clear()
                 let option = {
                     title : {
@@ -2775,44 +2802,59 @@
                 };
                 proBar.setOption(option);
             },
-//            工时
-            workTime(deptName,leaveTime,requiredTime){
-                for(let i=0;i<deptName.length;i++){
-                    let father = document.getElementById("hours-div");
-                    let div = '<div id="workHours'+i+'"  style="height: 150px;width: 300px;float: left;"></div>';
-                    father.insertAdjacentHTML("beforeend",div)
-                    let option = {
-                        axisLabel: {
-                            interval:0//横轴信息全部显示
-                        },
-                        tooltip : {
-                            trigger: 'item',
-                            formatter: "{a} <br/>{b} : {c} ({d}%)"
-                        },
-                        series : [
-                            {
-                                name: deptName[i],
-                                type: 'pie',
-                                radius : "60%",
-                                center: ['60%', '50%'],
-                                data:[
-                                    {value:leaveTime[i], name:'剩余工时'},
-                                    {value:requiredTime[i], name:'实际工时'}
-                                ],
-                                itemStyle: {
-                                    emphasis: {
-                                        shadowBlur: 10,
-                                        shadowOffsetX: 0,
-                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                    }
-                                }
+            //工时
+            workTime(deptName,leaveTime,requiredTime,allTime){
+                let father = document.getElementById("hours-div");
+                if(father){
+                    let allChild = document.querySelectorAll("#hours-div .hour-child");
+                    for(let i of allChild){
+                        father.removeChild(i)
+                    }
+                    setTimeout(()=>{
+                        for(let i=0;i<deptName.length;i++){
+                            let txtName
+                            if(leaveTime[i]>=0){
+                                txtName='剩余工时'
                             }
-                        ]
-                    };
-                    var echarts = require('echarts');
-                    var proBar= echarts.init(document.getElementById("workHours"+i)); //实时统计
-                    proBar.clear()
-                    proBar.setOption(option);
+                            else{
+                                txtName='超出工时'
+                                leaveTime[i]=-leaveTime[i]
+                            }
+                            let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
+                            father.insertAdjacentHTML("beforeend",div);
+                            let option = {
+                                axisLabel: {
+                                    interval:0//横轴信息全部显示
+                                },
+                                tooltip : {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+                                series : [
+                                    {
+                                        name: deptName[i],
+                                        type: 'pie',
+                                        radius : "60%",
+                                        center: ['60%', '50%'],
+                                        data:[
+                                            {value:leaveTime[i], name:txtName},
+                                            {value:allTime[i], name:'实际工时'}
+                                        ],
+                                        itemStyle: {
+                                            emphasis: {
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 0,
+                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                            }
+                                        }
+                                    }
+                                ]
+                            };
+                            let proBar= this.$echarts.init(document.getElementById("workHours"+i)); //实时统计
+                            proBar.setOption(option);
+                        }
+                    },0)
+
                 }
             },
             //-----------------------------------添加开发任务和测试任务的和合计
@@ -4496,6 +4538,8 @@
             },
             //-----------------------------------加载视图模式数据
             loadtrack(){
+                this.tracking.trackingvisiible? this.tracking.trackingvisiible = false:
+                    this.tracking.trackingvisiible = true
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.tech_NEET_ID);
                 this.$axios.post("/tech/queryView",params).then((res)=>{
@@ -4511,7 +4555,6 @@
                             arr.push(i)
                         }
                         this.$set(this.tracking, "data",arr);
-                        this.tracking.trackingvisiible = true;
                     }
                 });
             },
