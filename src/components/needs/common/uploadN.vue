@@ -54,17 +54,17 @@
                     case "上传手册":
                         type = "CODE"
                         break;
-                    case "上传用例":
+                    case "上传用例模板":
                         type = "TEST"
                         break;
                 }
                 let file = e.target.files[0];
                 let params = new FormData();
-                params.append("token",this.$getToken());
-                params.append("TYPE",type);
+                params.append("token",localStorage.getItem("token"));
+                // params.append("TYPE",type);
 //                params.append("BASE_ID",this.data.neel_id);
                 params.append("file",file);
-                this.$axios.post("/base/upload",params).then((res)=>{
+                this.$axios.post("/daliy/upload",params).then((res)=>{
                     let data = res.data;
                     if(data.code == 200){
                         this.data.fileIds.push(data.result.id);
@@ -79,9 +79,9 @@
                 }
                 this.$maskin();
                 let params = new URLSearchParams();
-                params.append("BASE_ID",this.data.neel_id);
+                params.append("DALIY_NEET_ID", this.data.neel_id);
                 params.append("attachmentId",this.data.fileIds);
-                this.$axios.post("/base/uploadConfrim",params).then((res)=>{
+                this.$axios.post("/daliy/uploadConfrim",params).then((res)=>{
                     let data = res.data;
                     if(data.code == 200){
                         this.$success("上传成功！");

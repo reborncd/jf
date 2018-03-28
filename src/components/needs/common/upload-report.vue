@@ -27,7 +27,7 @@
             </el-form-item>
             <el-form-item label="上传文件">
                 <div class="upload-wrapper" style="float:none;">
-                    <el-button type="primary" size="mini">上传测试结果</el-button>
+                    <el-button type="primary" size="mini">上传测试报告</el-button>
                     <input type="file" @change="uploadTestReport($event)" class="upload-input" style="width: 104px;top: 8px;">
                 </div>
                 <p v-for ="(item,index) in report.uploadFile" style="margin-top: 10px;">{{item.name}}

@@ -11,6 +11,11 @@ import echarts from  'echarts'
 import html2Canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 //3.22 end
+import VueQuillEditor from 'vue-quill-editor';
+import "./static/css/quill.core.css";
+import "./static/css/quill.snow.css";
+import "./static/css/quill.bubble.css";
+Vue.use(VueQuillEditor);
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -185,23 +190,23 @@ Vue.prototype.$format = (time) => {
         "year": year,
         "mouth": mouth < 10 ? "0" + mouth : mouth,
         "day": day < 10 ? "0" + day : day,
-        "hour": hour < 10 ? "0" + day : day,
-        "min": min < 10 ? "0" + day : day,
-        "second": second < 10 ? "0" + day : day,
+        "hour": hour < 10 ? "0" + hour : hour,
+        "min": min < 10 ? "0" + min : min,
+        "second": second < 10 ? "0" + second : second,
     }
 };
-//---------------------------------------------------
+
 // axios配置------------------------------------------
-//----------------------------------------------------
+
 let instance = axios.create({
-    // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
+    //baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     // baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
-    // baseURL:"http://172.16.2.215:8083",//欧
-    baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
-    //baseURL:"http://192.168.1.106:8080",
-    //baseURL:"http://192.168.1.179:8082",
-    //baseURL:"http://127.0.0.1:8082",
-    //baseURL:"http://192.180.4.150:8082",
+    // baseURL:"http://172.16.3.185:8083",//欧
+    //baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+     baseURL:"http://192.168.1.106:8080",//服务器
+    // baseURL:"http://192.168.1.179:8082",
+    // baseURL:"http://127.0.0.1:8082",
+    // baseURL:"http://192.180.4.150:8082",
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
