@@ -79,7 +79,7 @@
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
                         <el-button type="danger" @click="shouBug" size="mini">提交BUG</el-button>
-                        <el-select v-model="selectValues" @change="statusOpt"  clearable
+                        <el-select v-model="selectValues" placeholder="请选择状态" @change="statusOpt"  clearable
                                    size="mini">
                             <el-option
                                     v-for="item in selectValue"
@@ -119,15 +119,15 @@
                               highlight-current-row
                               @row-click="handleCurrentChange">
                             <el-table-column prop="id" label="编号"></el-table-column>
-                            <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
-                            <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
-                            <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
-                            <el-table-column prop="aa" label="版本号"></el-table-column>
                             <el-table-column prop="description" label="描述">
                                 <template slot-scope="scope">
                                     <span :title=scope.row.description class="tab-opt" style="">{{scope.row.description}}</span>
                                 </template>
                             </el-table-column>
+                            <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
+                            <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
+                            <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
+                            <el-table-column prop="aa" label="版本号"></el-table-column>
                             <el-table-column prop="priperty" label="优先级"></el-table-column>
                             <el-table-column prop="status" label="状态"></el-table-column>
                             <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
@@ -161,7 +161,7 @@
                                                 <el-form-item label="BUG说明">
                                                      {{tabs.form.description}}
                                                     <p>
-										               	<a style="margin-right: 20px; color: #999;" v-for="(item,index) in tabs.form.downName" @click="downfile(item.id)" >{{item.name}}</a>
+										               	<a style="margin-right: 20px; color: #66b1ff;" v-for="(item,index) in tabs.form.downName" @click="downfile(item.id)" >{{item.name}}</a>
 										            </p>
                                                 </el-form-item>
                                             </el-col>
@@ -258,14 +258,14 @@
                             </el-tab-pane>
                             <el-tab-pane label="全程跟踪" name="project">
                                 <div class="console-tab-content">
-                                    <el-form :model="form" label-width="180px" label-position="left">
+                                    <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                            <el-col :span="8" :sm="8">
-                                                <el-form-item label="待技术管理部审核：">
-                                                    <el-form-item label="">{{way.status}}</el-form-item>
+                                            <el-col :span="12" :sm="12">
+                                                <el-form-item label="状态：">
+                                                    <el-form-item label="">{{operate.status}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="8" :sm="8">
+                                            <el-col :span="12" :sm="12">
                                                 <el-form-item label="发送人：" label-width="100px">
                                                     <el-form-item label="">{{way.sender}}</el-form-item>
                                                 </el-form-item>
@@ -392,17 +392,9 @@
                 	"value":'已完成'
                 },
                 {
-                	'id':'3',
-                	"value":'已作废'
-                },
-                {
                 	'id':'4',
                 	"value":'已驳回'
                 },
-                {
-                	'id':'',
-                	'value':'全部'
-                }
                 ],
                 page: {},
                 form: {},

@@ -8,7 +8,7 @@
                :before-close="closeDialog">
         <div class="table-list">
             <el-table :data="data.allBugs" border style="width: 100%">
-                <el-table-column label="序号" width="190" show-overflow-tooltip>
+                <el-table-column label="编号" width="190" show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span v-if="scope.row.base_BUG_ID">{{scope.row.base_BUG_ID}}</span>
                         <span v-if="scope.row.work_BUG_ID">{{scope.row.work_BUG_ID}}</span>

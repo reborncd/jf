@@ -90,7 +90,7 @@
         <div class="content" v-if="!errorVisible">
           <div class="action clear">
             <el-button type="danger" @click="addPopup" size="mini">提交故障</el-button>
-            <el-select v-model="selectValues" clearable @change="statusOpt" size="mini">
+            <el-select v-model="selectValues" clearable placeholder="请选择状态" @change="statusOpt" size="mini">
               <el-option
                 v-for="item in selectValue"
                 :label="item.value"
@@ -124,15 +124,15 @@
                       :height="table.tableHeight" highlight-current-row
                       @row-click="handleCurrentChange">
               <el-table-column prop="id" label="编号" width="180"></el-table-column>
-              <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
-              <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
-              <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
-              <el-table-column prop="reason" label="故障成因"></el-table-column>
               <el-table-column prop="description" label="描述">
                 <template slot-scope="scope">
                   <span :title=scope.row.description class="tab-opt" style="">{{scope.row.description}}</span>
                 </template>
               </el-table-column>
+              <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
+              <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
+              <el-table-column prop="reason" label="故障成因"></el-table-column>
+              <el-table-column prop="create_TIME" label="提交日期" width="110"></el-table-column>
               <el-table-column prop="priperty" label="优先级" width="80"></el-table-column>
               <el-table-column prop="status" label="状态"></el-table-column>
               <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
@@ -166,7 +166,7 @@
                         <el-form-item label="故障描述">
                           {{tabs.form.description}}
 			               <p>
-			               	<a style="margin-right: 20px;color: #999" v-for="(item,index) in tabs.downName" @click="downfile(item.id)" >{{item.name}}</a>
+			               	<a style="margin-right: 20px;color: #66b1ff" v-for="(item,index) in tabs.downName" @click="downfile(item.id)" >{{item.name}}</a>
 			               </p>
                         </el-form-item>
 
@@ -177,7 +177,7 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="24" :sm="24">
-                        <el-form-item label="故障描复盘和分析">
+                        <el-form-item label="故障复盘分析">
                           {{tabs.form.descriptionEx}}
                         </el-form-item>
                       </el-col>
@@ -262,14 +262,14 @@
               </el-tab-pane>
               <el-tab-pane label="全程跟踪" name="project">
                 <div class="console-tab-content">
-                  <el-form :model="form" label-width="180px" label-position="left">
+                  <el-form :model="form" label-width="100px" label-position="left">
                     <el-row :gutter="20">
-                      <el-col :span="8" :sm="8">
-                        <el-form-item label="待技术管理部审核：">
-                          <el-form-item label="">{{way.status}}</el-form-item>
+                      <el-col :span="12" :sm="8">
+                        <el-form-item label="状态：">
+                          <el-form-item label="">{{operate.status}}</el-form-item>
                         </el-form-item>
                       </el-col>
-                      <el-col :span="8" :sm="8">
+                      <el-col :span="12" :sm="8">
                         <el-form-item label="发送人：" label-width="100px">
                           <el-form-item label="">{{way.sender}}</el-form-item>
                         </el-form-item>
@@ -318,6 +318,7 @@
               </el-col>
             </el-row>
             <el-row :gutter="24">
+              <el-col :span="24">
               <el-form-item label="故障描述" style="position: relative;">
                 <el-input v-model="popup.popTxt.description" type="textarea"></el-input>
                 <el-button type="primary">上传附件</el-button>
@@ -329,16 +330,21 @@
                 </p>
                 </el-upload>
               </el-form-item>
+              </el-col>
             </el-row>
             <el-row :gutter="24">
+              <el-col :span="24">
               <el-form-item label="故障复盘分析">
                 <el-input v-model="popup.popTxt.descriptionEx" type="textarea"></el-input>
               </el-form-item>
+              </el-col>
             </el-row>
             <el-row :gutter="24">
+              <el-col :span="24">
               <el-form-item label="交易量影响">
                 <el-input v-model="popup.popTxt.sumEffect" type="textarea"></el-input>
               </el-form-item>
+              </el-col>
             </el-row>
           </el-form>
           <div style="text-align: center">
@@ -392,17 +398,9 @@
             "value": '已完成'
           },
           {
-            'id': '3',
-            "value": '已作废'
-          },
-          {
             'id': '4',
             "value": '已驳回'
           },
-          {
-            'id': '',
-            'value': '全部'
-          }
         ],
         page: {},
         form: {},
@@ -582,9 +580,6 @@
             if (i.status == 2) {
               i.status = '已完成'
             }
-            if (i.status == 3) {
-              i.status = '已作废'
-            }
             if (i.status == 4) {
               i.status = '已驳回'
             }
@@ -596,6 +591,18 @@
             }
             if (i.priperty == 103) {
               i.priperty = '一般'
+            }
+            if(i.reason==1){
+                i.reason='程序问题'
+            }
+            if(i.reason==2){
+                i.reason='硬件环境'
+            }
+            if(i.reason=3){
+                i.reason='网络故障'
+            }
+            if(i.reason==4){
+                i.reason='人为错误'
             }
             arr.push(i)
           }
@@ -739,19 +746,13 @@
               this.form.pripoerty = data.result.fault.priperty;
               this.tabs.form.relationUser = data.result.fault.relation_USER;
               this.tabs.form.description = data.result.fault.description;
-              this.tabs.form.sumEffect = data.result.fault.sum_EFFECT;
+              this.tabs.form.sumEffect = data.result.fault.sum_EFFECT; //交易量影响
               this.tabs.form.descriptionEx = data.result.fault.description;
-//              if(val.status=='已完成' || val.status=='已驳回'){
-//                 this.tabs.consoleActionData.erract= [{"name":""}]
-//              }
-//              else{
-//                  this.tabs.consoleActionData.erract= [{"name":"驳回"},{"name":"确认"}]
-//              }
               this.operate.status =val.status
               this.operate.sender = data.result.fault.create_USER;
               this.way.sender = data.result.fault.create_USER;
               let arr = [];
-                let reason=[]
+              let reason=[]
               //
                 for(let i of data.result.reasons.reasons){
                     reason.push(i)
@@ -759,11 +760,7 @@
                 this.$set(this.operate.operateTxt, "reasonSelect", reason);
               if (data.result.process.result.length > 0) {
                 for (let i of data.result.process.result) {
-//                if (i.record_START) {
-//                  let start = this.$format(i.record_START);
-//                  i.record_START = `${start.year}-${start.mouth}-${start.day}-$(start.hour)`;
-//                }
-//                arr.push(i);
+                    arr.push(i);
                 }
 
                 this.$set(this.way, "information", arr);
@@ -907,6 +904,16 @@
 					this.$warn('请填写完整信息');
           return;
         }
+          if (!this.popup.popTxt.descriptionEx) {
+//        this.$warn('请填写故障描述');
+              this.$warn('请填写完整信息');
+              return;
+          }
+          if (!this.popup.popTxt.sumEffect) {
+//        this.$warn('请填写故障描述');
+              this.$warn('请填写完整信息');
+              return;
+          }
         let params = new FormData();
         params.append("token",this.$getToken())
         params.append("priperty", this.popup.popTxt.priperty2);	//故障等级

@@ -304,14 +304,14 @@
                                                 <el-form-item label="评审结果">{{tabs.tabsData.pingResult}}</el-form-item>
                                             </el-col>
 
-                                            <!------------------------------当前用例模板-->
-                                            <el-col :span="24" v-if="tabs.testtask">
-                                                <el-form-item label="当前用例模板" >
-                                                    <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','当前用例模板')">点击可查看</span>
+                                            <!------------------------------当前用例-->
+                                            <el-col :span="24">
+                                                <el-form-item label="当前用例" >
+                                                    <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','当前用例')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------开发手册-->
-                                            <el-col :span="24" v-if="tabs.codetask">
+                                            <el-col :span="24">
                                                 <el-form-item label="开发手册" >
                                                     <span style="cursor: pointer;color: orangered" @click="showDownLoadData('','开发手册')">点击可查看</span>
                                                 </el-form-item>
@@ -319,21 +319,21 @@
 
 
                                             <!------------------------------生产环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="生产环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','生产环境附件')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------测试环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="测试环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','测试环境附件')">点击可查看</span>
                                                 </el-form-item>
                                             </el-col>
                                             <!------------------------------准生产环境附件-->
-                                            <el-col :span="24" v-if="tabs.testtask">
+                                            <el-col :span="24">
                                                 <el-form-item label="准生产环境附件" >
                                                     <span style="cursor: pointer;color: orangered"
                                                           @click="showDownLoadData('','准生产环境附件')">点击可查看</span>
@@ -931,7 +931,7 @@
                     </el-col>
                     <el-col :span="12" :md="12">
                         <el-form-item label="需求类型">
-                            <el-select filterable clearable :disabled="addneeds.notAllowChooseType || addneeds.addType == 'changeInset'"
+                            <el-select filterable clearable :disabled="addneeds.addType == 'changeInset'"
                                        v-model="addneeds.addform.needstype"
                                        placeholder="请选择需求类型"
                                        style="width: 100%">
@@ -1050,7 +1050,8 @@
                                     v-if="addneeds.addType != 'changeInset'"
                                     :reform="addneeds.addform.reform" @setValue="setValue_reform">
                             </v-vueQuillEditor-reform>
-                            <p v-if="addneeds.addType == 'changeInset'">{{addneeds.addform.reform}}</p>
+                            <div v-if="addneeds.addType == 'changeInset'" class="reform_change"></div>
+                            <!--{{addneeds.addform.reform}}-->
                         </el-form-item>
                     </el-col>
 
@@ -1065,7 +1066,8 @@
                     </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldchangepoint">
                         <el-form-item label="原产品改造点">
-                            {{addneeds.addform.oldchangepoint}}
+                            <div class="oldchangepoint_change"></div>
+                            <!--{{addneeds.addform.oldchangepoint}}-->
                         </el-form-item>
                     </el-col>
                     <!--产品改造点-->
@@ -1081,7 +1083,8 @@
                     </el-col>
                     <el-col :span="24" :md="24" v-if="addneeds.addform.oldneedsname">
                         <el-form-item label="原需求描述">
-                            {{addneeds.addform.oldneedsname}}
+                            <div class="oldneedsname_change"></div>
+                            <!--{{addneeds.addform.oldneedsname}}-->
                         </el-form-item>
                     </el-col>
                     <!--需求描述-->
@@ -2084,6 +2087,7 @@
                         this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
                         this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
                         this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
+                        this.addneeds.addform.shenqingdate = new Date();
                         this.addneeds.addform.title = "新增";
                         this.addneeds.addvisible = true;
                         this.$maskoff();
@@ -2420,9 +2424,9 @@
                             this.tabs.tabsData.urgentOrNot = "是";
                             this.tabs.tabsData.urgent = base.urgent;
                         }
-//                        this.tabs.tabsData.background = base.background;//需求背景
-//                        this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
-//                        this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
+                        //this.tabs.tabsData.background = base.background;//需求背景
+                        //this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
+                        //this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
                         this.setBrInfo(document.querySelector(".background"),base.background);
                         this.setBrInfo(document.querySelector(".product_FUNCTION"),base.product_FUNCTION);
                         this.setBrInfo(document.querySelector(".neel_DESCRIPTION"),base.neel_DESCRIPTION);
@@ -2519,11 +2523,24 @@
                             base.success ? base.success : "";
 
 
-                        //新建变更后    在原需求上展示新需求信息
-                        if(base.base_NEW_ID){
+
+                        //被新建变更后的数据
+                        if(base.state_ID == 320){
                             this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
-//                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
-//                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);//新产品改造点
+                                this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);//新需求描述
+                            },0)
+
+                        }
+
+                        //新建变更后    在原需求上展示新需求信息
+                        if(base.demand_SIGN == 2 && base.base_NEW_ID){
+                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
 
                             this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);
                             this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);
@@ -2531,12 +2548,12 @@
 
                         //--------------------------新建变更的判断
                         //DEMAND_SIGN   1：需求内变更 2：新建变更,
-                        if(base.demand_SIGN  == 2){
+                        if(base.demand_SIGN == 2 && base.base_OLD_ID){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
                             this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
-//                            this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
-//                            this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
+                            this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
+                            this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
 
                             this.setBrInfo(document.querySelector(".oldchangepoint"),base.product_OLD_FUNCTION);
                             this.setBrInfo(document.querySelector(".oldneedsname"),base.neel_OLD_DESCRIPTION);
@@ -2546,10 +2563,12 @@
                         if(base.demand_SIGN == 1){
                             //当前是变更前的数据当前要展示新需求ID描述的等
 //                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
-//                            this.tabs.tabsData.oldchangepoint = base.old_NEEL_FUNCTION;//新产品产品改造点
-//                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//新需求描述
-                            this.setBrInfo(document.querySelector(".oldchangepoint"),base.old_NEEL_FUNCTION);
-                            this.setBrInfo(document.querySelector(".oldneedsname"),base.old_NEEL_DESCRIPTION);
+                            this.tabs.tabsData.oldchangepoint = base.old_PRODUCT_FUNCTION;//原产品产品改造点
+                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//原需求描述
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint"),base.old_PRODUCT_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname"),base.old_NEEL_DESCRIPTION);
+                            },0)
                         }
 
                         //-------------------判断是否有完成时间，有则展示
@@ -2578,7 +2597,10 @@
             },
             //设置换行数据
             setBrInfo(dom,info){
-                dom.insertAdjacentHTML("beforeend",info);
+                if(dom){
+                    dom.innerHTML = "";
+                    dom.insertAdjacentHTML("beforeend",info);
+                }
             },
             //设置实时统计数据
             setRealTime(systemDepts,currentTime){
@@ -2750,11 +2772,11 @@
                 let work_TIME = 0;//实际用时
                 let actual_TIME = 0;//总工时
                 for(let i of origin){
-                    i.old_REQUIRED_TIME?old_REQUIRED_TIME+=i.old_REQUIRED_TIME:"";
-                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                    i.old_ACTUAL_TIME?old_ACTUAL_TIME+=i.old_ACTUAL_TIME:"";
-                    i.work_TIME?work_TIME+=i.work_TIME:"";
-                    i.actual_TIME?actual_TIME+=i.actual_TIME:"";
+                    old_REQUIRED_TIME+= i.old_REQUIRED_TIME?i.old_REQUIRED_TIME:0;
+                    required_TIME+= i.required_TIME?i.required_TIME:0;
+                    old_ACTUAL_TIME+= i.old_ACTUAL_TIME?i.old_ACTUAL_TIME:0;
+                    work_TIME+= i.work_TIME?i.work_TIME:0;
+                    actual_TIME+= i.actual_TIME?i.actual_TIME:0;
                 }
                 view.push({
                     "user_NAME":"合计",
@@ -2866,7 +2888,7 @@
                         case "开发手册":
                             type = "CODE";
                             break;
-                        case "当前用例模板":
+                        case "当前用例":
                             type = "TEST";
                             break;
                         case "准生产环境附件":
@@ -3350,6 +3372,7 @@
             newchange(type){
                 this.$maskin();
                 if(type=="change"){
+                    this.clearAddData();
                     this.addneeds.addform.title = "新建变更";
                     this.addneeds.addType = "change";//当前是新建变更
                 }else{
@@ -3379,6 +3402,7 @@
                             //新建变更展示原需求编号
                             this.addneeds.addform.code = data.result.WORK_NEET_ID;//当前的新需求ID
                             this.addneeds.addform.oldcode = base.work_NEET_ID;
+                            this.addneeds.addform.shenqingdate = new Date();
                             this.addneeds.addform.oldgongneng = "";
                             this.addneeds.addform.oldneedsname = "";
                         }
@@ -3730,11 +3754,11 @@
                 let work_TIME = 0;//现实际用时
                 let actual_TIME = 0;//总工时
                 for(let i of val.infos){
-                    i.old_REQUIRED_TIME?old_REQUIRED_TIME+=i.old_REQUIRED_TIME:"";
-                    i.required_TIME?required_TIME+=i.required_TIME:"";
-                    i.old_ACTUAL_TIME?required_TIME+=i.old_ACTUAL_TIME:"";
-                    i.work_TIME?required_TIME+=i.work_TIME:"";
-                    i.actual_TIME?required_TIME+=i.actual_TIME:"";
+                    old_REQUIRED_TIME += i.old_REQUIRED_TIME?i.old_REQUIRED_TIME:0;
+                    required_TIME += i.required_TIME?i.required_TIME:0;
+                    old_ACTUAL_TIME += i.old_ACTUAL_TIME?i.old_ACTUAL_TIME:0;
+                    work_TIME += i.work_TIME?i.work_TIME:0;
+                    actual_TIME += i.actual_TIME?i.actual_TIME:0;
                 }
                 this.split.hasSplitvisible = true;
                 this.$set(this.split, "hasSplitTaskData", val.infos);
@@ -4012,7 +4036,7 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("操作成功！");
-                            this.$set(this.testTask.tableData[index], "TEST_STATE", 1);
+                            this.$set(this.testTask.tableData[index], "TEST_STATE", 2);
                             this.$maskoff();
                         }
                     })

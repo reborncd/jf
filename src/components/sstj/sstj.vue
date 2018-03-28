@@ -128,7 +128,7 @@
                 complete: {
                     selectArr: [],
                     select: "全部",
-                    originData: []
+                    originData : []
                 }
             }
         },
