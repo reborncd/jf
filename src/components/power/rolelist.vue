@@ -1,54 +1,98 @@
-<style scoped>
-    .search .el-input {
+<style>
+    .role-tree-title{
+        height: 47px;
+        width: 100%;
+        display: -webkit-flex;
+        justify-content: center;
+        align-items: center;
+        background: #939da9;
+        color: #fff;
+        font-weight: bold;
+        word-spacing: 20;
+    }
+    .handle-bar{
+        width: 100%;
+        height: 35px;
+        display: -webkit-flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        padding: 0 5px;
+    }
+    .handle-bar .search{
+        position: absolute;
+        right: 5px;
+    }
+    .role-el-table{
+        float: right;
+        width: 83%
+    }
+    .role-el-table th{
+        background: #939da9;
+        color: #fff;
+    }
+    .role-tree .el-tree{
+        border-bottom: 1px solid #eee;
+    }
+    .role-tree .el-tree-node, .el-tree-node__content{
+        min-height: 39px;
+        box-sizing: border-box;
+    }
+    .role-tree .el-tree-node{
+        border-top: 1px solid #eee;
+    }
+    .role-manage .el-card__header{
+        display: none;
+    }
+    .role-manage .search .el-input {
         width: auto;
     }
 
-    .table-list {
+    .role-manage .table-list {
         margin-top: 15px;
         text-align: center !important;
     }
 
-    .table-list table th div {
+    .role-manage .table-list table th div {
         text-align: center !important;
     }
 
-    .left-tree {
-        width: 14%;
+    .role-tree {
+        width: 15.5%;
         float: left;
         border: 1px solid #ebeef5;
         margin-right: 1%;
-        padding-top: 47px;
         overflow: auto;
     }
 
-    .el-button--small {
+    .role-manage .el-button--small {
         padding: 6px 10px;
     }
 
-    .el-button + .el-button {
+    .role-manage .el-button + .el-button {
         margin-left: 3px;
     }
 
     /*弹窗*/
 
-    .el-dialog__wrapper {
+    .role-manage .el-dialog__wrapper {
         overflow: visible;
     }
 
-    .el-dialog__body {
+    .role-manage .el-dialog__body {
         height: 300px;
         overflow-y: auto;
     }
 
-    .el-dialog__body .el-select {
+    .role-manage .el-dialog__body .el-select {
         width: 100%;
     }
 
-    .el-dialog__body .el-form-item {
+    .role-manage .el-dialog__body .el-form-item {
         margin-bottom: 10px;
     }
 
-    .roleInfodialog .el-form-item {
+    .role-manage .roleInfodialog .el-form-item {
         line-height: 24px !important;
         margin: 0;
     }
@@ -64,35 +108,36 @@
     }
 </style>
 <template>
-    <div class="rolelist common-card-wrap" style="height: 100%;">
+    <div class="rolelist common-card-wrap role-manage" style="height: 100%;">
         <el-card class="box-card">
-            <div slot="header" class="clearfix">
+            <div slot="header" class="clearfix" style="display: none">
                 <span class="card-title">人员配置</span>
+            </div>
+            <div class="handle-bar action clear">
+                <!--<el-button size="mini" type="primary" @click="createRole">新增职位</el-button>-->
+                <!--<router-link to="rolemanage">-->
+                    <!--<el-button size="mini">角色管理</el-button>-->
+                <!--</router-link>-->
+                <el-checkbox v-model="configChecked" @change="filterChangeEvent"
+                                style="margin-right: 10px;">只显示未配置人员
+                </el-checkbox>
+                <div class="search fr">
+                    <!--<el-checkbox v-model="leaveChecked" @change="filterChangeEvent" style="margin-right: 10px;">-->
+                        <!--显示离职人员-->
+                    <!--</el-checkbox>-->
+                    <el-input size="mini" v-model="keyword" placeholder="输入检索关键字" clearable @change="searchKeyword"
+                                @keyup.13="searchKeyword"></el-input>
+                    <el-button size="mini" type="primary" @click="searchKeyword">检索</el-button>
+                </div>
             </div>
             <div class="text item">
                 <div class="content">
-                    <div class="action clear">
-                        <!--<el-button size="mini" type="primary" @click="createRole">新增职位</el-button>-->
-                        <!--<router-link to="rolemanage">-->
-                            <!--<el-button size="mini">角色管理</el-button>-->
-                        <!--</router-link>-->
-                        <div class="search fr">
-                            <el-checkbox v-model="configChecked" @change="filterChangeEvent"
-                                         style="margin-right: 10px;">只显示未配置人员
-                            </el-checkbox>
-                            <!--<el-checkbox v-model="leaveChecked" @change="filterChangeEvent" style="margin-right: 10px;">-->
-                                <!--显示离职人员-->
-                            <!--</el-checkbox>-->
-                            <el-input size="mini" v-model="keyword" placeholder="输入检索关键字" clearable @change="searchKeyword"
-                                      @keyup.13="searchKeyword"></el-input>
-                            <el-button size="mini" type="primary" @click="searchKeyword">检索</el-button>
-                        </div>
-                    </div>
                     <div class="table-list">
-                        <div class="left-tree">
+                        <div class="left-tree role-tree">
+                            <div class="role-tree-title">选择部门</div>
                             <el-tree :data="treeDate" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table stripe class="table_role fr" :data="tableData" border style="width:85%"
+                        <el-table stripe class="role-el-table table_role fr" :data="tableData" border :highlight-current="true"
                                   :height="tableHeight">
                             <el-table-column align="center" prop="user_ACCOUNT" label="用户名" show-overflow-tooltip></el-table-column>
                             <el-table-column align="center" prop="user_NAME" label="姓名" show-overflow-tooltip></el-table-column>
@@ -103,7 +148,7 @@
                             <el-table-column align="center" :formatter="formatter" label="职务状态" show-overflow-tooltip></el-table-column>
                             <!--:filter-method="filterTag"-->
                             <!--:filters="[{text:0,value:'离职'},{text:1,value:'在职'}]" -->
-                            <el-table-column align="center" label="操作" width='250'>
+                            <el-table-column align="center" label="操作" width='200'>
                                 <template slot-scope="scope">
                                     <el-button @click="editRow(scope.row,scope,'read')" size="small">查看</el-button>
                                     <el-button @click="editRow(scope.row,scope,'edit')" size="small"

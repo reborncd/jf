@@ -1,37 +1,32 @@
-<style scoped>
-    .search .el-input {
+<style>
+    .rolemanage .el-card__header{
+        display: none;
+    }
+    .rolemanage .search .el-input {
         width: auto;
     }
 
-    .table-list {
+    .rolemanage .table-list {
         margin-top: 10px;
         text-align: center !important;
     }
 
-    .table-list table th div {
+    .rolemanage .table-list table th div {
         text-align: center !important;
     }
 
-    .el-table--border tr td:last-child, .el-table--border tr th:last-child {
+    .rolemanage .el-table--border tr td:last-child, .el-table--border tr th:last-child {
         border-right: 0 !important;
     }
 
-    .el-button--small {
+    .rolemanage .el-button--small {
         padding: 6px 10px;
     }
 
-    .el-button + .el-button {
+    .rolemanage .el-button + .el-button {
         margin-left: 3px;
     }
 
-    .left-tree {
-        width: 19%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        padding-top: 47px;
-        overflow: auto;
-    }
 </style>
 <style>
     .rolemanage .el-table--border tr td:last-child,
@@ -46,28 +41,29 @@
 <template>
     <div class="rolemanage common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
-            <div slot="header" class="clearfix">
+            <div slot="header" class="clearfix" style="display: none">
                 <span class="card-title">角色管理</span>
+            </div>
+            <div class="handle-bar action">
+                <router-link :to="{path:'addrole'}">
+                    <el-button size="mini" type="primary">新建角色</el-button>
+                </router-link>
+                <!--<router-link to="power">-->
+                    <!--<el-button size="mini">权限列表</el-button>-->
+                <!--</router-link>-->
+                <!--<div class="search fr">-->
+                    <!--<el-input size="mini" v-model="search" placeholder="输入检索关键字"></el-input>-->
+                    <!--<el-button size="mini" type="primary">检索</el-button>-->
+                <!--</div>-->
             </div>
             <div class="text item">
                 <div class="content">
-                    <div class="action">
-                        <router-link :to="{path:'addrole'}">
-                            <el-button size="mini" type="primary">新建角色</el-button>
-                        </router-link>
-                        <!--<router-link to="power">-->
-                            <!--<el-button size="mini">权限列表</el-button>-->
-                        <!--</router-link>-->
-                        <!--<div class="search fr">-->
-                            <!--<el-input size="mini" v-model="search" placeholder="输入检索关键字"></el-input>-->
-                            <!--<el-button size="mini" type="primary">检索</el-button>-->
-                        <!--</div>-->
-                    </div>
                     <div class="table-list">
-                        <div class="left-tree">
+                        <div class="left-tree role-tree">
+                            <div class="role-tree-title">选择部门</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table :data="tableData" border style="width: 80%" :height="tableHeight"
+                        <el-table class="role-el-table" :data="tableData" border :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
                             <el-table-column align="center" prop="role_NAME" label="所属角色"></el-table-column>
                             <el-table-column align="center" label="操作">
