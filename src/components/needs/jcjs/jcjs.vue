@@ -1501,10 +1501,14 @@
         <!--上传测试报告弹窗-->
         <upload-report :report="testReport"></upload-report>
         <!--验收-->
-        <el-dialog title="验收" :visible="tracking.trackingvisiible" width="95%"
+        <el-dialog title="验收" :visible="accept.visible" width="40%"
                    append-to-body modal-append-to-body
                    :before-close="closeDialog">
-
+            <p class="text-center" style="font-size: 16px">请选择验收结果</p>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="accept_not" type="danger" size="mini" v-if="accept.ifshow_n">不通过</el-button>
+                <el-button @click="accept_allow" type="primary" size="mini" v-if="accept.ifshow_t">通过</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -1881,6 +1885,12 @@
                     len:"",
                     requiredTime:"",
                     leaveTime:"",
+                },
+                //验收通过和不通过
+                accept:{
+                    visible:false,
+                    ifshow_t:true,//判断显
+                    ifshow_n:true
                 }
             }
         },
@@ -1922,6 +1932,66 @@
             this.loadData();
         },
         methods: {
+            //验收通过事件
+            accept_allow(){
+                let reason =  this.tabs.tabsData.fail;
+                let info = this.tabs.activeTableInfo;
+                if(reason){
+                    //曾经验收不通过过
+                    this.prompt("验收通过","请填写验收通过理由",(value)=> {
+                        if(!value.value){
+                            this.$warn("请填写理由");
+                            return;
+                        }
+                        this.$maskin();
+                        let params = new URLSearchParams();
+                        params.append("BASE_NEEL_ID", info.base_NEET_ID);
+                        params.append("OPER", "OK");
+                        params.append("REJECT_RESON", value.value);
+                        this.acceptSub(params);
+                        this.accept.ifshow_n = true;
+                        this.accept.ifshow_t = false;
+                    });
+                }else{
+                    //y验收通过
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("BASE_NEEL_ID", info.base_NEET_ID);
+                    params.append("OPER","OK");
+                    this.acceptSub(params);
+                    this.accept.ifshow_n = true;
+                    this.accept.ifshow_t = false;
+                }
+            },
+            //验收不通过实践
+            accept_not(){
+                this.prompt("验收不通过","请填写不通过理由",(value)=>{
+                    if(!value.value){
+                        this.$warn("请填写不通过理由");
+                        return;
+                    }
+                    let info = this.tabs.activeTableInfo;
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append("BASE_NEEL_ID", info.base_NEET_ID);
+                    params.append("OPER","FAIL");
+                    params.append("REJECT_RESON",value.value);
+                    this.acceptSub(params);
+                    this.accept.ifshow_n = false;
+                    this.accept.ifshow_t = true;
+                })
+            },
+            acceptSub(params){
+                this.$axios.post("/base/baseAccept", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        this.$success("操作成功！");
+                        this.accept.visible =false;
+                        this.$maskoff();
+                        this.loadData();
+                    }
+                })
+            },
             setValue_reform(data){
                 this.addneeds.addform.reform = data
             },
@@ -2297,6 +2367,7 @@
                 this.testTask.rejectvisible = false;//测试指派bug的弹窗
                 this.testTask.allbugvisible = false;//测试的bug清单弹窗
                 this.transfer.dialogvisible =false;//转接的弹窗
+                this.accept.visible = false;//验收的弹窗
             },
             //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<关闭弹窗>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -3300,64 +3371,70 @@
             },
             //-----------------------------------验收操作
             acceptance(){
-                //判断是否曾经未通过过，如果曾经未通过过，则通过时要填写通过理由
+                this.accept.visible = true;
                 let reason =  this.tabs.tabsData.fail;
-                this.confirm("请选择验收结果",()=>{
-                    //验收通过
-                    let info = this.tabs.activeTableInfo;
-                    if(reason){
-                        this.prompt("验收通过","请填写验收通过理由",(value)=> {
-                            this.$maskin();
-                            let params = new URLSearchParams();
-                            params.append("BASE_NEEL_ID", info.base_NEET_ID);
-                            params.append("OPER", "OK");
-                            params.append("REJECT_RESON", value.value)
-                            this.$axios.post("/base/baseAccept", params).then((res) => {
-                                let data = res.data;
-                                if (data.code == 200) {
-                                    this.$success("操作成功！");
-                                    this.$maskoff();
-                                    this.loadData();
-                                }
-                            })
-                        })
-                        return;
-                    }
-                    this.$maskin();
-                    let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.base_NEET_ID);
-                    params.append("OPER","OK");
-                    this.$axios.post("/base/baseAccept", params).then((res) => {
-                    let data = res.data;
-                    if (data.code == 200) {
-                        this.$success("操作成功！");
-                        this.$maskoff();
-                        this.loadData();
-                    }
-                })
-                },()=>{
-                    //验收不通过
-                    this.prompt("验收不通过","请填写不通过理由",(value)=>{
-                        if(!value.value){
-                            this.$warn("请填写不通过理由");
-                            return;
-                        }
-                        let info = this.tabs.activeTableInfo;
-                        this.$maskin();
-                        let params = new URLSearchParams();
-                        params.append("BASE_NEEL_ID", info.base_NEET_ID);
-                        params.append("OPER","FAIL");
-                        params.append("REJECT_RESON",value.value);
-                        this.$axios.post("/base/baseAccept", params).then((res) => {
-                            let data = res.data;
-                            if (data.code == 200) {
-                                this.$success("操作成功！");
-                                this.$maskoff();
-                                this.loadData();
-                            }
-                        })
-                    })
-                },["通过","不通过"])
+                if(reason){
+                    this.accept.ifshow_n = false;
+                    this.accept.ifshow_t = true;
+                }
+//                //判断是否曾经未通过过，如果曾经未通过过，则通过时要填写通过理由
+//                let reason =  this.tabs.tabsData.fail;
+//                this.confirm("请选择验收结果",()=>{
+//                    //验收通过
+//                    let info = this.tabs.activeTableInfo;
+//                    if(reason){
+//                        this.prompt("验收通过","请填写验收通过理由",(value)=> {
+//                            this.$maskin();
+//                            let params = new URLSearchParams();
+//                            params.append("BASE_NEEL_ID", info.base_NEET_ID);
+//                            params.append("OPER", "OK");
+//                            params.append("REJECT_RESON", value.value)
+//                            this.$axios.post("/base/baseAccept", params).then((res) => {
+//                                let data = res.data;
+//                                if (data.code == 200) {
+//                                    this.$success("操作成功！");
+//                                    this.$maskoff();
+//                                    this.loadData();
+//                                }
+//                            })
+//                        })
+//                        return;
+//                    }
+//                    this.$maskin();
+//                    let params = new URLSearchParams();
+//                    params.append("BASE_NEEL_ID", info.base_NEET_ID);
+//                    params.append("OPER","OK");
+//                    this.$axios.post("/base/baseAccept", params).then((res) => {
+//                    let data = res.data;
+//                    if (data.code == 200) {
+//                        this.$success("操作成功！");
+//                        this.$maskoff();
+//                        this.loadData();
+//                    }
+//                })
+//                },()=>{
+//                    //验收不通过
+//                    this.prompt("验收不通过","请填写不通过理由",(value)=>{
+//                        if(!value.value){
+//                            this.$warn("请填写不通过理由");
+//                            return;
+//                        }
+//                        let info = this.tabs.activeTableInfo;
+//                        this.$maskin();
+//                        let params = new URLSearchParams();
+//                        params.append("BASE_NEEL_ID", info.base_NEET_ID);
+//                        params.append("OPER","FAIL");
+//                        params.append("REJECT_RESON",value.value);
+//                        this.$axios.post("/base/baseAccept", params).then((res) => {
+//                            let data = res.data;
+//                            if (data.code == 200) {
+//                                this.$success("操作成功！");
+//                                this.$maskoff();
+//                                this.loadData();
+//                            }
+//                        })
+//                    })
+//                },["通过","不通过"])
             },
             //-----------------------------------撤回需求的操作
             back(){
