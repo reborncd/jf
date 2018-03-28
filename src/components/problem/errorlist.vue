@@ -56,6 +56,21 @@
     left: 10px;
 
   }
+  .tab-opt{
+    display: inline-block;
+    width: 90px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /*.console-action-wrapper .console-action span{*/
+     /*padding: 0;*/
+    /*line-height: 30px;*/
+   /*}*/
+  /*.console-action-wrapper .console-action{*/
+    /*box-shadow:0px 0px 0px white;*/
+  /*}*/
 </style>
 
 <template>
@@ -113,7 +128,11 @@
               <el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>
               <el-table-column prop="system_TYPE" label="子系统" width="110"></el-table-column>
               <el-table-column prop="reason" label="故障成因"></el-table-column>
-              <el-table-column prop="description" label="描述"></el-table-column>
+              <el-table-column prop="description" label="描述">
+                <template slot-scope="scope">
+                  <span :title=scope.row.description class="tab-opt" style="">{{scope.row.description}}</span>
+                </template>
+              </el-table-column>
               <el-table-column prop="priperty" label="优先级" width="80"></el-table-column>
               <el-table-column prop="status" label="状态"></el-table-column>
               <el-table-column prop="update_TIME" label="更新时间"></el-table-column>
@@ -128,17 +147,17 @@
                 <div class="console-tab-content">
                   <el-form ref="form" :model="form" label-width="100px" label-position="left">
                     <el-row :gutter="20">
-                      <el-col :span="8" :sm="8">
+                      <el-col :span="12" :sm="12">
                         <el-form-item label="BUG编号">
                           {{tabs.form.id}}
                         </el-form-item>
                       </el-col>
-                      <el-col :span="8" :sm="8">
+                      <el-col :span="12" :sm="12">
                         <el-form-item label="故障等级">
                         	{{tabs.form.pripoerty}}
                         </el-form-item>
                       </el-col>
-                      <el-col :span="8" :sm="8">
+                      <el-col :span="12" :sm="12">
                         <el-form-item label="故障分析人员">
                           {{tabs.form.relationUser}}
                         </el-form-item>
@@ -168,12 +187,12 @@
               </el-tab-pane>
               <el-tab-pane label="操作台" name="console">
                 <div class="console-action-wrapper">
-                  <i class="icon-more iconfont"
-                     @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
-                  <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                        <span v-for="item in tabs.consoleActionData.erract"
-                              @click="consoleActionEvent(item.name,'erract')">{{item.name}}</span>
-                  </div>
+                  <!--<i class="icon-more iconfont"-->
+                     <!--@click="tabs.consoleActionVisible = !tabs.consoleActionVisible" v-if="operate.status=='待审核'"></i>-->
+                  <!--<div class="console-action fr" v-if="tabs.consoleActionVisible">-->
+                        <!--<span v-for="item in tabs.consoleActionData.erract"-->
+                              <!--@click="consoleActionEvent(item.name,'erract')">{{item.name}}</span>-->
+                  <!--</div>-->
                 </div>
                 <div class="console-tab-content">
                   <el-form :model="form" label-width="100px" label-position="left">
@@ -188,44 +207,55 @@
                           <el-form-item label="">{{operate.sender}}</el-form-item>
                         </el-form-item>
                       </el-col>
-                      <el-col :span="12" :sm="12">
-                        <el-form-item label="成因">
-                          <el-input v-model="operate.operateTxt.reason">{{operate.operateTxt.reason}}</el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="12" :sm="12">
-                        <el-form-item label="影响范围">
-                          <el-input v-model="operate.operateTxt.effectScope">{{operate.operateTxt.effectScope}}</el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="24" :sm="12">
-                        <el-form-item label="涉及系统">
-                          <el-form-item label="">{{operate.system}}</el-form-item>
-                        </el-form-item>
+                      <div class="opt-show" v-if="operate.status=='待审核'">
+                        <el-col :span="12" :sm="12">
+                          <el-form-item label="成因">
+                              <el-select v-model="operate.operateTxt.reasonValue" placeholder=""  clearable style='width: 100%;'>
+                                <el-option
+                                        v-for="_item in operate.operateTxt.reasonSelect"
+                                        :label="_item.REASON_NAME"
+                                        :value="_item.ID"
+                                ></el-option>
+                              </el-select>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="12" :sm="12">
+                          <el-form-item label="影响范围">
+                            <el-input v-model="operate.operateTxt.effectScope">{{operate.operateTxt.effectScope}}</el-input>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="24" :sm="12">
+                          <el-form-item label="涉及系统">
+                            <el-form-item label="">{{operate.system}}</el-form-item>
+                          </el-form-item>
 
-                      </el-col>
-                      <el-col :span="24" :sm="12">
-                        <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
-                          <el-select v-model="item.csty" placeholder="子系统" clearable style="width:90%">
-                            <el-option
-                              v-for="_item in operate.subSystem"
-                              :label="_item.SYSTEM_NAME"
-                              :value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
-                            ></el-option>
-                          </el-select>
-                          <i
-                            :class="index == 0 && operate.systemAll.length ==1?'el-icon-plus':index == operate.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
-                            @click="addsubStystem(index,$event)"
-                            style="line-height: 40px;height: 40px;text-align: right;width: 8%; font-size: 20px;cursor: pointer;font-weight: bold">
-                          </i>
-
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="24" :sm="24">
-                        <el-form-item label="解决方案">
-                          <el-input type="textarea" v-model="operate.operateTxt.solution"></el-input>
-                        </el-form-item>
-                      </el-col>
+                        </el-col>
+                        <el-col :span="24" :sm="12">
+                          <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
+                            <el-select v-model="item.csty" placeholder="子系统" clearable style="width:90%">
+                              <el-option
+                                v-for="_item in operate.subSystem"
+                                :label="_item.SYSTEM_NAME"
+                                :value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
+                              ></el-option>
+                            </el-select>
+                            <i
+                              :class="index == 0 && operate.systemAll.length ==1?'el-icon-plus':index == operate.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
+                              @click="addsubStystem(index,$event)"
+                              style="line-height: 40px;height: 40px;text-align: right;width: 8%; font-size: 20px;cursor: pointer;font-weight: bold">
+                            </i>
+                          </el-form-item>
+                        </el-col>
+                        <el-col :span="24" :sm="24">
+                          <el-form-item label="解决方案">
+                            <el-input type="textarea" v-model="operate.operateTxt.solution"></el-input>
+                          </el-form-item>
+                        </el-col>
+                        <el-col align="center" v-if="operate.status=='待审核'">
+                                <el-button type="" size="medium" value="驳回" name="'bh" @click="consoleActionEvent('驳回')">驳回</el-button>
+                                <el-button type="primary" size="medium" value="确认" @click="consoleActionEvent('确认')">确认</el-button>
+                        </el-col>
+                      </div>
                     </el-row>
                   </el-form>
                 </div>
@@ -266,7 +296,7 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item label="故障编号">
-                  <el-input disabled="true" v-model="popup.popTxt.id"></el-input>
+                  <el-input disabled v-model="popup.popTxt.id"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -339,10 +369,10 @@
           systemAll: [{"fsty": "", "csty": ""}],
           subSystem: [],//子系统
           operateTxt:{
-          'reason': '',//成因
+          'reasonValue': '',//成因
+          'reasonSelect':'',
           'effectScope': '',//影响范围
           'solution': '',//解决方案
-          
           }
         },
         way: {
@@ -423,7 +453,7 @@
             "erract": [{
               "name": "驳回"
             }, {
-              "name": "确认",
+              "name": "确认"
             }]
           },
           consoleActionVisible: false,
@@ -456,6 +486,7 @@
          }
          
         },
+          activeinfo:'',
         errorVsetTableDataisible: false,
       }
     },
@@ -513,9 +544,11 @@
       	//清除新增新增的表单
         this.clearAddData();
         let params = new URLSearchParams();
+          this.$maskin();
         this.$axios.post("/fault/query?type=1", params).then((res) => {
           let data = res.data
           this.setTableData(data)
+            this.$maskoff();
         })
 //              this.$axios.get("/fault/status?token=abm", params).then((res) => {
 //          	 	let data=res.data;
@@ -668,9 +701,6 @@
           }
         })
       },
-      keyChange(val){
-
-      },
       //详情显示
       handleCurrentChange(val){
       	this.clearAddData();
@@ -684,6 +714,10 @@
         this.loadTabsData(val);
       },
       loadTabsData(val){
+          this.activeinfo=val
+          this.$maskin();
+          this.clearAddData()
+          this.operate.id=val.status;
           let params = new URLSearchParams();
           params.append("id", val.id);
           this.$axios.post("/fault/get", params).then((res) => {
@@ -707,32 +741,22 @@
               this.tabs.form.description = data.result.fault.description;
               this.tabs.form.sumEffect = data.result.fault.sum_EFFECT;
               this.tabs.form.descriptionEx = data.result.fault.description;
-              switch (data.result.fault.status) {
-                case 1:
-                  this.operate.status = '审核中'
-                  this.way.status = '审核中'
-                  break;
-                case 2:
-                  this.operate.status = '已完成'
-                  this.way.status = '已完成'
-                  break;
-                case 3:
-                  this.operate.status = '已作废'
-                  this.way.status = '已作废'
-                  break;
-                case 4:
-                  this.operate.status = '已驳回'
-                  this.way.status = '已驳回'
-                  break;
-                case 5:
-                  this.operate.status = '已关联'
-                  this.way.status = '已关联'
-                  break;
-              }
+//              if(val.status=='已完成' || val.status=='已驳回'){
+//                 this.tabs.consoleActionData.erract= [{"name":""}]
+//              }
+//              else{
+//                  this.tabs.consoleActionData.erract= [{"name":"驳回"},{"name":"确认"}]
+//              }
+              this.operate.status =val.status
               this.operate.sender = data.result.fault.create_USER;
               this.way.sender = data.result.fault.create_USER;
               let arr = [];
+                let reason=[]
               //
+                for(let i of data.result.reasons.reasons){
+                    reason.push(i)
+                }
+                this.$set(this.operate.operateTxt, "reasonSelect", reason);
               if (data.result.process.result.length > 0) {
                 for (let i of data.result.process.result) {
 //                if (i.record_START) {
@@ -741,6 +765,7 @@
 //                }
 //                arr.push(i);
                 }
+
                 this.$set(this.way, "information", arr);
               }
               else {
@@ -769,7 +794,9 @@
               		 this.$set(this.tabs, "downName", down);
               	}
               }
+                this.$maskoff();
             }
+
           })
       },
 //         搜索
@@ -893,8 +920,10 @@
         this.$axios.post("/fault/submit", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
+
             this.$success("操作成功！");
             this.errorVisible = false;
+
             this.clearAddData();
             this.loadData();
           }
@@ -912,6 +941,12 @@
         for (let i in this.operate.operateTxt) {
             this.operate.operateTxt[i] = "";
         }
+        let len=this.operate.systemAll.length-1
+        for (let i of this.operate.systemAll) {
+            i.csty=''
+        }
+        this.operate.systemAll.splice(0,len)
+        this.operate.system='';
     },
       //添加系统
       addsubStystem(index, e){
@@ -927,22 +962,28 @@
         }
       },
       setConsoleVisible(){
+        this.clearAddData()
         this.tabs.consoleWrapperVisible = false;
         this.calculateTableHeight(false)
       },
       //驳回 确认操作
       consoleActionEvent(val, f){
         if (val == '确认') {
-        /*  if (!this.operate.reason) {
+       if (!this.operate.operateTxt.reasonValue) {
 //          this.$warn("请填写成因")
-						this.$warn('请填写完整信息');
+           this.$warn('请填写完整信息');
             return
           }
-          if (!this.operate.effectScope) {
+          if (!this.operate.operateTxt.effectScope) {
 //          this.$warn("请填写影响范围")
-						this.$warn('请填写完整信息');
+              this.$warn('请填写完整信息');
             return
-          }*/
+          }
+            if (!this.operate.operateTxt.solution) {
+//          this.$warn("请填写影响范围")
+                this.$warn('请填写完整信息');
+                return
+            }
           let nameArr = []
           let idArr = []
           for (let i of this.operate.systemAll) {
@@ -967,15 +1008,17 @@
           }*/
           let params = new URLSearchParams();
           params.append("id", this.tabs.form.id);	//id
-          params.append("reason", this.operate.reason);	//成因
-          params.append("effectScope", this.operate.effectScope);	//影响范围
-          params.append("solution", this.operate.solution);//解决方案
+          params.append("reason", this.operate.operateTxt.reasonValue);	//成因
+          params.append("effectScope", this.operate.operateTxt.effectScope);	//影响范围
+          params.append("solution", this.operate.operateTxt.solution);//解决方案
           params.append("systemTypeId", idArr);//子系统id
           params.append("systemType", nameArr);//子系统名称
           params.append("type", 1);//子系统id
           this.$axios.post("/fault/audit", params).then((res) => {
             if (res.status == 200) {
               this.$success("操作成功！");
+                this.operate.status='已完成'
+//                this.operate.id='已完成'
               this.errorVisible = false;
               this.loadData();
             }
@@ -988,6 +1031,8 @@
             if (res.status == 200) {
               this.$success("操作成功！");
               this.errorVisible = false;
+              this.operate.status='已驳回'
+//                this.operate.id='已驳回'
               this.clearAddData();
               this.loadData();
             }
@@ -997,7 +1042,6 @@
           })
         }
 
-        this.tabs.consoleActionVisible = false
       },
       //返回
       backPage(val){

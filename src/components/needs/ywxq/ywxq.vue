@@ -82,7 +82,8 @@
                 <div class="content">
                     <div class="action clear">
                         <el-button type="danger" size="mini" @click="newneeds" v-if="addneeds.addif">新增</el-button>
-                        <el-select v-model="selectValue" filterable clearable size="mini" @change="queryTableData($event,'select')">
+                        <el-select v-model="selectValue"  placeholder="请选择状态"
+                                   filterable clearable size="mini" @change="queryTableData($event,'select')">
                             <el-option
                                     v-for="item in states"
                                     :key="item.state_ID"
@@ -128,9 +129,9 @@
                                   ref="ywxq_table"
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="work_NEET_ID" label="需求编号" width="200" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
                             <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
-                            <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
                             <!--<template slot-scope="scope">-->
                             <!--<p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>-->
                             <!--</template>-->
@@ -850,9 +851,7 @@
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="实时统计" name="count">
-                                <div class="console-tab-content">
-                                    aa
-                                </div>
+                                <realtime :sstj="sstj"></realtime>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -1456,6 +1455,7 @@
     import allbug from "../common/allbug.vue";//详情页的所有BUG
     import upload from "../common/upload.vue";//上传附件组件
     import uploadReport from "../common/upload-report.vue";//上传附件组件
+    import realtime from "../common/realtime.vue";//实时统计组件
     export default {
         data(){
             return {
@@ -1797,6 +1797,16 @@
                     fileIds:[],
                     type:"",
                     neel_id:""
+                },
+                sstj:{
+                    info:'',//信息
+                    allTime:'',//总工时
+                    bugCount:'',//bug数
+                    activeName:'first',
+                    deptName:"",
+                    len:"",
+                    requiredTime:"",
+                    leaveTime:"",
                 }
             }
         },
@@ -1829,6 +1839,7 @@
             "all-bug":allbug,//所有bug
             "upload":upload,//上传文件
             "upload-report":uploadReport,//上传测试报告
+            "realtime":realtime,//实时统计
         },
         mounted(){
             this.loadData();
@@ -2074,6 +2085,12 @@
                 }
                 if(!this.addneeds.addform.designdate){
                     this.$warn("请填写期望上线日期");
+                    return;
+                }
+                let start = (new Date(this.addneeds.addform.shenqingdate)).getTime();
+                let end = (new Date(this.addneeds.addform.designdate)).getTime();
+                if(start>end){
+                    this.$warn("申请日期必须小于期望上线日期");
                     return;
                 }
                 if(!this.addneeds.addform.fromdeptId){
@@ -2389,7 +2406,7 @@
                         this.$set(this.tabs, "genzongOrigin", data.result.records);
                         this.$set(this.tabs,"genzongArr",data.result.deptRecord);
                         //--------------------------判断当前任务是否被拆分过（只有技术管理部和技术经理才能看到所有的拆分任务）
-                        if (data.result.systemDepts.length) {
+                        if (data.result.systemDepts && data.result.systemDepts.length) {
                             this.$set(this.split, "hasSplitTaskDataByGroupOrigin", data.result.systemDepts);
                             //在选择关联项目之前只展示当前部门的任务，如果当前人是管理层或者提出者，则默认展示所有（arr为空）
                             let arr = [];
@@ -2420,21 +2437,30 @@
                         this.tabs.tabsData.success =
                             base.success ? base.success : "";
 
+
+                        //新建变更后    在原需求上展示新需求信息
+                        if(base.base_NEW_ID){
+                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
+                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+                        }
+
                         //--------------------------新建变更的判断
-                        if(base.work_NEET_FID){
+                        //DEMAND_SIGN   1：需求内变更 2：新建变更,
+                        if(base.demand_SIGN  == 2){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.oldcode = base.work_NEET_FID;//原需求ID
+                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
                             this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
                             this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
                         }
 
-                        //当前是被变更的需求信息
-                        if(base.work_NEW_ID){
+                        //--------------------------当前是被变更的需求信息
+                        if(base.demand_SIGN == 1){
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
-                            this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品产品改造点
-                            this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
+//                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.oldchangepoint = base.old_NEEL_DESCRIPTION;//新产品产品改造点
+                            this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//新需求描述
                         }
 
                         //-------------------判断是否有完成时间，有则展示
@@ -2449,15 +2475,56 @@
                             this.tabs.tabsData.test_end = base.test_END_DATETIME;
                         }
 
+                        //加载实时统计数据
+                        if(data.result.systemDepts && data.result.currentTime){
+//                            this.setRealTime(data.result.systemDepts,data.result.currentTime)
+                        }
 
                         //----------------------加载权限
                         this.setStateAction(data.result);
 
-                        //加载实时统计数据
-
                         this.$maskoff();
                     }
                 })
+            },
+            //设置实时统计数据
+            setRealTime(systemDepts,currentTime){
+                let datashow = systemDepts;
+                let nowTime = currentTime;
+                let yaxis = []; //y轴显示
+                let startTime = []; //预期开始时间
+                let endTime = []; //预期结束时间
+                let actualTime = []; //实际完成时间
+                let timeInfo=[]; //所有信息
+                let deptName=[];//部门
+                let allTime=[];//总用时
+                let requiredTime=[];//实际用时
+                let leaveTime=[];//剩余用时
+                for(let i of datashow) {
+                    timeInfo.push(i);
+                    yaxis.push(i.DEPT_NAME);
+                    startTime.push(new Date(i.EXPECT_START));
+                    endTime.push(new Date(i.EXPECT_END));
+                    if(!i.lastCompleteTime) {
+                        i.lastCompleteTime=nowTime
+                    }
+                    if(i.lastCompleteTime<=i.EXPECT_END){
+                        i.lastCompleteTime=i.EXPECT_END
+                    }
+                    if(i.allTime){
+                        allTime.push(i.allTime);
+                        deptName.push(i.DEPT_NAME);
+                        requiredTime.push(i.requiredTime);
+                        leaveTime.push(i.allTime-i.requiredTime)
+                    }
+                    actualTime.push(new Date(i.lastCompleteTime));
+                    this.$set(this.sstj, "info", timeInfo);
+                }
+                let len=requiredTime.length;
+                this.sstj.deptName = deptName;
+                this.sstj.len = len;
+                this.sstj.requiredTime = requiredTime;
+                this.sstj.leaveTime = leaveTime;
             },
             //-----------------------------------添加开发任务和测试任务的和合计
             setCodeAndTestTaskTotal(origin,view){
@@ -2987,9 +3054,9 @@
                         this.prompt("验收通过","请填写验收通过理由",(value)=> {
                             this.$maskin();
                             let params = new URLSearchParams();
-                            params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                            params.append("WORK_NEEL_ID", info.work_NEET_ID);
                             params.append("OPER", "OK");
-                            params.append("REJECT_RESON", value.value)
+                            params.append("REJECT_RESON", value.value);
                             this.$axios.post("/work/baseAccept", params).then((res) => {
                                 let data = res.data;
                                 if (data.code == 200) {
@@ -3003,7 +3070,7 @@
                     }
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("WORK_NEEL_ID", info.work_NEET_ID);
                     params.append("OPER","OK");
                     this.$axios.post("/work/baseAccept", params).then((res) => {
                         let data = res.data;
@@ -3023,7 +3090,7 @@
                         let info = this.tabs.activeTableInfo;
                         this.$maskin();
                         let params = new URLSearchParams();
-                        params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                        params.append("WORK_NEEL_ID", info.work_NEET_ID);
                         params.append("OPER","FAIL");
                         params.append("REJECT_RESON",value.value);
                         this.$axios.post("/work/baseAccept", params).then((res) => {
@@ -3065,7 +3132,7 @@
                     this.addneeds.addType = "changeInset";//当前是需求内变更
                 }
                 let params = new URLSearchParams();
-                params.append("BASE_NELL_ID",this.tabs.activeTableInfo.work_NEET_ID);
+                params.append("WORK_NELL_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 this.$axios.post("/work/baseSaveFront",params).then((res)=>{
                     let data = res.data;
                     if(data.code == 200){
@@ -3677,7 +3744,7 @@
                     }
                 }
                 if (arr.length == 0) {
-                    this.$warn("请添加步骤");
+                    this.$warn("请添加用例后再提交");
                     return;
                 }
                 this.$maskin();

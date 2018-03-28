@@ -87,7 +87,7 @@
                         <!--<input type="file" id="upload">-->
                         <!--</el-form-item>-->
                         <el-form-item>
-                            <el-button type="primary" @click="">操作日志</el-button>
+                            <!--<el-button type="primary" @click="">操作日志</el-button>-->
                             <el-button>返回</el-button>
                         </el-form-item>
                     </el-form>

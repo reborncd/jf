@@ -362,10 +362,12 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("退出成功");
+                            let date = new Date();
                             let account = localStorage.getItem("ACCOUNT");
                             localStorage.clear();
+                            document.cookie="token=''; expires="+date.toGMTString();
                             localStorage.setItem("ACCOUNT", account);
-                            this.$router.replace("/login")
+                            location.href = ""
                         }
                     })
                 })

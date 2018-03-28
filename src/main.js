@@ -194,10 +194,10 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //----------------------------------------------------
 let instance = axios.create({
-    baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
-    //baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
-    //baseURL:"http://172.16.2.124:8082",//欧
-    // baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+    // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
+    // baseURL: "http://172.16.1.200:8080/JiFu_Project",//安
+    // baseURL:"http://172.16.2.215:8083",//欧
+    baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
     //baseURL:"http://192.168.1.106:8080",
     //baseURL:"http://192.168.1.179:8082",
     //baseURL:"http://127.0.0.1:8082",
@@ -210,10 +210,9 @@ instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
     // 每次请求都添加一个token
-    if (config.method == "post" && localStorage.getItem("token") &&
+    if (config.method == "post" && Vue.prototype.$getToken() &&
         config.data.constructor.name == "URLSearchParams") {
-        let token = localStorage.getItem("token");
-        // config.data+="&token="+"1234";
+        let token = Vue.prototype.$getToken();
         config.data += `&token=${token}`;
     }
     return config;
@@ -265,9 +264,20 @@ Vue.prototype.$axios = instance;
 
 //-----------获取token
 Vue.prototype.$getToken = ()=>{
-    let token = localStorage.getItem("token");
-    return token?token:"";
-}
+    let cookie = document.cookie.split(";");
+    let token = "";
+    for(let i  of cookie){
+        if(i.split("=")[0] == "token"){
+            token = i.split("=")[1];
+        }
+    }
+    if(token){
+        return token;
+    }else{
+        let token = localStorage.getItem("token");
+        return token?token:""
+    }
+};
 //--------正则匹配
 Vue.prototype.$reg = {
     "email": /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/,

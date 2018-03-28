@@ -58,7 +58,13 @@
         <el-table :data="changeInset.tableData" border style="width: 100%">
             <el-table-column prop="user_NAME" label="人员"  show-overflow-tooltip></el-table-column>
             <el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="base_INFO_ID" label="任务编码" show-overflow-tooltip width="200">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.base_INFO_ID">{{scope.row.base_INFO_ID}}</span>
+                    <span v-if="scope.row.work_INFO_ID">{{scope.row.work_INFO_ID}}</span>
+                    <span v-if="scope.row.tech_INFO_ID">{{scope.row.tech_INFO_ID}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="end_DATE" :formatter="changeInsetMatter" label="完成日期" width="120" show-overflow-tooltip></el-table-column>
             <el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
             <el-table-column prop="facility_NAME" label="难易度" show-overflow-tooltip></el-table-column>

@@ -61,11 +61,13 @@
     .scrollContent li p:hover {
         text-decoration: underline;
     }
-    .scrollContent li strong{
+
+    .scrollContent li strong {
         font-size: 14px;
         font-weight: bold;
-        margin-bottom:5px;
+        margin-bottom: 5px;
     }
+
     /*日期插件*/
     .date-wrap {
         background: #777;
@@ -252,7 +254,7 @@
                 has_delay: [],//已经延期
                 will_delay: [],//将要延期
                 todo: [],//代办事项
-                operLog:[],//操作日志
+                operLog: [],//操作日志
                 srcRoute: {
                     "1": "业务需求",
                     "2": "技术需求",
@@ -291,12 +293,12 @@
             date: function (time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth()+1) : '' + (d.getMonth() + 1);
+                let month = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : '' + (d.getMonth() + 1);
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
                 let hour = d.getHours() < 10 ? '0' + d.getHours() : '' + d.getHours();
                 let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : '' + d.getMinutes();
                 let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : '' + d.getSeconds();
-                return year + '-' + month + '-' + day+' '+hour+':'+minutes+':'+seconds;
+                return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
             },
         },
         methods: {
@@ -492,33 +494,25 @@
                     angleAxis: {},
                     radiusAxis: {
                         type: 'category',
-                        data: this.show.dept_NAME,
-                        z: 5
+                        data: this.show.dept_NAME,//组的数量
                     },
                     polar: {},
                     series: [{
                         type: 'bar',
                         data: this.show.kocount,
                         coordinateSystem: 'polar',
-                        name: 'A',
-                        stack: 'a'
+                        name: '空闲',
+                        stack: ''
                     }, {
                         type: 'bar',
                         data: this.show.mcount,
                         coordinateSystem: 'polar',
-                        name: 'B',
-                        stack: 'a'
-                    }, {
-                        type: 'bar',
-                        data: this.show.sumcount,
-                        coordinateSystem: 'polar',
-                        name: 'C',
-                        stack: 'a'
-                    },
-                    ],
+                        name: '忙碌',
+                        stack: ''
+                    }],
                     legend: {
                         show: true,
-                        data: ['A', 'B', 'C']
+                        data: ['空闲', '忙碌']
                     }
                 };
                 // 使用刚指定的配置项和数据显示图表。
@@ -526,7 +520,7 @@
                 let asset_wrap = document.getElementById("asset");
                 let asset_chart = this.$echarts.init(asset_wrap);
                 asset_chart.setOption(optionresources);
-                this.clearInt()
+                this.clearInt();
             },
             //------------------------设置轮播图的效果
             //移动到轮播图上移除定时器

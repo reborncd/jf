@@ -15,7 +15,13 @@
                 </template>
             </el-table-column>
             <el-table-column prop="system_NAME" label="系统名" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="base_INFO_ID" label="任务编码" width="190" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <span v-if="scope.row.base_INFO_ID">{{scope.row.base_INFO_ID}}</span>
+                    <span v-if="scope.row.work_INFO_ID">{{scope.row.work_INFO_ID}}</span>
+                    <span v-if="scope.row.tech_INFO_ID">{{scope.row.tech_INFO_ID}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="end_DATE" :formatter="splitDataFormatter"
                              show-overflow-tooltip label="完成日期"></el-table-column>
             <el-table-column prop="responsible_MODULE" label="负责模块" show-overflow-tooltip></el-table-column>
@@ -26,7 +32,7 @@
             <el-table-column prop="work_TIME" label="现实际用时（小时）" width="100"></el-table-column>
             <el-table-column prop="actual_TIME" label="总工时" width="100"></el-table-column>
             <el-table-column prop="test_RESULT" label="完成结果" width="100" show-overflow-tooltip></el-table-column>
-            <el-table-column label="状态" width="80" show-overflow-tooltip>
+            <el-table-column label="状态" width="120" show-overflow-tooltip>
                 <template slot-scope="scope">
                     <div v-if="tabs.state_ID != 320">
                         <span v-if="scope.row.state_ID ==306" style="color: red">待开发</span>
