@@ -169,7 +169,7 @@
 	export default {
 		data() {
 			return {
-				select_value: "personal",
+				select_value: "group",
 				select: [{
 					label: "开发组",
 					value: "group"
@@ -302,7 +302,7 @@
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
 				
-				if(this.select_value=="personal" && this.selectArr_value){
+				if(this.select_value=="group" && this.selectArr_value){
 					params.append("deptId", this.selectArr_value);
 				}
 				this.$axios.post("/statistical/getStatisticalProjectByUser", params).then((res) => {
