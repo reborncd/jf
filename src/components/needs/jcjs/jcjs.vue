@@ -1500,6 +1500,12 @@
         <upload :data="uploadAction"></upload>
         <!--上传测试报告弹窗-->
         <upload-report :report="testReport"></upload-report>
+        <!--验收-->
+        <el-dialog title="验收" :visible="tracking.trackingvisiible" width="95%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1858,6 +1864,7 @@
                     data:[],//表格数据
                     title:"",//标题
                 },
+                //上传文件
                 uploadAction:{
                     uploadvisible:false,
                     uploadFiles:[],

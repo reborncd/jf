@@ -2527,7 +2527,7 @@
 
                         //被新建变更后的数据
                         if(base.state_ID == 320){
-                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
                             this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
                             this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
                             setTimeout(()=>{
@@ -2538,8 +2538,8 @@
                         }
 
                         //新建变更后    在原需求上展示新需求信息
-                        if(base.demand_SIGN == 2 && base.base_NEW_ID){
-                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+                        if(base.demand_SIGN == 2 && base.work_NEW_ID){
+                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
                             this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
                             this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
                             setTimeout(()=>{
@@ -2550,10 +2550,10 @@
 
                         //--------------------------新建变更的判断
                         //DEMAND_SIGN   1：需求内变更 2：新建变更,
-                        if(base.demand_SIGN == 2 && base.base_OLD_ID){
+                        if(base.demand_SIGN == 2 && base.work_OLD_ID){
                             //当期是新建的变更要展示原需求编号ID等
                             //当前是变更前的数据当前要展示新需求ID描述的等
-                            this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
+                            this.tabs.tabsData.oldcode = base.work_NEET_FID;//原需求ID
                             this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
                             this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
                             setTimeout(()=>{
@@ -2565,7 +2565,7 @@
                         //--------------------------当前是被变更的需求信息
                         if(base.demand_SIGN == 1){
                             //当前是变更前的数据当前要展示新需求ID描述的等
-//                            this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
+//                            this.tabs.tabsData.newcode = base.work_NEW_ID;//新需求ID
                             this.tabs.tabsData.oldchangepoint = base.old_PRODUCT_FUNCTION;//原产品产品改造点
                             this.tabs.tabsData.oldneedsname = base.old_NEEL_DESCRIPTION;//原需求描述
                             setTimeout(()=>{
@@ -3401,6 +3401,11 @@
                             this.addneeds.addform.code = base.work_NEET_ID;//当前的新需求ID
                             this.addneeds.addform.oldchangepoint = base.product_FUNCTION;//原需求功能
                             this.addneeds.addform.oldneedsname = base.neel_DESCRIPTION;//原需求描述
+                            //操作过快导致dom没加载出来会出现null，暂时用settimeout替代下
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint_change"),base.product_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname_change"),base.neel_DESCRIPTION);
+                            },0)
                         }else{
                             //新建变更展示原需求编号
                             this.addneeds.addform.code = data.result.WORK_NEET_ID;//当前的新需求ID
@@ -3438,6 +3443,9 @@
                 this.addneeds.addform.jiaji = info.urgent?"1":"0";//是否加急
                 this.addneeds.addform.jiajireason = info.urgent?info.urgent:"";//加急原因
                 this.addneeds.addform.reform = info.background;//需求背景
+                setTimeout(()=> {
+                    this.setBrInfo(document.querySelector(".reform_change"), info.background);
+                },0)
 //                this.addneeds.addform.changepoint = info.product_FUNCTION;//产品改造点
 //                this.addneeds.addform.needsname = info.neel_DESCRIPTION;//需求描述
             },
