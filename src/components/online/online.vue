@@ -229,7 +229,7 @@
 											</el-form-item>
 										</el-col>
 										</el-row>
-										<el-row :md="24" :gutter="20">
+										<el-row :md="24" :gutter="20" v-if="tabs.data_one.GOLIVE_SAVE">
 											<el-col :span="12" :md="12">
 												<el-form-item label="上线类型">
 													<el-select v-model="consoleForm.onlineType" @change="consoleForm.ifUrgent=''">
@@ -714,7 +714,7 @@
 					}
 					params.append("id", upload); //上传文件id
                     params.append("DESIRED_START_DATETIME", this.consoleForm.expectDate); //预计上线日期
-					params.append("DOWN_ID", localStorage.getItem("DOWN_ID")); //上传文件ID
+					params.append("DOWN_ID",this.popup.popTxt.down_id); //上传文件ID
 					if(!this.tabs.data_one.GOLIVEUP){
 
                         params.append("NEEL_ID", this.mainId); //id
@@ -1234,7 +1234,7 @@
 					this.popup.popTxt.down_id = "1"
 				}
 				params.append("down", this.popup.popTxt.down_id);
-                localStorage.setItem("DOWN_ID",this.popup.popTxt.down_id)
+                // localStorage.setItem("DOWN_ID",this.popup.popTxt.down_id)
 				this.$axios.post("/golive/upload", params, config).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
