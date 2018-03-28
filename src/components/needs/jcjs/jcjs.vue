@@ -2428,10 +2428,11 @@
                         //this.tabs.tabsData.background = base.background;//需求背景
                         //this.tabs.tabsData.product_FUNCTION = base.product_FUNCTION;//产品改造点
                         //this.tabs.tabsData.neel_DESCRIPTION = base.neel_DESCRIPTION;//需求描述
-                        this.setBrInfo(document.querySelector(".background"),base.background);
-                        this.setBrInfo(document.querySelector(".product_FUNCTION"),base.product_FUNCTION);
-                        this.setBrInfo(document.querySelector(".neel_DESCRIPTION"),base.neel_DESCRIPTION);
-
+                        setTimeout(()=>{
+                            this.setBrInfo(document.querySelector(".background"),base.background);
+                            this.setBrInfo(document.querySelector(".product_FUNCTION"),base.product_FUNCTION);
+                            this.setBrInfo(document.querySelector(".neel_DESCRIPTION"),base.neel_DESCRIPTION);
+                        },0);
                         //--------------------------判断需求评审结果--------------------------
                         if(base.check_TIME){
                             let ping_date = this.$format(base.check_TIME);
@@ -2541,9 +2542,10 @@
                             this.tabs.tabsData.newcode = base.base_NEW_ID;//新需求ID
                             this.tabs.tabsData.newchangepoint = base.product_NEW_FUNCTION;//新产品改造点
                             this.tabs.tabsData.newneedsname = base.neel_NEW_DESCRIPTION;//新需求描述
-
-                            this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);
-                            this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".newchangepoint"),base.product_NEW_FUNCTION);
+                                this.setBrInfo(document.querySelector(".newneedsname"),base.neel_NEW_DESCRIPTION);
+                            },0)
                         }
 
                         //--------------------------新建变更的判断
@@ -2554,9 +2556,10 @@
                             this.tabs.tabsData.oldcode = base.base_NEET_FID;//原需求ID
                             this.tabs.tabsData.oldchangepoint = base.product_OLD_FUNCTION;//原产品改造点
                             this.tabs.tabsData.oldneedsname = base.neel_OLD_DESCRIPTION;//原需求描述
-
-                            this.setBrInfo(document.querySelector(".oldchangepoint"),base.product_OLD_FUNCTION);
-                            this.setBrInfo(document.querySelector(".oldneedsname"),base.neel_OLD_DESCRIPTION);
+                            setTimeout(()=>{
+                                this.setBrInfo(document.querySelector(".oldchangepoint"),base.product_OLD_FUNCTION);
+                                this.setBrInfo(document.querySelector(".oldneedsname"),base.neel_OLD_DESCRIPTION);
+                            },0)
                         }
 
                         //--------------------------当前是被变更的需求信息
