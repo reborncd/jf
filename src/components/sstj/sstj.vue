@@ -78,32 +78,32 @@
                             <el-row :gutter="20" >
                                 <el-col :span="12" :sm="12">
                                     <el-form-item label="需求名称">
-                                        {{realtimeInfo.name}}
+                                        {{realtimeInfo.neel_NAME}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="12" :sm="12">
                                     <el-form-item label="需求编号">
-                                        {{realtimeInfo.number}}
+                                        {{realtimeInfo.neel_ID}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="12" :sm="12">
                                     <el-form-item label="参与者">
-                                        {{realtimeInfo.actor}}
+                                        {{realtimeInfo.check_NAME}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="12" :sm="12">
                                     <el-form-item label="期望上线时间">
-                                        {{realtimeInfo.onlinetime}}
+                                        {{realtimeInfo.golive_DATE}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="24" :sm="12">
                                     <el-form-item label="需求描述">
-                                        {{realtimeInfo.xqms}}
+                                        {{realtimeInfo.neel_DESCRIPTION}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="12" :sm="12">
                                     <el-form-item label="当前状态">
-                                        {{realtimeInfo.status}}
+                                        {{realtimeInfo.state_NAME}}
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="12" :sm="12">
@@ -153,7 +153,7 @@
                     </el-select>
                     <el-select v-model="option.code" clearable placeholder="请选择需求">
                         <el-option v-for="item in option.codeArr" :key="item.neel_ID" :label="item.neel_NAME"
-                                   :value="item.value"></el-option>
+                                   :value="item.neel_ID"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="切换频率">
@@ -213,12 +213,12 @@
                 },
                 realtimeInfo:{
                     infos:'',
-                    name:'',  //需求名称
-                    number:'',//需求编号
-                    actor:'',//参与者
-                    onlinetime:'',//上线时间
-                    xqms:'',//需求描述
-                    status:'',//当前状态
+                    neel_NAME:'',  //需求名称
+                    neel_ID:'',//需求编号
+                    check_NAME:'',//参与者
+                    golive_DATE:'',//上线时间
+                    neel_DESCRIPTION:'',//需求描述
+                    state_Name:'',//当前状态
                     stage:'',//所处阶段
                     info:'',//各种信息
                     titleVisible:false,//标题的显示
@@ -235,96 +235,18 @@
             },
             //保存设置
             saveOption(){
+                let that = this;
                 let params = new URLSearchParams();
                 params.append("NEEL_TYPE", this.option.needschoosen);//需求类型ID
                 params.append("NEEL_ID", this.option.code);//需求ID
                 this.$axios.post("/statistical/getneelmainba", params).then((res) => {
                     let data = res.data;
-                    if (data.code == 200) {
-
-
-
+                    if (data.code == 200 && Reflect.has(data, 'result')) {
+                        that.realtimeInfo = data.result.neellist.length > 0 && data.result.neellist[0];
+                        that.option.visible = false;
                     }
                 })
             },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             closeDialog(){
                 this.option.visible = false;//看板的弹窗
             },
