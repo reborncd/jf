@@ -3430,7 +3430,7 @@
                         }
                         this.$maskin();
                         let params = new URLSearchParams();
-                        params.append("BASE_NEEL_ID", info.tech_NEET_ID);
+                        params.append("TECH_NEEL_ID", info.tech_NEET_ID);
                         params.append("OPER", "OK");
                         params.append("REJECT_RESON", value.value);
                         this.acceptSub(params);
@@ -3439,7 +3439,7 @@
                     //y验收通过
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.tech_NEET_ID);
+                    params.append("TECH_NEEL_ID", info.tech_NEET_ID);
                     params.append("OPER","OK");
                     this.acceptSub(params);
                 }
@@ -3454,14 +3454,14 @@
                     let info = this.tabs.activeTableInfo;
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.tech_NEET_ID);
+                    params.append("TECH_NEEL_ID", info.tech_NEET_ID);
                     params.append("OPER","FAIL");
                     params.append("REJECT_RESON",value.value);
                     this.acceptSub(params);
                 })
             },
             //请求接口
-            c(params){
+            acceptSub(params){
                 this.$axios.post("/tech/baseAccept", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {

@@ -3381,7 +3381,7 @@
                         }
                         this.$maskin();
                         let params = new URLSearchParams();
-                        params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                        params.append("WORK_NEEL_ID", info.work_NEET_ID);
                         params.append("OPER", "OK");
                         params.append("REJECT_RESON", value.value);
                         this.acceptSub(params);
@@ -3390,7 +3390,7 @@
                     //y验收通过
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("WORK_NEEL_ID", info.work_NEET_ID);
                     params.append("OPER","OK");
                     this.acceptSub(params);
                 }
@@ -3405,7 +3405,7 @@
                     let info = this.tabs.activeTableInfo;
                     this.$maskin();
                     let params = new URLSearchParams();
-                    params.append("BASE_NEEL_ID", info.work_NEET_ID);
+                    params.append("WORK_NEEL_ID", info.work_NEET_ID);
                     params.append("OPER","FAIL");
                     params.append("REJECT_RESON",value.value);
                     this.acceptSub(params);
