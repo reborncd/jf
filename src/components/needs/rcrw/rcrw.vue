@@ -128,7 +128,7 @@
 							<el-table-column prop="daliy_NEET_ID" label="任务编号" width="200"></el-table-column>
 							<el-table-column prop="task_NAME" label="任务名称" show-overflow-tooltip></el-table-column>
 							<el-table-column prop="start_DATE" label="申请日期" width="110"></el-table-column>
-							<el-table-column prop="start_TIME" label="申请时间" width="110"></el-table-column>
+							<!--<el-table-column prop="start_TIME" label="申请时间" width="110"></el-table-column>-->
 							<el-table-column prop="end_DATE_STRING" label="期望上线时间" width="110"></el-table-column>
 							<el-table-column prop="user_NAME" label="申请人" width="110"></el-table-column>
 							<el-table-column prop="rriority_NAME" label="优先级" width="70"></el-table-column>
@@ -168,6 +168,12 @@
 											<el-col :span="12">
 												<el-form-item label="申请人">{{tabs.data_one.daliy.user_NAME}}</el-form-item>
 											</el-col>
+                                            <el-col :span="12" v-if="tabs.data_one.daliy.reject_RESON && tabs.data_one.daliy.state_ID==212">
+                                                <el-form-item label="不通过原因" style="color: red">{{tabs.data_one.daliy.reject_RESON}}</el-form-item>
+                                            </el-col>
+                                            <el-col :span="12" v-if="tabs.data_one.daliy.reject_RESON && tabs.data_one.daliy.state_ID==209">
+                                                <el-form-item label="通过原因" style="color: red">{{tabs.data_one.daliy.reject_RESON}}</el-form-item>
+                                            </el-col>
 											<el-col :span="12">
 												<el-form-item label="任务名称">{{tabs.data_one.daliy.task_NAME}}</el-form-item>
 											</el-col>
@@ -195,8 +201,9 @@
 											<el-col :span="12">
 												<el-form-item label="加急说明" v-if="tabs.data_one.daliy.ugent">{{tabs.data_one.daliy.ugent}}</el-form-item>
 											</el-col>
-											<el-col :span="12">
-												<el-form-item label="需求描述">{{tabs.data_one.daliy.task_DESCRIPTION}}</el-form-item>
+											<el-col :span="24">
+												<el-form-item label="需求描述">
+													<div class="task_DESCRIPTION"></div></el-form-item>
 											</el-col>
 											<el-col :span="12" v-if="tabs.data_one.daliy.check_TYPE">
 												<el-form-item label="需求评审结果 ">{{tabs.data_one.daliy.check_TYPE}}</el-form-item>
@@ -406,7 +413,7 @@
 								<div class="console-tab-content">
 									<el-form label-width="60px" label-position="left">
 										<el-row :gutter="20">
-											<el-col :span="10" :sm="10">
+											<el-col :span="6" :sm="6">
 												<el-form-item label="状态：">
 													<span style="color: red">{{tabs.state_NAME}}</span>
 												</el-form-item>
@@ -416,19 +423,20 @@
 													{{tabs.user_NAME}}
 												</el-form-item>
 											</el-col>
+											<el-col :span="6" :sm="6">
+												<el-form-item>
+													<el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
+												</el-form-item>
+											</el-col>
 
-											<el-col :span="8" :sm="8" v-if="tabs.chooseDeptArr">
+											<el-col :span="6" :sm="6" v-if="tabs.chooseDeptArr">
 												<el-form-item label-width="100px">
 													<el-select v-model="tabs.chooseDept" @change="chooseDeptF" clearable placeholder="请选择部门" style="float: right;">
 														<el-option v-for="item in tabs.chooseDeptArr" :label="item.DEPT_NAME" :value="item.DEPT_ID"></el-option>
 													</el-select>
 												</el-form-item>
 											</el-col>
-											<el-col :span="6" :sm="6">
-												<el-form-item>
-													<el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
-												</el-form-item>
-											</el-col>
+
 											<el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
 												<p v-for="(item,index) in tabs.genzong" class="genzong">
 													<span style="width: 30px;display: inline-block;">{{index+1}}.</span> <span style="width: 150px;display: inline-block;">{{item.record_START | time}}</span>{{item.record_DESC}}
@@ -500,14 +508,27 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="申请日期">
+                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
 					<el-col :span="12" :md="12">
 						<el-form-item label="期望上线时间">
 							<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" :md="12">
+					<!--<el-col :span="12" :md="12">-->
+						<!--<el-form-item label="需求描述">-->
+							<!--<el-input v-model="addneeds.addform.needsname"></el-input>-->
+						<!--</el-form-item>-->
+					<!--</el-col>-->
+					<el-col :span="24" :md="24">
 						<el-form-item label="需求描述">
-							<el-input v-model="addneeds.addform.needsname"></el-input>
+							<!--<el-input type="textarea" v-model="addneeds.addform.needsname"></el-input>-->
+							<v-vueQuillEditor-needsname
+									:needsname="addneeds.addform.needsname" @setValue="setValue_needsname">
+							</v-vueQuillEditor-needsname>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
@@ -538,9 +559,12 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" :md="12">
+					<el-col :span="24" :md="24">
 						<el-form-item label="产品改造点">
-							<el-input v-model="addneeds.addform.prduct_function"></el-input>
+							<!--<el-input v-model="addneeds.addform.prduct_function"></el-input>-->
+							<v-vueQuillEditor-changepoint
+									:changepoint="addneeds.addform.prduct_function" @setValue="setValue_changepoint">
+							</v-vueQuillEditor-changepoint>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
@@ -693,9 +717,17 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" :md="12">
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="申请日期">
+                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
+                        </el-form-item>
+                    </el-col>
+					<el-col :span="24" :md="24">
 						<el-form-item label="需求描述">
-							<el-input v-model="addneeds.addform.needsname"></el-input>
+							<!--<el-input v-model="addneeds.addform.needsname"></el-input>-->
+							<v-vueQuillEditor-needsname
+									:needsname="addneeds.addform.needsname" @setValue="setValue_needsname">
+							</v-vueQuillEditor-needsname>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
@@ -726,9 +758,12 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" :md="12">
+					<el-col :span="24" :md="24">
 						<el-form-item label="产品改造点">
-							<el-input v-model="addneeds.addform.prduct_function"></el-input>
+							<!--<el-input v-model="addneeds.addform.prduct_function"></el-input>-->
+							<v-vueQuillEditor-changepoint
+									:changepoint="addneeds.addform.prduct_function" @setValue="setValue_changepoint">
+							</v-vueQuillEditor-changepoint>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12" :md="12">
@@ -974,6 +1009,9 @@
 </template>
 
 <script>
+    import vueQuillEditor_reform from '../common/vueQuillEditor_reform.vue';//需求背景
+    import vueQuillEditor_changepoint from '../common/vueQuillEditor_changepoint.vue';//产品改造点
+    import vueQuillEditor_needsname from '../common/vueQuillEditor_needsname.vue';//需求描述
     import download from "../common/download.vue";//下载弹窗
     import tracking from "../common/tracking.vue";//全程跟踪视图模式
     import uploadN from  "../common/uploadN.vue";//上传
@@ -1019,6 +1057,7 @@
 						"xtnameArr": "", //系统名称数组
 						"jihuadate": "", //期望上线时间
 						"startTime": "", //预计开始时间
+                        "applyDate":new Date(),//申请时间
 						"endTime": "", //预计完成时间
 						"analysisTime": "", //分析时间
 						"analysis": '', //需求分析结果
@@ -1207,6 +1246,9 @@
 			},
 		},
         components:{
+            'v-vueQuillEditor-reform': vueQuillEditor_reform,
+            'v-vueQuillEditor-changepoint': vueQuillEditor_changepoint,
+            'v-vueQuillEditor-needsname': vueQuillEditor_needsname,
             "tracking":tracking,//全程跟踪视图模式
             "download":download,//下载文件
             "uploadN":uploadN//上传文件
@@ -1219,13 +1261,11 @@
 		    changeEnd(val){
 		            this.addneeds.addform.endTime=''
                     this.pickerOptions={}
-                    console.log(val)
                     this.pickerOptions= {
                         disabledDate(time) {
-                            return time.getTime() < val - 8.64e7
+                            return time.getTime() < val
                         }
                     }
-
 			},
 			loadData() {
 				this.$maskin()
@@ -1318,12 +1358,21 @@
 						this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem);
 						this.consoleAction() //控制台按钮展示
 						this.getSplit() //获取分配默认值
+                        let self=this
+                        var t=setTimeout(function(){
+                            self.setBrInfo(document.querySelector(".task_DESCRIPTION"),data.result.daliy.task_DESCRIPTION);
+                            // self.setBrInfo(document.querySelector(".needsname"),data.result.daliy.needsname);
+                        },500)
 					} else {
 						this.$warn(data.message);
 					}
 					this.$maskoff()
 				})
 			},
+            setBrInfo(dom,info){
+                dom.innerHTML = "";
+                dom.insertAdjacentHTML("beforeend",info);
+            },
 			//编辑产品经理建立的需求初始化数值
 			proEdit() {
 				let all = this.tabs.data_one.daliy
@@ -1331,6 +1380,7 @@
 				this.addneeds.addform.sxname = all.user_NAME
 				this.addneeds.addform.name = all.task_NAME
 				this.addneeds.addform.jihuadate = new Date(Date.parse(all.end_DATE_STRING.replace(/-/g, "/")))
+                this.addneeds.addform.applyDate= new Date(Date.parse(all.start_DATE.replace(/-/g, "/")))
 				this.addneeds.addform.needsname = all.task_DESCRIPTION
 				this.addneeds.addform.level = all.rriority
 				this.addneeds.addform.ascription = all.ascription
@@ -1409,6 +1459,11 @@
 						this.$set(this.addneeds.addform.splitForm, "splitAnalysis", data.result.deptSystem[0]);
 						this.consoleAction()
 						this.getSplit() //获取分配默认值
+                        let self=this
+                        var t=setTimeout(function(){
+                            self.setBrInfo(document.querySelector(".task_DESCRIPTION"),data.result.daliy.task_DESCRIPTION);
+                            // self.setBrInfo(document.querySelector(".needsname"),data.result.daliy.needsname);
+                        },500)
 					} else {
 						this.$warn(data.message);
 					}
@@ -1466,16 +1521,35 @@
 			//控制台action
 			consoleAction() {
 				this.tabs.consoleActionData = []
-				if(this.tabs.ifConsole) {
-					this.tabs.consoleActionData.push({
-						"key": '1',
-						"name": '通过'
-					})
-					this.tabs.consoleActionData.push({
-						"key": '2',
-						"name": '不通过'
-					})
+				if(this.tabs.ifConsole ) {
+				    if(this.tabs.data_one.daliy.state_ID==212) {
+                        this.tabs.consoleActionData.push({
+                            "key": '1',
+                            "name": '通过'
+                        })
+                    }else if(this.tabs.data_one.daliy.state_ID==209){
+                        this.tabs.consoleActionData.push({
+                            "key": '2',
+                            "name": '不通过'
+                        })
+                    }else{
+                        this.tabs.consoleActionData.push({
+                            "key": '1',
+                            "name": '通过'
+                        })
+                        this.tabs.consoleActionData.push({
+                            "key": '2',
+                            "name": '不通过'
+                        })
+                    }
 				}
+
+          /*      if(this.tabs.ifConsole && this.tabs.data_one.daliy.state_ID!=212) {
+                    this.tabs.consoleActionData.push({
+                        "key": '2',
+                        "name": '不通过'
+                    })
+                }*/
 				if(this.tabs.ifAssign) {
 					this.tabs.consoleActionData.push({
 						"key": '3',
@@ -1515,10 +1589,12 @@
 			},
 			innitFrom() {
 				this.$maskin();
+
 				let params = new URLSearchParams();
 				this.$axios.post("/daliy/saveDaliyFront", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
+                        this.addneeds.addform.applyDate=new Date()
 						//涉及系统
 						this.$set(this.addneeds.addform, "sjxtArr", data.result.firstSystem)
 						this.$set(this.addneeds.addform, "systemArr", data.result.system)
@@ -1671,6 +1747,7 @@
 					params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
 					params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
 					params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
+                    params.append("NEW_DATE", this.addneeds.addform.applyDate); //期望上线时间
 					params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
 
 					params.append("ASCRIPTION", this.addneeds.addform.ascription); //需求划分归属
@@ -1843,6 +1920,7 @@
 					params.append("TASK_NAME", this.addneeds.addform.name); //任务名称
 					params.append("TASK_DESCRIPTION", this.addneeds.addform.needsname); //needsname 需求描述
 					params.append("END_DATE", this.addneeds.addform.jihuadate); //期望上线时间
+                    params.append("NEW_DATE", this.addneeds.addform.applyDate); //期望上线时间
 					if((this.addneeds.addform.fromdeptId).split('-').length > 1) {
 						params.append("TASK_SOURCE", (this.addneeds.addform.fromdeptId).split('-')[1] + '-' + this.addneeds.addform.fromdeptroleId); //任务来源 fromdeptId fromdeptroleId
 					} else {
@@ -1895,6 +1973,7 @@
 				this.addneeds.addvisible = true;
 				this.clearData()
 				this.loadData()
+
 				this.innitFrom()
 			},
 			//新建任务产品经理
@@ -2152,6 +2231,7 @@
 				this.addneeds.addform.sjxt = []
 				this.addneeds.addform.name = ''
 				this.addneeds.addform.jihuadate = ''
+                this.addneeds.addform.applyDate = ''
 				this.addneeds.addform.ascription = ''
 				this.addneeds.addform.daliyTypeName = ''
 				this.addneeds.addform.result = ''
@@ -2222,19 +2302,52 @@
 			//确认
 			agreeRow(val, e) {
 				e.cancelBubble = true;
-				this.$maskin();
+				console.log(val)
 				let params = new URLSearchParams();
-				params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
-				this.$axios.post("/daliy/daliyCheck", params).then((res) => {
-					let data = res.data;
-					if(data.code == 200) {
-						this.$success(data.message);
-						this.loadData();
-					} else {
-						this.$warn(data.message);
-					}
-					this.$maskoff();
-				})
+				if(this.tabs.data_one.daliy.state_ID==212){
+                    let self = this
+                    let text="通过"
+                    this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        inputPattern: /[\S]/,
+                        inputErrorMessage: '' + text + '理由不能为空'
+                    }).then(({
+                                 value
+                             }) => {
+
+                        this.$maskin();
+                        let params = new URLSearchParams();
+                        params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+                        params.append('REJECT_RESON', value);
+                        this.$axios.post("/daliy/daliyConfrim", params).then((res) => {
+                            let data = res.data;
+                            if(data.code == 200) {
+                                this.$success(data.message);
+                                this.loadData();
+                            } else {
+                                this.$warn(data.message);
+                            }
+                            this.$maskoff();
+                        });
+                    }).catch(() => {
+
+                    });
+                }else {
+                    this.$maskin();
+                    params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+                    this.$axios.post("/daliy/daliyConfrim", params).then((res) => {
+                        let data = res.data;
+                        if(data.code == 200) {
+                            this.$success(data.message);
+                            this.loadData();
+                        } else {
+                            this.$warn(data.message);
+                        }
+                        this.$maskoff();
+                    })
+                }
+
 			},
 			//分配
 			assignRow(val, e) {
@@ -2322,12 +2435,11 @@
 				}).then(({
 					value
 				}) => {
-
 					this.$maskin();
 					let params = new URLSearchParams();
 					params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
 					params.append('REJECT_RESON', value);
-					this.$axios.post("/daliy/daliyCheck", params).then((res) => {
+					this.$axios.post("/daliy/daliyReject", params).then((res) => {
 						let data = res.data;
 						if(data.code == 200) {
 							this.$success(data.message);
@@ -2544,6 +2656,12 @@
                 this.uploadAction.neel_id = this.handle.daliy_NEET_ID;
                 this.uploadAction.type=type;
                 this.uploadAction.uploadvisible = true;
+            },
+            setValue_needsname(data){
+                this.addneeds.addform.needsname = data
+            },
+            setValue_changepoint(data){
+                this.addneeds.addform.prduct_function = data
             },
 			//下载附件
 			downfile(val) {

@@ -1,4 +1,4 @@
-<style scoped>
+<style>
     /*全程跟踪视图模式*/
     .tracking-wrapper li{
         margin-top:20px;

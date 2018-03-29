@@ -86,15 +86,15 @@
 					<div class="table-list">
 						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
 							<el-table-column prop="nell" label="需求编号" width="200"></el-table-column>
+                            <el-table-column prop="system_NAME" label="系统名称" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="golive_SYSTEM" label="子系统" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="ban" label="版本号" width="70"></el-table-column>
+                            <el-table-column prop="colive_TYPE_NAME" label="上线类型" width="110"></el-table-column>
+                            <el-table-column prop="release_HEAD" label="发布负责人" width="110"></el-table-column>
 							<el-table-column prop="desired_START_DATETIME" label="预计上线日期" width="110"></el-table-column>
 							<el-table-column prop="golive_DATE" label="上线日期" width="110"></el-table-column>
 							<el-table-column prop="desired_END_DATETIME" label="预期上线时间" width="110"></el-table-column>
 							<el-table-column prop="golive_TIME" label="上线时间" width="110"></el-table-column>
-							<el-table-column prop="system_NAME" label="系统名称" show-overflow-tooltip></el-table-column>
-							<el-table-column prop="golive_SYSTEM" label="子系统" show-overflow-tooltip></el-table-column>
-							<el-table-column prop="ban" label="版本号" width="70"></el-table-column>
-							<el-table-column prop="colive_TYPE_NAME" label="上线类型" width="110"></el-table-column>
-							<el-table-column prop="release_HEAD" label="发布负责人" width="110"></el-table-column>
 							<el-table-column prop="state_NAME" label="状态"></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
@@ -159,12 +159,13 @@
 												</el-form-item>
 											</el-col>-->
 											<el-col :span="24">
-												<el-form-item label="需求描述">{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}
-													<!--<div>{{tabs.data_one.DemandTechnology.neel_DESCRIPTION}}</div>-->
+												<el-form-item label="需求描述">
+													<div class="neel_DESCRIPTION"></div>
 												</el-form-item>
 											</el-col>
 											<el-col :span="24">
-												<el-form-item label="产品功能">{{tabs.data_one.DemandTechnology.product_FUNCTION}}
+												<el-form-item label="产品功能">
+                                                    <div class="product_FUNCTION"></div>
 												</el-form-item>
 											</el-col>
 										</el-row>
@@ -208,7 +209,7 @@
 								</div>
 							</el-tab-pane>
 
-							<el-tab-pane label="操作台" name="console" v-if="state.id!=13">
+							<el-tab-pane label="操作台" name="console" v-if="state.id!=13 || state.id!=14">
 								<div class="console-tab-content">
 									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_ZLGT">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
@@ -334,13 +335,12 @@
 													</p>
 												</el-form-item>
 											</el-col>
-										</el-row>
-                                        <el-row :gutter="20">
 											<el-col :span="24">
 												<el-button style="display: block;margin: 0 auto;" @click="submitConsole" size="medium" type="primary">上线申请
 												</el-button>
 											</el-col>
 										</el-row>
+
 									</el-form>
 
 									<!--<el-form label-width="60px" label-position="left" v-if="state.id==9 || state.id==10 || state.id==4 || state.id==2 || state.id==3">-->
@@ -360,7 +360,7 @@
 									<!--</el-form>-->
 								</div>
 							</el-tab-pane>
-							<el-tab-pane label="全程跟踪" name="log" v-if="state.id!=13">
+							<el-tab-pane label="全程跟踪" name="log" v-if="state.id!=13 || state.id!=14">
 								<div class="console-tab-content">
 									<el-form label-width="60px" label-position="left">
 										<el-row :gutter="20">
@@ -623,10 +623,7 @@
 			},
 			mustData() {
 				let firm = "1"
-				// if(this.popup.popTxt.fileList.length == 0) {
-				// 	this.$warn("请上传附件说明");
-				// 	firm = "0"
-				// }
+
 				if(this.consoleForm.onlineType != 0 && !this.consoleForm.ifUrgent) {
 					this.$warn("请选择是否加急");
 					firm = "0"
@@ -718,22 +715,25 @@
 					params.append("DOWN_ID",this.popup.popTxt.down_id); //上传文件ID
 					if(!this.tabs.data_one.GOLIVEUP){
                         params.append("NEEL_ID", this.mainId); //id
-                        this.$axios.post("/golive/addgoliveproject", params).then((res) => {
-                            let data = res.data;
-                            if(data.code == 200) {
-                                this.$success(data.message);
-                                this.tabs.consoleWrapperVisible = false;
-                                this.calculateTableHeight(false)
-                                this.clearAddData();
-                                this.loadData();
-                            } else {
-                                this.$warn(data.message);
-                            }
-                            this.$maskoff();
-                        });
+                        if(this.popup.popTxt.fileList.length == 0) {
+                        	this.$warn("请上传附件说明");
+                        }else {
+                            this.$axios.post("/golive/addgoliveproject", params).then((res) => {
+                                let data = res.data;
+                                if(data.code == 200) {
+                                    this.$success(data.message);
+                                    this.tabs.consoleWrapperVisible = false;
+                                    this.calculateTableHeight(false)
+                                    this.clearAddData();
+                                    this.loadData();
+                                } else {
+                                    this.$warn(data.message);
+                                }
+                                this.$maskoff();
+                            });
+                        }
 					}else {
                         params.append("GOLIVE_ID", this.goliveId); //id
-
                         this.$axios.post("/golive/upgoliveproject", params).then((res) => {
                             let data = res.data;
                             if(data.code == 200) {
@@ -1027,6 +1027,7 @@
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				//              this.$maskin();
+                this.goliveType()
 				this.clearData() //清空form表单
 				this.tabs.activeTableInfo = val;
 				this.state.id = val.state;
@@ -1050,18 +1051,23 @@
 						let data = res.data;
 						if(data.code == 200) {
 							this.$set(this.tabs, "data_one", data.result);
-							this.consoleAction()
+                            this.consoleAction()
 							if(data.result.GOLIVEUP){
                                 this.goliveId=data.result.goliveProject.golive_ID
                                 this.resetData(data.result.goliveProject)
 							}
+							let self=this
+                            var t=setTimeout(function(){
+                                self.setBrInfo(document.querySelector(".neel_DESCRIPTION"),data.result.DemandTechnology.neel_DESCRIPTION);
+                                self.setBrInfo(document.querySelector(".product_FUNCTION"),data.result.DemandTechnology.product_FUNCTION);
+                            },500)
 						} else {
 							this.$warn(data.message);
 						}
 						this.$maskoff();
 					})
 				}
-				this.goliveType()
+
 				this.systemList(val.nell)
 				this.allTrack(val.golive_ID)
 				//添加审批字段
@@ -1102,6 +1108,10 @@
 					this.$maskoff();
 				})
 			},
+            setBrInfo(dom,info){
+                dom.innerHTML = "";
+                dom.insertAdjacentHTML("beforeend",info);
+            },
 			systemList(val) {
 				this.$maskin();
 				let params = new URLSearchParams()
