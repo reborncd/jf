@@ -20,6 +20,15 @@
     .zlk .el-table .cell {
         text-align: center;
     }
+    .docedit .el-select{
+        width: 100%;
+    }
+    .docedit-wrap .el-form-item{
+        margin-bottom: 10px;
+    }
+    .docedit-wrap .el-dialog__body{
+        padding: 15px 20px;
+    }
 </style>
 <template>
     <div class="zlk common-card-wrap" style="height: 100%;">
@@ -74,13 +83,13 @@
             </div>
         </el-card>
         <!--新建资料-->
-        <el-dialog title="新建资料" :visible="add.addvisible" width="80%"
+        <el-dialog class="docedit-wrap" title="新建资料" :visible="add.addvisible" width="50%"
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-row :md="24" :gutter="20">
                     <el-col :span="24" :md="24">
-                        <el-form-item label="文档编号">
-                            <el-col :span="6" style="padding-left: 0">
+                        <el-form-item label="文档编号" class="docedit">
+                            <el-col :span="8" style="padding-left: 0">
                                 <el-select v-model="add.subform.company" placeholder="企业代号">
                                     <el-option
                                             v-for="item in add.subform.companyArr"
@@ -90,7 +99,7 @@
                                     </el-option>
                                 </el-select>
                             </el-col>
-                            <el-col :span="6" style="padding-left: 0">
+                            <el-col :span="8" style="padding-left: 0">
                                 <el-select v-model="add.subform.system" placeholder="系统代号">
                                     <el-option
                                             v-for="item in add.subform.systemArr"
@@ -100,7 +109,7 @@
                                     </el-option>
                                 </el-select>
                             </el-col>
-                            <el-col :span="6" style="padding-left: 0">
+                            <el-col :span="8" style="padding-left: 0">
                                 <el-select v-model="add.subform.doc" placeholder="文档类型">
                                     <el-option
                                             v-for="item in add.subform.docArr"
@@ -110,51 +119,32 @@
                                     </el-option>
                                 </el-select>
                             </el-col>
-                            <el-col :span="3" style="padding-left: 0">
-                                <el-input v-model="add.subform.code" disabled></el-input>
+                            <el-col :span="6" style="padding-left: 0; margin-top: 10px">
+                                <el-input v-model="add.subform.code" disabled size="small"></el-input>
                             </el-col>
-                            <el-col :span="3" style="padding-left: 0">
-                                <el-input v-model="add.subform.year" disabled></el-input>
+                            <el-col :span="6" style="padding-left: 0; margin-top: 10px">
+                                <el-input v-model="add.subform.year" disabled size="small"></el-input>
                             </el-col>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" :md="12">
+                    <el-col :span="24" :md="24">
                         <el-form-item label="文档名称">
                             <el-input v-model="add.subform.wordname"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12" :md="12">
+                    <el-col :span="24" :md="24">
                         <el-form-item label="文档名版本">
-                            <el-col :span="1" style="padding: 0">v</el-col>
-                            <el-col :span="23" style="padding: 0">
-                                <el-input v-model="add.subform.version"></el-input>
+                            <el-col style="padding: 0">
+                                <el-input v-model="add.subform.version">
+                                    <template slot="prepend">V</template>
+                                </el-input>
                             </el-col>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
-                        <el-form-item label="目录位置">
-                            <el-select v-model="add.subform.dirF" placeholder="请选择目录位置">
-                                <el-option
-                                        v-for="item in add.subform.dirFather"
-                                        :key="item.no_ID"
-                                        :label="item.no_REMARK"
-                                        :value="item.no_ID+','+item.no_REMARK">
-                                </el-option>
-                            </el-select>
-                            <el-select v-model="add.subform.dirC" placeholder="请选择目录位置">
-                                <el-option
-                                        v-for="item in add.subform.dirChild"
-                                        :key="item.system_ID"
-                                        :label="item.system_NAME"
-                                        :value="item.system_ID+','+item.system_NAME">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="关联系统">
+                        <el-form-item label="关联系统" style="width: 100%">
                             <el-select v-model="add.subform.sysF" placeholder="请选择关联系统"
-                                       @change="sysChange">
+                                       @change="sysChange" style="width: 50%">
                                 <el-option
                                         v-for="item in add.subform.sysFather"
                                         :key="item.system_ID"
@@ -162,7 +152,7 @@
                                         :value="item.system_ID+','+item.system_NAME">
                                 </el-option>
                             </el-select>
-                            <el-select v-model="add.subform.sysC" placeholder="请选择关联系统">
+                            <el-select v-model="add.subform.sysC" style="width: 50%; float: left" placeholder="请选择关联系统">
                                 <el-option
                                         v-for="item in add.subform.sysChild"
                                         :key="item.system_ID"
@@ -170,6 +160,12 @@
                                         :value="item.system_ID+','+item.system_NAME">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" :md="24">
+                        <el-form-item label="录入人员" >
+                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
+                            </el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
@@ -183,16 +179,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
-                        <el-form-item label="录入人员" >
-                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
-                            </el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="录入人员" :span="12" :md="12">
-                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
-                            </el-input>
-                        </el-form-item>
                         <el-form-item label="上传文档" :span="12" :md="12">
                             <div style="position: relative;overflow: hidden">
                                 <el-button type="primary" size="mini">上传附件</el-button>
