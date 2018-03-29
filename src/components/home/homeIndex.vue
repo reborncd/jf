@@ -1,4 +1,9 @@
 <style>
+    .chartTitle{
+        position: absolute;
+        font-size: 12px;
+        color: #381414;
+    }
     .icon-box{
         position: absolute;
         width: 20px;
@@ -216,6 +221,9 @@
                 <el-col :span="8" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
+                            <div class="chartTitle" >
+                                <div v-for="(item, index) in this.show.dept_NAME" v-key="item">{{index + 1}}. {{item}}</div><!--{{show.dept_NAME[show.dept_NAME.length - index - 1]}}</div>-->
+                            </div>
                             <div slot="header" class="clearfix">
                                 <span class="card-title">资源动态</span>
                             </div>
@@ -509,11 +517,14 @@
                         }
                     ]
                 };
+                // this.show.dept_NAME
                 let optionresources = {
                     angleAxis: {},
                     radiusAxis: {
                         type: 'category',
-                        data: this.show.dept_NAME,//组的数量
+                        // data: new Array(this.show.dept_NAME.length).fill(''),//组的数量
+                        data: Array.from(new Array(this.show.dept_NAME.length), (x, i) => i + 1),
+                        z: 10
                     },
                     polar: {},
                     series: [{
@@ -531,7 +542,9 @@
                     }],
                     legend: {
                         show: true,
-                        data: ['空闲', '忙碌']
+                        data: ['空闲', '忙碌'],
+                        left: 'right',
+                        orient: 'vertical'
                     }
                 };
                 // 使用刚指定的配置项和数据显示图表。

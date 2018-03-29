@@ -207,7 +207,7 @@
             </ul>
         </div>
         <div class="mainr" :style="content">
-            <router-view ref="routerView"></router-view>
+            <router-view ref="routerView" :username="userName"></router-view>
         </div>
         <div id="mask">
             <i class="el-icon-loading" id="loading"></i>

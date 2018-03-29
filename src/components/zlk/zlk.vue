@@ -131,27 +131,7 @@
                             </el-col>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="目录位置">
-                            <el-select v-model="add.subform.dirF" placeholder="请选择目录位置">
-                                <el-option
-                                        v-for="item in add.subform.dirFather"
-                                        :key="item.no_ID"
-                                        :label="item.no_REMARK"
-                                        :value="item.no_ID+','+item.no_REMARK">
-                                </el-option>
-                            </el-select>
-                            <el-select v-model="add.subform.dirC" placeholder="请选择目录位置">
-                                <el-option
-                                        v-for="item in add.subform.dirChild"
-                                        :key="item.system_ID"
-                                        :label="item.system_NAME"
-                                        :value="item.system_ID+','+item.system_NAME">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
+                    <el-col :span="13" :md="13">
                         <el-form-item label="关联系统">
                             <el-select v-model="add.subform.sysF" placeholder="请选择关联系统"
                                        @change="sysChange">
@@ -172,6 +152,12 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12" :md="12">
+                        <el-form-item label="录入人员" >
+                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="24" :md="24">
                         <el-form-item label="文档简介">
                             <el-input
@@ -183,16 +169,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="24" :md="24">
-                        <el-form-item label="录入人员" >
-                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
-                            </el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :md="24">
-                        <el-form-item label="录入人员" :span="12" :md="12">
-                            <el-input placeholder="请输入内容" v-model="add.subform.write_user">
-                            </el-input>
-                        </el-form-item>
                         <el-form-item label="上传文档" :span="12" :md="12">
                             <div style="position: relative;overflow: hidden">
                                 <el-button type="primary" size="mini">上传附件</el-button>
