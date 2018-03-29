@@ -222,7 +222,11 @@
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div class="chartTitle" >
-                                <div v-for="(item, index) in this.show.dept_NAME" v-key="item">{{index + 1}}. {{item}}</div><!--{{show.dept_NAME[show.dept_NAME.length - index - 1]}}</div>-->
+                                <div
+                                  v-for="(item, index) in this.show.dept_NAME"
+                                  v-key="item">
+                                    {{index + 1}}. {{show.dept_NAME[show.dept_NAME.length - index - 1]}}
+                                </div>
                             </div>
                             <div slot="header" class="clearfix">
                                 <span class="card-title">资源动态</span>
@@ -523,7 +527,7 @@
                     radiusAxis: {
                         type: 'category',
                         // data: new Array(this.show.dept_NAME.length).fill(''),//组的数量
-                        data: Array.from(new Array(this.show.dept_NAME.length), (x, i) => i + 1),
+                        data: Array.from(new Array(this.show.dept_NAME.length), (x, i) => this.show.dept_NAME.length - i),
                         z: 10
                     },
                     polar: {},
