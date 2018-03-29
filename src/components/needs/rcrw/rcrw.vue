@@ -124,7 +124,8 @@
 					</div>
 					<!--表格部分-->
 					<div class="table-list">
-						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
+						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight"
+								  highlight-current-row @row-click="handleCurrentChange">
 							<el-table-column prop="daliy_NEET_ID" label="任务编号" width="200"></el-table-column>
 							<el-table-column prop="task_NAME" label="任务名称" show-overflow-tooltip></el-table-column>
 							<el-table-column prop="start_DATE" label="申请日期" width="110"></el-table-column>
@@ -1320,6 +1321,9 @@
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				this.$maskin();
+
+                //全程跟踪视图模式
+                this.tracking.trackingvisiible = false;
 				this.innitFrom()
 				//this.tabs.activeName = "info";
 				this.clearData()

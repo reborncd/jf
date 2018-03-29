@@ -2341,6 +2341,8 @@
                 this.hang.hangvisible = false;
                 //关闭确认需求的表格
                 this.changeInset.visible = false;
+                //全程跟踪视图模式
+                this.tracking.trackingvisiible = false;
             },
             //-----------------------------------初始化技术经理还技术管理部的操作台的视图
             resetConsoleVisible(){
