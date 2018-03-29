@@ -429,10 +429,13 @@
 													<el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
 												</el-form-item>
 											</el-col>
-											<el-col :span="24" :sm="24">
+											<el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
 												<p v-for="(item,index) in tabs.genzong" class="genzong">
 													<span style="width: 30px;display: inline-block;">{{index+1}}.</span> <span style="width: 150px;display: inline-block;">{{item.record_START | time}}</span>{{item.record_DESC}}
 												</p>
+											</el-col>
+											<el-col :span="24" :sm="24" v-if="tracking.trackingvisiible">
+												<tracking :tracking="tracking"></tracking>
 											</el-col>
 										</el-row>
 									</el-form>
@@ -958,11 +961,11 @@
 			</div>
 		</el-dialog>
 		<!--全程跟踪视图模式-->
-		<el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"
-				   append-to-body modal-append-to-body
-				   :before-close="closeDialog">
-			<tracking :tracking="tracking"></tracking>
-		</el-dialog>
+		<!--<el-dialog title="全程跟踪视图模式" :visible="tracking.trackingvisiible" width="95%"-->
+				   <!--append-to-body modal-append-to-body-->
+				   <!--:before-close="closeDialog">-->
+			<!--<tracking :tracking="tracking"></tracking>-->
+		<!--</el-dialog>-->
 		<!--下载文件-->
 		<download :download="download"></download>
 		<!--上传附件弹窗-->
@@ -2111,6 +2114,8 @@
 			},
             //-----------------------------------加载视图模式数据
             loadtrack(){
+                this.tracking.trackingvisiible? this.tracking.trackingvisiible = false:
+                    this.tracking.trackingvisiible = true
                 let params = new URLSearchParams();
                 params.append('DALIY_NEET_ID', this.handle.daliy_NEET_ID);
                 this.$axios.post("/daliy/queryView",params).then((res)=>{
@@ -2126,7 +2131,7 @@
                             arr.push(i)
                         }
                         this.$set(this.tracking, "data",arr);
-                        this.tracking.trackingvisiible = true;
+//                        this.tracking.trackingvisiible = true;
                     }
                 });
             },
