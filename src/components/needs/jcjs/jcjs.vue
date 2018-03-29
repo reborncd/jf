@@ -130,8 +130,10 @@
                                   @row-click="handleCurrentChange">
                             <el-table-column prop="base_NEET_ID" label="需求编号" width="200" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="neel_NAME" label="需求名称" width="180" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"></el-table-column>
-                            <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"></el-table-column>
+                            <el-table-column prop="start_DATE" :formatter="tableFormatter_start" label="申请日期" width="100"
+                                             show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="end_DATE" :formatter="tableFormatter_end" label="期望上线日期" width="120"
+                                             show-overflow-tooltip></el-table-column>
                                 <!--<template slot-scope="scope">-->
                                     <!--<p :title="scope.row.neel_NAME" style="width:160px;">{{scope.row.neel_NAME}}</p>-->
                                 <!--</template>-->
@@ -864,12 +866,12 @@
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
+                                            <el-col :span="24" :sm="24" v-show="!tracking.trackingvisiible">
                                                 <p v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
                                                 </p>
                                             </el-col>
-                                            <el-col :span="24" :sm="24" v-if="tracking.trackingvisiible">
+                                            <el-col :span="24" :sm="24" v-show="tracking.trackingvisiible">
                                                 <tracking :tracking="tracking"></tracking>
                                             </el-col>
                                         </el-row>
@@ -883,12 +885,12 @@
                                         <el-tab-pane label="周期" name="first" clearable>
                                             <!--周期-->
                                             <h1 v-if="sstj.hidezqvisible"
-                                                style="text-align: center; font-weight: bold; color: #b5b5b5;font-size: 22px">周期信息为空</h1>
+                                                style="text-align: center; font-weight: bold; color: #b5b5b5;font-size: 22px">暂无周期信息</h1>
                                             <div v-show="!sstj.hidezqvisible" id="system" clearable style="width:1000px;height: 200px;margin: 20px 0;"></div>
                                         </el-tab-pane>
                                         <el-tab-pane label="工时" name="second" clearable>
                                             <h1 v-if="sstj.hidegsvisible"
-                                                style="text-align: center;font-weight: bold; color: #b5b5b5;font-size: 22px">工时进度为空</h1>
+                                                style="text-align: center;font-weight: bold; color: #b5b5b5;font-size: 22px">暂无工时进度</h1>
                                             <ul v-if="!sstj.hidegsvisible" style="margin-bottom: 10px">
                                                 <li v-for="item in sstj.info" style="width: 30%;display: inline-block">
                                                     {{item.DEPT_NAME}}总工时:{{item.requiredTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
@@ -2619,24 +2621,17 @@
 
                         //加载实时统计数据
                         if(data.result.systemDepts && data.result.currentTime){
-                            if(data.result.systemDepts.length){
-                                //技术经理分析过后显示周期统计模块
-                                this.sstj.hidezqvisible = false
-                                let bool = false;
-                                for(let i of data.result.systemDepts){
-                                    if(i.infos){
-                                        bool = true
-                                    }
-                                }
-                                bool?this.sstj.hidegsvisible = false:this.sstj.hidegsvisible = true
+                            if(!data.result.systemDepts.length) {
+                                //当前没有分配给技术经理，全部不显示信息
+                                this.sstj.hidezqvisible = true;
+                                this.sstj.hidegsvisible = true;
                             }else{
-                                //没有进行分析取消所有展示
-                                this.sstj.hidezqvisible = true
-                                this.sstj.hidegsvisible = true
+                                //默认显示信息
+                                this.sstj.hidezqvisible = false;
+                                this.sstj.hidegsvisible = false;
+                                this.setRealTime(data.result.systemDepts,data.result.currentTime)
                             }
-                            this.setRealTime(data.result.systemDepts,data.result.currentTime)
                         }
-
                         this.$maskoff();
                     }
                 })
@@ -2663,10 +2658,18 @@
                 let requiredTime=[];//总用时
                 let leaveTime=[];//剩余用时
                 for(let i of datashow) {
+                    if(!i.EXPECT_END && !i.EXPECT_START){
+                        //该项目没有被评审，跳过添加数据，跳过部门
+                        continue;
+                    }
                     timeInfo.push(i);
                     yaxis.push(i.DEPT_NAME);
-                    startTime.push(new Date(i.EXPECT_START));
-                    endTime.push(new Date(i.EXPECT_END));
+                    if(i.EXPECT_START){
+                        startTime.push(new Date(i.EXPECT_START));
+                    }
+                    if(i.EXPECT_END){
+                        endTime.push(new Date(i.EXPECT_END));
+                    }
                     if(!i.lastCompleteTime) {
                         //如果没有完成事件，设置完成时间为当前时间
                         i.lastCompleteTime = nowTime
@@ -2683,7 +2686,6 @@
                         leaveTime.push(i.requiredTime-i.allTime)
                     }
                     actualTime.push(new Date(i.lastCompleteTime));
-
                     this.$set(this.sstj, "gsinfo", timeInfo);
                 }
                 let len=requiredTime.length;
@@ -2697,14 +2699,19 @@
                 this.$set(this.sstj,"leaveTime",leaveTime);
                 this.$set(this.sstj,"allTime",allTime);
                 this.sstj.len = len;
+                if(!yaxis.length){
+                    //没有信息则不显示图表
+                    this.sstj.hidegsvisible = true;
+                    this.sstj.hidezqvisible = true;
+                    return;
+                }
                 this.realTime(yaxis,startTime,endTime,actualTime);
                 this.workTime(deptName,leaveTime,requiredTime,allTime);
-
             },
 //            实时统计周期
             realTime(yaxis,startTime,endTime,actualTime) {
                 let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
-                proBar.clear()
+                proBar.clear();
                 let option = {
                     title : {
                         text: '周期统计',
@@ -2722,14 +2729,14 @@
                     },
                     tooltip: {
                         trigger: 'axis',
-                        formatter: function(params) {
-                            let res = params[0].name + "</br>"
-                            let date0 = new Date(params[0].data);
-                            let date1 = new Date(params[1].data);
-                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
-                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
-                            res += params[0].seriesName + ":" + date0 + "</br>"
-                            res += params[1].seriesName + ":" + date1 + "</br>"
+                        formatter: (params)=> {
+                            let res = params[0].name + "</br>";
+                            let start = this.$format(new Date(params[0].data));
+                            let end = this.$format(new Date(params[1].data));
+                            let date0 = start.year + "-" + start.mouth + "-" + start.day;
+                            let date1 = end.year + "-" + end.mouth + "-" + end.day;
+                            res += params[0].seriesName + ":" + date0 + "</br>";
+                            res += params[1].seriesName + ":" + date1 + "</br>";
                             return res;
                         }
                     },

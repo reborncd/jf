@@ -438,12 +438,12 @@
 												</el-form-item>
 											</el-col>
 
-											<el-col :span="24" :sm="24" v-if="!tracking.trackingvisiible">
+											<el-col :span="24" :sm="24" v-show="!tracking.trackingvisiible">
 												<p v-for="(item,index) in tabs.genzong" class="genzong">
 													<span style="width: 30px;display: inline-block;">{{index+1}}.</span> <span style="width: 150px;display: inline-block;">{{item.record_START | time}}</span>{{item.record_DESC}}
 												</p>
 											</el-col>
-											<el-col :span="24" :sm="24" v-if="tracking.trackingvisiible">
+											<el-col :span="24" :sm="24" v-show="tracking.trackingvisiible">
 												<tracking :tracking="tracking"></tracking>
 											</el-col>
 										</el-row>
@@ -1342,7 +1342,7 @@
 				this.tabs.ifSplit = ''
 				this.tabs.ifEdit = ''
 				this.tabs.ifPing = ''
-                this.popup.popTxt.fileList=[]
+                this.popup.popTxt.fileList=[];
 				this.$axios.post("/daliy/queryDaliyMessage", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
