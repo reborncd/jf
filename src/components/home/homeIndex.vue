@@ -1,4 +1,12 @@
 <style>
+    .icon-box{
+        position: absolute;
+        width: 20px;
+        height: calc(100% - 12px);
+    }
+    .card-title{
+        font-weight: bold;
+    }
     .mr {
         margin-right: 15px;
     }
@@ -77,11 +85,18 @@
 
     .box-card ul li {
         position: relative;
-        padding-left: 20px;
         line-height: 20px;
         font-size: 14px;
-        margin-top: 12px;
         cursor: pointer;
+        min-height: 56px;
+        max-height: 76px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        box-sizing: border-box;
+        border-top: 1px dashed #ddd;
+    }
+    .box-card ul li:first-child {
+        border-top: 0px dashed #ddd;
     }
 
     .box-card ul .dian {
@@ -93,6 +108,10 @@
         border-radius: 50%;
         background: #ccc;
     }
+    .box-card ul .content-title {
+        margin-left: 20px;
+        color: #222;
+    }
 
     .box-card ul .content-title span.date {
         color: #999999;
@@ -100,19 +119,19 @@
     }
 
     /*内容部分*/
-    .box-card ul li:hover .content {
-        text-decoration: underline;
-        color: #ff4f1f;
-    }
 
     .box-card ul .content {
+        letter-spacing: 0.4px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        height: 40px;
+        min-height: 20px;
+        max-height: 40px;
         overflow: hidden;
-        color: #ff4f1f;
-        margin-top: 3px;
+        color: #666;
+        margin-top: 4px;
+        margin-left: 20px;
+
     }
 </style>
 
@@ -144,7 +163,7 @@
                             </div>
                             <ul class="text item">
                                 <li v-for="(item, index) in todo" @click="goPage(item)">
-                                    <span class="dian"></span>
+                                    <div class="icon-box"> <i class="anticon icon-right"></i> </div>
                                     <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
                                         <span class="date fr">{{item.work_TIME | date}}</span>
                                     </h4>
@@ -163,7 +182,7 @@
                             </div>
                             <ul class="text item">
                                 <li v-for="(item, index) in hasdo" @click="goPage(item)">
-                                    <span class="dian"></span>
+                                    <div class="icon-box"> <i class="anticon icon-right"></i> </div>
                                     <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
                                         <span class="date fr">{{item.work_TIME | date}}</span>
                                     </h4>
@@ -214,7 +233,7 @@
 
                             <ul class="text item">
                                 <li v-for="(item, index) in operLog" @click="goPage(item)">
-                                    <span class="dian"></span>
+                                    <div class="icon-box"> <i class="anticon icon-right"></i> </div>
                                     <h4 class="content-title">{{item.record_SUBJECT}}
                                         <span class="date fr">{{item.record_START | date}}</span>
                                     </h4>
