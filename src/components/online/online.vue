@@ -688,7 +688,7 @@
 			},
 			submitConsole() {
 				if(this.mustData() == "1") {
-					this.$maskin();
+
 					let formArr = JSON.stringify(this.onlineForm.onlineContent);
 					let params = new URLSearchParams();
 
@@ -718,6 +718,7 @@
                         if(this.popup.popTxt.fileList.length == 0) {
                         	this.$warn("请上传附件说明");
                         }else {
+                            this.$maskin();
                             this.$axios.post("/golive/addgoliveproject", params).then((res) => {
                                 let data = res.data;
                                 if(data.code == 200) {
@@ -734,6 +735,7 @@
                         }
 					}else {
                         params.append("GOLIVE_ID", this.goliveId); //id
+                        this.$maskin();
                         this.$axios.post("/golive/upgoliveproject", params).then((res) => {
                             let data = res.data;
                             if(data.code == 200) {

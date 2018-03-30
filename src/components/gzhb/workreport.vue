@@ -117,9 +117,9 @@
 									<el-col :span="6">
 										<el-form-item label="技术需求"><span style="color: red;">{{showData.techSize}}</span></el-form-item>
 									</el-col>
-									<el-col :span="6">
-										<el-form-item label="问题管理"><span style="color: red;">{{showData.faultSize}}</span></el-form-item>
-									</el-col>
+									<!--<el-col :span="6">-->
+										<!--<el-form-item label="问题管理"><span style="color: red;">{{showData.faultSize}}</span></el-form-item>-->
+									<!--</el-col>-->
 									<el-col :span="24">
 										<h5><i class="iconfont icon-biaozhungongshizhidinghefenxi i-b"></i><span class="i-b">工时统计</span></h5>
 									</el-col>
@@ -151,15 +151,14 @@
 						</el-row>
 						<div class="table-list">
 							<el-table :data="showData.workList" border style="width: 100%"  @row-click="goneeds">
+								<el-table-column prop="ID" label="需求编号" width="200"></el-table-column>
 								<el-table-column prop="TASK_NAME" label="需求名称" show-overflow-tooltip></el-table-column>
-								<el-table-column prop="TASK_DESC" label="需求描述" show-overflow-tooltip></el-table-column>
-								<el-table-column prop="DESIGN_SYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
-								<el-table-column prop="MODULE_NAME" label="负责模块"></el-table-column>
+								<el-table-column prop="SYSTEM_NAME" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="TASK_FINAL" label="负责模块" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="START_DATE" label="开始时间" width="110"></el-table-column>
 								<el-table-column prop="REALY_DATE" label="完成时间" width="110"></el-table-column>
-								<el-table-column prop="USER_NAME" label="开发负责人" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="USER_NAME" label="人员" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="TYPE" label="需求类型" width="100"></el-table-column>
-
 								<!--<el-table-column prop="DESCRIPTION" label="故障描述"></el-table-column>
 								<el-table-column prop="SOLUTION" label="解决方案"></el-table-column>-->
 							</el-table>

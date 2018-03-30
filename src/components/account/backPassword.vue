@@ -70,18 +70,18 @@
                     this.$warn("请输入手机号码");
                     return;
                 }
-                if (!reg.account.test(this.account)) {
-                    this.$warn("用户名格式不正确");
-                    return;
-                }
-                if (!reg.password.test(this.password)) {
-                    this.$warn("新密码格式不正确");
-                    return;
-                }
-                if (!reg.phone.test(this.phone)) {
-                    this.$warn("手机号码格式不正确");
-                    return;
-                }
+//                if (!reg.account.test(this.account)) {
+//                    this.$warn("用户名格式不正确");
+//                    return;
+//                }
+//                if (!reg.password.test(this.password)) {
+//                    this.$warn("新密码格式不正确");
+//                    return;
+//                }
+//                if (!reg.phone.test(this.phone)) {
+//                    this.$warn("手机号码格式不正确");
+//                    return;
+//                }
                 this.$maskin()
                 let params = new URLSearchParams();
                 params.append('USER_ACCOUNT', this.account);

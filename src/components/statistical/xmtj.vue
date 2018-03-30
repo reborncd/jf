@@ -89,7 +89,7 @@
 					</div>
 				</div>
 				<div class="i-b" style="float: right;">
-					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="changeLoad" v-model="dateRange" type="daterange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="changeLoad" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
 					</el-date-picker>
 				</div>
 			</div>
@@ -129,9 +129,9 @@
 									</template>
 								</el-table-column>
 								<!--<el-table-column prop="st_NEELID" label="需求编号" ></el-table-column>-->
-								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
-								<el-table-column prop="st_ENDDATE" label="期望日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
+								<el-table-column prop="st_ENDDATE" label="期望上线日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>

@@ -142,9 +142,9 @@
 										<span @click="goneeds($event,scope.row)" class="tab-opt" >{{scope.row.st_NEELID}}</span>
 									</template>
 								</el-table-column>
-								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
-								<el-table-column prop="st_ENDDATE" label="期望日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
+								<el-table-column prop="st_ENDDATE" label="期望上线日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>
@@ -169,7 +169,7 @@
 	export default {
 		data() {
 			return {
-				 select_value: "group",
+				select_value: "personal",
 				select: [{
 					label: "开发组",
 					value: "group"
@@ -302,7 +302,7 @@
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
 				
-				if(this.select_value=="group" && this.selectArr_value){
+				if(this.select_value=="personal" && this.selectArr_value){
 					params.append("deptId", this.selectArr_value);
 				}
 				this.$axios.post("/statistical/getStatisticalProjectByUser", params).then((res) => {
@@ -386,7 +386,7 @@
 				let card_header_height = document.querySelector(".el-card__header").offsetHeight;
 				let card_body = document.querySelector(".box-card .el-card__body");
 				card_body.style.height = height - card_header_height - 36 + "px";
-				var proBar = echarts.init(document.getElementById("work-bar")); //项目统计表格
+				var proBar = echarts.init(document.getElementById("work-bar")); //人员统计表格
 				proBar.clear()
 				let option = {
 					title: {
@@ -420,7 +420,7 @@
 						type: 'value'
 					}],
 					series: [{
-						name: '直接访问',
+						name: '工时统计',
 						type: 'bar',
 						barWidth: '60%',
 						data: datas
@@ -436,11 +436,11 @@
 				let card_header_height = document.querySelector(".el-card__header").offsetHeight;
 				let card_body = document.querySelector(".box-card .el-card__body");
 				card_body.style.height = height - card_header_height - 36 + "px";
-				var proBar = echarts.init(document.getElementById("pro-bar")); //项目统计表格
+				var proBar = echarts.init(document.getElementById("pro-bar")); //人员统计表格
 				proBar.clear()
 				let option = {
 					title: {
-						text: '项目统计',
+						text: '人员统计',
 						x: 'center'
 					},
 					color: ['#3398DB'],
@@ -470,7 +470,7 @@
 						type: 'value'
 					}],
 					series: [{
-						name: '项目统计',
+						name: '人员统计',
 						type: 'bar',
 						barWidth: '60%',
 						data: datas
@@ -522,7 +522,7 @@
 				let card_header_height = document.querySelector(".el-card__header").offsetHeight;
 				let card_body = document.querySelector(".box-card .el-card__body");
 				card_body.style.height = height - card_header_height - 36 + "px";
-				var proBar = echarts.init(document.getElementById("per-bar")); //项目统计表格
+				var proBar = echarts.init(document.getElementById("per-bar")); //人员统计表格
 				proBar.clear()
 				let option = {}
 				option = {
@@ -544,6 +544,7 @@
 							var res = params[0].name + "</br>"
 							var date0 = params[0].data;
 							var date1 = params[1].data;
+							console.log(params[0])
 							date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
 							date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
 							res += params[0].seriesName + ":" + date0 + "</br>"

@@ -81,14 +81,14 @@
                     password: /^[A-Za-z0-9]+$/,
                     name: /^[\u4e00-\u9fa5]{0,}$/
                 };
-//                if (this.account == "") {
-//                    this.$warn("请输入用户名");
-//                    return;
-//                }
-//                if (this.password == "") {
-//                    this.$warn("请输入密码");
-//                    return;
-//                }
+                if (this.account == "") {
+                    this.$warn("请输入用户名");
+                    return;
+                }
+                if (this.password == "") {
+                    this.$warn("请输入密码");
+                    return;
+                }
 //                if (!reg.account.test(this.account)) {
 //                    this.$warn("用户名格式错误");
 //                    return;

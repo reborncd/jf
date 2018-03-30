@@ -901,6 +901,7 @@
                                             <div  v-show="!sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div">
                                                 <h1 style="text-align: center; font-weight: 900;font-size: 22px">工时统计</h1>
                                             </div>
+                                            <div v-show="!sstj.hidegsvisible" style="width: 1000px;"  id="user-div" class="clear"></div>
                                         </el-tab-pane>
                                     </el-tabs>
                                 </div>
@@ -2310,6 +2311,7 @@
                 this.testTask.rejectvisible = false;//测试指派bug的弹窗
                 this.testTask.allbugvisible = false;//测试的bug清单弹窗
                 this.transfer.dialogvisible =false;//转接的弹窗
+                this.accept.visible = false;//验收的弹窗
             },
             //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<关闭弹窗>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -2609,8 +2611,9 @@
                         //----------------------加载权限
                         this.setStateAction(data.result);
 
-                        if(data.result.systemDepts && data.result.currentTime){
-                            if(!data.result.systemDepts.length) {
+                        //加载实时统计数据
+                        if(data.result.systemDepts_1 && data.result.currentTime){
+                            if(!data.result.systemDepts_1.length) {
                                 //当前没有分配给技术经理，全部不显示信息
                                 this.sstj.hidezqvisible = true;
                                 this.sstj.hidegsvisible = true;
@@ -2618,7 +2621,10 @@
                                 //默认显示信息
                                 this.sstj.hidezqvisible = false;
                                 this.sstj.hidegsvisible = false;
-                                this.setRealTime(data.result.systemDepts,data.result.currentTime)
+                                this.setRealTime(
+                                    data.result.systemDepts_1,
+                                    data.result.currentTime,
+                                    data.result.workTime)
                             }
                         }
 
@@ -2634,7 +2640,7 @@
                 }
             },
             //设置实时统计数据
-            setRealTime(systemDepts,currentTime){
+            setRealTime(systemDepts,currentTime,workTime){
 //                this.$set(this, "selectValue", statusArr);
                 let datashow = systemDepts;
                 let nowTime = currentTime;
@@ -2644,15 +2650,27 @@
                 let actualTime = []; //实际完成时间
                 let timeInfo=[]; //所有信息
                 let deptName=[];//部门
-                let allTime=[];//实际用时
-                let requiredTime=[];//总用时
-                let leaveTime=[];//剩余用时
+                let allTime=[];//部门实际工时
+                let requiredTime=[];//部门总工时
+                let leaveTime=[];//部门剩余工时
+
+                let userName=[];//人员
+                let userallTime=[];//个人实际工时
+                let userequiredTime=[];//个人总工时
+                let userleaveTime=[];//个人剩余工时
                 for(let i of datashow) {
                     if(!i.EXPECT_END && !i.EXPECT_START){
                         //该项目没有被评审，跳过添加数据，跳过部门
                         continue;
                     }
                     timeInfo.push(i);
+                    let start = this.$format(new Date(i.EXPECT_START));
+                    let end = this.$format(new Date(i.EXPECT_END));
+                    let arr =  [
+                        `${start.mouth}/${start.day}`,
+                        `${end.mouth}/${end.day}`
+                    ]
+//                    yaxis.push(i.DEPT_NAME+arr[0]+'-'+arr[1]);
                     yaxis.push(i.DEPT_NAME);
                     if(i.EXPECT_START){
                         startTime.push(new Date(i.EXPECT_START));
@@ -2676,19 +2694,29 @@
                         leaveTime.push(i.requiredTime-i.allTime)
                     }
                     actualTime.push(new Date(i.lastCompleteTime));
-                    this.$set(this.sstj, "gsinfo", timeInfo);
+                    this.$set(this.sstj, "info", timeInfo);
                 }
-                let len=requiredTime.length;
-                this.$set(this.sstj,"yaxis",yaxis);
-                this.$set(this.sstj,"startTime",startTime);
-                this.$set(this.sstj,"endTime",endTime);
-                this.$set(this.sstj,"actualTime",actualTime);
-                this.$set(this.sstj,"timeInfo",timeInfo);
-                this.$set(this.sstj,"deptName",deptName);
-                this.$set(this.sstj,"requiredTime",requiredTime);
-                this.$set(this.sstj,"leaveTime",leaveTime);
-                this.$set(this.sstj,"allTime",allTime);
-                this.sstj.len = len;
+                if(workTime && workTime.length){
+                    for(let j of workTime){
+                        userName.push(j.USER_NAME)
+                        userallTime.push(j.ALL_TIME)
+                        userequiredTime.push(j.REAL_TIME)
+                        userleaveTime.push(j.required_TIME-j.work_TIME)
+                    }
+                }
+                this.userworkTime(userName,userallTime,userequiredTime,userleaveTime)
+
+//                let len=requiredTime.length;
+//                this.$set(this.sstj,"yaxis",yaxis);
+//                this.$set(this.sstj,"startTime",startTime);
+//                this.$set(this.sstj,"endTime",endTime);
+//                this.$set(this.sstj,"actualTime",actualTime);
+//                this.$set(this.sstj,"timeInfo",timeInfo);
+//                this.$set(this.sstj,"deptName",deptName);
+//                this.$set(this.sstj,"requiredTime",requiredTime);
+//                this.$set(this.sstj,"leaveTime",leaveTime);
+//                this.$set(this.sstj,"allTime",allTime);
+//                this.sstj.len = len;
                 if(!yaxis.length){
                     //没有信息则不显示图表
                     this.sstj.hidegsvisible = true;
@@ -2797,6 +2825,11 @@
                                 axisLabel: {
                                     interval:0//横轴信息全部显示
                                 },
+                                title: {
+                                    text: deptName[i],
+                                    left: 'center',
+                                    top: 0,
+                                },
                                 tooltip : {
                                     trigger: 'item',
                                     formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -2826,6 +2859,65 @@
                         }
                     },0)
 
+                }
+            },
+            //人员工时
+            userworkTime(userName,userallTime,userequiredTime,userleaveTime){
+                let father = document.getElementById("user-div");
+                if(father){
+                    let allChild = document.querySelectorAll("#user-div .user-child");
+                    for(let i of allChild){
+                        father.removeChild(i)
+                    }
+                    setTimeout(()=>{
+                        for(let i=0;i<userName.length;i++){
+                            let txtName
+                            if(userleaveTime[i]>=0){
+                                txtName='剩余工时'
+                            }
+                            else{
+                                txtName='超出工时'
+                                userleaveTime[i]=-userleaveTime[i]
+                            }
+                            let div = '<div id="userworkHours'+i+'" class="user-child" style="height: 150px;width: 300px;float: left;"></div>';
+                            father.insertAdjacentHTML("beforeend",div);
+                            let option = {
+                                title: {
+                                    text: userName[i],
+                                    left: 'center',
+                                    top: 0,
+                                },
+                                axisLabel: {
+                                    interval:0//横轴信息全部显示
+                                },
+                                tooltip : {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+                                series : [
+                                    {
+                                        name: userName[i],
+                                        type: 'pie',
+                                        radius : "60%",
+                                        center: ['60%', '50%'],
+                                        data:[
+                                            {value:userleaveTime[i], name:txtName},
+                                            {value:userallTime[i], name:'实际工时'}
+                                        ],
+                                        itemStyle: {
+                                            emphasis: {
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 0,
+                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                            }
+                                        }
+                                    }
+                                ]
+                            };
+                            let proBar= this.$echarts.init(document.getElementById("userworkHours"+i)); //实时统计
+                            proBar.setOption(option);
+                        }
+                    },0)
                 }
             },
             //-----------------------------------添加开发任务和测试任务的和合计

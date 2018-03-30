@@ -509,21 +509,17 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="申请日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
 					<el-col :span="12" :md="12">
-						<el-form-item label="期望上线时间">
-							<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
+						<el-form-item label="申请日期">
+							<el-date-picker type="date" @change="changeEnd" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
 						</el-form-item>
 					</el-col>
-					<!--<el-col :span="12" :md="12">-->
-						<!--<el-form-item label="需求描述">-->
-							<!--<el-input v-model="addneeds.addform.needsname"></el-input>-->
-						<!--</el-form-item>-->
-					<!--</el-col>-->
+					<el-col :span="12" :md="12">
+						<el-form-item label="期望上线时间">
+							<el-date-picker type="date" v-if="!addneeds.addform.applyDate"  disabled :picker-options="pickerOptions1" placeholder="选择日期"  v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" v-if="addneeds.addform.applyDate"   :picker-options="pickerOptions1" placeholder="选择日期"  v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
+						</el-form-item>
+					</el-col>
 					<el-col :span="24" :md="24">
 						<el-form-item label="需求描述">
 							<!--<el-input type="textarea" v-model="addneeds.addform.needsname"></el-input>-->
@@ -718,11 +714,17 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-                    <el-col :span="12" :md="12">
-                        <el-form-item label="申请日期">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
-                        </el-form-item>
-                    </el-col>
+					<el-col :span="12" :md="12">
+						<el-form-item label="申请日期">
+							<el-date-picker type="date" @change="changeEnd" placeholder="选择日期" v-model="addneeds.addform.applyDate" style="width: 100%;"></el-date-picker>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12" :md="12">
+						<el-form-item label="期望上线时间">
+							<el-date-picker type="date" v-if="!addneeds.addform.applyDate"  disabled :picker-options="pickerOptions1" placeholder="选择日期"  v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
+							<el-date-picker type="date" v-if="addneeds.addform.applyDate"   :picker-options="pickerOptions1" placeholder="选择日期"  v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
+						</el-form-item>
+					</el-col>
 					<el-col :span="24" :md="24">
 						<el-form-item label="需求描述">
 							<!--<el-input v-model="addneeds.addform.needsname"></el-input>-->
@@ -779,11 +781,7 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12" :md="12">
-						<el-form-item label="期望上线时间">
-							<el-date-picker type="date" placeholder="选择日期" v-model="addneeds.addform.jihuadate" style="width: 100%;"></el-date-picker>
-						</el-form-item>
-					</el-col>
+
 					<el-col :span="12" :md="12">
 						<el-form-item label="重要程度">
 							<el-select v-model="addneeds.addform.zhongyaochegndu" clearable placeholder="请选择重要程度" style="width: 100%;">
@@ -1221,7 +1219,8 @@
 				ifPRODUCT_SAVE: "", //是否产品经理新增
 				errorVsetTableDataisible: false,
 				addOneTaskSuccess: false,
-                pickerOptions:""//结束时间限制
+                pickerOptions:"",//结束时间限制
+                pickerOptions1:""
 			}
 		},
 		filters: {
@@ -2303,12 +2302,29 @@
 				this.screenKey.END_DATE = value[1];
 				this.loadData();
 			},
-			//确认
-			agreeRow(val, e) {
-				e.cancelBubble = true;
-				console.log(val)
-				let params = new URLSearchParams();
-				if(this.tabs.data_one.daliy.state_ID==212){
+            //确认
+            agreeRow(val, e) {
+                e.cancelBubble = true;
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+                this.$axios.post("/daliy/daliyCheck", params).then((res) => {
+                    let data = res.data;
+                    if(data.code == 200) {
+                        this.$success(data.message);
+                        this.loadData();
+                    } else {
+                        this.$warn(data.message);
+                    }
+                    this.$maskoff();
+                })
+            },
+            //通过
+            agreeRow1(val, e) {
+                e.cancelBubble = true;
+                console.log(val)
+                let params = new URLSearchParams();
+                if(this.tabs.data_one.daliy.state_ID==212){
                     let self = this
                     let text="通过"
                     this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
@@ -2352,7 +2368,7 @@
                     })
                 }
 
-			},
+            },
 			//分配
 			assignRow(val, e) {
 				e.cancelBubble = true;
@@ -2427,36 +2443,67 @@
 					}, 0);
 				}
 			},
-			//驳回
-			unagreeRow(val, e, text) {
-				e.cancelBubble = true;
-				let self = this
-				this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					inputPattern: /[\S]/,
-					inputErrorMessage: '' + text + '理由不能为空'
-				}).then(({
-					value
-				}) => {
-					this.$maskin();
-					let params = new URLSearchParams();
-					params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
-					params.append('REJECT_RESON', value);
-					this.$axios.post("/daliy/daliyReject", params).then((res) => {
-						let data = res.data;
-						if(data.code == 200) {
-							this.$success(data.message);
-							this.loadData();
-						} else {
-							this.$warn(data.message);
-						}
-						this.$maskoff();
-					});
-				}).catch(() => {
+            //不通过
+            unagreeRow1(val, e, text) {
+                e.cancelBubble = true;
+                let self = this
+                this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /[\S]/,
+                    inputErrorMessage: '' + text + '理由不能为空'
+                }).then(({
+                             value
+                         }) => {
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+                    params.append('REJECT_RESON', value);
+                    this.$axios.post("/daliy/daliyReject", params).then((res) => {
+                        let data = res.data;
+                        if(data.code == 200) {
+                            this.$success(data.message);
+                            this.loadData();
+                        } else {
+                            this.$warn(data.message);
+                        }
+                        this.$maskoff();
+                    });
+                }).catch(() => {
 
-				});
-			},
+                });
+            },
+            //驳回
+            unagreeRow(val, e, text) {
+                e.cancelBubble = true;
+                let self = this
+                this.$prompt('确定进行' + text + '操作？', '请填写' + text + '理由', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /[\S]/,
+                    inputErrorMessage: '' + text + '理由不能为空'
+                }).then(({
+                             value
+                         }) => {
+
+                    this.$maskin();
+                    let params = new URLSearchParams();
+                    params.append('DALIY_NEET_ID', val.daliy_NEET_ID);
+                    params.append('REJECT_RESON', value);
+                    this.$axios.post("/daliy/daliyCheck", params).then((res) => {
+                        let data = res.data;
+                        if(data.code == 200) {
+                            this.$success(data.message);
+                            this.loadData();
+                        } else {
+                            this.$warn(data.message);
+                        }
+                        this.$maskoff();
+                    });
+                }).catch(() => {
+
+                });
+            },
 			// 开始任务startTask
 			startTask(val, e) {
 				e.cancelBubble = true;
@@ -2515,10 +2562,10 @@
 			consoleActionEvent(val) {
 				switch(val.key) {
 					case "1":
-						this.agreeRow(this.handle, event)
+						this.agreeRow1(this.handle, event)
 						break;
 					case "2":
-						this.unagreeRow(this.handle, event, '不通过')
+						this.unagreeRow1(this.handle, event, '不通过')
 						break;
 					case "3":
 						this.assignRow(this.handle, event)

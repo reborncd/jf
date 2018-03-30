@@ -1,30 +1,23 @@
 <style scoped>
     .chart-wrap h2 {
         text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 30px;
     }
-
     .four-pie {
         margin-top: 30px;
     }
-
     .four-pie div {
-        width: 500px;
-        height: 150px;
-        display: inline-block;
+        width: 25%;
+        height: 200px;
+        float: left;
     }
-
-    .chart-wrap h2 {
-        font-size: 20px;
-        font-weight: bold;
-    }
-
     .setting-wrap {
         position: absolute;
-        width: 100%;
         padding-top: 10px;
         left: 30px;
         top: 18px;
-        background: white;
         z-index: 10;
     }
     .el-form-item{
@@ -38,7 +31,6 @@
         line-height: 25px;
     }
 </style>
-
 <template>
     <div>
         <div class="common-card-wrap" style="height: 100%;">
@@ -47,36 +39,43 @@
                     <!--全局看板-->
                     <div class="setting-wrap">
                         <el-button type="primary" size="mini" @click="showOption">看板设置</el-button>
+                        <el-button @click="fullScreen()" style="margin-left: 10px;" type="primary" size="mini">
+                            {{fullStatus?'退出全屏':'全屏查看'}}
+                        </el-button>
                     </div>
-                    <div class="content" v-if="visible.global">
+                    <div class="content" v-show="visible.global">
                         <div class="chart-wrap">
                             <h2>任务状态</h2>
-                            <div class="four-pie">
+                            <div class="four-pie clear">
                                 <div id="task1"></div>
                                 <div id="task2"></div>
                                 <div id="task3"></div>
                                 <div id="task4"></div>
                             </div>
                         </div>
-                        <div class="chart-wrap">
-                            <h2>人员状态</h2>
-                            <div id="people" style="display: block;margin: 0 auto;height: 200px"></div>
-                        </div>
-                        <div class="chart-wrap">
-                            <h2>完成状态</h2>
-                            <el-select v-model="complete.select" placeholder="请选择组别" @change="changeComplete">
-                                <el-option
-                                        v-for="item in complete.selectArr"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                </el-option>
-                            </el-select>
-                            <div id="complete" style="display: block;margin: 0 auto;height: 500px"></div>
+                        <div class="clear col-wrap">
+                            <div class="chart-wrap fl" style="width: 40%;margin-right: 5%;">
+                                <h2>人员状态</h2>
+                                <div id="people" style="width:100%;height: 500px"></div>
+                            </div>
+                            <div class="chart-wrap fl" style="width: 55%">
+                                <h2>完成状态</h2>
+                                <div style="text-align: right">
+                                    <el-select v-model="complete.select" placeholder="请选择组别" @change="changeComplete">
+                                        <el-option
+                                                v-for="item in complete.selectArr"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div id="complete" style="display: block;margin: 0 auto;height: 500px"></div>
+                            </div>
                         </div>
                     </div>
                     <!--周期工时-->
-                    <div class="content" v-if="visible.needs" style="margin-top: 35px">
+                    <div class="content" v-show="visible.needs" style="margin-top: 35px">
                         <!--信息块-->
                         <el-form label-width="120px" label-position="left">
                             <el-row :gutter="20" >
@@ -127,14 +126,14 @@
                 </div>
             </el-card>
         </div>
-        <el-dialog title="看板设置" :visible="option.visible" width="50%"
+        <el-dialog title="看板设置" :visible="option.visible" width="60%"
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
-                <el-form-item label="看板类型">
+                <el-form-item label="看板类型" style="margin-bottom:10px;">
                     <el-checkbox v-model="option.global">全局看板</el-checkbox>
                     <el-checkbox v-model="option.needs">需求看板</el-checkbox>
                 </el-form-item>
-                <el-form-item label="需求类型" v-if="option.needs">
+                <el-form-item label="需求类型" v-if="option.needs" style="margin-bottom:10px;">
                     <el-select v-model="option.needschoosen" clearable placeholder="请选择需求类型"
                                @change="needsChange($event)">
                         <el-option v-for="item in option.needsArr" :key="item.value" :label="item.name"
@@ -145,7 +144,7 @@
                                    :value="item.neel_ID"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="切换频率">
+                <el-form-item label="切换频率" v-if="option.needs && option.global">
                     <el-select v-model="option.time" placeholder="请选择切换频率">
                         <el-option v-for="item in option.timeArr" :key="item.value" :label="item.key"
                                    :value="item.value"></el-option>
@@ -158,11 +157,11 @@
         </el-dialog>
     </div>
 </template>
-
 <script>
     export default {
         data(){
             return {
+                fullStatus:false,
                 visible:{
                     global:true,
                     needs:false
@@ -231,9 +230,14 @@
             //保存设置
             saveOption(){
                 clearInterval(this.interval);
-                this.option.global?this.visible.global = true:this.visible.global = false;
-                this.option.needs?this.visible.needs = true:this.visible.needs = false;
-                if(this.option.needs){
+                if(this.option.global && !this.option.needs){
+                    //选择了全局未选择需求看板
+                    this.visible.global = true;
+                    this.visible.needs = false;
+                }else if(!this.option.global && this.option.needs){
+                    //选择了需求看板未选择全局
+                    this.visible.global = false;
+                    this.visible.needs = true;
                     if(!this.option.needschoosen){
                         this.$warn("请选择需求类型");
                         return
@@ -242,55 +246,27 @@
                         this.$warn("请选择需求编码");
                         return
                     }
-                }
-                if(this.option.global && this.option.needs && !this.option.time){
-                    this.$warn("请选择切换频率");
-                    return;
-                }
-                this.$maskin();
-                let params = new URLSearchParams();
-                params.append("NEEL_TYPE", this.option.needschoosen);//需求类型ID
-                params.append("NEEL_ID", this.option.code);//需求ID
-                this.$axios.post("/statistical/getneelmainba", params).then((res) => {
-                    let data = res.data;
-                    if (data.code == 200 && Reflect.has(data, 'result')) {
-                        this.realtimeInfo = data.result.neellist.length > 0 && data.result.neellist[0];
-                        document.querySelector(".neel_DESCRIPTION").innerHTML = data.result.neellist[0].neel_DESCRIPTION
-                        this.info = data.result.NEELGZ;
-                        //加载实时统计数据
-                        if(data.result.systenDept && data.result.currentTime){
-                            if(data.result.systenDept.length){
-                                //技术经理分析过后显示周期统计模块
-                                this.sstj.hidezqvisible = true
-                                let bool = false;
-                                for(let i of data.result.systenDept){
-                                    if(i.infos){
-                                        bool = true
-                                    }
-                                }
-                                bool?this.sstj.hidegsvisible = true:this.sstj.hidegsvisible = false
-                            }else{
-                                //没有进行分析取消所有展示
-                                this.sstj.hidezqvisible = false
-                                this.sstj.hidegsvisible = false
-                            }
-                            this.setRealTime(data.result.systenDept,data.result.currentTime)
-                        }
-                        this.option.visible = false;
-                        if(this.option.global && this.option.needs){
-                           this.interval = setInterval(()=>{
-                             if(this.visible.global){
-                                 this.visible.global  = false;
-                                 this.visible.needs  = true;
-                             }else{
-                                 this.visible.global  = true;
-                                 this.visible.needs  = false;
-                             }
-                           },this.option.time*1000)
-                        }
-                        this.$maskoff()
+                    this.loadNeedsInfo();
+                }else if (this.option.global && this.option.needs){
+                    //选择了全局未选择需求看板
+                    this.visible.global = true;
+                    this.visible.needs = false;
+                    if(!this.option.time){
+                        this.$warn("请选择切换频率");
+                        return;
                     }
-                })
+                    this.loadNeedsInfo();
+                    this.interval = setInterval(()=>{
+                        this.visible.global = !this.visible.global;
+                        this.visible.needs = !this.visible.needs;
+                        this.loadGlobal();
+                        this.loadNeedsInfo();
+                    },this.option.time*1000);
+                }else if (!this.option.global && !this.option.needs){
+                    //不能存在全部不选的情况
+                    this.$warn("请至少选择一项看板");
+                }
+                this.option.visible = false;
             },
             //设置实时统计数据
             setRealTime(systenDept,currentTime){
@@ -476,16 +452,17 @@
             closeDialog(){
                 this.option.visible = false;//看板的弹窗
             },
-            calculate(){
+            _calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
                 card_body.style.height = height - 36 + "px";
             },
             loadData(){
                 this.$maskin();
-                this.calculate();
+                this._calculate();
                 this.loadGlobal();//加载全局看板
             },
+            //加载全局看板设置
             loadGlobal(){
                 let params = new URLSearchParams();
                 this.$axios.post("/statistical/getstatistics", params).then((res) => {
@@ -500,16 +477,16 @@
                             let Barr = [];
                             let Carr = [];
                             for (let i of data.result.stalist) {
-                                if (i.rriority_NAME == "S") {
+                                if (i.rriority_NAME == "紧急+重要") {
                                     Sarr.push(i);
                                 }
-                                if (i.rriority_NAME == "A") {
+                                if (i.rriority_NAME == "不紧急+重要") {
                                     Aarr.push(i);
                                 }
-                                if (i.rriority_NAME == "B") {
+                                if (i.rriority_NAME == "紧急+不重要") {
                                     Barr.push(i);
                                 }
-                                if (i.rriority_NAME == "C") {
+                                if (i.rriority_NAME == "不紧急+不重要") {
                                     Carr.push(i);
                                 }
                             }
@@ -558,15 +535,53 @@
                     }
                 });
             },
+            //加载需求信息
+            loadNeedsInfo(){
+                this.$maskin();
+                let params = new URLSearchParams();
+                params.append("NEEL_TYPE", this.option.needschoosen);//需求类型ID
+                params.append("NEEL_ID", this.option.code);//需求ID
+                this.$axios.post("/statistical/getneelmainba", params).then((res) => {
+                    let data = res.data;
+                    if (data.code == 200 && Reflect.has(data, 'result')) {
+                        this.realtimeInfo = data.result.neellist.length > 0 && data.result.neellist[0];
+                        document.querySelector(".neel_DESCRIPTION").innerHTML = data.result.neellist[0].neel_DESCRIPTION
+                        this.info = data.result.NEELGZ;
+                        //加载实时统计数据
+                        if(data.result.systenDept && data.result.currentTime){
+                            if(data.result.systenDept.length){
+                                //技术经理分析过后显示周期统计模块
+                                this.sstj.hidezqvisible = true
+                                let bool = false;
+                                for(let i of data.result.systenDept){
+                                    if(i.infos){
+                                        bool = true
+                                    }
+                                }
+                                bool?this.sstj.hidegsvisible = true:this.sstj.hidegsvisible = false
+                            }else{
+                                //没有进行分析取消所有展示
+                                this.sstj.hidezqvisible = false
+                                this.sstj.hidegsvisible = false
+                            }
+                            this.setRealTime(data.result.systenDept,data.result.currentTime)
+                        }
+                        this.$maskoff()
+                    }
+                })
+            },
             //选择需求类型change事件
             needsChange(e){
-                this.option.code = "";
+                this.$maskin();
+                this.interval = "";//清除定时器
+                this.option.code = "";//清除上次选中的值
                 let params = new URLSearchParams();
                 params.append("NEEL_TYPE", this.option.needschoosen);
                 this.$axios.post("/statistical/getneelnamelist", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
-                        this.$set(this.option, "codeArr", data.result.neellist)
+                        this.$set(this.option, "codeArr", data.result.neellist);
+                        this.$maskoff();
                     }
                 })
             },
@@ -574,19 +589,19 @@
             setTaskStatus(Sarr, Aarr, Barr, Carr){
                 let task1 = this.$echarts.init(document.getElementById("task1"));
                 task1.clear();
-                task1.setOption(this.statusOption("紧急重要", Sarr));
+                task1.setOption(this.statusOption("紧急+重要", Sarr));
 
                 let task2 = this.$echarts.init(document.getElementById("task2"));
                 task2.clear();
-                task2.setOption(this.statusOption("紧急普通", Aarr));
+                task2.setOption(this.statusOption("不紧急+重要", Aarr));
 
                 let task3 = this.$echarts.init(document.getElementById("task3"));
                 task3.clear();
-                task3.setOption(this.statusOption("中等重要", Barr));
+                task3.setOption(this.statusOption("紧急+不重要", Barr));
 
                 let task4 = this.$echarts.init(document.getElementById("task4"));
                 task4.clear();
-                task4.setOption(this.statusOption("一般普通", Carr));
+                task4.setOption(this.statusOption("不紧急+不重要", Carr));
             },
             //圆的设置
             statusOption(title, allData){
@@ -644,6 +659,7 @@
                     radiusAxis: {
                         type: 'category',
                         data: data.dept_NAME,//组的数量
+                        z:5
                     },
                     polar: {},
                     series: [{
@@ -677,19 +693,6 @@
                 let jcjs = [];//基础建设的数组
                 let rcrw = [];//日常任务的数组
                 let jsxq = [];//技术需求的数组
-                if (this.complete.select == "全部") {
-                    for (let i of data) {
-                        for (let j of i.deptuserlist) {
-                            person.push(j.user_NAME);
-                            for (let n of j.userwtbdlist) {
-                                ywxq.push(n.prodcount);
-                                jcjs.push(n.basecount);
-                                rcrw.push(n.edalcount);
-                                jsxq.push(n.techcount);
-                            }
-                        }
-                    }
-                }
                 for (let i of data) {
                     if (i.value == this.complete.select) {
                         for (let j of i.deptuserlist) {
@@ -780,6 +783,61 @@
                 complete.clear();
                 complete.setOption(this.completeOption(data));
             },
+            //全屏查看功能
+            fullScreen(){
+                if(!this.fullStatus){
+                    let element = document.documentElement;
+                    if (element.requestFullscreen) {
+                        element.requestFullscreen();
+                    } else if (element.mozRequestFullScreen) {//火狐
+                        element.mozRequestFullScreen();
+                    } else if (element.webkitRequestFullscreen) {//谷歌
+                        element.webkitRequestFullscreen();
+                    } else if (element.msRequestFullscreen) {//ie
+                        element.msRequestFullscreen();
+                    }
+                    element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);//全屏状态允许键盘输入
+                }else{
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.mozExitFullScreen) {
+                        document.mozExitFullScreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+                setTimeout(()=>{
+                    this.calculateFullScreen()
+                },500)
+            },
+            calculateFullScreen(){
+                let width = window.innerWidth;
+                let height = window.innerHeight;
+                let mainr = document.querySelector(".mainr");
+                let card =document.querySelector(".common-card-wrap");
+                let card_body = document.querySelector(".box-card .el-card__body");
+                if(!this.fullStatus){
+                    mainr.style.width = width+"px";
+                    mainr.style.height = height+"px";
+                }else{
+                    mainr.style.height = height-50+"px";
+                    mainr.style.width = width-224+"px";
+                }
+                if(!this.fullStatus){
+                    mainr.style.left = 0;
+                    mainr.style.top = 0;
+                    mainr.style.padding = 0;
+                    card.style.paddingRight = 0;
+                    card_body.style.height = height+"px";
+                }else{
+                    mainr.style.left = 224+"px";
+                    mainr.style.top = 50+"px";
+                    mainr.style.padding = "17px 0 17px 17px";
+                    card.style.paddingRight = 17+"px";
+                    card_body.style.height = height-36-50+"px";
+                }
+                this.fullStatus = !this.fullStatus;
+            }
         }
     }
 </script>

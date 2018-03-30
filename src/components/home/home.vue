@@ -132,11 +132,12 @@
         position: fixed;
         left: 224px;
         top: 50px;
-        overflow-y: auto;
-        padding: 17px 224px 17px 17px;
+        overflow: hidden;
         z-index: 1;
         width: 100%;
         height: 586px;
+        padding: 17px 0 17px 17px;
+        z-index:10;
     }
 
     .mainr::-webkit-scrollbar {
@@ -314,7 +315,7 @@
                 let height = window.innerHeight;
                 let width=window.innerWidth
                 this.content = {
-//                    'width':`${width-224-34}px`,
+                    'width':`${width-224}px`,
                     'height': `${height - 50}px`
                 };
             },

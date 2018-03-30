@@ -163,7 +163,7 @@
                             <el-table-column prop="system_TYPE" label="子系统" width="110" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="create_TIME" label="提交日期" width="110" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="aa" label="版本号" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="priperty" label="优先级" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="priperty" label="bug等级" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="status" label="状态" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="update_TIME" label="更新时间" show-overflow-tooltip></el-table-column>
                         </el-table>
@@ -217,7 +217,7 @@
                                     </div>
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
-                                            <el-col :span="12" :sm="12" v-if="operate.glvisibble" style="width: 51%;float: right">
+                                            <el-col :span="12" :sm="12" v-if="operate.status=='待审核' && operate.permission" style="width: 51%;float: right">
                                                 <el-form-item label="关联的缺陷号">
                                                     <el-select v-model="operate.relationValue" placeholder="" filterable  clearable style="width: 100%">
                                                         <el-option
@@ -243,7 +243,7 @@
                                                     <el-form-item label="">{{operate.sender}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
-                                            <div class="opt-show" v-if="operate.status=='待审核'">
+                                            <div class="opt-show" v-if="operate.status=='待审核' && operate.permission">
                                                 <el-col :span="12" :sm="12">
                                                     <el-form-item label="成因">
                                                             <el-select v-model="operate.reasonValue" placeholder="" filterable  clearable style='width: 100%;'>
@@ -353,10 +353,7 @@
 		                                    :value="item.value"
 	                                    	></el-option>
 	                                </el-select>
-                                    <el-button style="margin-left: 100px"  type="primary"
-                                                v-if="operate.fpvisible"
-                                                @click="tableAction($event)">分配人员
-                                    </el-button>
+
 	                            </el-form-item>
 
 
@@ -394,6 +391,10 @@
                         </el-row>
                     </el-form>
                     <div style="text-align: center">
+                        <el-button style="margin-left: 100px"  type="primary"
+                                   v-if="operate.fpvisible"
+                                   @click="tableAction($event)">分配人员
+                        </el-button>
                         <el-button type="danger" @click="subForm">确 定</el-button>
                     </div>
                 </div>
@@ -470,7 +471,8 @@
                     glvisibble:false,
                       topeople:'',//指派人
                       topeopleSelect:'',
-                      fpvisible:true//分配弹窗显示
+                      fpvisible:true,//分配弹窗显示
+                      permission:false
                     
                   },
               way:{
@@ -899,7 +901,8 @@
                           this.operate.sender=data.result.fault.create_USER;
                           this.way.sender=data.result.fault.create_USER;
                           this.operate.relation=data.result.technologys;
-                          
+                          this.operate.permission = data.result.permission;
+                          console.log(this.operate.permission )
                           let arr=[];
                           if(data.result.process.result.length>0){
                             for(let i of data.result.process.result){
@@ -1114,6 +1117,7 @@
 
             },
             closeDialog(){
+                this.assign.assignvisible = false;//分配任务的弹窗
                 this.split.splitaddvisible = false;//拆分任务添加人员的弹窗
             },
            getFile(e){

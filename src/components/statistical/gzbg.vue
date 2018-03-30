@@ -123,27 +123,35 @@
 									<el-col :span="6">
 										<el-form-item label="业务需求"><span style="color: red;">{{showData.completeBus}}</span></el-form-item>
 									</el-col>
+                                    <el-col :span="6">
+                                        <el-form-item label="技术需求"><span style="color: red;">{{showData.completeTech}}</span></el-form-item>
+                                    </el-col>
 									<el-col :span="6">
-										<el-form-item label="基础需求任务"><span style="color: red;">{{showData.completeBase}}</span></el-form-item>
+										<el-form-item label="基础建设"><span style="color: red;">{{showData.completeBase}}</span></el-form-item>
 									</el-col>
 									<el-col :span="6">
 										<el-form-item label="日常任务"><span style="color: red;">{{showData.completeDaliy}}</span></el-form-item>
 									</el-col>
-									<el-col :span="6">
-										<el-form-item label="技术需求"><span style="color: red;">{{showData.completeTech}}</span></el-form-item>
-									</el-col>
+
 									<!--<el-col :span="6">
 										<el-form-item label="问题管理"><span style="color: red;">{{showData.faultSize}}</span></el-form-item>
 									</el-col>-->
 									<el-col :span="24">
 										<h5><i class="iconfont icon-biaozhungongshizhidinghefenxi i-b"></i><span class="i-b">工时统计</span></h5>
 									</el-col>
-									<el-col :span="6">
-										<el-form-item label="忙碌"><span style="color: red;">{{showData.allWorkHours}}</span></el-form-item>
-									</el-col>
-									<el-col :span="6">
-										<el-form-item label="空闲"><span style="color: red;">{{showData.relDays}}</span></el-form-item>
-									</el-col>
+                                    <el-col :span="6">
+                                        <el-form-item label="业务需求"><span style="color: red;">{{showData.Workcount}}</span></el-form-item>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-form-item label="技术需求"><span style="color: red;">{{showData.Techcount}}</span></el-form-item>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-form-item label="基础建设"><span style="color: red;">{{showData.Basecount}}</span></el-form-item>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-form-item label="日常任务"><span style="color: red;">{{showData.Daliycount}}</span></el-form-item>
+                                    </el-col>
+
 
 								</el-row>
 							</el-col>
@@ -161,10 +169,10 @@
 						</el-row>
 						<div class="table-list">
 							<el-table :data="showData.resuletMapList" border style="width: 100%">
-								<el-table-column prop="name2" label="项目组" width="110"></el-table-column>
-								<el-table-column prop="name1" label="人员姓名" width="110"></el-table-column>
 								<el-table-column prop="ST_NEELID" label="需求编号" width="200"></el-table-column>
 								<el-table-column prop="ST_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
+								<el-table-column prop="name2" label="项目组" width="110"></el-table-column>
+								<el-table-column prop="name1" label="人员" width="110"></el-table-column>
 								<el-table-column prop="RETURNTYPENAME" label="所属需求" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="ST_expectedStartTime" label="预计开始日期" width="110"></el-table-column>
 								<el-table-column prop="ST_expectedEndtTime" label="预计结束日期" width="110"></el-table-column>
@@ -333,7 +341,7 @@
 					legend: {
 						orient: 'vertical',
 						x: 'left',
-						data: ['日常任务', '业务需求', '技术需求', '基础需求任务', "忙碌", "空闲"]
+                        data: ['日常任务', '业务需求', '技术需求', '基础建设', '问题管理', '日常任务', '业务需求', '技术需求', '基础建设']
 					},
 					series: [{
 							name: '工时统计',
@@ -352,14 +360,22 @@
 								}
 							},
 							data: [{
-									value: this.showData.relDays,
-									name: '空闲'
-								},
-								{
-									value: this.showData.allWorkHours,
-									name: '忙碌'
-								}
-							]
+                                    value: this.showData.Daliycount,
+                                    name: '日常任务'
+                                },
+                                {
+                                    value: this.showData.Workcount,
+                                    name: '业务需求'
+                                },
+                                {
+                                    value: this.showData.Techcount,
+                                    name: '技术需求'
+                                },
+                                {
+                                    value: this.showData.Basecount,
+                                    name: '基础建设'
+                                }
+                            ]
 						},
 						{
 							name: '完成任务统计',
@@ -380,7 +396,7 @@
 								},
 								{
 									value: this.showData.completeBase,
-									name: '基础需求任务'
+									name: '基础建设'
 								}
 							]
 						}

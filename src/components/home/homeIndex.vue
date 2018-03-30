@@ -139,7 +139,6 @@
 
     }
 </style>
-
 <template>
     <el-col :span="24" class="mainr-index">
         <div :style="topHeight">
@@ -208,7 +207,7 @@
         </div>
         <div :style="bottomHeight">
             <el-col :span="24" style="height: 100%">
-                <el-col :span="8" style="height: 100%">
+                <el-col :span="8" v-if="zhou" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div slot="header" class="clearfix">
@@ -218,7 +217,7 @@
                         </el-card>
                     </div>
                 </el-col>
-                <el-col :span="8" style="height: 100%">
+                <el-col :span="8" v-if="zi" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div class="chartTitle" >
@@ -236,7 +235,7 @@
                     </div>
                 </el-col>
                 <!--操作日志-->
-                <el-col :span="8" style="height: 100%">
+                <el-col :span="logSize" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div slot="header" class="clearfix">
@@ -267,9 +266,7 @@
             </el-col>
         </div>
     </el-col>
-
 </template>
-
 <script>
     import datePlug from "./datePlug.vue";
 
@@ -277,11 +274,11 @@
         data() {
             return {
                 scrollStyle_y: 0,
-                interval: "",
+                interval: "",//滚动字幕定时器
                 scrollHeight: "",
-                scrollWrap: "",
-                topHeight: "",
-                bottomHeight: "",
+                scrollWrap: "",//滚动字幕warp
+                topHeight: "",//上部分的高度
+                bottomHeight: "",//底部的高度
                 has_delay: [],//已经延期
                 will_delay: [],//将要延期
                 todo: [],//代办事项
@@ -294,7 +291,6 @@
                     "5": "问题管理"
                 },//代办事项的标题数组
                 hasdo: [],//经办事项
-
                 show: {
                     time: [],//时间
                     comcount: [],//当日完成
@@ -306,7 +302,10 @@
                     kocount: [],//空闲
                     mcount: [],//忙碌
                     sumcount: [],//人数
-                }
+                },
+                zhou:false,//一周工作动态判断
+                zi:false,//资源动态判断
+                logSize:24,//操作日志的宽度
             }
         },
         components: {
@@ -318,7 +317,7 @@
             this.clearInt();
         },
         mounted() {
-            this.loadData()
+            this.loadData();
         },
         filters: {
             date: function (time) {
@@ -370,10 +369,13 @@
                     //                    截取下半部分100%的高度      -   卡片头部的高度
                     i.style.height = ((height - 34 - 10) * 0.4) - card_header_height - 1 + "px";
                 }
+
             },
             //加载数据
             loadData() {
-                this.calculate();
+                setTimeout(()=>{
+                    this.calculate();
+                },200)
                 this.$maskin();
                 let params = new URLSearchParams();
                 //加载待办事项
@@ -392,15 +394,24 @@
                 this.$axios.post("/main/queryTask", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                        //判断权限
+                        data.result.MAIN_ZHOU?this.zhou =true:this.zhou = false;
+                        data.result.MAIN_ZI?this.zi =true:this.zi = false;
+                        if(this.zi && this.zhou){
+                            this.logSize = 8;
+                        }else if(this.zi || this.zhou){
+                            this.logSize = 16;
+                        }else  if(!this.zi && !this.zhou){
+                            this.logSize = 24;
+                        }
                         //将要延期
                         this.$set(this, "will_delay", data.result.willTask);
                         //已经延期
                         this.$set(this, "has_delay", data.result.failTask);
-                        this.setInterval()
+                        this.setInterval();
                         this.$maskoff();
                     }
-                })
-
+                });
                 //一周动态
                 this.$axios.post("/main/datecount", params).then((res) => {
                     let data = res.data;

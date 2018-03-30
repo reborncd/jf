@@ -160,7 +160,7 @@
               <el-table-column prop="system_TYPE" label="子系统" width="110" show-overflow-tooltip></el-table-column>
               <el-table-column prop="reason" label="故障成因" show-overflow-tooltip></el-table-column>
               <el-table-column prop="create_TIME" label="提交日期" width="110" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="priperty" label="优先级" width="80" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="priperty" label="故障等级" width="80" show-overflow-tooltip></el-table-column>
               <el-table-column prop="status" label="状态" show-overflow-tooltip></el-table-column>
               <el-table-column prop="update_TIME" label="更新时间" show-overflow-tooltip></el-table-column>
             </el-table>
@@ -234,7 +234,7 @@
                           <el-form-item label="">{{operate.relation_USER}}</el-form-item>
                         </el-form-item>
                       </el-col>
-                      <div class="opt-show" v-if="operate.status=='待审核'">
+                      <div class="opt-show" v-if="operate.status=='待审核' && operate.permission">
                         <el-col :span="12" :sm="12">
                           <el-form-item label="成因">
                               <el-select v-model="operate.operateTxt.reasonValue" placeholder=""  clearable style='width: 100%;'>
@@ -341,9 +341,7 @@
               <el-col :span="12">
                 <el-form-item label="故障分析人员">
                   <el-input v-model="popup.popTxt.relationUser" style="width: 50%"></el-input>
-                  <el-button style="margin-left: 100px"  type="primary"
-                              @click="tableAction($event)">分配人员
-                  </el-button>
+
                 </el-form-item>
               </el-col>
               <el-col :span="12" :sm="12">
@@ -383,6 +381,9 @@
             </el-row>
           </el-form>
           <div style="text-align: center">
+            <el-button style="margin-left: 100px"  type="primary"
+                       @click="tableAction($event)">分配人员
+            </el-button>
             <el-button type="danger" @click="subForm">确 定</el-button>
           </div>
         </div>
@@ -457,7 +458,8 @@
           'effectScope': '',//影响范围
           'solution': '',//解决方案
           },
-            fpvisible:true//分配弹窗显示
+            fpvisible:true,//分配弹窗显示
+            permission:false
         },
         way: {
           status: '',
@@ -686,18 +688,21 @@
             if (i.priperty == 103) {
               i.priperty = '一般'
             }
-            if(i.reason==1){
-                i.reason='程序问题'
+            if(i.reason){
+                if(i.reason==1){
+                    i.reason='程序问题'
+                }
+                if(i.reason==2){
+                    i.reason='硬件环境'
+                }
+                if(i.reason=3){
+                    i.reason='网络故障'
+                }
+                if(i.reason==4){
+                    i.reason='人为错误'
+                }
             }
-            if(i.reason==2){
-                i.reason='硬件环境'
-            }
-            if(i.reason=3){
-                i.reason='网络故障'
-            }
-            if(i.reason==4){
-                i.reason='人为错误'
-            }
+
             arr.push(i)
           }
           this.$set(this.table, "tableData", arr);
@@ -920,6 +925,7 @@
           this.$axios.post("/fault/get", params).then((res) => {
             let data = res.data;
             if (data.code == 200) {
+                console.log(data.result.fault)
               //以下是设置展示数据
                switch (data.result.fault.priperty) {
                 case 101:
@@ -937,10 +943,12 @@
               this.tabs.form.relationUser = data.result.fault.relation_USER;
               this.tabs.form.description = data.result.fault.description;
               this.tabs.form.sumEffect = data.result.fault.sum_EFFECT; //交易量影响
-              this.tabs.form.descriptionEx = data.result.fault.description;
+              this.tabs.form.descriptionEx = data.result.fault.description_EX;
               this.operate.status =val.status
               this.operate.relation_USER = data.result.fault.relation_USER;
+              this.operate.permission = data.result.permission;
               this.way.relation_USER = data.result.fault.relation_USER;
+              console.log(this.operate.permission)
               let arr = [];
               let reason=[]
               //
@@ -1130,6 +1138,7 @@
         this.calculateTabsHeight();
     },
         closeDialog(){
+            this.assign.assignvisible = false;//分配任务的弹窗
             this.split.splitaddvisible = false;//拆分任务添加人员的弹窗
         },
      //清除新增新增的表单

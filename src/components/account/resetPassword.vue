@@ -69,14 +69,14 @@ export default {
     methods:{
         resetSub(){
             let reg_pwd = /^[A-Za-z0-9]+$/;
-//            if(this.reset.oldPw == ""){
-//                this.$warn("请输入旧密码");
-//                return;
-//            }
-//            if(this.reset.newPw == ""){
-//                this.$warn("请输入新密码");
-//                return;
-//            }
+            if(this.reset.oldPw == ""){
+                this.$warn("请输入旧密码");
+                return;
+            }
+            if(this.reset.newPw == ""){
+                this.$warn("请输入新密码");
+                return;
+            }
 //            if (!reg_pwd.test(this.reset.oldPw)) {
 //                this.$warn("旧密码格式有误");
 //                return

@@ -86,6 +86,10 @@
 					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
 					</el-option>
 				</el-select>
+                <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData">
+                    <el-option v-for="(item, index) in select" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
 				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
 						<el-button size="mini" type="primary" @click="getPdf('积分统计')">生成报告
@@ -139,18 +143,20 @@
 	export default {
 		data() {
 			return {
-				select_value: "orther",
-				select: [{
-					label: "日报",
-					value: "day"
-				}, {
-					label: "周报",
+				select_value: "week",
+				select: [
+				//     {
+				// 	label: "日积分",
+				// 	value: "day"
+				// },
+                    {
+					label: "周积分",
 					value: "week"
 				}, {
-					label: "月报",
+					label: "月积分",
 					value: "month"
 				}, {
-					label: "年报",
+					label: "年积分",
 					value: "year"
 				}],
 				showData: [],
@@ -218,15 +224,15 @@
 			loadCharData() {
 				this.$maskin();
 				let params = new URLSearchParams();
-				if(this.dateRange.length == 0) {
-					params.append("startDate", "");
-					params.append("endDate", "");
-					this.select_value = "day"
-				} else {
-					params.append("startDate", this.dateRange[0]);
-					params.append("endDate", this.dateRange[1]);
-					this.select_value = "orther"
-				}
+				// if(this.dateRange.length == 0) {
+				// 	params.append("startDate", "");
+				// 	params.append("endDate", "");
+				// 	this.select_value = "day"
+				// } else {
+				// 	params.append("startDate", this.dateRange[0]);
+				// 	params.append("endDate", this.dateRange[1]);
+				// 	this.select_value = "orther"
+				// }
 				params.append("TYPE", this.select_value);
 				this.$axios.post("/statistical/getIntegralStatisticalData", params).then((res) => {
 					let data = res.data;
@@ -238,9 +244,9 @@
 						let integral=[]
 						for(let i of data.result.result2) {
 							xaxis.push(i.userName)
-							efficiency.push(i.efficiency)
-							promptness.push(i.promptness)
-							saturation.push(i.saturation)
+							efficiency.push((i.efficiency)*100)
+							promptness.push((i.promptness)*100)
+							saturation.push((i.saturation)*100)
 							integral.push(i.integral)
 						}
 						this.loadsystemChart(xaxis, efficiency, promptness, saturation,integral)
@@ -262,7 +268,7 @@
 				let option = {}
 				option = {
 					title: {
-						text: "系统统计",
+						text: "积分统计",
 						left: 'center'
 					},
 					tooltip: {
@@ -306,7 +312,6 @@
 						type: 'value',
 						name: '百分比',
 						min: 0,
-						max:100,
 						position: 'left',
 						axisLabel: {
 							formatter: '{value}%'
@@ -318,7 +323,7 @@
 						min: 0,
 						position: 'right',
 						axisLabel: {
-							formatter: '{value}'
+							formatter: '{value}个'
 						}
 					}
 				],

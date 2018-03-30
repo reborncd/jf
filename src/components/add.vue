@@ -7,6 +7,7 @@
         <el-select v-model="value" placeholder="请选择">
             <el-option
                     v-for="item in options"
+                    :key = "item.menu_id"
                     :label="item.menu_name"
                     :value="item.menu_id">
             </el-option>

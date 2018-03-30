@@ -100,8 +100,8 @@
 
     .edition-line li p.banP {
         position: absolute;
-        top: 54%;
-        left: 0px;
+        top: 60%;
+        left: -17px;
         width: 100%;
         text-align: left;
     }
@@ -182,8 +182,11 @@
                             <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
                             <el-table-column label="需求描述" show-overflow-tooltip>
                                 <template slot-scope="scope">
-                                    <span @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
-                                          class="tab-opt" style="line-height:1">{{scope.row.neel_DESCRIPTION}}</span>
+                                    <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
+                                          class="tab-opt neel_DESCRIPTION" style="line-height:1;"
+                                    :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
+                                    <!--:title=scope.row.neel_DESCRIPTION-->
+                                    <!--{{scope.row.neel_DESCRIPTION}}-->
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -223,7 +226,7 @@
                                                 :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
                                                 <em @mouseover="showInfo(index)" @mouseleave="hiddenInfo(index)"></em>
                                                 <span></span>
-                                                <p class="banP">{{item.ban}}</p>
+                                                <p class="banP">{{item.new_VERSION}}</p>
                                                 <div class="infoDiv" style=""
                                                      v-if="tabs.infoshowVisible && tabs.activeLineIndex == index"
                                                      v-model="tabs.infoshowVisible">
@@ -407,6 +410,13 @@
             setTableData(data){
                 this.$set(this.table, "tableData", data);
                 this.$set(this.table, "tableOriginData", data);
+//                setTimeout(()=>{
+//                    let row = document.querySelectorAll(".neel_DESCRIPTION");
+//                for(let i of row){
+//                    console.log(i)
+//                    i.insertAdjacentHTML("beforeend",i.getAttribute("data-text")?i.getAttribute("data-text"):'')
+//                }
+//                },0)
                 this.$maskoff();
             },
             //版本详情显示
