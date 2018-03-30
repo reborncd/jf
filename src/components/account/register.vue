@@ -29,7 +29,7 @@
                 <div class="label-wrap" @keyup="keyEvent($event)">
                     <el-form  label-width="80px">
                         <el-form-item label="用户名">
-                            <el-input type="text" v-model="account" placeholder="请输入用户名">
+                            <el-input type="text" v-model="account" placeholder="请输入用户名（只支持英文和数字）">
                                 <i slot="prefix" class="el-input__icon iconfont icon-gerenzhongxin"></i>
                             </el-input>
                         </el-form-item>
@@ -140,18 +140,18 @@
                     this.$warn("请输入入职日期");
                     return;
                 }
-//                if (!reg.account.test(this.account)) {
-//                    this.$warn("用户名格式只支持字母和数字");
-//                    return;
-//                }
+                if (!reg.account.test(this.account)) {
+                    this.$warn("用户名格式只支持英文和数字");
+                    return;
+                }
 //                if (!reg.password.test(this.password)) {
 //                    this.$warn("密码格式只支持数字和字母");
 //                    return;
 //                }
-//                if (!reg.name.test(this.name)) {
-//                    this.$warn("姓名格式不正确");
-//                    return;
-//                }
+                if (!reg.name.test(this.name)) {
+                    this.$warn("姓名格式不正确");
+                    return;
+                }
                 if (!reg.phone.test(this.phone)) {
                     this.$warn("手机号码格式错误");
                     return;

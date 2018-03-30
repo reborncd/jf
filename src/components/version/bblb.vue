@@ -216,7 +216,9 @@
                                             <el-table-column prop="start_TIME" label="启用时间"
                                                              show-overflow-tooltip></el-table-column>
                                             <el-table-column prop="neel_DESCRIPTION" label="需求描述"
-                                                             show-overflow-tooltip></el-table-column>
+                                                             show-overflow-tooltip>
+
+                                            </el-table-column>
                                         </el-table>
                                     </div>
                                     <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">

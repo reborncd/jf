@@ -223,7 +223,7 @@
                             <div class="chartTitle" >
                                 <div
                                   v-for="(item, index) in this.show.dept_NAME"
-                                  v-key="item">
+                                  :key="item">
                                     {{index + 1}}. {{show.dept_NAME[show.dept_NAME.length - index - 1]}}
                                 </div>
                             </div>

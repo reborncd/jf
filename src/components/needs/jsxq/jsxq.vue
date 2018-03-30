@@ -2041,10 +2041,13 @@
                 //判断是否有search跳转到赌赢的操作台
                 if(this.$route.params.neelId){
                     let id = this.$route.params.neelId;
-                    for(let i of data.bases){
-                        if(i.tech_NEET_ID == id){
-                            this.handleCurrentChange(i);
-                            this.$refs.jsxq_table.setCurrentRow(i);
+                    for(let i=0;i<data.bases.length;i++){
+                        if(data.bases[i].tech_NEET_ID == id){
+                            setTimeout(()=>{
+                                this.tabs.index = i;
+                            this.$refs.jsxq_table.setCurrentRow(data.bases[i]);
+                            this.handleCurrentChange(data.bases[i]);
+                        },0)
                             break;
                         }
                     }
@@ -2382,7 +2385,7 @@
                 this.changeInset.visible = false;//技术经理确认变更
             },
             //-----------------------------------表格点击事件
-            handleCurrentChange(val){
+            handleCurrentChange(val,e){
                 //点击时初始化操作
                 this.$maskin();
                 this.resetAllStatus();
@@ -2393,6 +2396,26 @@
                         this.calculate()
                     }, 0);
                 }
+                //更改scrollTop，将选中置顶
+                let scrollTop = 0;
+                let table_body = this.$refs.jsxq_table.$el.querySelector(".el-table__body-wrapper");
+                if(!e){
+                    let row = document.querySelector(".el-table__body-wrapper");
+                    scrollTop = row.getElementsByTagName("tr")[this.tabs.index].offsetTop;
+                } else if(!e.target.classList.contains("el-table__row")){
+                    for(let i of e.path){
+                        if(i.classList.contains("el-table__row")){
+                            scrollTop = i.offsetTop;
+                            break;
+                        }
+                    }
+                }else{
+                    scrollTop = e.target.offsetTop
+                }
+                setTimeout(()=>{
+                    table_body.scrollTop = scrollTop;
+            },0)
+
                 if (val.tech_NEET_ID) {
                     this.loadTabsData(val)
                 }
@@ -3006,10 +3029,16 @@
             },
             //-----------------------------------点击新需求和旧需求进行跳转
             goNeedList(e,code,type){
-                for(let i of this.table.tableOriginData){
-                    if(i.tech_NEET_ID == code){
-                        this.handleCurrentChange(i);
-                        this.$refs.jsxq_table.setCurrentRow(i)
+                let data = this.table.tableOriginData;
+                for(let i=0;i<data.length;i++){
+                    if(data[i].tech_NEET_ID == code){
+                        setTimeout(()=>{
+                            console.log(i)
+                        this.tabs.index= i;
+                        this.$refs.jsxq_table.setCurrentRow(data[i])
+                        this.handleCurrentChange(data[i]);
+                    },0);
+                        break
                     }
                 }
             },
