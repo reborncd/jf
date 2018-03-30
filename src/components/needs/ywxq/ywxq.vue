@@ -353,7 +353,7 @@
                                             </el-col>
                                             <!--验收不通过-->
                                             <el-col :span="24" v-if="tabs.tabsData.fail" style="color: red">
-                                                <el-form-item label="验收不通过">{{tabs.tabsData.fail}}</el-form-item>
+                                                <el-form-item label="验收不通过原因">{{tabs.tabsData.fail}}</el-form-item>
                                             </el-col>
                                             <!--验收通过原因-->
                                             <el-col :span="24" v-if="tabs.tabsData.success" style="color: red">
@@ -2391,6 +2391,7 @@
             },
             //-----------------------------------表格后面按钮的点击事件
             tableAction(index,row,e,type){
+                this.tabs.index = index
                 this.tabs.activeTableInfo = row;
                 this.$refs.ywxq_table.setCurrentRow(row);
                 //阻止事件冒泡
@@ -2636,22 +2637,33 @@
                         this.setStateAction(data.result);
 
                         //加载实时统计数据
-                        if(data.result.systemDepts_1 && data.result.currentTime){
-                            if(!data.result.systemDepts_1.length) {
-                                //当前没有分配给技术经理，全部不显示信息
-                                this.sstj.hidezqvisible = true;
-                                this.sstj.hidegsvisible = true;
-                            }else{
-                                //默认显示信息
-                                this.sstj.hidezqvisible = false;
-                                this.sstj.hidegsvisible = false;
-                                this.setRealTime(
-                                    data.result.systemDepts_1,
-                                    data.result.currentTime,
-                                    data.result.workTime)
+                        if(data.result.systemDepts){
+                            //默认显示信息
+                            this.sstj.hidezqvisible = false;
+                            this.sstj.hidegsvisible = false;
+                            this.setRealTime(
+                                data.result.systemDepts,
+                                data.result.currentTime,
+                                data.result.workTime)
+                        }else if(data.result.systemDepts_1 && data.result.systemDepts_1.length){
+                            //默认显示信息
+                            this.sstj.hidezqvisible = false;
+                            this.sstj.hidegsvisible = false;
+                            let arr = [];
+                            for(let i of  data.result.systemDepts_1){
+                                if(i.myGroup){
+                                    arr.push(i)
+                                }
                             }
+                            this.setRealTime(
+                                arr,
+                                data.result.currentTime,
+                                data.result.workTime)
+                        }else{
+                            //当前没有分配给技术经理，全部不显示信息
+                            this.sstj.hidezqvisible = true;
+                            this.sstj.hidegsvisible = true;
                         }
-
                         this.$maskoff();
                     }
                 })
@@ -2720,12 +2732,15 @@
                     actualTime.push(new Date(i.lastCompleteTime));
                     this.$set(this.sstj, "info", timeInfo);
                 }
+                //REAL_TIME 预计用时
+                //ALL_TIME  实际用时
                 if(workTime && workTime.length){
                     for(let j of workTime){
+                        console.log(j)
                         userName.push(j.USER_NAME)
                         userallTime.push(j.ALL_TIME)
                         userequiredTime.push(j.REAL_TIME)
-                        userleaveTime.push(j.required_TIME-j.work_TIME)
+                        userleaveTime.push(j.REAL_TIME-j.ALL_TIME)
                     }
                 }
                 this.userworkTime(userName,userallTime,userequiredTime,userleaveTime)

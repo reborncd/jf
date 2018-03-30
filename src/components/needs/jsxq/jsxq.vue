@@ -352,7 +352,7 @@
                                             </el-col>
                                             <!--验收不通过-->
                                             <el-col :span="24" v-if="tabs.tabsData.fail" style="color: red">
-                                                <el-form-item label="验收不通过">{{tabs.tabsData.fail}}</el-form-item>
+                                                <el-form-item label="验收不通过原因">{{tabs.tabsData.fail}}</el-form-item>
                                             </el-col>
                                             <!--验收通过原因-->
                                             <el-col :span="24" v-if="tabs.tabsData.success" style="color: red">
@@ -665,7 +665,7 @@
                                             <el-table-column prop="user_NAME" label="人员" width="80"></el-table-column>
                                             <el-table-column prop="old_SYSTEM_NAME" label="原系统名" show-overflow-tooltip width="120"></el-table-column>
                                             <el-table-column prop="system_NAME" label="当前系统名" show-overflow-tooltip width="120"></el-table-column>
-                                            <el-table-column prop="TECH_INFO_ID" label="任务编码" show-overflow-tooltip width="200"></el-table-column>
+                                            <el-table-column prop="tech_INFO_ID" label="任务编码" show-overflow-tooltip width="200"></el-table-column>
                                             <el-table-column prop="end_DATE" :formatter="splitDataFormatter" show-overflow-tooltip label="完成日期" width="120"></el-table-column>
                                             <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120" show-overflow-tooltip></el-table-column>
                                             <el-table-column prop="responsible_MODULE" label="当前负责模块" width="120" show-overflow-tooltip></el-table-column>
@@ -742,7 +742,7 @@
                                                 <el-table :data="testTask.testSplitData" border style="width: 100%"
                                                           v-show="testTask.testtaskvisible">
                                                     <el-table-column prop="user_NAME" label="人员" width="80" show-overflow-tooltip></el-table-column>
-                                                    <el-table-column prop="TECH_INFO_ID" label="任务编码"
+                                                    <el-table-column prop="tech_INFO_ID" label="任务编码"
                                                                      width="200"></el-table-column>
                                                     <el-table-column prop="end_DATE" :formatter="splitDataFormatter" width="120" label="完成日期"></el-table-column>
                                                     <el-table-column prop="old_RESPONSIBLE_MODULE" label="原负责模块" width="120" show-overflow-tooltip></el-table-column>
@@ -2401,6 +2401,7 @@
                 let table_body = this.$refs.jsxq_table.$el.querySelector(".el-table__body-wrapper");
                 if(!e){
                     let row = document.querySelector(".el-table__body-wrapper");
+                    console.log(row)
                     scrollTop = row.getElementsByTagName("tr")[this.tabs.index].offsetTop;
                 } else if(!e.target.classList.contains("el-table__row")){
                     for(let i of e.path){
@@ -2422,6 +2423,7 @@
             },
             //-----------------------------------表格后面按钮的点击事件
             tableAction(index,row,e,type){
+                this.tabs.index = index;
                 this.tabs.activeTableInfo = row;
                 this.$refs.jsxq_table.setCurrentRow(row);
                 //阻止事件冒泡
@@ -2670,22 +2672,33 @@
                         this.setStateAction(data.result);
 
                         //加载实时统计数据
-                        if(data.result.systemDepts_1 && data.result.currentTime){
-                            if(!data.result.systemDepts_1.length) {
-                                //当前没有分配给技术经理，全部不显示信息
-                                this.sstj.hidezqvisible = true;
-                                this.sstj.hidegsvisible = true;
-                            }else{
-                                //默认显示信息
-                                this.sstj.hidezqvisible = false;
-                                this.sstj.hidegsvisible = false;
-                                this.setRealTime(
-                                    data.result.systemDepts_1,
-                                    data.result.currentTime,
-                                    data.result.workTime)
+                        if(data.result.systemDepts){
+                            //默认显示信息
+                            this.sstj.hidezqvisible = false;
+                            this.sstj.hidegsvisible = false;
+                            this.setRealTime(
+                                data.result.systemDepts,
+                                data.result.currentTime,
+                                data.result.workTime)
+                        }else if(data.result.systemDepts_1 && data.result.systemDepts_1.length){
+                            //默认显示信息
+                            this.sstj.hidezqvisible = false;
+                            this.sstj.hidegsvisible = false;
+                            let arr = [];
+                            for(let i of  data.result.systemDepts_1){
+                                if(i.myGroup){
+                                    arr.push(i)
+                                }
                             }
+                            this.setRealTime(
+                                arr,
+                                data.result.currentTime,
+                                data.result.workTime)
+                        }else{
+                            //当前没有分配给技术经理，全部不显示信息
+                            this.sstj.hidezqvisible = true;
+                            this.sstj.hidegsvisible = true;
                         }
-
                         this.$maskoff();
                     }
                 })
@@ -2754,12 +2767,15 @@
                     actualTime.push(new Date(i.lastCompleteTime));
                     this.$set(this.sstj, "info", timeInfo);
                 }
+                //REAL_TIME 预计用时
+                //ALL_TIME  实际用时
                 if(workTime && workTime.length){
                     for(let j of workTime){
+                        console.log(j)
                         userName.push(j.USER_NAME)
                         userallTime.push(j.ALL_TIME)
                         userequiredTime.push(j.REAL_TIME)
-                        userleaveTime.push(j.required_TIME-j.work_TIME)
+                        userleaveTime.push(j.REAL_TIME-j.ALL_TIME)
                     }
                 }
                 this.userworkTime(userName,userallTime,userequiredTime,userleaveTime)
