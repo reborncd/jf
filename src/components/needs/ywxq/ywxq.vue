@@ -1520,6 +1520,16 @@
                 <el-button @click="accept_allow" type="primary" size="mini" v-if="accept.ifshow_t">通过</el-button>
             </div>
         </el-dialog>
+        <!--测试通过和不通过-->
+        <el-dialog title="验收" :visible="testComplete.visible" width="40%"
+                   append-to-body modal-append-to-body
+                   :before-close="closeDialog">
+            <p class="text-center" style="font-size: 16px">请选择测试结果</p>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="test_notallow" type="danger" size="mini">不通过</el-button>
+                <el-button @click="test_allow" type="primary" size="mini">通过</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -1895,6 +1905,10 @@
                     visible:false,
                     ifshow_t:true,//判断显
                     ifshow_n:true
+                },
+                //测试通过和不通过
+                testComplete:{
+                    visible:false
                 }
             }
         },
@@ -2315,6 +2329,7 @@
                 this.testTask.allbugvisible = false;//测试的bug清单弹窗
                 this.transfer.dialogvisible =false;//转接的弹窗
                 this.accept.visible = false;//验收的弹窗
+                this.testComplete.visible = false;//测试通过和不通过
             },
             //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<关闭弹窗>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -4048,20 +4063,32 @@
                             this.taskFinished.taskFinishedvisible = true;
                         }
                         if(type == "test"){
-                            this.confirm(msg, () => {
-                                //通过测试
-                                this.taskFinished.taskFinishedvisible = true;
-                            }, () => {
-                                //不通过测试
-                                this.taskFinished.taskFinishedvisible = true;
-                                this.taskFinished.testnotallow = true;//测试不通过
-                            }, ["通过", "不通过"])
+                            this.testComplete.visible = true;
+//                            this.confirm(msg, () => {
+//                                //通过测试
+//                                this.taskFinished.taskFinishedvisible = true;
+//                            }, () => {
+                            //不通过测试
+//                                this.taskFinished.taskFinishedvisible = true;
+//                                this.taskFinished.testnotallow = true;//测试不通过
+//                            }, ["通过", "不通过"]);
                             this.$maskoff();
                             return;
                         }
                         this.$maskoff();
                     }
                 });
+            },
+            //测试不通过
+            test_notallow(){
+                //不通过测试
+                this.taskFinished.taskFinishedvisible = true;
+                this.taskFinished.testnotallow = true;//测试不通过
+            },
+            //测试通过
+            test_allow(){
+                //通过测试
+                this.taskFinished.taskFinishedvisible = true;
             },
             //-----------------------------------完成提交操作
             subFinishTask(){
@@ -4095,6 +4122,7 @@
                     let data = res.data;
                     if (data.code == 200) {
                         this.taskFinished.taskFinishedvisible = false;
+                        this.testComplete.visible = false;
                         this.$success("操作成功！");
                         this.$maskoff();
                         this.loadData();
