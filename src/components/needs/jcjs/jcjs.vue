@@ -2388,7 +2388,7 @@
                 }
                 setTimeout(()=>{
                     table_body.scrollTop = scrollTop;
-                },0)
+                },0);
 
                 if (val.base_NEET_ID) {
                     this.loadTabsData(val)

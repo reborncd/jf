@@ -207,7 +207,7 @@
         </div>
         <div :style="bottomHeight">
             <el-col :span="24" style="height: 100%">
-                <el-col :span="8" v-if="zhou" style="height: 100%">
+                <el-col :span="8" v-show="zhou" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div slot="header" class="clearfix">
@@ -217,7 +217,7 @@
                         </el-card>
                     </div>
                 </el-col>
-                <el-col :span="8" v-if="zi" style="height: 100%">
+                <el-col :span="8" v-show="zi" style="height: 100%">
                     <div class="box-wrap mr mt">
                         <el-card class="box-card bottom_card">
                             <div class="chartTitle" >
