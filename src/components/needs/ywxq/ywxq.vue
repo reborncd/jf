@@ -853,9 +853,10 @@
                                                 <el-form-item label="发送人">{{tabs.tabsData.send_NAME}}</el-form-item>
                                             </el-col>
                                             <el-col :span="6" :sm="6">
-                                                <el-form-item>
-                                                    <el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
-                                                </el-form-item>
+                                              <el-form-item>
+                                                <el-button size="mini" type="primary" @click="loadtrack">
+                                                  {{tracking.trackingvisiible?'列表模式':'视图模式'}}</el-button>
+                                              </el-form-item>
                                             </el-col>
                                             <el-col :span="6" :sm="6">
                                                 <el-form-item>
@@ -2690,6 +2691,7 @@
             },
             //设置实时统计数据
             setRealTime(systemDepts,currentTime,workTime){
+
 //                this.$set(this, "selectValue", statusArr);
                 let datashow = systemDepts;
                 let nowTime = currentTime;
@@ -2718,7 +2720,7 @@
                     let arr =  [
                         `${start.mouth}/${start.day}`,
                         `${end.mouth}/${end.day}`
-                    ]
+                    ];
 //                    yaxis.push(i.DEPT_NAME+arr[0]+'-'+arr[1]);
                     yaxis.push(i.DEPT_NAME);
                     if(i.EXPECT_START){
@@ -2794,7 +2796,6 @@
                     xAxis: {
                         type: 'time'
                     },
-
                     yAxis: {
                         data: yaxis
                     },
@@ -2811,8 +2812,7 @@
                             return res;
                         }
                     },
-                    series: [
-                        {
+                    series: [{
                             name: '开始时间',
                             type: 'bar',
                             stack: '开始时间',
@@ -2823,33 +2823,7 @@
                                 }
                             },
                             data: startTime
-                        }, {
-                            name: '结束时间',
-                            type: 'bar',
-                            stack: '开始时间',
-                            itemStyle: {
-                                normal: {
-                                    color: '#2E91BD',
-                                    barBorderRadius: 0,
-                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                                    shadowBlur: 20
-                                }
-                            },
-                            data:endTime
-                        },
-                        {
-                            name: '超出开始时间',
-                            type: 'bar',
-                            stack: '开始时间',
-                            itemStyle: {
-                                normal: {
-                                    color: '#F4201B',
-                                    shadowColor: 'rgba(255, 255, 255, 0.3)',
-                                }
-                            },
-                            data:actualTime
-                        }
-                    ]
+                        }]
                 };
                 proBar.setOption(option);
             },
@@ -4055,6 +4029,8 @@
                         if (nowDate > val.end_DATE) {
                             //对比当前时间和预计完成时间显示超时原因
                             this.taskFinished.outtime = true;//显示超时原因
+                        }else{
+                          this.taskFinished.outtime = false;
                         }
                         if(!type){
                             //当前是开发点击完成任务
@@ -4279,7 +4255,7 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("操作成功！");
-                            this.$set(this.testTask.tableData[index], "TEST_STATE", 2);
+                            this.$set(this.testTask.tableData[index], "TEST_STATE", 1);
                             this.$maskoff();
                         }
                     })
@@ -4382,7 +4358,7 @@
                         this.$success("操作成功！");
                         this.testTask.rejectvisible = false;
                         if(!this.testTask.addbug){
-                            this.$set(this.testTask.tableData[this.testTask.step_index], "TEST_STATE", 2);
+                            this.$set(this.testTask.tableData[this.testTask.step_index], "TEST_STATE", 0);
                         }
                         this.$maskoff();
                         this.clearAssignBug();//清除选择的数据
@@ -4672,8 +4648,7 @@
             },
             //-----------------------------------加载视图模式数据
             loadtrack(){
-                this.tracking.trackingvisiible? this.tracking.trackingvisiible = false:
-                    this.tracking.trackingvisiible = true
+                this.tracking.trackingvisiible  = !this.tracking.trackingvisiible;
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.work_NEET_ID);
                 this.$axios.post("/work/queryView",params).then((res)=>{

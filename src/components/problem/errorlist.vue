@@ -358,7 +358,7 @@
                 <input type="file" @change="getFile($event)" placeholder="上传附件"
                        style="width:78px;opacity: 0;position: absolute;left: 0;top: 63px;">
                 <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
-                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
+                  <i style="margin-left: 10px;cursor: pointer;color: red;"
                   	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
                 </p>
                 </el-upload>
@@ -552,7 +552,7 @@
             {
               'name': '一般',
               "value": "103"
-            }],  
+            }],
          popTxt:{
               'id':'',//问题编号
 	          'priperty2':'',//故障等级
@@ -563,7 +563,7 @@
 	          'uploadFiles':[],              // 上传成功的文件数组
 	          'fileList':[],                //上传附件
          }
-         
+
         },
           split:{
               splitaddvisible:false
@@ -650,8 +650,8 @@
 //          	 	if(data.code==200){
 //          	 		for(let i of data.result.status){
 //							statusArr.push(i);
-//          	 		}      
-//          	 		this.$set(this, "selectValue", statusArr); 
+//          	 		}
+//          	 		this.$set(this, "selectValue", statusArr);
 //          	 	}
 //          	 	else{
 //          	 		this.$warn(message);
@@ -960,18 +960,19 @@
                 arr = [];
                 this.$set(this.way, "information", arr);
               }
+              //操作台涉及系统
+              this.operate.system = data.result.systemDept.SYSTEM_NAME
 //           操作台子系统显示
               let subSystems = [];
               for (let i of data.result.systems.result) {
-                if (!i.SYSTEM_FID) {
-                  this.operate.system = i.SYSTEM_NAME
-                }
-                else {
-                  subSystems.push(i);
-                }
+                let obj = {
+                    "SYSTEM_NAME":i.SYSTEM_NAME,
+                    "SYSTEM_ID":i.SYSTEM_ID
+                  }
+                subSystems.push(obj);
               }
               this.$set(this.operate, "subSystem", subSystems);
-              
+
               //显示下载附件
               if(data.result.attachment.length>0){
               	let down=[]
@@ -1046,7 +1047,7 @@
         };
          let params = new FormData();
          params.append("token",this.$getToken())
-         params.append("file",e.target.files[0]);	
+         params.append("file",e.target.files[0]);
          this.$axios.post("/fault/upload", params,config).then((res)=>{
          	let data =res.data;
          	if(data.code == 200){
@@ -1060,7 +1061,7 @@
          })
       },
       //下载附件
-      downfile(val){      	
+      downfile(val){
       	let token=localStorage.getItem("token")
 //    	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
       	this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
@@ -1126,7 +1127,7 @@
             this.assign.checkList = [];//初始化选中的数据
           }
         });
-      },     
+      },
 //            控制台切换
       tabClick(val){
         this.calculateTabsHeight();

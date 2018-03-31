@@ -853,7 +853,10 @@
                                             </el-col>
                                             <el-col :span="6" :sm="6">
                                                 <el-form-item>
-                                                    <el-button size="mini" type="primary" @click="loadtrack">视图模式</el-button>
+                                                  <el-form-item>
+                                                    <el-button size="mini" type="primary" @click="loadtrack">
+                                                      {{tracking.trackingvisiible?'列表模式':'视图模式'}}</el-button>
+                                                  </el-form-item>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="6" :sm="6">
@@ -4090,6 +4093,8 @@
                         if (nowDate > val.end_DATE) {
                             //对比当前时间和预计完成时间显示超时原因
                             this.taskFinished.outtime = true;//显示超时原因
+                        }else{
+                          this.taskFinished.outtime = false;
                         }
                         if(!type){
                             //当前是开发点击完成任务
@@ -4314,7 +4319,7 @@
                         let data = res.data;
                         if (data.code == 200) {
                             this.$success("操作成功！");
-                            this.$set(this.testTask.tableData[index], "TEST_STATE", 2);
+                            this.$set(this.testTask.tableData[index], "TEST_STATE", 1);
                             this.$maskoff();
                         }
                     })
@@ -4417,7 +4422,7 @@
                         this.$success("操作成功！");
                         this.testTask.rejectvisible = false;
                         if(!this.testTask.addbug){
-                            this.$set(this.testTask.tableData[this.testTask.step_index], "TEST_STATE", 2);
+                            this.$set(this.testTask.tableData[this.testTask.step_index], "TEST_STATE", 0);
                         }
                         this.$maskoff();
                         this.clearAssignBug();//清除选择的数据
@@ -4707,8 +4712,7 @@
             },
             //-----------------------------------加载视图模式数据
             loadtrack(){
-                this.tracking.trackingvisiible? this.tracking.trackingvisiible = false:
-                    this.tracking.trackingvisiible = true
+                this.tracking.trackingvisiible = !this.tracking.trackingvisiible
                 let params = new URLSearchParams();
                 params.append("BASE_ID",this.tabs.activeTableInfo.tech_NEET_ID);
                 this.$axios.post("/tech/queryView",params).then((res)=>{

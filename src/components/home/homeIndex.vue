@@ -1,4 +1,4 @@
-<style>
+<style scoped>
     .chartTitle{
         position: absolute;
         font-size: 12px;
