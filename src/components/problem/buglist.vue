@@ -162,7 +162,6 @@
                             <!--<el-table-column prop="os_TYPE" label="涉及系统"></el-table-column>-->
                             <el-table-column prop="system_TYPE" label="子系统" width="110" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="create_TIME" label="提交日期" width="110" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="aa" label="版本号" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="priperty" label="bug等级" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="status" label="状态" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="update_TIME" label="更新时间" show-overflow-tooltip></el-table-column>
@@ -301,12 +300,12 @@
                                     <el-form :model="form" label-width="100px" label-position="left">
                                         <el-row :gutter="20">
                                             <el-col :span="12" :sm="12">
-                                                <el-form-item label="状态：">
+                                                <el-form-item label="状态">
                                                     <el-form-item label="">{{operate.status}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="12" :sm="12">
-                                                <el-form-item label="发送人：" label-width="100px">
+                                                <el-form-item label="发送人" label-width="100px">
                                                     <el-form-item label="">{{way.sender}}</el-form-item>
                                                 </el-form-item>
                                             </el-col>
@@ -600,20 +599,13 @@
             date(time) {
                 let d = new Date(time);
                 let year = d.getFullYear();
-                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
+                let month = (d.getMonth() + 1)<10?'0' + (d.getMonth()+1) : '' + d.getMonth()+ 1;
                 let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
                 let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
                 let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
                 let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
                 return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
             },
-            date_yyyyMMdd(time){
-                let d = new Date(time);
-                let year = d.getFullYear();
-                let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
-                let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-                return year + '-' + month + '-' + day
-            }
         },
         mounted(){
             this.calculate();

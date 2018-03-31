@@ -292,12 +292,12 @@
                   <el-form :model="form" label-width="100px" label-position="left">
                     <el-row :gutter="20">
                       <el-col :span="12" :sm="8">
-                        <el-form-item label="状态：">
+                        <el-form-item label="状态">
                           <el-form-item label="">{{operate.status}}</el-form-item>
                         </el-form-item>
                       </el-col>
                       <el-col :span="12" :sm="8">
-                        <el-form-item label="发送人：" label-width="100px">
+                        <el-form-item label="发送人" label-width="100px">
                           <el-form-item label="">{{way.relation_USER}}</el-form-item>
                         </el-form-item>
                       </el-col>
@@ -585,16 +585,16 @@
       }
     },
      filters: {
-        date(time) {
-            let d = new Date(time);
-            let year = d.getFullYear();
-            let month = (d.getMonth() + 1)<10?'0' + d.getMonth() : '' + d.getMonth()+ 1;
-            let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
-            let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
-            let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
-            let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
-            return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
-        }
+         date(time) {
+             let d = new Date(time);
+             let year = d.getFullYear();
+             let month = (d.getMonth() + 1)<10?'0' + (d.getMonth()+1) : '' + d.getMonth()+ 1;
+             let day = d.getDate() < 10 ? '0' + d.getDate() : '' + d.getDate();
+             let hour = d.getHours()< 10 ? '0' + d.getHours() : '' + d.getHours();
+             let minutes = d.getMinutes() <10 ? '0' + d.getMinutes() : '' + d.getMinutes();
+             let seconds = d.getSeconds() <10 ? '0' + d.getSeconds() : '' + d.getSeconds();
+             return year + '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
+         },
     },
     mounted(){
       this.calculate();
@@ -1155,6 +1155,7 @@
         }
         this.operate.systemAll.splice(0,len)
         this.operate.system='';
+        this.tabs.downName=''
     },
       //添加系统
       addsubStystem(index, e){

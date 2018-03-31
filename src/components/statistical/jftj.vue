@@ -96,10 +96,10 @@
 						</el-button>
 					</div>
 				</div>
-				<div class="i-b" style="float: right;">
-					<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="loadCharData" v-model="dateRange" type="daterange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
-					</el-date-picker>
-				</div>
+				<!--<div class="i-b" style="float: right;">-->
+					<!--<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="loadCharData" v-model="dateRange" type="daterange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">-->
+					<!--</el-date-picker>-->
+				<!--</div>-->
 			</div>
 			<div class="text item workreport-wrapper" id="pdfDom">
 				<div class="report-statistics clear">
@@ -233,7 +233,9 @@
 				// 	params.append("endDate", this.dateRange[1]);
 				// 	this.select_value = "orther"
 				// }
-				params.append("TYPE", this.select_value);
+
+				params.append("deptId", this.selectArr_value);
+                params.append("TYPE", this.select_value);
 				this.$axios.post("/statistical/getIntegralStatisticalData", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -259,6 +261,7 @@
 				})
 			},
 			loadsystemChart(xaxis, efficiency, promptness, saturation,integral) {
+
 				var echarts = require('echarts');
 				let height = document.querySelector(".mainr").offsetHeight;
 				let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -274,18 +277,15 @@
 					tooltip: {
 						trigger: 'axis',
 						formatter: function(params, ticket, callback) {
-
 							var res = params[0].name;
-
 							for(var i = 0, l = params.length; i < l; i++) {
 								if(params[i].seriesType === 'line') {
-									res += '<br/>' + params[i].seriesName + ' : ' + (params[i].value ? params[i].value : '-') + '';
+									res += '<br/>' + params[i].seriesName + ' : ' + (params[i].value ? params[i].value : '0') + '';
 								} else {
-									res += '<br/>' + params[i].seriesName + ' : ' + (params[i].value ? params[i].value : '-') + '%';
+									res += '<br/>' + params[i].seriesName + ' : ' + (params[i].value ? params[i].value : '0') + '%';
 								}
 							}
 							return res;
-
 						}
 					},
 					grid: {
@@ -294,7 +294,7 @@
 					legend: {
 						bottom: 20,
 						x: 'center',
-						data: ['饱和度', '效率', '及时率']
+						data: ['饱和度', '效率', '及时率',"积分"]
 					},
 					xAxis: [{
 						type: 'category',
@@ -328,7 +328,7 @@
 					}
 				],
 					series: [{
-						name: '饱和度',
+						name: '工作效率',
 						type: 'bar',
 						yAxisIndex: 0,
 						label: {
@@ -337,17 +337,17 @@
 								position: 'top',
 							}
 						},
-						lineStyle: {
-							normal: {
-								width: 3,
-								shadowColor: 'rgba(0,0,0,0.4)',
-								shadowBlur: 10,
-								shadowOffsetY: 10
-							}
-						},
+						// lineStyle: {
+						// 	normal: {
+						// 		width: 3,
+						// 		shadowColor: 'rgba(0,0,0,0.4)',
+						// 		shadowBlur: 10,
+						// 		shadowOffsetY: 10
+						// 	}
+						// },
 						data: efficiency
 					}, {
-						name: '效率',
+						name: '任务完成及时率',
 						type: 'bar',
 						yAxisIndex: 0,
 						label: {
@@ -358,7 +358,7 @@
 						},
 						data: promptness
 					}, {
-						name: '及时率',
+						name: '工作饱和度',
 						type: 'bar',
 						yAxisIndex: 0,
 						label: {
@@ -370,7 +370,7 @@
 						data: saturation
 					}
 					, {
-						name: '期内正常运转率',
+						name: '积分',
 						type: 'line',
 						yAxisIndex: 0,
 						label: {

@@ -164,7 +164,7 @@
 												</el-form-item>
 											</el-col>
 											<el-col :span="24">
-												<el-form-item label="产品功能">
+												<el-form-item label="产品改造点">
                                                     <div class="product_FUNCTION"></div>
 												</el-form-item>
 											</el-col>
@@ -200,7 +200,7 @@
 											<el-col :span="12">
 												<el-form-item label="下载附件">
 													<p>
-														<a style="margin-right: 20px;color: #999" v-for="(item,index) in tabs.data_one.dowm" @click="downfile(item.id)">{{item.name}}</a>
+														<a style="margin-right: 20px;color: #409EFF" v-for="(item,index) in tabs.data_one.dowm" @click="downfile(item.id)">{{item.name}}</a>
 													</p>
 												</el-form-item>
 											</el-col>

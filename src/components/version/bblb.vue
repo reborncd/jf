@@ -154,6 +154,41 @@
         white-space: nowrap;
     }
 </style>
+<style>
+    .left-tree {
+        width: 19%;
+        float: left;
+        border: 1px solid #ebeef5;
+        margin-right: 1%;
+        /*padding-top: 47px;*/
+        overflow: auto;
+    }
+    .role-tree-title{
+        height: 47px;
+        width: 100%;
+        display: -webkit-flex;
+        justify-content: center;
+        align-items: center;
+        background: #939da9;
+        color: #fff;
+        font-weight: bold;
+        word-spacing: 20;
+    }
+    .role-tree .el-tree-node, .el-tree-node__content{
+        min-height: 39px;
+        box-sizing: border-box;
+    }
+    .role-tree {
+        width: 15.5%;
+        float: left;
+        border: 1px solid #ebeef5;
+        margin-right: 1%;
+        overflow: auto;
+    }
+    .el-dialog--center .el-dialog__body{
+        padding-top: 0px!important;
+    }
+</style>
 
 <template>
     <div class="rolelist common-card-wrap" style="height: 100%;">
@@ -171,37 +206,37 @@
                         </div>
                     </div>
                     <div class="table-list">
-                        <el-table :data="table.tableData" border style="width: 100%"
-                                  :height="table.tableHeight" highlight-current-row
-                                  @row-click="handleCurrentChange">
-                            <el-table-column prop="system_FNAME" label="涉及系统" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="system_NAME" label="子系统" width="110" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="new_VERSION" label="最新版本" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="current_VERSION" label="当前版本" width="110" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="start_DATE" label="启用日期" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
-                            <el-table-column label="需求描述" show-overflow-tooltip>
-                                <template slot-scope="scope">
-                                    <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
-                                          class="tab-opt neel_DESCRIPTION" style="line-height:1;"
-                                    :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
-                                    <!--:title=scope.row.neel_DESCRIPTION-->
-                                    <!--{{scope.row.neel_DESCRIPTION}}-->
-                                </template>
-                            </el-table-column>
+                        <div class="left-tree role-tree">
+                            <div class="role-tree-title">涉及系统</div>
+                                <el-tree :data="treeData" @node-click="leftTreeClick" ></el-tree>
+                            </div>
+                        <el-table :data="table.tableData" :highlight-current="true"
+                                  :height="tableHeight" border style="width: 80%"
+                         empty-text="请选择系统或当前系统没有数据" highlight-current-row
+                        @row-click="editRow">
+                        <el-table-column prop="system_NAME" label="子系统" width="110" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="new_VERSION" label="最新版本" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="current_VERSION" label="当前版本" width="110" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="start_DATE" label="启用日期" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="需求名称" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                        <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
+                        class="tab-opt neel_DESCRIPTION" style="line-height:1;"
+                        :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
+                        <!--:title=scope.row.neel_DESCRIPTION-->
+                        <!--{{scope.row.neel_DESCRIPTION}}-->
+                        </template>
+                        </el-table-column>
                         </el-table>
                     </div>
                     <!--详情表格-->
-                    <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
-                        <div class="console-action-wrapper">
-                            <i class="el-icon-close close" @click="tabClick"></i>
-                        </div>
-                        <el-tabs v-model="tabs.activeName" type="card" @tab-click="tabClick">
-                            <el-tab-pane label="详情页" name="info">
+                    <el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center
+                               label-position="left" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
                                 <div class="console-tab-content">
                                     <div class="table-list">
                                         <el-table class='detail-table' :data="table.tableDetail" border
-                                                  style="width: 100%;margin-top:20px;text-align: center;"
+                                                  style="width: 100%;text-align: center;"
                                                   :height="table.tableHeight" highlight-current-row>
                                             <el-table-column prop="system_FNAME" label="涉及系统"
                                                              show-overflow-tooltip></el-table-column>
@@ -216,12 +251,10 @@
                                             <el-table-column prop="start_TIME" label="启用时间"
                                                              show-overflow-tooltip></el-table-column>
                                             <el-table-column prop="neel_DESCRIPTION" label="需求描述"
-                                                             show-overflow-tooltip>
-
-                                            </el-table-column>
+                                                             show-overflow-tooltip></el-table-column>
                                         </el-table>
                                     </div>
-                                    <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">
+                                    <div class="edition-line clearfix" v-if="dialogOption.dialog_person_visible">
                                         <ul class="edition-line-ul clearfix">
                                             <li v-for='(item,index) in tabs.versionLine'
                                                 :style="{ width: tabs.width}" v-model="item.version"
@@ -239,8 +272,16 @@
                                         </ul>
                                     </div>
                                 </div>
-                            </el-tab-pane>
                         </el-tabs>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button size="mini" @click="cancelForm">关闭</el-button>
+                        </div>
+                    </el-dialog>
+
+                    <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
+                        <div class="console-action-wrapper">
+                            <i class="el-icon-close close" @click="tabClick"></i>
+                        </div>
                     </div>
                     <el-dialog title="添加版本" :visible="dialog.dialogVisible"
                                append-to-body modal-append-to-body :before-close="closeAddDialog">
@@ -297,6 +338,7 @@
     export default {
         data(){
             return {
+                treeData:[],
                 dialog: {
                     name: '',
                     systemValue: '',
@@ -355,23 +397,32 @@
                         name: ""
                     }
                 },
+                dialogOption: {
+                    lockScroll: false,
+                    appendToBody: false,
+                    dialog_person_visible: false,
+                    dialog_dep_visible: false,
+                    showClose: false,
+                    dialogTitle: "",
+                    modal: false,
+                    infoShow: false
+                },
             }
         },
         mounted(){
+            this.calculate();
             this.loadData();
         },
         methods: {
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
+                let leftTree = document.querySelector(".left-tree");
+//                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                card_body.style.height = height - 36 + "px";//此处需减去卡片头部
-                //表格高度
-                this.calculateTableHeight(this.tabs.consoleWrapperVisible);
-                //tab高度
-                if (this.tabs.consoleWrapperVisible) {
-                    this.calculateTabsHeight();
-                }
-                //控制台的内容区域高度
+                card_body.style.height = ( height - 34)  + "px";
+                //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
+                leftTree.style.height = (height - 36)  - 20 - 28 - 15 + "px";
+                this.tableHeight = (height - 36)  - 20 - 28 - 15;
             },
             calculateTableHeight(type){
                 let height = document.querySelector(".mainr").offsetHeight;
@@ -400,35 +451,36 @@
                 let params = new URLSearchParams();
                 this.$axios.post('/version/versionlist', params).then((res) => {
                     if (res.code = 200) {
-                        let data = res.data.result
-                        this.setTableData(data);
+                        let sysArr=[]
+                        let data = res.data.result;
+                        let temp = []
+                        for (let i of data) {
+                                let obj = {
+                                    "label": i.system_FNAME,
+                                    "id": i.system_ID,
+                                };
+                                if(temp.indexOf(i.system_ID) == -1){
+                                    temp.push(i.system_ID)
+                                    sysArr.push(obj)
+                                }
+                        }
+                        this.treeData = sysArr;
                         this.$maskoff();
                     }
-                    else {
-                        this.warn(message);
-                    }
+//                    else {
+//                        this.warn(message);
+//                    }
                 })
             },
             setTableData(data){
                 this.$set(this.table, "tableData", data);
                 this.$set(this.table, "tableOriginData", data);
-//                setTimeout(()=>{
-//                    let row = document.querySelectorAll(".neel_DESCRIPTION");
-//                for(let i of row){
-//                    console.log(i)
-//                    i.insertAdjacentHTML("beforeend",i.getAttribute("data-text")?i.getAttribute("data-text"):'')
-//                }
-//                },0)
                 this.$maskoff();
             },
             //版本详情显示
-            handleCurrentChange(val){
-                if (!this.tabs.consoleWrapperVisible) {
-                    this.tabs.consoleWrapperVisible = true;
-                    setTimeout(() => {
-                        this.calculate()
-                    }, 0);
-                }
+            editRow(val){
+                this.$maskin();
+                this.dialogOption.dialogTitle = "详情";
                 let params = new URLSearchParams();
                 if (val.neel_ID) {
                     params.append("NEEL_ID", val.neel_ID);
@@ -441,12 +493,14 @@
                 this.$axios.post("/version/sonversionlist", params).then((res) => {
                     if (res.data.code == 200) {
                         let data = res.data.result;
-                        let versionNum = data.length;
+//                        let versionNum = data.length;
                         let arr = [];
                         let nowArr
                         let versionP = []
                         for (let i of data) {
-                            versionP.push(i);
+                            if(i.start_DATE){
+                                versionP.push(i);
+                            }
                             if (i.current_STATE == 1) {
                                 i.current_STATE = '是'
                                 nowArr=i
@@ -454,10 +508,10 @@
                             else {
                                 i.current_STATE = '';
                             }
-
                             arr.push(i);
                         }
-
+                        let versionNum = versionP.length;
+                        console.log(versionNum)
                         this.$set(this.table, "tableDetail", arr);
                         for (let i = 0; i < versionNum; i++) {
                             this.tabs.versionLine.push();
@@ -465,15 +519,18 @@
                             this.$set(this.tabs, "width", width);
                         }
 //                        最后一个不是当前版本
-                        if(versionP[versionNum-1].current_STATE==''){  //如果最后一个不是当前版本
-                            if(nowArr){
-                                versionP.push(nowArr);
-                            }
 
+                        if(versionNum>=1){
+                            if(versionP[versionNum-1].current_STATE==''){  //如果最后一个不是当前版本
+                                if(nowArr){
+                                    versionP.push(nowArr);
+                                }
+                            }
                         }
 
                         this.$set(this.tabs, "versionLine", versionP);
-
+                        this.dialogOption.dialog_person_visible = true;
+                        this.$maskoff();
                     }
                 })
                 return false;
@@ -488,6 +545,7 @@
                 this.tabs.infoshowVisible = false;
                 this.tabs.activeLineIndex = ""
             },
+
             //添加版本
             showdialog(){
                 this.dialog.dialogVisible = true;
@@ -613,6 +671,27 @@
                 this.loadData();
                 this.clearAddData();
                 this.dialog.dialogVisible = false
+            },
+//            点击左侧树
+            leftTreeClick(val){
+                let params = new URLSearchParams();
+                params.append('SYSTEM_ID', val.id);
+                this.$axios.post("/version/versionlist", params).then((res) => {
+                    if (res.status = 200) {
+                        let subsystems = [];
+                        let data = res.data.result;
+                        for (let i of data) {
+                            subsystems.push(i);
+                        }
+                        this.$set(this.table, "tableData", subsystems);//子系统
+                    }
+                })
+            },
+            closeDialog(){
+                this.dialogOption.dialog_person_visible = false;
+            },
+            cancelForm(){
+                this.dialogOption.dialog_person_visible = false;
             },
             //跳转到需求页面
             goneeds(e, val){

@@ -133,7 +133,7 @@
 								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
 								<el-table-column prop="st_ENDDATE" label="期望上线日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
-								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<!--<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>-->
 								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>
 								<el-table-column prop="st_PLANHOURS" label="计划工时" width="110"></el-table-column>
 								<el-table-column prop="st_WORKHOURS" label="投入工时" width="110"></el-table-column>
@@ -212,12 +212,14 @@
 						}
 					}, {
 						text: '年报',
+                        year:"",
 						onClick(picker) {
 							const end = new Date();
 							const start = new Date();
 							start.setDate(1);
 							start.setMonth(0);
 							picker.$emit('pick', [start, end]);
+							this.year="year"
 						}
 					}]
 				}
@@ -242,20 +244,29 @@
 				this.classType = "", // 传值（分别对应 A 新增 B 完成 C留存 D执行）
 					this.selectDate = "", //传值 （点击对象对应的时间） 
 					this.selectNew = "", //传值标签
-					this.loadChartsData()
+                    this.loadChartsData()
 			},
 			loadChartsData() {
 				this.$maskin();
 				let params = new URLSearchParams();
+
 
 				if(this.dateRange.length == 0) {
 					params.append("startDate", "");
 					params.append("endDate", "");
 					this.select_value = "day"
 				} else {
-					params.append("startDate", this.dateRange[0]);
-					params.append("endDate", this.dateRange[1]);
+				    let startDate=this.dateRange[0]
+                    let endDate=this.dateRange[1]
 					this.select_value = "orther"
+                    if(this.pickerOptions2.shortcuts[3].year=="year"){
+                        this.pickerOptions2.shortcuts[3].year=""
+                        this.select_value="year"
+                        startDate=""
+                        endDate=""
+                    }
+                    params.append("startDate", startDate);
+                    params.append("endDate", endDate);
 				}
 
 				params.append("TYPE", this.select_value);
@@ -296,7 +307,7 @@
 									}
 									break;
 								case "留存":
-									if(i.name == "A") {
+									if(i.name == "延期") {
 										i.label = {
 											normal: {
 												show: true,
@@ -305,13 +316,13 @@
 												textStyle: {
 													color: '#000'
 												},
-												formatter: '留存',
+												formatter: '延期',
 											}
 										}
 									}
 									break;
 								case "执行":
-									if(i.name == "A") {
+									if(i.name == "期内") {
 										i.label = {
 											normal: {
 												show: true,
@@ -320,7 +331,7 @@
 												textStyle: {
 													color: '#000'
 												},
-												formatter: '执行',
+												formatter: '期内',
 											}
 										}
 									}
@@ -342,15 +353,23 @@
 				this.$maskin();
 				let params = new URLSearchParams();
 
-				if(this.dateRange.length == 0) {
-					params.append("startDate", "");
-					params.append("endDate", "");
-					this.select_value = "day"
-				} else {
-					params.append("startDate", this.dateRange[0]);
-					params.append("endDate", this.dateRange[1]);
-					this.select_value = "orther"
-				}
+                if(this.dateRange.length == 0) {
+                    params.append("startDate", "");
+                    params.append("endDate", "");
+                    this.select_value = "day"
+                } else {
+                    let startDate=this.dateRange[0]
+                    let endDate=this.dateRange[1]
+                    this.select_value = "orther"
+                    if(this.pickerOptions2.shortcuts[3].year=="year"){
+                        this.pickerOptions2.shortcuts[3].year=""
+                        this.select_value="year"
+                        startDate=""
+                        endDate=""
+                    }
+                    params.append("startDate", startDate);
+                    params.append("endDate", endDate);
+                }
 
 				params.append("TYPE", this.select_value);
 				params.append("classType", this.classType);

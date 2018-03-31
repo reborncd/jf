@@ -118,10 +118,13 @@
                             </ul>
                         </div>
                         <!--信息块-->
+                        <h1 v-show="!sstj.hidezqvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">周期信息</h1>
+                        <h1 v-show="sstj.hidezqvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">暂无周期信息</h1>
                         <div v-show="sstj.hidezqvisible" id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-                        <div v-show="sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div">
-                            <h1 style="text-align: center; font-weight: 900;font-size: 20px">工时统计</h1>
-                        </div>
+                        <h1 v-show="sstj.hidegsvisible" style="text-align: center; font-weight: 900;font-size: 20px">工时统计</h1>
+                        <h1 v-show="!sstj.hidegsvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">暂无工时信息</h1>
+                        <div v-show="sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div"></div>
+                        <div v-show="sstj.hidegsvisible" style="width: 1000px;"  id="user-div" class="clear"></div>
                     </div>
                 </div>
             </el-card>
@@ -140,8 +143,8 @@
                                    :value="item.id"></el-option>
                     </el-select>
                     <el-select v-model="option.code" clearable placeholder="请选择需求">
-                        <el-option v-for="item in option.codeArr" :key="item.neel_ID" :label="item.neel_NAME"
-                                   :value="item.neel_ID"></el-option>
+                        <el-option v-for="item in option.codeArr" :key="item.state_ID" :label="item.state_NAME"
+                                   :value="item.state_ID"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="切换频率" v-if="option.needs && option.global">
@@ -214,6 +217,8 @@
                     hidegsvisible:false,//工时统计
                 },
                 interval:"",
+                allNeedsinfo:[],//所有需求的信息
+                needsIndex:0,
             }
         },
         mounted(){
@@ -257,198 +262,207 @@
                     }
                     this.loadNeedsInfo();
                     this.interval = setInterval(()=>{
-                        this.visible.global = !this.visible.global;
-                        this.visible.needs = !this.visible.needs;
-                        this.loadGlobal();
-                        this.loadNeedsInfo();
+                        if(this.needsIndex != this.allNeedsinfo.length){
+                            this.visible.needs = true;
+                            this.visible.global = false;
+                            this.loadNeedsByIndex();
+                            this.needsIndex++
+                        }else{
+                            this.needsIndex = 0;
+                            this.loadGlobal();
+                            this.loadNeedsInfo();
+                            this.visible.needs = false;
+                            this.visible.global = true;
+                        }
                     },this.option.time*1000);
                 }else if (!this.option.global && !this.option.needs){
                     //不能存在全部不选的情况
                     this.$warn("请至少选择一项看板");
+                    return;
                 }
                 this.option.visible = false;
             },
-            //设置实时统计数据
-            setRealTime(systenDept,currentTime){
-                let datashow = systenDept;
-                let nowTime = currentTime;
-                let yaxis = []; //y轴显示
-                let startTime = []; //预期开始时间
-                let endTime = []; //预期结束时间
-                let actualTime = []; //实际完成时间
-                let timeInfo=[]; //所有信息
-                let deptName=[];//部门
-                let allTime=[];//实际用时
-                let requiredTime=[];//总用时
-                let leaveTime=[];//剩余用时
-                for(let i of datashow) {
-                    timeInfo.push(i);
-                    yaxis.push(i.DEPT_NAME);
-                    startTime.push(new Date(i.EXPECT_START));
-                    endTime.push(new Date(i.EXPECT_END));
-                    if(!i.lastCompleteTime) {
-                        //如果没有完成事件，设置完成时间为当前时间
-                        i.lastCompleteTime = nowTime
-                    }
-                    if(i.lastCompleteTime<=i.EXPECT_END){
-                        //如果完成时间在计划时间之内，完成时间等于预计时间
-                        i.lastCompleteTime=i.EXPECT_END
-                    }
-                    //所有人员的实际用时
-                    if(i.allTime){
-                        allTime.push(i.allTime);
-                        deptName.push(i.DEPT_NAME);
-                        requiredTime.push(i.requiredTime);
-                        leaveTime.push(i.requiredTime-i.allTime)
-                    }
-                    actualTime.push(new Date(i.lastCompleteTime));
-
-                    this.$set(this.sstj, "gsinfo", timeInfo);
-                }
-                let len=requiredTime.length;
-                this.$set(this.sstj,"yaxis",yaxis);
-                this.$set(this.sstj,"startTime",startTime);
-                this.$set(this.sstj,"endTime",endTime);
-                this.$set(this.sstj,"actualTime",actualTime);
-                this.$set(this.sstj,"timeInfo",timeInfo);
-                this.$set(this.sstj,"deptName",deptName);
-                this.$set(this.sstj,"requiredTime",requiredTime);
-                this.$set(this.sstj,"leaveTime",leaveTime);
-                this.$set(this.sstj,"allTime",allTime);
-                this.sstj.len = len;
-                this.realTime(yaxis,startTime,endTime,actualTime);
-                this.workTime(deptName,leaveTime,requiredTime,allTime);
-
-            },
-//            实时统计周期
-            realTime(yaxis,startTime,endTime,actualTime) {
-                let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
-                proBar.clear()
-                let option = {
-                    title : {
-                        text: '周期统计',
-                        x:'center'
-                    },
-                    legend: {
-                        data: ['实时统计']
-                    },
-                    xAxis: {
-                        type: 'time'
-                    },
-
-                    yAxis: {
-                        data: yaxis
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        formatter: function(params) {
-                            let res = params[0].name + "</br>"
-                            let date0 = new Date(params[0].data);
-                            let date1 = new Date(params[1].data);
-                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
-                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
-                            res += params[0].seriesName + ":" + date0 + "</br>"
-                            res += params[1].seriesName + ":" + date1 + "</br>"
-                            return res;
-                        }
-                    },
-                    series: [
-                        {
-                            name: '开始时间',
-                            type: 'bar',
-                            stack: '开始时间',
-                            itemStyle: {
-                                normal: {
-                                    color: '#778899',
-                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                                }
-                            },
-                            data: startTime
-                        }, {
-                            name: '结束时间',
-                            type: 'bar',
-                            stack: '开始时间',
-                            itemStyle: {
-                                normal: {
-                                    color: '#2E91BD',
-                                    barBorderRadius: 0,
-                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                                    shadowBlur: 20
-                                }
-                            },
-                            data:endTime
-                        },
-                        {
-                            name: '超出开始时间',
-                            type: 'bar',
-                            stack: '开始时间',
-                            itemStyle: {
-                                normal: {
-                                    color: '#F4201B',
-                                    shadowColor: 'rgba(255, 255, 255, 0.3)',
-                                }
-                            },
-                            data:actualTime
-                        }
-                    ]
-                };
-                proBar.setOption(option);
-            },
-            //工时
-            workTime(deptName,leaveTime,requiredTime,allTime){
-                let father = document.getElementById("hours-div");
-                if(father){
-                    let allChild = document.querySelectorAll("#hours-div .hour-child");
-                    for(let i of allChild){
-                        father.removeChild(i)
-                    }
-                    setTimeout(()=>{
-                        for(let i=0;i<deptName.length;i++){
-                            let txtName
-                            if(leaveTime[i]>=0){
-                                txtName='剩余工时'
-                            }
-                            else{
-                                txtName='超出工时'
-                                leaveTime[i]=-leaveTime[i]
-                            }
-                            let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
-                            father.insertAdjacentHTML("beforeend",div);
-                            let option = {
-                                axisLabel: {
-                                    interval:0//横轴信息全部显示
-                                },
-                                tooltip : {
-                                    trigger: 'item',
-                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                                },
-                                series : [
-                                    {
-                                        name: deptName[i],
-                                        type: 'pie',
-                                        radius : "60%",
-                                        center: ['60%', '50%'],
-                                        data:[
-                                            {value:leaveTime[i], name:txtName},
-                                            {value:allTime[i], name:'实际工时'}
-                                        ],
-                                        itemStyle: {
-                                            emphasis: {
-                                                shadowBlur: 10,
-                                                shadowOffsetX: 0,
-                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                            }
-                                        }
-                                    }
-                                ]
-                            };
-                            let proBar= this.$echarts.init(document.getElementById("workHours"+i)); //实时统计
-                            proBar.setOption(option);
-                        }
-                    },0)
-
-                }
-            },
+//            //设置实时统计数据
+//            setRealTime(systenDept,currentTime){
+//                let datashow = systenDept;
+//                let nowTime = currentTime;
+//                let yaxis = []; //y轴显示
+//                let startTime = []; //预期开始时间
+//                let endTime = []; //预期结束时间
+//                let actualTime = []; //实际完成时间
+//                let timeInfo=[]; //所有信息
+//                let deptName=[];//部门
+//                let allTime=[];//实际用时
+//                let requiredTime=[];//总用时
+//                let leaveTime=[];//剩余用时
+//                for(let i of datashow) {
+//                    timeInfo.push(i);
+//                    yaxis.push(i.DEPT_NAME);
+//                    startTime.push(new Date(i.EXPECT_START));
+//                    endTime.push(new Date(i.EXPECT_END));
+//                    if(!i.lastCompleteTime) {
+//                        //如果没有完成事件，设置完成时间为当前时间
+//                        i.lastCompleteTime = nowTime
+//                    }
+//                    if(i.lastCompleteTime<=i.EXPECT_END){
+//                        //如果完成时间在计划时间之内，完成时间等于预计时间
+//                        i.lastCompleteTime=i.EXPECT_END
+//                    }
+//                    //所有人员的实际用时
+//                    if(i.allTime){
+//                        allTime.push(i.allTime);
+//                        deptName.push(i.DEPT_NAME);
+//                        requiredTime.push(i.requiredTime);
+//                        leaveTime.push(i.requiredTime-i.allTime)
+//                    }
+//                    actualTime.push(new Date(i.lastCompleteTime));
+//
+//                    this.$set(this.sstj, "gsinfo", timeInfo);
+//                }
+//                let len=requiredTime.length;
+////                this.$set(this.sstj,"yaxis",yaxis);
+////                this.$set(this.sstj,"startTime",startTime);
+////                this.$set(this.sstj,"endTime",endTime);
+////                this.$set(this.sstj,"actualTime",actualTime);
+////                this.$set(this.sstj,"timeInfo",timeInfo);
+////                this.$set(this.sstj,"deptName",deptName);
+////                this.$set(this.sstj,"requiredTime",requiredTime);
+////                this.$set(this.sstj,"leaveTime",leaveTime);
+////                this.$set(this.sstj,"allTime",allTime);
+////                this.sstj.len = len;
+//                this.realTime(yaxis,startTime,endTime,actualTime);
+//                this.workTime(deptName,leaveTime,requiredTime,allTime);
+//
+//            },
+////            实时统计周期
+//            realTime(yaxis,startTime,endTime,actualTime) {
+//                let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
+//                proBar.clear()
+//                let option = {
+//                    title : {
+//                        text: '周期统计',
+//                        x:'center'
+//                    },
+//                    legend: {
+//                        data: ['实时统计']
+//                    },
+//                    xAxis: {
+//                        type: 'time'
+//                    },
+//
+//                    yAxis: {
+//                        data: yaxis
+//                    },
+//                    tooltip: {
+//                        trigger: 'axis',
+//                        formatter: function(params) {
+//                            let res = params[0].name + "</br>"
+//                            let date0 = new Date(params[0].data);
+//                            let date1 = new Date(params[1].data);
+//                            date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
+//                            date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
+//                            res += params[0].seriesName + ":" + date0 + "</br>"
+//                            res += params[1].seriesName + ":" + date1 + "</br>"
+//                            return res;
+//                        }
+//                    },
+//                    series: [
+//                        {
+//                            name: '开始时间',
+//                            type: 'bar',
+//                            stack: '开始时间',
+//                            itemStyle: {
+//                                normal: {
+//                                    color: '#778899',
+//                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+//                                }
+//                            },
+//                            data: startTime
+//                        }, {
+//                            name: '结束时间',
+//                            type: 'bar',
+//                            stack: '开始时间',
+//                            itemStyle: {
+//                                normal: {
+//                                    color: '#2E91BD',
+//                                    barBorderRadius: 0,
+//                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+//                                    shadowBlur: 20
+//                                }
+//                            },
+//                            data:endTime
+//                        },
+//                        {
+//                            name: '超出开始时间',
+//                            type: 'bar',
+//                            stack: '开始时间',
+//                            itemStyle: {
+//                                normal: {
+//                                    color: '#F4201B',
+//                                    shadowColor: 'rgba(255, 255, 255, 0.3)',
+//                                }
+//                            },
+//                            data:actualTime
+//                        }
+//                    ]
+//                };
+//                proBar.setOption(option);
+//            },
+//            //工时
+//            workTime(deptName,leaveTime,requiredTime,allTime){
+//                let father = document.getElementById("hours-div");
+//                if(father){
+//                    let allChild = document.querySelectorAll("#hours-div .hour-child");
+//                    for(let i of allChild){
+//                        father.removeChild(i)
+//                    }
+//                    setTimeout(()=>{
+//                        for(let i=0;i<deptName.length;i++){
+//                            let txtName
+//                            if(leaveTime[i]>=0){
+//                                txtName='剩余工时'
+//                            }
+//                            else{
+//                                txtName='超出工时'
+//                                leaveTime[i]=-leaveTime[i]
+//                            }
+//                            let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
+//                            father.insertAdjacentHTML("beforeend",div);
+//                            let option = {
+//                                axisLabel: {
+//                                    interval:0//横轴信息全部显示
+//                                },
+//                                tooltip : {
+//                                    trigger: 'item',
+//                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+//                                },
+//                                series : [
+//                                    {
+//                                        name: deptName[i],
+//                                        type: 'pie',
+//                                        radius : "60%",
+//                                        center: ['60%', '50%'],
+//                                        data:[
+//                                            {value:leaveTime[i], name:txtName},
+//                                            {value:allTime[i], name:'实际工时'}
+//                                        ],
+//                                        itemStyle: {
+//                                            emphasis: {
+//                                                shadowBlur: 10,
+//                                                shadowOffsetX: 0,
+//                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+//                                            }
+//                                        }
+//                                    }
+//                                ]
+//                            };
+//                            let proBar= this.$echarts.init(document.getElementById("workHours"+i)); //实时统计
+//                            proBar.setOption(option);
+//                        }
+//                    },0)
+//
+//                }
+//            },
             closeDialog(){
                 this.option.visible = false;//看板的弹窗
             },
@@ -545,35 +559,263 @@
                 this.$maskin();
                 let params = new URLSearchParams();
                 params.append("NEEL_TYPE", this.option.needschoosen);//需求类型ID
-                params.append("NEEL_ID", this.option.code);//需求ID
+                params.append("STATE_ID", this.option.code);//需求ID
                 this.$axios.post("/statistical/getneelmainba", params).then((res) => {
                     let data = res.data;
-                    if (data.code == 200 && Reflect.has(data, 'result')) {
-                        this.realtimeInfo = data.result.neellist.length > 0 && data.result.neellist[0];
-                        document.querySelector(".neel_DESCRIPTION").innerHTML = data.result.neellist[0].neel_DESCRIPTION;
-                        this.info = data.result.NEELGZ;
-                        //加载实时统计数据
-                        if(data.result.systenDept && data.result.currentTime){
-                            if(data.result.systenDept.length){
-                                //技术经理分析过后显示周期统计模块
-                                this.sstj.hidezqvisible = true
-                                let bool = false;
-                                for(let i of data.result.systenDept){
-                                    if(i.infos){
-                                        bool = true
-                                    }
-                                }
-                                bool?this.sstj.hidegsvisible = true:this.sstj.hidegsvisible = false
-                            }else{
-                                //没有进行分析取消所有展示
-                                this.sstj.hidezqvisible = false
-                                this.sstj.hidegsvisible = false
-                            }
-                            this.setRealTime(data.result.systenDept,data.result.currentTime)
-                        }
+                    if (data.code == 200) {
+                        this.allNeedsinfo = data.result.neellist.length > 0 && data.result.neellist;
+                        this.loadNeedsByIndex();
                         this.$maskoff()
                     }
                 })
+            },
+            loadNeedsByIndex(){
+                let info = this.allNeedsinfo;
+                let info_index = info[this.needsIndex];
+                this.realtimeInfo = info_index;
+                document.querySelector(".neel_DESCRIPTION").innerHTML = info_index.neel_DESCRIPTION;
+                this.info = info_index.map.queryRecordByTaskId;
+                //加载实时统计数据
+                if(info_index.systenDept){
+                    if(info_index.systenDept.length){
+                        //默认显示信息
+                        this.sstj.hidezqvisible = false;
+                        this.sstj.hidegsvisible = false;
+                        this.setRealTime(
+                            info_index.map.systenDept,
+                            info_index.map.currentTime,
+                            info_index.map.taskTime)
+                    }else{
+                        //当前没有分配给技术经理，全部不显示信息
+                        this.sstj.hidezqvisible = true;
+                        this.sstj.hidegsvisible = true;
+                    }
+                }
+            },
+            //设置实时统计数据
+            setRealTime(systemDepts,currentTime,workTime){
+//                this.$set(this, "selectValue", statusArr);
+                let datashow = systemDepts;
+                let nowTime = currentTime;
+                let yaxis = []; //y轴显示
+                let startTime = []; //预期开始时间
+                let endTime = []; //预期结束时间
+                let actualTime = []; //实际完成时间
+                let timeInfo=[]; //所有信息
+                let deptName=[];//部门
+                let allTime=[];//部门实际工时
+                let requiredTime=[];//部门总工时
+                let leaveTime=[];//部门剩余工时
+
+                let userName=[];//人员
+                let userallTime=[];//个人实际工时
+                let userequiredTime=[];//个人总工时
+                let userleaveTime=[];//个人剩余工时
+                for(let i of datashow) {
+                    if(!i.EXPECT_END && !i.EXPECT_START){
+                        //该项目没有被评审，跳过添加数据，跳过部门
+                        continue;
+                    }
+                    timeInfo.push(i);
+                    let start = this.$format(new Date(i.EXPECT_START));
+                    let end = this.$format(new Date(i.EXPECT_END));
+                    let arr =  [
+                        `${start.mouth}/${start.day}`,
+                        `${end.mouth}/${end.day}`
+                    ]
+//                    yaxis.push(i.DEPT_NAME+arr[0]+'-'+arr[1]);
+                    yaxis.push(i.DEPT_NAME);
+                    if(i.EXPECT_START){
+                        startTime.push(new Date(i.EXPECT_START));
+                    }
+                    if(i.EXPECT_END){
+                        endTime.push(new Date(i.EXPECT_END));
+                    }
+                    if(!i.lastCompleteTime) {
+                        //如果没有完成事件，设置完成时间为当前时间
+                        i.lastCompleteTime = nowTime
+                    }
+                    if(i.lastCompleteTime<=i.EXPECT_END){
+                        //如果完成时间在计划时间之内，完成时间等于预计时间
+                        i.lastCompleteTime=i.EXPECT_END
+                    }
+                    //所有人员的实际用时
+                    if(i.allTime){
+                        allTime.push(i.allTime);
+                        deptName.push(i.DEPT_NAME);
+                        requiredTime.push(i.requiredTime);
+                        leaveTime.push(i.requiredTime-i.allTime)
+                    }
+                    actualTime.push(new Date(i.lastCompleteTime));
+                    this.$set(this.sstj, "info", timeInfo);
+                }
+                //REAL_TIME 预计用时
+                //ALL_TIME  实际用时
+                if(workTime && workTime.length){
+                    for(let j of workTime){
+                        console.log(j)
+                        userName.push(j.USER_NAME)
+                        userallTime.push(j.ALL_TIME)
+                        userequiredTime.push(j.REAL_TIME)
+                        userleaveTime.push(j.REAL_TIME-j.ALL_TIME)
+                    }
+                }
+                this.userworkTime(userName,userallTime,userequiredTime,userleaveTime)
+
+//                let len=requiredTime.length;
+//                this.$set(this.sstj,"yaxis",yaxis);
+//                this.$set(this.sstj,"startTime",startTime);
+//                this.$set(this.sstj,"endTime",endTime);
+//                this.$set(this.sstj,"actualTime",actualTime);
+//                this.$set(this.sstj,"timeInfo",timeInfo);
+//                this.$set(this.sstj,"deptName",deptName);
+//                this.$set(this.sstj,"requiredTime",requiredTime);
+//                this.$set(this.sstj,"leaveTime",leaveTime);
+//                this.$set(this.sstj,"allTime",allTime);
+//                this.sstj.len = len;
+                if(!yaxis.length){
+                    //没有信息则不显示图表
+                    this.sstj.hidegsvisible = true;
+                    this.sstj.hidezqvisible = true;
+                    return;
+                }
+                this.realTime(yaxis,startTime,endTime,actualTime);
+                this.workTime(deptName,leaveTime,requiredTime,allTime);
+
+            },
+//            实时统计周期
+            realTime(yaxis,startTime,endTime,actualTime) {
+                let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
+                proBar.clear();
+                let option = {
+                    title : {
+                        text: '周期统计',
+                        x:'center'
+                    },
+                    legend: {
+                        data: ['实时统计']
+                    },
+                    xAxis: {
+                        type: 'time'
+                    },
+
+                    yAxis: {
+                        data: yaxis
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: (params)=> {
+                            let res = params[0].name + "</br>";
+                            let start = this.$format(new Date(params[0].data));
+                            let end = this.$format(new Date(params[1].data));
+                            let date0 = start.year + "-" + start.mouth + "-" + start.day;
+                            let date1 = end.year + "-" + end.mouth + "-" + end.day;
+                            res += params[0].seriesName + ":" + date0 + "</br>";
+                            res += params[1].seriesName + ":" + date1 + "</br>";
+                            return res;
+                        }
+                    },
+                    series: [
+                        {
+                            name: '开始时间',
+                            type: 'bar',
+                            stack: '开始时间',
+                            itemStyle: {
+                                normal: {
+                                    color: '#778899',
+                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                }
+                            },
+                            data: startTime
+                        }, {
+                            name: '结束时间',
+                            type: 'bar',
+                            stack: '开始时间',
+                            itemStyle: {
+                                normal: {
+                                    color: '#2E91BD',
+                                    barBorderRadius: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                    shadowBlur: 20
+                                }
+                            },
+                            data:endTime
+                        },
+                        {
+                            name: '超出开始时间',
+                            type: 'bar',
+                            stack: '开始时间',
+                            itemStyle: {
+                                normal: {
+                                    color: '#F4201B',
+                                    shadowColor: 'rgba(255, 255, 255, 0.3)',
+                                }
+                            },
+                            data:actualTime
+                        }
+                    ]
+                };
+                proBar.setOption(option);
+            },
+            //工时
+            workTime(deptName,leaveTime,requiredTime,allTime){
+                let father = document.getElementById("hours-div");
+                if(father){
+                    let allChild = document.querySelectorAll("#hours-div .hour-child");
+                    for(let i of allChild){
+                        father.removeChild(i)
+                    }
+                    setTimeout(()=>{
+                        for(let i=0;i<deptName.length;i++){
+                            let txtName
+                            if(leaveTime[i]>=0){
+                                txtName='剩余工时'
+                            }
+                            else{
+                                txtName='超出工时'
+                                leaveTime[i]=-leaveTime[i]
+                            }
+                            let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
+                            father.insertAdjacentHTML("beforeend",div);
+                            let option = {
+                                axisLabel: {
+                                    interval:0//横轴信息全部显示
+                                },
+                                title: {
+                                    text: deptName[i],
+                                    left: 'center',
+                                    top: 0,
+                                },
+                                tooltip : {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+                                series : [
+                                    {
+                                        name: deptName[i],
+                                        type: 'pie',
+                                        radius : "60%",
+                                        center: ['60%', '50%'],
+                                        data:[
+                                            {value:leaveTime[i], name:txtName},
+                                            {value:allTime[i], name:'实际工时'}
+                                        ],
+                                        itemStyle: {
+                                            emphasis: {
+                                                shadowBlur: 10,
+                                                shadowOffsetX: 0,
+                                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                            }
+                                        }
+                                    }
+                                ]
+                            };
+                            let proBar= this.$echarts.init(document.getElementById("workHours"+i)); //实时统计
+                            proBar.setOption(option);
+                        }
+                    },0)
+
+                }
             },
             //选择需求类型change事件
             needsChange(e){
@@ -619,14 +861,14 @@
                     arr_data.push(obj);
                 }
                 let arr_title = [
-                    "技术管理部",
-                    "开发部",
+                    "待技术管理部审核",
+                    "待技术经理审核",
                     "开发中",
                     "测试中",
                     "已验收",
-                    "技术负责人",
-                    "系统管理部",
-                    "产品部验收"
+                    "待技术负责人审核",
+                    "待系统管理部部长审核",
+                    "待产品经理验收"
                 ];
                 return {
                     title: {
@@ -642,7 +884,6 @@
                         type: 'scroll',
                         right: 0,
                         top: 20,
-                        bottom: 20,
                         data: arr_title
                     },
                     series: [{

@@ -125,7 +125,7 @@
 					<!--表格部分-->
 					<div class="table-list">
 						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight"
-								  highlight-current-row @row-click="handleCurrentChange">
+								  highlight-current-row  :row-class-name="tableRowClassName" @row-click="handleCurrentChange">
 							<el-table-column prop="daliy_NEET_ID" label="任务编号" width="200"></el-table-column>
 							<el-table-column prop="task_NAME" label="任务名称" show-overflow-tooltip></el-table-column>
 							<el-table-column prop="start_DATE" label="申请日期" width="110"></el-table-column>
@@ -191,6 +191,9 @@
 												<el-form-item label="优先级">{{tabs.data_one.daliy.rriority_NAME}}</el-form-item>
 											</el-col>
 											<el-col :span="12">
+												<el-form-item label="涉及产品线">{{tabs.data_one.daliy.prduct_LINE}}</el-form-item>
+											</el-col>
+											<el-col :span="12">
 												<el-form-item label="重要程度">{{tabs.data_one.daliy.importance_NAME}}</el-form-item>
 											</el-col>
 											<el-col :span="12" v-if="tabs.data_one.daliy.ugent">
@@ -205,6 +208,10 @@
 											<el-col :span="24">
 												<el-form-item label="需求描述">
 													<div class="task_DESCRIPTION"></div></el-form-item>
+											</el-col>
+											<el-col :span="24">
+												<el-form-item label="产品改造点">
+													<div class="prduct_FUNCTION"></div></el-form-item>
 											</el-col>
 											<el-col :span="12" v-if="tabs.data_one.daliy.check_TYPE">
 												<el-form-item label="需求评审结果 ">{{tabs.data_one.daliy.check_TYPE}}</el-form-item>
@@ -1293,12 +1300,32 @@
 						for(let i of data.result.state) {
 							this.optionsOn.push(i)
 						}
+                        //判断是否有search跳转到赌赢的操作台
+                        if(this.$route.params.neelId){
+                            let id = this.$route.params.neelId;
+                            for(let i of data.result.daliys){
+                                if(i.daliy_NEET_ID == id){
+
+                                    this.handleCurrentChange(i);
+                                    // this.$refs.rcrw_table.setCurrentRow(i);
+
+                                    break;
+                                }
+                            }
+                            return;
+                        }
 					} else {
 						this.$warn(data.message);
 					}
 					this.$maskoff()
 				})
 			},
+            tableRowClassName({row, rowIndex}) {
+                if (row.daliy_NEET_ID == this.$route.params.neelId) {
+                    return 'td-current';
+                }
+                return '';
+            },
 			selectStatOn() {
 				this.screenKey.STATE = '';
 				this.screenKey.STATE = this.selectValueOn;
@@ -1320,7 +1347,6 @@
 			//点击表格列表展示控制台
 			handleCurrentChange(val) {
 				this.$maskin();
-
                 //全程跟踪视图模式
                 this.tracking.trackingvisiible = false;
 				this.innitFrom()
@@ -1364,7 +1390,7 @@
                         let self=this
                         var t=setTimeout(function(){
                             self.setBrInfo(document.querySelector(".task_DESCRIPTION"),data.result.daliy.task_DESCRIPTION);
-                            // self.setBrInfo(document.querySelector(".needsname"),data.result.daliy.needsname);
+							self.setBrInfo(document.querySelector(".prduct_FUNCTION"),data.result.daliy.prduct_FUNCTION);
                         },500)
 					} else {
 						this.$warn(data.message);
@@ -1465,7 +1491,7 @@
                         let self=this
                         var t=setTimeout(function(){
                             self.setBrInfo(document.querySelector(".task_DESCRIPTION"),data.result.daliy.task_DESCRIPTION);
-                            // self.setBrInfo(document.querySelector(".needsname"),data.result.daliy.needsname);
+                            self.setBrInfo(document.querySelector(".prduct_FUNCTION"),data.result.daliy.prduct_FUNCTION);
                         },500)
 					} else {
 						this.$warn(data.message);

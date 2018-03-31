@@ -146,7 +146,7 @@
 								<el-table-column prop="st_STARTDATE" label="提交日期" width="110"></el-table-column>
 								<el-table-column prop="st_ENDDATE" label="期望上线日期" width="110"></el-table-column>
 								<el-table-column prop="st_NEELSOURCE" label="需求来源" show-overflow-tooltip></el-table-column>
-								<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>
+								<!--<el-table-column prop="st_DESIGNSYSTEM" label="涉及系统" show-overflow-tooltip></el-table-column>-->
 								<el-table-column prop="st_RRIORITY" label="优先级" width="70"></el-table-column>
 								<el-table-column prop="st_STATE" label="状态"></el-table-column>
 								<!--<el-table-column prop="st_WORKHOURS" label="更新时间"></el-table-column>-->
@@ -171,7 +171,7 @@
 			return {
 				select_value: "personal",
 				select: [{
-					label: "开发组",
+					label: "全部开发组",
 					value: "group"
 				}, {
 					label: "人员统计",
@@ -438,9 +438,13 @@
 				card_body.style.height = height - card_header_height - 36 + "px";
 				var proBar = echarts.init(document.getElementById("pro-bar")); //人员统计表格
 				proBar.clear()
+				let text="人员统计"
+				if(this.select_value=="personal"){
+                    text="任务统计"
+				}
 				let option = {
 					title: {
-						text: '人员统计',
+						text: text,
 						x: 'center'
 					},
 					color: ['#3398DB'],
@@ -470,7 +474,7 @@
 						type: 'value'
 					}],
 					series: [{
-						name: '人员统计',
+						name: text,
 						type: 'bar',
 						barWidth: '60%',
 						data: datas
