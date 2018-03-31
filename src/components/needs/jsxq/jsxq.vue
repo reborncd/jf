@@ -2685,12 +2685,12 @@
                         this.setStateAction(data.result);
 
                         //加载实时统计数据
-                        if(data.result.systemDepts){
+                        if(data.result.systemDepts_0){
                             //默认显示信息
                             this.sstj.hidezqvisible = false;
                             this.sstj.hidegsvisible = false;
                             this.setRealTime(
-                                data.result.systemDepts,
+                                data.result.systemDepts_0,
                                 data.result.currentTime,
                                 data.result.workTime)
                         }else if(data.result.systemDepts_1 && data.result.systemDepts_1.length){

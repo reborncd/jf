@@ -112,7 +112,7 @@
 
     .edition-line li .infoDiv {
         position: absolute;
-        width:180px;
+        width: 180px;
         left: 7px;
         bottom: 35px;
         padding: 5px 10px;
@@ -139,7 +139,7 @@
         text-align: center !important;
     }
 
-    .el-table .cell{
+    .el-table .cell {
         text-align: center !important;
     }
 
@@ -163,7 +163,14 @@
         /*padding-top: 47px;*/
         overflow: auto;
     }
-    .role-tree-title{
+
+    .right-table {
+        float: left;
+        padding: 0px;
+        width: 80%;
+    }
+
+    .role-tree-title {
         height: 47px;
         width: 100%;
         display: -webkit-flex;
@@ -172,12 +179,13 @@
         background: #939da9;
         color: #fff;
         font-weight: bold;
-        word-spacing: 20;
     }
-    .role-tree .el-tree-node, .el-tree-node__content{
+
+    .role-tree .el-tree-node, .el-tree-node__content {
         min-height: 39px;
         box-sizing: border-box;
     }
+
     .role-tree {
         width: 15.5%;
         float: left;
@@ -185,157 +193,68 @@
         margin-right: 1%;
         overflow: auto;
     }
-    .el-dialog--center .el-dialog__body{
-        padding-top: 0px!important;
+
+    .el-dialog--center .el-dialog__body {
+        padding-top: 0px !important;
     }
 </style>
 
 <template>
-    <div class="rolelist common-card-wrap" style="height: 100%;">
-        <el-card class="box-card">
-            <div class="text item">
-                <div class="content">
-                    <div class="action clear">
-                        <el-button type="danger" @click="showdialog" size="mini">添加版本</el-button>
-                        <div class="fr">
-                            <div class="search i-b" @keyup="searchKeyword($event)">
-                                <el-input clearable placeholder="请输入检索关键字"
-                                        suffix-icon="icon-sousuo iconfont" v-model="keyword" size="mini">
-                                </el-input>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-list">
-                        <div class="left-tree role-tree">
-                            <div class="role-tree-title">涉及系统</div>
-                                <el-tree :data="treeData" @node-click="leftTreeClick" ></el-tree>
-                            </div>
-                        <el-table :data="table.tableData" :highlight-current="true"
-                                  :height="tableHeight" border style="width: 80%"
-                         empty-text="请选择系统或当前系统没有数据" highlight-current-row
-                        @row-click="editRow">
-                        <el-table-column prop="system_NAME" label="子系统" width="110" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="new_VERSION" label="最新版本" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="current_VERSION" label="当前版本" width="110" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="start_DATE" label="启用日期" show-overflow-tooltip></el-table-column>
-                        <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
-                        <el-table-column label="需求名称" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                        <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
-                        class="tab-opt neel_DESCRIPTION" style="line-height:1;"
-                        :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
-                        <!--:title=scope.row.neel_DESCRIPTION-->
-                        <!--{{scope.row.neel_DESCRIPTION}}-->
-                        </template>
-                        </el-table-column>
-                        </el-table>
-                    </div>
-                    <!--详情表格-->
-                    <el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center
-                               label-position="left" width="70%" append-to-body modal-append-to-body :before-close="closeDialog">
-                                <div class="console-tab-content">
-                                    <div class="table-list">
-                                        <el-table class='detail-table' :data="table.tableDetail" border
-                                                  style="width: 100%;text-align: center;"
-                                                  :height="table.tableHeight" highlight-current-row>
-                                            <el-table-column prop="system_FNAME" label="涉及系统"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="system_NAME" label="子系统" width="110"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="new_VERSION" label="版本号"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="current_STATE" label="当前版本" width="110"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="start_DATE" label="启用日期"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="start_TIME" label="启用时间"
-                                                             show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="neel_DESCRIPTION" label="需求名称"
-                                                             show-overflow-tooltip>
-                                                <template slot-scope="scope">
-                                                    <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION class="tab-opt neel_DESCRIPTION" style="line-height:1;"
-                                                         :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
-                                                </template>
-                                            </el-table-column>
-                                        </el-table>
-                                    </div>
-                                    <div class="edition-line clearfix" v-if="dialogOption.dialog_person_visible">
-                                        <ul class="edition-line-ul clearfix">
-                                            <li v-for='(item,index) in tabs.versionLine'
-                                                :style="{ width: tabs.width}" v-model="item.version"
-                                                :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
-                                                <em @mouseover="showInfo(index)" @mouseleave="hiddenInfo(index)"></em>
-                                                <span></span>
-                                                <p class="banP">{{item.new_VERSION}}</p>
-                                                <div class="infoDiv" style=""
-                                                     v-if="tabs.infoshowVisible && tabs.activeLineIndex == index"
-                                                     v-model="tabs.infoshowVisible">
-                                                    <p>操作人：{{item.user_NAME}}</p>
-                                                    <p>操作说明：{{item.czsm}}</p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                        </el-tabs>
-                        <div slot="footer" class="dialog-footer">
-                            <el-button size="mini" @click="cancelForm">关闭</el-button>
-                        </div>
-                    </el-dialog>
 
-                    <div class="console-tab-wrapper" v-if="tabs.consoleWrapperVisible">
-                        <div class="console-action-wrapper">
-                            <i class="el-icon-close close" @click="tabClick"></i>
-                        </div>
-                    </div>
-                    <el-dialog title="添加版本" :visible="dialog.dialogVisible"
-                               append-to-body modal-append-to-body :before-close="closeAddDialog">
-                        <el-form label-width="80px">
-                            <el-row>
-                                <el-col>
-                                    <el-form-item label="系统">
-                                        <el-select v-model="dialog.systemValue" placeholder="请选择" @change="systemOpt">
-                                            <el-option
-                                                v-for="item in dialog.systemSelect"
-                                                :label="item.system_NAME"
-                                                :value="item.system_ID+'-'+item.system_NAME"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col>
-                                    <el-form-item label="子系统">
-                                        <el-select v-model="dialog.subsystemValue" placeholder="请选择">
-                                            <el-option
-                                                    v-for="item in dialog.subSystemSelect"
-                                                    :label="item.system_NAME"
-                                                    :value="item.system_ID+'-'+item.system_NAME"
-                                            ></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col class="" :span='24' style='position: relative;'>
-                                    <el-form-item label="版本" class=''>
-                                        v&nbsp;
-                                        <el-input v-model="dialog.banben" placeholder="请填写版本号,格式1.2.0"
-                                                  style="width: 88%;"></el-input>
 
-                                    </el-form-item>
-                                </el-col>
-                                <el-col style="text-align: center;">
-                                    <el-button type="primary" @click="postSystem" size="medium">提交</el-button>
-                                    <el-button @click="backPage" size="medium">返回</el-button>
-                                </el-col>
-                            </el-row>
-                            <div slot="footer" class="dialog-footer" :visible="dialog.dialogVisible">
-
-                            </div>
-                        </el-form>
-
-                    </el-dialog>
-                </div>
-            </div>
-        </el-card>
-    </div>
+                <!--</div>-->
+                <!--详情表格-->
+                <!--<el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center-->
+                <!--label-position="left" width="70%" append-to-body modal-append-to-body :before-close="closeDialog">-->
+                <!--<div class="console-tab-content">-->
+                <!--<div class="table-list">-->
+                <!--<el-table class='detail-table' :data="table.tableDetail" border-->
+                <!--style="width: 100%;text-align: center;"-->
+                <!--:height="table.tableHeight" highlight-current-row>-->
+                <!--<el-table-column prop="system_FNAME" label="涉及系统"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="system_NAME" label="子系统" width="110"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="new_VERSION" label="版本号"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="current_STATE" label="当前版本" width="110"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="start_DATE" label="启用日期"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="start_TIME" label="启用时间"-->
+                <!--show-overflow-tooltip></el-table-column>-->
+                <!--<el-table-column prop="neel_DESCRIPTION" label="需求名称"-->
+                <!--show-overflow-tooltip>-->
+                <!--<template slot-scope="scope">-->
+                <!--<div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION class="tab-opt neel_DESCRIPTION" style="line-height:1;"-->
+                <!--:data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>-->
+                <!--</template>-->
+                <!--</el-table-column>-->
+                <!--</el-table>-->
+                <!--</div>-->
+                <!--<div class="edition-line clearfix" v-if="dialogOption.dialog_person_visible">-->
+                <!--<ul class="edition-line-ul clearfix">-->
+                <!--<li v-for='(item,index) in tabs.versionLine'-->
+                <!--:style="{ width: tabs.width}" v-model="item.version"-->
+                <!--:class="index==tabs.versionLine.length-1?'last_li':'line_li'">-->
+                <!--<em @mouseover="showInfo(index)" @mouseleave="hiddenInfo(index)"></em>-->
+                <!--<span></span>-->
+                <!--<p class="banP">{{item.new_VERSION}}</p>-->
+                <!--<div class="infoDiv" style=""-->
+                <!--v-if="tabs.infoshowVisible && tabs.activeLineIndex == index"-->
+                <!--v-model="tabs.infoshowVisible">-->
+                <!--<p>操作人：{{item.user_NAME}}</p>-->
+                <!--<p>操作说明：{{item.czsm}}</p>-->
+                <!--</div>-->
+                <!--</li>-->
+                <!--</ul>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</el-tabs>-->
+                <!--<div slot="footer" class="dialog-footer">-->
+                <!--<el-button size="mini" @click="cancelForm">关闭</el-button>-->
+                <!--</div>-->
+                <!--</el-dialog>-->
 
 </template>
 
@@ -343,7 +262,7 @@
     export default {
         data(){
             return {
-                treeData:[],
+                treeData: [],
                 dialog: {
                     name: '',
                     systemValue: '',
@@ -412,7 +331,6 @@
                     modal: false,
                     infoShow: false
                 },
-                tableHeight: "",
             }
         },
         mounted(){
@@ -421,18 +339,30 @@
         },
         methods: {
             calculate(){
+//                let height = document.querySelector(".mainr").offsetHeight;
+////                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
+//                let card_body = document.querySelector(".box-card .el-card__body");
+//                card_body.style.height = ( height - 34) + "px";
+//                //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
+//                this.tableHeight = (height - 36) - 20 - 28 - 15;
+
+
                 let height = document.querySelector(".mainr").offsetHeight;
-                let leftTree = document.querySelector(".left-tree");
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                card_body.style.height = ( height - 34)  + "px";
-                //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
-                leftTree.style.height = (height - 36)  - 20 - 28 - 15 + "px";
-                this.tableHeight = (height - 36)  - 20 - 28 - 15;
+                card_body.style.height = height - 36 + "px";
+                //表格高度
+                this.calculateTableHeight(this.tabs.consoleWrapperVisible);
+                //tab高度
+                if (this.tabs.consoleWrapperVisible) {
+                    this.calculateTabsHeight();
+                }
             },
             calculateTableHeight(type){
+                let leftTree = document.querySelector(".left-tree");
                 let height = document.querySelector(".mainr").offsetHeight;
                 let actionHeight = document.querySelector(".content .action").offsetHeight;
+                leftTree.style.height = height - 36 - actionHeight - 20 - 20 - 2 + "px";
                 //true代表没有控制台
                 if (!type) {
                     //-----------------------body的上下padding--table的margin-top-卡片头部
@@ -457,18 +387,18 @@
                 let params = new URLSearchParams();
                 this.$axios.post('/version/versionlist', params).then((res) => {
                     if (res.code = 200) {
-                        let sysArr=[]
+                        let sysArr = []
                         let data = res.data.result;
                         let temp = []
                         for (let i of data) {
-                                let obj = {
-                                    "label": i.system_FNAME,
-                                    "id": i.system_ID,
-                                };
-                                if(temp.indexOf(i.system_ID) == -1){
-                                    temp.push(i.system_ID)
-                                    sysArr.push(obj)
-                                }
+                            let obj = {
+                                "label": i.system_FNAME,
+                                "id": i.system_ID,
+                            };
+                            if (temp.indexOf(i.system_ID) == -1) {
+                                temp.push(i.system_ID)
+                                sysArr.push(obj)
+                            }
                         }
                         this.treeData = sysArr;
                         this.$maskoff();
@@ -484,9 +414,14 @@
                 this.$maskoff();
             },
             //版本详情显示
-            editRow(val){
+            handleCurrentChange(val){
                 this.$maskin();
-                this.dialogOption.dialogTitle = "详情";
+                if (!this.tabs.consoleWrapperVisible) {
+                    this.tabs.consoleWrapperVisible = true;
+                    setTimeout(() => {
+                        this.calculate()
+                    }, 0);
+                }
                 let params = new URLSearchParams();
                 if (val.neel_ID) {
                     params.append("NEEL_ID", val.neel_ID);
@@ -504,12 +439,12 @@
                         let nowArr
                         let versionP = []
                         for (let i of data) {
-                            if(i.start_DATE){
+                            if (i.start_DATE) {
                                 versionP.push(i);
                             }
                             if (i.current_STATE == 1) {
                                 i.current_STATE = '是'
-                                nowArr=i
+                                nowArr = i
                             }
                             else {
                                 i.current_STATE = '';
@@ -526,9 +461,9 @@
                         }
 //                        最后一个不是当前版本
 
-                        if(versionNum>=1){
-                            if(versionP[versionNum-1].current_STATE==''){  //如果最后一个不是当前版本
-                                if(nowArr){
+                        if (versionNum >= 1) {
+                            if (versionP[versionNum - 1].current_STATE == '') {  //如果最后一个不是当前版本
+                                if (nowArr) {
                                     versionP.push(nowArr);
                                 }
                             }
@@ -541,6 +476,54 @@
                 })
                 return false;
             },
+//            handleCurrentChange(val){
+//                this.calculate()
+//                this.calculateTableHeight()
+//                this.calculateTabsHeight()
+//                if (!this.tabs.consoleWrapperVisible) {
+//                    this.tabs.consoleWrapperVisible = true;
+//                    setTimeout(() => {
+//                        this.calculate()
+//                    }, 0);
+//                }
+//                let params = new URLSearchParams();
+//                if (val.neel_ID) {
+//                    params.append("NEEL_ID", val.neel_ID);
+//                    params.append("SYSTEM_ID", val.system_ID);
+//                    params.append("SUBSYSTEM", val.subsystem);
+//                } else {
+//                    params.append("SYSTEM_ID", val.system_ID);
+//                    params.append("SUBSYSTEM", val.subsystem);
+//                }
+//                this.$axios.post("/version/sonversionlist", params).then((res) => {
+//                    if (res.data.code == 200) {
+//                        let data = res.data.result;
+//                        let versionNum = data.length;
+//                        let arr = [];
+//                        let versionP = []
+//                        for (let i of data) {
+//                            versionP.push(i);
+//                            if (i.current_STATE == 1) {
+//                                i.current_STATE = '是'
+//                            }
+//                            else {
+//                                i.current_STATE = '';
+//                            }
+//
+//                            arr.push(i);
+//                        }
+//                        this.$set(this.table, "tableDetail", arr);
+//                        this.$set(this.tabs, "versionLine", versionP);
+//                        for (let i = 0; i < versionNum; i++) {
+//                            this.tabs.versionLine.push();
+//                            let width = 100 / (versionNum + 1) + "%"
+//                            this.$set(this.tabs, "width", width);
+//                        }
+//
+//                    }
+//                })
+//                return false;
+//            },
             //版本轴信息显示
             showInfo(index){
                 this.tabs.infoshowVisible = true;
@@ -667,10 +650,7 @@
 //                this.dialog.banben = '';
             },
             tabClick(val){
-                this.tabs.consoleWrapperVisible = false
                 this.calculateTabsHeight();
-                this.calculate();
-                this.calculateTableHeight();
             },
             //返回
             backPage(val){
