@@ -1,5 +1,11 @@
 @import '../../index.less';
 
+.tree_table{
+  .el-card__body{
+    overflow: unset;
+  }
+}
+
 .handle-bar{
   width: 100%;
   height: 40px;
@@ -36,7 +42,15 @@
   border: 1px solid #ebeef5;
   overflow: auto;
   margin-right: 1%;
+  position: relative;
+  .el-tree{
+    padding-top: 47px;
+    overflow: auto;
+    height: 100%;
+  }
   .left-tree-title{
+    z-index: 100;
+    position: absolute;
     height: 47px;
     width: 100%;
     background: #939da9;

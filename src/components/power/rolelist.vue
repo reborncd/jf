@@ -83,12 +83,12 @@
                     <el-button size="mini" type="primary" @click="searchKeyword">检索</el-button>
                 </div>
             </div>
-            <div class="text item">
+            <div class="text item tree_table">
                 <div class="content">
                     <div class="table-list">
                         <div class="left-tree role-tree">
                             <div class="left-tree-title">选择部门</div>
-                            <el-tree :data="treeDate" @node-click="leftTreeClick"></el-tree>
+                            <el-tree class="select-tree" :data="treeDate" @node-click="leftTreeClick"></el-tree>
                         </div>
                         <el-table stripe class="right-table role-el-table table_role fr" :data="tableData" border :highlight-current="true"
                                   :height="tableHeight">

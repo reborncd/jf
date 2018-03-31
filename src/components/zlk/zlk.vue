@@ -36,7 +36,7 @@
                     </div>
                     <div class="clear" >
                         <div class="tree-wrapper leftwrap left-tree">
-                            <div class="left-tree-title">选择部门</div>
+                          <div class="left-tree-title">选择{{selectValue === '1'?'目录':'系统'}}</div>
                             <el-tree
                                     :data="leftData"
                                     ref="lefttree"
@@ -502,16 +502,11 @@ import cloneDeep from 'lodash/cloneDeep';
                 params.append("DATUM_ID", code); // 文档编码
                 params.append("DATUM_NAME", name);// 文档名称
                 params.append("DATUM_VERSION", version);// 文本版本
-                params.append("DIRECTORY_LOCATION",
-                    `${subform.dirF.split(",")[1]}-${subform.dirC.split(",")[1]}`);// 目录位置
+                params.append("WRITE_USER", subform.write_user);
                 params.append("INTERCONNECTED_SYSTEM",
                     subform.sysF.split(",")[1] + '-' + subform.sysC.split(",")[1]);//关联系统
                 params.append("FILE_DESCRIPTIOON", intro);// 文档简介
                 params.append("uploadfileIds", subform.fileIds);//上传文件
-                params.append("CONDITION_FLAGF",
-                    `${subform.dirF.split(",")[0]},${subform.sysF.split(",")[0]}`);//系统和目录的父级ID
-                params.append("CONDITION_FLAGC",
-                    `${subform.dirC.split(",")[0]},${subform.sysC.split(",")[0]}`);//系统和目录的子集ID
                 this.$axios.post("datum/addDatum", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
@@ -524,22 +519,17 @@ import cloneDeep from 'lodash/cloneDeep';
             },
             //左侧点击事件
             leftclick(val){
-                if (val.children) {
-                    return;
-                }
                 this.$maskin();
                 let params = new URLSearchParams();
-                if (val.no_ID && val.system_ID && this.selectValue == 1) {
-                    params.append("CONDITION_FLAGF", val.no_ID);
-                }
-                if (val.system_FID && val.system_ID && this.selectValue == 2) {
-                    params.append("CONDITION_FLAGF", val.system_FID);
-                }
                 params.append("CONDITION_FLAG", this.selectValue);
                 if(this.selectValue == 1){
                     params.append("CONDITION_FLAGF", val.no_ID);
                 }else{
+                  if(!!val.children){
+                    params.append("CONDITION_FLAGF", val.system_ID);
+                  }else{
                     params.append("CONDITION_FLAGC", val.system_ID);
+                  }
                 }
                 this.$axios.post("/datum/getDatumlist", params).then((res) => {
                     let data = res.data;
