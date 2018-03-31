@@ -374,7 +374,7 @@
 	                                <input type="file" @change="getFile($event)" placeholder="上传附件"
 					                       style="width:78px;opacity: 0;position: absolute;left: 10px;top: 63px;">
 					                <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
-					                  <i style="margin-left: 10px;cursor: pointer;color: red;" 
+					                  <i style="margin-left: 10px;cursor: pointer;color: red;"
 					                  	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
 					                </p>
 					                </el-upload>
@@ -472,7 +472,7 @@
                       topeopleSelect:'',
                       fpvisible:true,//分配弹窗显示
                       permission:false
-                    
+
                   },
               way:{
                 status:'',
@@ -646,7 +646,7 @@
                 }
             },
             handleSizeChange(val){
-            	
+
             },
             loadData(){
                 this.$maskin();
@@ -871,8 +871,8 @@
                         this.calculate()
                     }, 0);
                 }
-                this.loadTabsData(val)               
-                
+                this.loadTabsData(val)
+
             },
             loadTabsData(val){
                     if(val.status=='待审核'){
@@ -906,17 +906,19 @@
                             arr=[];
                             this.$set(this.way, "information", arr);
                           }
+                          //操作台涉及系统
+                          this.operate.system = data.result.systemDept.SYSTEM_NAME
 //                       	 操作台子系统显示
                           let subSystems=[];
                           let reason=[]
-                          for(let i of data.result.systems.result){
-                          	if(!i.SYSTEM_FID){
-                          		this.operate.system=i.SYSTEM_NAME
-                          	}
-                          	else{
-                          		subSystems.push(i);
-                          	}
+                          for (let i of data.result.systems.result) {
+                            let obj = {
+                              "SYSTEM_NAME":i.SYSTEM_NAME,
+                              "SYSTEM_ID":i.SYSTEM_ID
+                            }
+                            subSystems.push(obj);
                           }
+                          this.$set(this.operate, "subSystem", subSystems);
                             for(let i of data.result.reasons.reasons){
                                 reason.push(i)
                             }
@@ -1121,7 +1123,7 @@
 	        };
 	         let params = new FormData();
 	         params.append("token",this.$getToken())
-	         params.append("file",e.target.files[0]);	
+	         params.append("file",e.target.files[0]);
 	         this.$axios.post("/fault/upload", params,config).then((res)=>{
 	         	let data =res.data;
 	         	if(data.code == 200){
@@ -1135,7 +1137,7 @@
 	         })
 	      },
 	      //下载附件
-	      downfile(val){      	
+	      downfile(val){
 	      	let token=localStorage.getItem("token")
 //	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
 			this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
@@ -1247,7 +1249,7 @@
             },
 
            backPage(val){
-             	this.loadData();       
+             	this.loadData();
              	this.clearAddData();
             	this.bugVisible=false
             }

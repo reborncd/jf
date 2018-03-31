@@ -146,7 +146,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="职位">
-                    <el-input v-model="dialogData.personData.position"></el-input>
+                    <el-input v-model="dialogData.personData.position" :disabled="dialogOption.infoShow"></el-input>
                 </el-form-item>
                 <el-form-item label="开发语言">
                     <el-select v-model="dialogData.personData.chooseLanguage" clearable
@@ -312,8 +312,8 @@
                 let card_body = document.querySelector(".box-card .el-card__body");
                 card_body.style.height = ( height - 34) - card_header_height + "px";
                 //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
-                leftTree.style.height = (height - 36) - card_header_height - 20 - 28 - 15 + "px";
-                this.tableHeight = (height - 36) - card_header_height - 20 - 28 - 15;
+                leftTree.style.height = (height - 36) - card_header_height - 20 - 28 - 20 + "px";
+                this.tableHeight = (height - 36) - card_header_height - 20 - 28 - 20;
             },
             closeDialog(){
               this.dialogOption.dialog_person_visible = false;
