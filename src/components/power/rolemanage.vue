@@ -38,6 +38,9 @@
         padding: 6px 0 !important;
     }
 </style>
+<style lang="less">
+@import '../commonless/tree_and_table.less';
+</style>
 <template>
     <div class="rolemanage common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
@@ -60,10 +63,10 @@
                 <div class="content">
                     <div class="table-list">
                         <div class="left-tree role-tree">
-                            <div class="role-tree-title">选择部门</div>
+                            <div class="left-tree-title">选择部门</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table class="role-el-table" :data="tableData" border :height="tableHeight"
+                        <el-table class="right-table role-el-table" :data="tableData" border :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
                             <el-table-column align="center" prop="role_NAME" label="所属角色"></el-table-column>
                             <el-table-column align="center" label="操作">

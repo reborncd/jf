@@ -1,46 +1,7 @@
-<style>
-    .role-tree-title{
-        height: 47px;
-        width: 100%;
-        display: -webkit-flex;
-        justify-content: center;
-        align-items: center;
-        background: #939da9;
-        color: #fff;
-        font-weight: bold;
-        word-spacing: 20;
-    }
-    .handle-bar{
-        width: 100%;
-        height: 35px;
-        display: -webkit-flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        padding: 0 5px;
-    }
-    .handle-bar .search{
-        position: absolute;
-        right: 5px;
-    }
-    .role-el-table{
-        float: right;
-        width: 83%
-    }
-    .role-el-table th{
-        background: #939da9;
-        color: #fff;
-    }
-    .role-tree .el-tree{
-        border-bottom: 1px solid #eee;
-    }
-    .role-tree .el-tree-node, .el-tree-node__content{
-        min-height: 39px;
-        box-sizing: border-box;
-    }
-    .role-tree .el-tree-node{
-        border-top: 1px solid #eee;
-    }
+<style lang="less">
+@import '../commonless/tree_and_table.less';
+</style>
+<style scope>
     .role-manage .el-card__header{
         display: none;
     }
@@ -55,14 +16,6 @@
 
     .role-manage .table-list table th div {
         text-align: center !important;
-    }
-
-    .role-tree {
-        width: 15.5%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        overflow: auto;
     }
 
     .role-manage .el-button--small {
@@ -113,7 +66,7 @@
             <div slot="header" class="clearfix" style="display: none">
                 <span class="card-title">人员配置</span>
             </div>
-            <div class="handle-bar action clear">
+            <div class="handle-bar action">
                 <!--<el-button size="mini" type="primary" @click="createRole">新增职位</el-button>-->
                 <!--<router-link to="rolemanage">-->
                     <!--<el-button size="mini">角色管理</el-button>-->
@@ -134,10 +87,10 @@
                 <div class="content">
                     <div class="table-list">
                         <div class="left-tree role-tree">
-                            <div class="role-tree-title">选择部门</div>
+                            <div class="left-tree-title">选择部门</div>
                             <el-tree :data="treeDate" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table stripe class="role-el-table table_role fr" :data="tableData" border :highlight-current="true"
+                        <el-table stripe class="right-table role-el-table table_role fr" :data="tableData" border :highlight-current="true"
                                   :height="tableHeight">
                             <el-table-column align="center" prop="user_ACCOUNT" label="用户名" show-overflow-tooltip></el-table-column>
                             <el-table-column align="center" prop="user_NAME" label="姓名" show-overflow-tooltip></el-table-column>

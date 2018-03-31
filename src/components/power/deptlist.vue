@@ -1,3 +1,6 @@
+<style lang="less">
+@import '../commonless/tree_and_table.less';
+</style>
 <style>
     .rolemanage .search .el-input {
         width: auto;
@@ -54,10 +57,10 @@
                 <div class="content">
                     <div class="table-list">
                         <div class="role-tree left-tree">
-                            <div class="role-tree-title">选择部门</div>
+                            <div class="left-tree-title">选择部门</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table class="role-el-table" :data="tableData" border :height="tableHeight"
+                        <el-table class="right-table role-el-table" :data="tableData" border :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
                             <el-table-column align="center" prop="dept_name" label="部门名称"></el-table-column>
                             <el-table-column align="center" prop="project" label="项目编码"></el-table-column>

@@ -1,20 +1,6 @@
 <style scoped>
     @import "../../static/css/table.css";
     @import "../../static/css/console.css";
-
-    .tree-wrapper.leftwrap {
-        padding: 20px 10px;
-        float: left;
-        width: 20%;
-        margin-right: 1%;
-        border: 1px solid #ebeef5;
-        overflow: auto;
-    }
-
-    .tree-wrapper.rightwrap {
-        float: right;
-        width: 79%;
-    }
 </style>
 <style>
     .zlk .el-table .cell {
@@ -30,12 +16,15 @@
         padding: 15px 20px;
     }
 </style>
+<style lang="less">
+@import '../commonless/tree_and_table.less';
+</style>
 <template>
     <div class="zlk common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
-                    <div class="action clear">
+                    <div class="handle-bar action">
                         <el-button type="danger" size="mini" @click="addZL">新资料</el-button>
                         <el-select v-model="selectValue" size="mini" @change="changeTree">
                             <el-option
@@ -45,8 +34,9 @@
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="clear" style="margin-top: 20px;">
-                        <div class="tree-wrapper leftwrap">
+                    <div class="clear" >
+                        <div class="tree-wrapper leftwrap left-tree">
+                            <div class="left-tree-title">选择部门</div>
                             <el-tree
                                     :data="leftData"
                                     ref="lefttree"
@@ -54,7 +44,7 @@
                                     @node-click="leftclick">
                             </el-tree>
                         </div>
-                        <div class="tree-wrapper rightwrap">
+                        <div class="tree-wrapper rightwrap right-table">
                             <div class="table-list" style="margin-top: 0;">
                                 <el-table :data="table.tableData" border style="width: 100%"
                                           :height="table.tableHeight"
@@ -152,7 +142,7 @@
                                         :value="item.system_ID+','+item.system_NAME">
                                 </el-option>
                             </el-select>
-                            <el-select v-model="add.subform.sysC" style="width: 50%; float: left" placeholder="请选择关联系统">
+                            <el-select v-model="add.subform.sysC" style="width: 50%; float: right" placeholder="请选择关联系统">
                                 <el-option
                                         v-for="item in add.subform.sysChild"
                                         :key="item.system_ID"
@@ -221,6 +211,7 @@
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep';
     export default {
         props: {
             username: ''
@@ -419,6 +410,7 @@
             addZL(){
                 this.$maskin();
                 this.add.addvisible = true;
+                let that = this;
                 let params = new URLSearchParams();
                 this.$axios.post("/datum/getDatumnoList", params).then((res) => {
                     let data = res.data;
@@ -442,8 +434,10 @@
                                 farr.push(i)
                             }
                         }
-                        this.$set(this.add.subform, "sysFather", farr);
-                        this.$set(this.add.subform, "sysChildOrigin", carr);
+                        // this.$set(this.add.subform, "sysFather", farr);
+                        // this.$set(this.add.subform, "sysChildOrigin", carr);
+                        this.add.subform.sysFather = cloneDeep(farr)
+                        this.add.subform.sysChildOrigin = cloneDeep(carr)
                         this.$maskoff();
                     }
                 })
@@ -481,10 +475,6 @@
                 }
                 if (!subform.version) {
                     this.$warn("请填写文档版本");
-                    return;
-                }
-                if (!subform.dirF || !subform.dirC) {
-                    this.$warn("请选择完整的目录位置");
                     return;
                 }
                 if (!subform.sysF || !subform.sysC) {
@@ -546,7 +536,11 @@
                     params.append("CONDITION_FLAGF", val.system_FID);
                 }
                 params.append("CONDITION_FLAG", this.selectValue);
-                params.append("CONDITION_FLAGC", val.system_ID);
+                if(this.selectValue == 1){
+                    params.append("CONDITION_FLAGF", val.no_ID);
+                }else{
+                    params.append("CONDITION_FLAGC", val.system_ID);
+                }
                 this.$axios.post("/datum/getDatumlist", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {

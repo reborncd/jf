@@ -24,14 +24,6 @@
         margin-left: 3px;
     }
 
-    .left-tree {
-        width: 19%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        padding-top: 47px;
-        overflow: auto;
-    }
 </style>
 <style>
     .rolemanage .el-table--border tr td:last-child,
@@ -43,19 +35,23 @@
         padding: 6px 0!important;
     }
 </style>
+<style lang="less">
+@import '../commonless/tree_and_table.less';
+</style>
 <template>
     <div class="rolemanage common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
-                    <div class="action">
+                    <div class="action handle-bar">
                         <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
                     </div>
                     <div class="table-list">
                         <div class="left-tree">
+                            <div class="left-tree-title">选择部门</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table :data="tableData" border style="width: 80%" :height="tableHeight"
+                        <el-table class="right-table" :data="tableData" border :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
                             <el-table-column align="center" prop="system_NAME" label="子系统"></el-table-column>
                         </el-table>
