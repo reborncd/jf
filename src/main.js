@@ -1,9 +1,8 @@
-﻿﻿﻿﻿import Vue from 'vue'
+import Vue from 'vue'
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
 import './static/css/iconfont.css'
-import './static/css/iconfont_ct.css'
 import './static/css/table.css'
 import './static/css/console.css'
 import App from './App.vue'
@@ -23,6 +22,19 @@ Vue.use(VueQuillEditor);
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
+
+// api请求地址
+let dep_host_port = "192.168.1.106:8080";    // 服务器, 开发模式不需要修改, 不能注释
+
+// let dev_host_port = "172.16.3.95:8080";   // 薛
+ let dev_host_port = "192.180.4.200:8080"; // 安, 内网
+// let dev_host_port = "172.16.3.185:8083";  // 欧
+// let dev_host_port = "172.16.2.8:8989";      // 康
+// let dev_host_port = "192.168.1.179:8082";
+// let dev_host_port = "192.168.1.106:8080";    // 服务器
+// let dev_host_port = "127.0.0.1:8082";
+// let dev_host_port = "192.180.4.150:8082";
+
 //----------------------------------------------------
 //路由跳转
 //----------------------------------------------------
@@ -203,15 +215,7 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 
 let instance = axios.create({
-    // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
-    // baseURL: "http://192.180.4.200:8080/JiFu_Project",//安
-    // baseURL:"http://172.16.3.185:8083",//欧
-     baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
-
-    // baseURL:"http://192.168.1.106:8080",//服务器
-    // baseURL:"http://192.168.1.179:8082",
-    // baseURL:"http://127.0.0.1:8082",
-    // baseURL:"http://192.180.4.150:8082",
+    baseURL: `http://${process.env.NODE_ENV === 'development'? dev_host_port:dep_host_port}/JiFu_Project`,
     headers: {
         'content-type': 'application/x-www-form-urlencoded'
     }
