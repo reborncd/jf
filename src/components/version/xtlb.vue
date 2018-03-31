@@ -24,6 +24,30 @@
         margin-left: 3px;
     }
 
+    .left-tree {
+        width: 19%;
+        float: left;
+        border: 1px solid #ebeef5;
+        margin-right: 1%;
+        /*padding-top: 47px;*/
+        overflow: auto;
+    }
+    .role-tree-title{
+        height: 47px;
+        width: 100%;
+        display: -webkit-flex;
+        justify-content: center;
+        align-items: center;
+        background: #939da9;
+        color: #fff;
+        font-weight: bold;
+        word-spacing: 20;
+    }
+    .role-tree .el-tree-node, .el-tree-node__content{
+        min-height: 89px;
+        box-sizing: border-box;
+        background: red;
+    }
 </style>
 <style>
     .rolemanage .el-table--border tr td:last-child,
@@ -34,24 +58,32 @@
     .rolemanage .el-table td {
         padding: 6px 0!important;
     }
-</style>
-<style lang="less">
-@import '../commonless/tree_and_table.less';
+    .el-table th{
+        background: #939da9;
+        color: white;
+    }
+    .el-tree-node{
+        min-height: 37px;
+        line-height: 37px;
+    }
+    .el-tree-node .el-tree-node__content{
+        min-height: 37px;
+    }
 </style>
 <template>
     <div class="rolemanage common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
-                    <div class="action handle-bar">
+                    <div class="action">
                         <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
                     </div>
                     <div class="table-list">
-                        <div class="left-tree">
-                            <div class="left-tree-title">选择部门</div>
+                        <div class="left-tree role-tree">
+                            <div class="role-tree-title">涉及系统</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table class="right-table" :data="tableData" border :height="tableHeight"
+                        <el-table :data="tableData" class="role-el-tablee" border style="width: 80%" :height="tableHeight"
                                   empty-text="请选择部门或当前部门没有数据">
                             <el-table-column align="center" prop="system_NAME" label="子系统"></el-table-column>
                         </el-table>
@@ -65,18 +97,21 @@
                 <el-row>
                     <el-col>
                         <el-form-item label="系统">
-                            <el-select v-model="dialog.system" placeholder="请选择"  filterable allow-create>
+                            <el-select v-model="dialog.system" placeholder="请选择"  filterable allow-create @change="systemOpt" style="width:43%">
                                 <el-option
                                         v-for="item in dialog.systemSelect"
                                         :label="item.system_NAME"
                                         :value="item.system_ID"
                                 ></el-option>
                             </el-select>
+                            <el-input v-model="dialog.systemperson" v-if="dialog.systempvisibble" placeholder="维护人" style="width: 43%;"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col class="subsystem" :span='24' style='position: relative;'>
                         <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
-                            <el-input v-model="item.csty" placeholder="请填写子系统" style="width: 88%;"></el-input>
+                            <el-input v-model="item.SYSTEM_NAME" placeholder="请填写子系统" style="width: 43%;"></el-input>
+
+                            <el-input v-model="item.SYSTEM_USER" placeholder="维护人" style="width: 43%;"></el-input>
                             <i
                                     :class="index == 0 && dialog.systemAll.length ==1?'el-icon-plus':index == dialog.systemAll.length-1?'el-icon-plus':'el-icon-minus'"
                                     @click="addsubStystem(index,$event)"
@@ -104,12 +139,14 @@
                 treeData: [],
                 leftTreeData: [],
                 dialog:{
-                    name:'',
-                        system:'',
+                        name:'',
+                        systemperson:'',//涉及系统维护人
+                        systempvisibble:false,//涉及系统维护人是否显示
+                        system:'',//涉及系统
                         dialogVisible: false,
                         classic:[],
-                        systemSelect:[],
-                        systemAll: [{"csty": ""}],
+                        systemSelect:[],//涉及系统选项
+                        systemAll: [{"SYSTEM_NAME": "",'SYSTEM_USER':""}],//子系统
                 },
             }
         },
@@ -180,43 +217,69 @@
                     }
                 })
             },
+//            涉及系统选择时时候是否显示维护人
+            systemOpt(val){
+                let systemList=[]
+                for(let i of this.dialog.systemSelect){
+                    systemList.push(i.system_ID)
+                }
+                if(systemList.indexOf(val)==-1){
+                    this.dialog.systempvisibble=true
+                }
+                else{
+                    this.dialog.systempvisibble=false
+                }
+           },
             //新建系统提交
             postSystem(){
                 let params = new URLSearchParams();
                 let subSystem=[]
-                let systemList=[];
+                let systemList=[];  //系统列表
+//                如果涉及系统为空
                 if(!this.dialog.system){
                     this.$warn('涉及系统不能为空');
                     return;
                 }
+//                如果涉及系统不为空
                 else{
                     for(let i of this.dialog.systemSelect){
                         systemList.push(i.system_ID)
                     }
-                    if(systemList.indexOf(this.dialog.system)==-1){
-                        params.append("SYSTEM_NAME",this.dialog.system);//如果是新的涉及系统就传值新的系统name
+                    if(systemList.indexOf(this.dialog.system)==-1){  //如果是新添加的系统
+                        if(!this.dialog.systemperson){
+                            this.$warn('涉及系统维护人不能为空');
+                            return
+                        }
+                        else{
+                            params.append("SYSTEM_NAME",this.dialog.system);//如果是新的涉及系统就传值新的系统name
+                        }
+
                     }
                     else{
-
                         params.append("SYSTEM_ID",this.dialog.system);//如果是已存在的涉及系统 就传值系统id
                     }
                 }
                 for(let i of this.dialog.systemAll){
-                    if(systemList.indexOf(this.dialog.system) >=0 ){  //如果不是新的涉及系统
-                        if(!i.csty){
+                    if(systemList.indexOf(this.dialog.system) >=0 ){  //如果不是新的涉及系统  子系统必填
+                        if(!i.SYSTEM_NAME){
                             this.$warn('请填写子系统')
                             return
                         }
+                        if(!i.SYSTEM_USER){
+                            this.$warn('请填写子系统维护人')
+                            return
+                        }
                     }
-                    if( subSystem.indexOf(i.csty)==-1){
-                        subSystem.push(i.csty)
+                    if( subSystem.indexOf(i.SYSTEM_NAME)==-1){
+                        subSystem.push(i)
                     }
                     else{
                         this.$warn('请填写不同的子系统')
                         return
                     }
                 }
-                params.append("SYSTEM_NAMES",subSystem);
+                params.append("bice",JSON.stringify(subSystem));
+                params.append("SYSTEM_USER",this.dialog.systemperson);
                 this.$axios.post('/version/addSystem ', params).then((res) => {
                     if(res.data.code=200){
                         let data=res.data.result;
@@ -236,24 +299,32 @@
             addsubStystem(index, e){
                 let type = e.target.className
                 if (type == "el-icon-plus") {
-                    if (!this.dialog.systemAll[index].csty) {
+                    if (!this.dialog.systemAll[index].SYSTEM_NAME) {
                         this.$warn("请先填写子系统");
+                        return
+                    }
+                    if (!this.dialog.systemAll[index].SYSTEM_USER) {
+                        this.$warn("请先填写子系统维护人");
                         return
                     }
                     else{
                         let subSystem=[];
                         for(let i of this.dialog.systemAll){
-                            let csty=i.csty;
-                            if(subSystem.indexOf(csty)==-1){
-                                subSystem.push(csty);
+//                            let SYSTEM_NAME=i.SYSTEM_NAME;
+//                            if(subSystem.indexOf(SYSTEM_NAME)==-1){
+//                                subSystem.push(SYSTEM_NAME);
+//                            }
+                            let SYSTEM_NAME=i.SYSTEM_NAME;
+                            if(subSystem.indexOf(SYSTEM_NAME)==-1){
+                                subSystem.push(i);
                             }
                             else{
-                                this.dialog.systemAll[index].csty=''
+                                this.dialog.systemAll[index].SYSTEM_NAME=''
                                 this.$warn("请填写不同的子系统");
                                 return
                             }
                         }
-                        this.dialog.systemAll.push({"csty": ""});
+                        this.dialog.systemAll.push({"SYSTEM_NAME": "","SYSTEM_USER":''});
                     }
                 }
                 else {
@@ -269,7 +340,7 @@
             clearAddData(){
                 let len=this.dialog.systemAll.length-1;
                 for (let i of this.dialog.systemAll) {
-                    i.csty=''
+                    i=''
                 }
                 this.dialog.systemAll.splice(0,len)
                 this.dialog.system='';
