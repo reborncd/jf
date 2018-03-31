@@ -720,7 +720,7 @@
         getAssign(){
 //                let info = this.tabs.activeTableInfo;
             this.assign.keyword = "";//初始化关键字
-            this.assign.checkList = [];//初始化选中的数据
+//            this.assign.checkList = [];//初始化选中的数据
             this.assign.assignDeptIndex = "";//初始化选中的索引
             this.assign.leftSearch = false;//关闭搜索结果的展示
             this.assign.assignvisible = true;
@@ -789,20 +789,15 @@
         //-----------------------------------提交分配任务
         subAssign(){
             let result = this.assign.checkList;
+            console.log(result)
             if (result.length == 0) {
                 this.$warn("当前没有选择任何人员");
             } else {
-                let temp = [];
-                let idArr = [];
-                let nameArr = [];
-                for (let i of result) {
-                    temp.push(i.split("-"))
+                let arr = [];
+                for(let i of result){
+                    arr.push(i.split("-")[0])
                 }
-                for (let i of temp) {
-                    idArr.push(i[0]);
-                    nameArr.push(i[1]);
-                }
-                this.$set(this.popup,"fppeople",idArr);
+                this.$set(this.popup,"fppeople",arr);
                 this.assign.assignvisible = false;
             }
         },
@@ -925,7 +920,6 @@
           this.$axios.post("/fault/get", params).then((res) => {
             let data = res.data;
             if (data.code == 200) {
-                console.log(data.result.fault)
               //以下是设置展示数据
                switch (data.result.fault.priperty) {
                 case 101:
@@ -948,7 +942,6 @@
               this.operate.relation_USER = data.result.fault.relation_USER;
               this.operate.permission = data.result.permission;
               this.way.relation_USER = data.result.fault.relation_USER;
-              console.log(this.operate.permission)
               let arr = [];
               let reason=[]
               //
@@ -1130,6 +1123,7 @@
             this.errorVisible = false;
             this.clearAddData();
             this.loadData();
+            this.assign.checkList = [];//初始化选中的数据
           }
         });
       },     
