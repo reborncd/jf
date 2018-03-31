@@ -1,10 +1,8 @@
 <style scoped>
-	@import "../../../static/css/table.css";
-	@import "../../../static/css/console.css";
 	.search .el-input {
 		width: auto;
 	}
-	
+
 	.back {
 		position: absolute;
 		left: 0;
@@ -13,29 +11,29 @@
 		cursor: pointer;
 		line-height: 21px;
 	}
-	
+
 	.back i.b {
 		color: #606266;
 		font-style: normal;
 	}
-	
+
 	.el-date-editor--datetimerange.el-input__inner {
 		width: 370px;
 	}
-	
+
 	.el-textarea textarea {
 		height: 100px;
 	}
-	
+
 	.el-table td,
 	.el-table th {
 		padding: 5px 0;
 	}
-	
+
 	.el-button {
 		padding: 6px 10px;
 	}
-	
+
 	.console-tab-content .add {
 		position: absolute;
 		font-size: 20px;
@@ -46,17 +44,17 @@
 		right: 5px;
 		margin: auto;
 	}
-	
+
 	.addCol {
 		position: relative;
 		padding: 0 30px 0 0!important;
 	}
-	
+
 	.assgin-dialog h2 {
 		margin-bottom: 10px;
 		font-size: 20px;
 	}
-	
+
 	.assgin-dialog .tab span {
 		float: left;
 		width: 50%;
@@ -65,7 +63,7 @@
 		line-height: 30px;
 		cursor: pointer;
 	}
-	
+
 	.assgin-dialog .tab span.active {
 		color: dodgerblue;
 	}
@@ -73,13 +71,13 @@
 	/*height: 300px;*/
 	/*overflow-y: auto;*/
 	/*}*/
-	
+
 	.assign-wrapper li {
 		margin-bottom: 6px;
 		padding: 0 10px;
 		min-height: 70px;
 	}
-	
+
 	.assign-wrapper li .deptTitle {
 		display: block;
 		width: 100%;
@@ -89,12 +87,12 @@
 		font-size: 14px;
 		margin: 5px auto;
 	}
-	
+
 	.assign-wrapper .check-item {
 		margin: 5px 0;
 		display: block;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}

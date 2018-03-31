@@ -232,7 +232,7 @@
                     </div>
                     <!--详情表格-->
                     <el-dialog :title="dialogOption.dialogTitle" :visible="dialogOption.dialog_person_visible" center
-                               label-position="left" width="60%" append-to-body modal-append-to-body :before-close="closeDialog">
+                               label-position="left" width="70%" append-to-body modal-append-to-body :before-close="closeDialog">
                                 <div class="console-tab-content">
                                     <div class="table-list">
                                         <el-table class='detail-table' :data="table.tableDetail" border
@@ -250,8 +250,13 @@
                                                              show-overflow-tooltip></el-table-column>
                                             <el-table-column prop="start_TIME" label="启用时间"
                                                              show-overflow-tooltip></el-table-column>
-                                            <el-table-column prop="neel_DESCRIPTION" label="需求描述"
-                                                             show-overflow-tooltip></el-table-column>
+                                            <el-table-column prop="neel_DESCRIPTION" label="需求名称"
+                                                             show-overflow-tooltip>
+                                                <template slot-scope="scope">
+                                                    <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION class="tab-opt neel_DESCRIPTION" style="line-height:1;"
+                                                         :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
+                                                </template>
+                                            </el-table-column>
                                         </el-table>
                                     </div>
                                     <div class="edition-line clearfix" v-if="dialogOption.dialog_person_visible">
@@ -407,6 +412,7 @@
                     modal: false,
                     infoShow: false
                 },
+                tableHeight: "",
             }
         },
         mounted(){

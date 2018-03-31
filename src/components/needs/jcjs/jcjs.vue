@@ -1,6 +1,4 @@
 <style scoped>
-    @import "../../../static/css/table.css";
-    @import "../../../static/css/console.css";
     .search .el-input {
         width: auto;
     }

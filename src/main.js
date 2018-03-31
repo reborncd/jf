@@ -2,8 +2,10 @@
 import ElementUI from 'element-ui'
 import './static/css/common.css'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
-import  "./static/css/iconfont.css"
-import  "./static/css/iconfont_ct.css"
+import './static/css/iconfont.css'
+import './static/css/iconfont_ct.css'
+import './static/css/table.css'
+import './static/css/console.css'
 import App from './App.vue'
 import router from "./router.js";
 import axios from "axios";
@@ -12,6 +14,7 @@ import echarts from  'echarts'
 import html2Canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 //3.22 end
+//富文本
 import VueQuillEditor from 'vue-quill-editor';
 import "./static/css/quill.core.css";
 import "./static/css/quill.snow.css";
