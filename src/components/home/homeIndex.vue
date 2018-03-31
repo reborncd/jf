@@ -567,7 +567,6 @@
                 let asset_wrap = document.getElementById("asset");
                 let asset_chart = this.$echarts.init(asset_wrap);
                 asset_chart.setOption(optionresources);
-                this.clearInt();
             },
             //------------------------设置轮播图的效果
             //移动到轮播图上移除定时器

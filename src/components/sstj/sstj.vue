@@ -10,7 +10,7 @@
     }
     .four-pie div {
         width: 25%;
-        height: 200px;
+        height: 400px;
         float: left;
     }
     .setting-wrap {
@@ -491,6 +491,11 @@
                                 }
                             }
                             //设置任务状态
+                            let empty = [{"count":0,"state_NAME":"暂无"}];
+                            !Sarr.length?Sarr = empty:Sarr;
+                            !Aarr.length?Aarr = empty:Aarr;
+                            !Barr.length?Barr = empty:Barr;
+                            !Carr.length?Carr = empty:Carr;
                             this.setTaskStatus(Sarr, Aarr, Barr, Carr);
                             //人员状态
                             let personData = {
@@ -545,7 +550,7 @@
                     let data = res.data;
                     if (data.code == 200 && Reflect.has(data, 'result')) {
                         this.realtimeInfo = data.result.neellist.length > 0 && data.result.neellist[0];
-                        document.querySelector(".neel_DESCRIPTION").innerHTML = data.result.neellist[0].neel_DESCRIPTION
+                        document.querySelector(".neel_DESCRIPTION").innerHTML = data.result.neellist[0].neel_DESCRIPTION;
                         this.info = data.result.NEELGZ;
                         //加载实时统计数据
                         if(data.result.systenDept && data.result.currentTime){
@@ -605,14 +610,24 @@
             },
             //圆的设置
             statusOption(title, allData){
-                let arr = [];
+                let arr_data = [];
                 for (let i of allData) {
                     let obj = {
                         "name": i.state_NAME,
                         "value": i.count
                     };
-                    arr.push(obj);
+                    arr_data.push(obj);
                 }
+                let arr_title = [
+                    "技术管理部",
+                    "开发部",
+                    "开发中",
+                    "测试中",
+                    "已验收",
+                    "技术负责人",
+                    "系统管理部",
+                    "产品部验收"
+                ];
                 return {
                     title: {
                         text: title,
@@ -623,19 +638,19 @@
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
                     legend: {
-                        type: 'scroll',
                         orient: 'vertical',
-                        right: 10,
+                        type: 'scroll',
+                        right: 0,
                         top: 20,
                         bottom: 20,
-                        data: allData
+                        data: arr_title
                     },
                     series: [{
                         name: '需求状态',
                         type: 'pie',
                         radius: '55%',
-                        center: ['40%', '50%'],
-                        data: arr,
+                        center: ['50%', '50%'],
+                        data: arr_data,
                         itemStyle: {
                             emphasis: {
                                 shadowBlur: 10,
