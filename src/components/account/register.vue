@@ -109,7 +109,7 @@
                     phone: /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/,
                     account: /^[a-zA-Z0-9]+$/,
                     password: /^[A-Za-z0-9]+$/,
-                    name: /^[\u4e00-\u9fa5]{0,}$/,
+                    name: /^[\u4e00-\u9fa5]{0,7}$/,
                     email:/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/,
                 };
                 if (this.account == "") {
@@ -152,9 +152,13 @@
                     this.$warn("姓名格式不正确");
                     return;
                 }
-                if (!reg.phone.test(this.phone)) {
-                    this.$warn("手机号码格式错误");
-                    return;
+//                if (!reg.phone.test(this.phone)) {
+//                    this.$warn("手机号码格式错误");
+//                    return;
+//                }
+                if(String(this.phone).length != 11){
+                      this.$warn("手机号码格式错误");
+                      return;
                 }
                 if (!reg.email.test(this.email)) {
                     this.$warn("邮箱格式错误");
