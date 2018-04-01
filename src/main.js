@@ -27,9 +27,9 @@ Vue.config.productionTip = false;
 let dep_host_port = "192.168.1.106:8080";    // 服务器, 开发模式不需要修改, 不能注释
 
 // let dev_host_port = "172.16.3.95:8080";   // 薛
- let dev_host_port = "192.180.4.200:8080"; // 安, 内网
+// let dev_host_port = "192.180.4.200:8080"; // 安, 内网
 // let dev_host_port = "172.16.3.185:8083";  // 欧
-// let dev_host_port = "172.16.2.8:8989";      // 康
+ let dev_host_port = "172.16.2.8:8989";      // 康
 // let dev_host_port = "192.168.1.179:8082";
 // let dev_host_port = "192.168.1.106:8080";    // 服务器
 // let dev_host_port = "127.0.0.1:8082";
@@ -218,8 +218,8 @@ let instance = axios.create({
     // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
     // baseURL: "http://192.180.4.200:8080/JiFu_Project",//安
     // baseURL:"http://172.16.3.185:8083",//欧
-  //baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
-
+  // baseURL: "http://172.16.2.8:8989/JiFu_Project",//康
+  //
     baseURL:"http://192.168.1.106:8080",//服务器
     // baseURL:"http://192.168.1.179:8082",
     // baseURL:"http://127.0.0.1:8082",
@@ -286,18 +286,19 @@ Vue.prototype.$axios = instance;
 
 //-----------获取token
 Vue.prototype.$getToken = ()=>{
+    //优先获取localStorage
+    let token = localStorage.getItem("token");
+    if(token){
+      return token;
+    }
     let cookie = document.cookie.split(";");
-    let token = "";
-    for(let i  of cookie){
+    for(let i of cookie){
         if(i.split("=")[0] == "token"){
             token = i.split("=")[1];
         }
     }
     if(token){
         return token;
-    }else{
-        let token = localStorage.getItem("token");
-        return token?token:""
     }
 };
 //--------正则匹配
