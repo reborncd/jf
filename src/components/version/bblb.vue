@@ -6,31 +6,12 @@
         width: auto;
     }
 
-    .back {
-        position: absolute;
-        left: 0;
-        top: 0;
-        font-size: 13px;
-        cursor: pointer;
-        line-height: 21px;
-    }
-
-    .back i.b {
-        color: #606266;
-        font-style: normal;
-    }
-
     .el-date-editor--datetimerange.el-input__inner {
         width: 370px;
     }
 
     .el-textarea textarea {
         height: 100px;
-    }
-
-    .el-table td, .el-table th {
-        padding: 5px 0;
-        text-align: center;
     }
 
     .el-button {
@@ -154,44 +135,8 @@
         white-space: nowrap;
     }
 </style>
-<style>
-    .left-tree {
-        width: 19%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        /*padding-top: 47px;*/
-        overflow: auto;
-    }
-    .right-table{
-        width: 80%;
-      float: left;
-    }
-    .role-tree-title{
-        height: 47px;
-        width: 100%;
-        display: -webkit-flex;
-        justify-content: center;
-        align-items: center;
-        background: #939da9;
-        color: #fff;
-        font-weight: bold;
-        word-spacing: 20;
-    }
-    .role-tree .el-tree-node, .el-tree-node__content{
-        min-height: 39px;
-        box-sizing: border-box;
-    }
-    .role-tree {
-        width: 15.5%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        overflow: auto;
-    }
-    .el-dialog--center .el-dialog__body{
-        padding-top: 0px!important;
-    }
+<style lang="less">
+@import '../commonless/tree_and_table.less';
 </style>
 
 <template>
@@ -199,7 +144,7 @@
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
-                    <div class="action clear">
+                    <div class="action handle-bar">
                         <el-button type="danger" @click="showdialog" size="mini">添加版本</el-button>
                         <div class="fr">
                             <div class="search i-b" @keyup="searchKeyword($event)">
@@ -210,12 +155,12 @@
                         </div>
                     </div>
 
-                        <div class="left-tree role-tree" style="margin-top: 20px">
-                            <div class="role-tree-title">涉及系统</div>
+                        <div class="left-tree role-tree" style="margin-top: 10px">
+                            <div class="left-tree-title">涉及系统</div>
                                 <el-tree :data="treeData" @node-click="leftTreeClick" ></el-tree>
                         </div>
                         <div class="right-table">
-                          <div class="table-list">
+                          <div class="table-list" style="margin-top: 10px">
                             <el-table :data="table.tableData" :highlight-current="true"
                                       :height="table.tableHeight" border style="width: 100%"
                                       empty-text="请选择系统或当前系统没有数据" highlight-current-row
