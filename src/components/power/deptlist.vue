@@ -87,7 +87,7 @@
 
                         <!--@change="deptChangeEvent"-->
                         <el-option v-for="item in dialogData.deptData.roleDept" :label="item.dept_name"
-                                   :value="item.dept_id"></el-option>
+                                   :value="item.dept_id" :key="item.dept_id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="新增部门">
@@ -113,6 +113,7 @@
                                placeholder="请选选择涉及系统" filterable>
                         <!--@change="deptChangeEvent"-->
                         <el-option v-for="item in dialogData.systemData.systemArr" :label="item.system_NAME"
+                                   :key="item.system_ID"
                                    :value="item.system_ID"></el-option>
                     </el-select>
                 </el-form-item>

@@ -134,14 +134,14 @@
                 <el-form-item label="所属部门">
                     <el-select v-model="dialogData.personData.chooseDept" clearable
                                :placeholder="dialogOption.infoShow?'':'请选择部门'" @change="chooseDeptEvent" :disabled="dialogOption.infoShow">
-                        <el-option v-for="item in dialogData.personData.deptRoles" :label="item.dept_name"
+                        <el-option v-for="item in dialogData.personData.deptRoles" :label="item.dept_name" :key="item.dept_id"
                                    :value="item.dept_id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="角色">
                     <el-select v-model="dialogData.personData.chooseRole" clearable
                                :placeholder="dialogOption.infoShow?'':'请根据部门选择职位'" :disabled="dialogOption.infoShow">
-                        <el-option v-for="item in dialogData.personData.deptRoles_choosen" :label="item.role_NAME"
+                        <el-option v-for="item in dialogData.personData.deptRoles_choosen" :label="item.role_NAME" :key="item.role_ID"
                                    :value="item.role_ID"></el-option>
                     </el-select>
                 </el-form-item>
@@ -152,7 +152,7 @@
                     <el-select v-model="dialogData.personData.chooseLanguage" clearable
                                :placeholder="dialogOption.infoShow?'':'请选择开发语言'"
                                :disabled="dialogOption.infoShow">
-                        <el-option v-for="item in dialogData.personData.languages" :label="item.LABEL_LANGUAGE_NAME"
+                        <el-option v-for="item in dialogData.personData.languages" :label="item.LABEL_LANGUAGE_NAME" :key="item.LABEL_LANGUAGE_ID"
                                    :value="item.LABEL_LANGUAGE_ID"></el-option>
                     </el-select>
                 </el-form-item>
@@ -161,13 +161,13 @@
                                :placeholder="dialogOption.infoShow?'':'请选择直属上级'"
                                style="width: 48%;margin-right: 2%;" @change="choosedeptUser"
                                :disabled="dialogOption.infoShow">
-                        <el-option v-for="item in dialogData.personData.deptUsers" :label="item.dept_name"
+                        <el-option v-for="item in dialogData.personData.deptUsers" :label="item.dept_name" :key="item.dept_id"
                                    :value="item.dept_id"></el-option>
                     </el-select>
                     <el-select v-model="dialogData.personData.choosedeptUserId" filterable clearable
                                :placeholder="dialogOption.infoShow?'':'请选择负责人'"
                                style="width: 48%" :disabled="dialogOption.infoShow">
-                        <el-option v-for="item in dialogData.personData.deptUsers_choosen" :label="item.user_NAME"
+                        <el-option v-for="item in dialogData.personData.deptUsers_choosen" :label="item.user_NAME" :key="item.user_ID"
                                    :value="item.user_ID"></el-option>
                     </el-select>
                 </el-form-item>

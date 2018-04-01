@@ -2,66 +2,66 @@
 	@import "../../static/css/table.css";
 	@import "../../static/css/console.css";
 	/*头部*/
-	
+
 	.report-header .name {
 		font-weight: bold;
 		font-size: 20px;
 	}
-	
+
 	.report-header .group {
 		color: #9f9f9f;
 		margin: 5px 0;
 		font-size: 15px;
 	}
 	/*统计部分*/
-	
+
 	.report-left {
 		width: 300px;
 		margin-top: 10px;
 	}
-	
+
 	.report-statistics h5 {
 		font-size: 16px;
 		font-weight: 400;
 		margin: 5px 0;
 	}
-	
+
 	.report-statistics .iconfont {
 		color: #5fccac;
 		font-size: 20px;
 		margin-right: 5px;
 	}
-	
+
 	.statistics-content {
 		padding-left: 24px;
 	}
-	
+
 	.statistics-content p {
 		float: left;
 		width: 50%;
 		line-height: 24px;
 	}
-	
+
 	.statistics-content p .key {
 		color: #626262;
 	}
-	
+
 	.statistics-content p .value {
 		color: #dd544e;
 	}
-	
+
 	.el-textarea textarea {
 		min-height: 80px!important;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}
-	
+
 	.el-form-item {
 		margin-bottom: 0;
 	}
-	
+
 	h5 {
 		padding-top: 20px;
 	}
@@ -76,19 +76,19 @@
 			<div class="text item workreport-wrapper">
 				<div class="report-header clear" style="margin-bottom: 30px;">
 					<el-select v-model="selectValueUs" @change="loadData" clearable size="mini">
-						<el-option v-for="(item, index) in optionsUs" :label="item.label" :value="item.value">
+						<el-option v-for="(item, index) in optionsUs" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
 					<el-select v-model="selectValueOnI" v-if="selectValueUs=='group'" placeholder="请选择部门" @change="loadData" clearable size="mini">
-						<el-option v-for="(item, index) in optionsOn" :label="item.dept_name" :value="item.dept_id">
+						<el-option v-for="(item, index) in optionsOn" :key="item.dept_id" :label="item.dept_name" :value="item.dept_id">
 						</el-option>
 					</el-select>
 					<el-select v-model="selectValueOn" v-if="selectValueUs=='personal'" placeholder="请选择部门" @change="getUser(selectValueOn)" clearable size="mini">
-						<el-option v-for="(item, index) in optionsOn" :label="item.dept_name" :value="item.dept_id">
+						<el-option v-for="(item, index) in optionsOn" :key="item.dept_id" :label="item.dept_name" :value="item.dept_id">
 						</el-option>
 					</el-select>
 					<el-select v-model="pValueOn" v-if="selectValueUs=='personal'" placeholder="请选择人员" @change="loadData" clearable size="mini">
-						<el-option v-for="(item, index) in pArr" :label="item.user_NAME" :value="item.user_ID">
+						<el-option v-for="(item, index) in pArr" :key="item.user_ID" :label="item.user_NAME" :value="item.user_ID">
 						</el-option>
 					</el-select>
 					<!--<div class="fr" style="margin-left: 20px;">
@@ -284,7 +284,7 @@
 				}
 				params.append("selectType", this.selectValueUs);
 				params.append("TYPE", this.select_value);
-				
+
 				this.$axios.post("/statistical/getWorkReportLists", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {

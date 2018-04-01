@@ -262,8 +262,10 @@
                                   </el-table>
                                   <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">
                                     <ul class="edition-line-ul clearfix">
-                                      <li v-for='(item,index) in tabs.versionLine' v-bind:style="{ width: tabs.width}" v-model="item.version" :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
-                                        <em v-on:mouseover="showInfo(index)" v-on:mouseleave="hiddenInfo(index)"></em>
+                                      <li v-for='(item,index) in tabs.versionLine'
+                                          :style="{ width: tabs.width}" v-model="item.version"
+                                          :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
+                                        <em @mouseover="showInfo(index)" @mouseleave="hiddenInfo(index)"></em>
                                         <span></span>
                                         <p class="banP">{{item.new_VERSION}}</p>
                                         <div class="infoDiv" style=""  v-if="tabs.infoshowVisible && tabs.activeLineIndex == index" v-model="tabs.infoshowVisible">
@@ -287,6 +289,7 @@
                                         <el-select v-model="dialog.systemValue" placeholder="请选择" @change="systemOpt">
                                             <el-option
                                                 v-for="item in dialog.systemSelect"
+                                                :key="item.system_ID"
                                                 :label="item.system_NAME"
                                                 :value="item.system_ID+'-'+item.system_NAME"></el-option>
                                         </el-select>
@@ -297,6 +300,7 @@
                                         <el-select v-model="dialog.subsystemValue" placeholder="请选择">
                                             <el-option
                                                     v-for="item in dialog.subSystemSelect"
+                                                    :key="item.system_ID"
                                                     :label="item.system_NAME"
                                                     :value="item.system_ID+'-'+item.system_NAME"
                                             ></el-option>

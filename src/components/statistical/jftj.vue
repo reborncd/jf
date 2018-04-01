@@ -2,74 +2,74 @@
 	@import "../../static/css/table.css";
 	@import "../../static/css/console.css";
 	/*头部*/
-	
+
 	.report-header .name {
 		font-weight: bold;
 		font-size: 20px;
 	}
-	
+
 	.report-header .el-select {
 		float: right;
 	}
-	
+
 	.report-header .group {
 		color: #9f9f9f;
 		margin: 5px 0;
 		font-size: 15px;
 	}
 	/*统计部分*/
-	
+
 	.report-left {
 		width: 300px;
 		margin-top: 10px;
 	}
-	
+
 	.report-statistics h5 {
 		font-size: 16px;
 		font-weight: 400;
 		margin: 5px 0;
 	}
-	
+
 	.report-statistics .iconfont {
 		color: #5fccac;
 		font-size: 20px;
 		margin-right: 5px;
 	}
-	
+
 	.statistics-content {
 		padding-left: 24px;
 	}
-	
+
 	.statistics-content p {
 		float: left;
 		width: 50%;
 		line-height: 24px;
 	}
-	
+
 	.statistics-content p .key {
 		color: #626262;
 	}
-	
+
 	.statistics-content p .value {
 		color: #dd544e;
 	}
-	
+
 	.el-textarea textarea {
 		min-height: 80px!important;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}
-	
+
 	.el-form-item {
 		margin-bottom: 0;
 	}
-	
+
 	h5 {
 		padding-top: 20px;
 	}
-	
+
 	.search {
 		float: right;
 	}
@@ -83,11 +83,11 @@
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
 				<el-select v-model="selectArr_value"  placeholder="请选择部门" clearable size="mini" @change="loadCharData">
-					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
+					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id" :key="item.dept_id">
 					</el-option>
 				</el-select>
                 <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData">
-                    <el-option v-for="(item, index) in select" :label="item.label" :value="item.value">
+                    <el-option v-for="(item, index) in select" :label="item.label" :value="item.value" :key="item.value">
                     </el-option>
                 </el-select>
 				<div class="fr" style="margin-left: 20px;">
@@ -256,7 +256,7 @@
 					} else {
 						this.$warn(data.message);
 					}
-					
+
 
 				})
 			},

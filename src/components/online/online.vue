@@ -64,11 +64,11 @@
 					<div class="action clear">
 
 						<el-select v-model="selectValueUs" @change="selectStatUs(selectValueUs)" clearable size="mini">
-							<el-option v-for="(item, index) in optionsUs" :label="item.key" :value="item.value">
+							<el-option v-for="(item, index) in optionsUs" :label="item.key" :value="item.value" :key="item.value">
 							</el-option>
 						</el-select>
 						<el-select v-model="selectValueOn" @change="selectStatOn(selectValueOn)" clearable size="mini">
-							<el-option v-for="(item, index) in optionsOn" :label="item.key" :value="item.value">
+							<el-option v-for="(item, index) in optionsOn" :label="item.key" :value="item.value" :key="item.value">
 							</el-option>
 						</el-select>
 						<div class="fr">
@@ -200,7 +200,7 @@
 											<el-col :span="12">
 												<el-form-item label="下载附件">
 													<p>
-														<a style="margin-right: 20px;color: #409EFF" v-for="(item,index) in tabs.data_one.dowm" @click="downfile(item.id)">{{item.name}}</a>
+														<a style="margin-right: 20px;color: #409EFF" v-for="(item,index) in tabs.data_one.dowm" :key="item.id" @click="downfile(item.id)">{{item.name}}</a>
 													</p>
 												</el-form-item>
 											</el-col>
@@ -214,8 +214,7 @@
 									<div class="console-action-wrapper" v-if="tabs.data_one.GOLIVE_ZLGT">
 										<i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
 										<div class="console-action fr" v-if="tabs.consoleActionVisible">
-											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item,)">{{item.name}}
-                                            </span>
+											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}</span>
 										</div>
 									</div>
                                     <!----v-if="tabs.data_one.GOLIVE_SAVE"----->
@@ -235,7 +234,7 @@
 											<el-col :span="12" :md="12">
 												<el-form-item label="上线类型">
 													<el-select v-model="consoleForm.onlineType" @change="consoleForm.ifUrgent=''">
-														<el-option v-for="(item, index) in onlineTypes" :label="item.key" :value="item.value">
+														<el-option v-for="(item, index) in onlineTypes" :label="item.key" :key="item.value" :value="item.value">
 														</el-option>
 													</el-select>
 												</el-form-item>
@@ -253,7 +252,7 @@
 												<el-col :span="12">
 													<el-form-item label="涉及系统">
 														<el-select v-model="content.SYSTEM_ID" @change="systeMv(index,$event)">
-															<el-option v-for="(item, index) in aboutSystems" :label="item.key" :value="item.value">
+															<el-option v-for="(item, index) in aboutSystems" :key="item.value" :label="item.key" :value="item.value">
 															</el-option>
 														</el-select>
 													</el-form-item>
@@ -261,7 +260,7 @@
 												<el-col :span="12">
 													<el-form-item label="上线系统">
 														<el-select v-model="content.GOLIVE_SYSTEM">
-															<el-option v-for="(item, index) in onlineSystems" :label="item.key" :value="item.value">
+															<el-option v-for="(item, index) in onlineSystems" :key="item.value" :label="item.key" :value="item.value">
 															</el-option>
 														</el-select>
 													</el-form-item>
@@ -315,7 +314,7 @@
 											<el-col :span="12">
 												<el-form-item label="是否停交易">
 													<el-select v-model="consoleForm.ifStop">
-														<el-option v-for="(item, index) in ifUrgents" :label="item.key" :value="item.value">
+														<el-option v-for="(item, index) in ifUrgents" :label="item.key" :value="item.value" :key="item.value">
 														</el-option>
 													</el-select>
 												</el-form-item>

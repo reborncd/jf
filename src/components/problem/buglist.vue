@@ -117,6 +117,7 @@
                                    size="mini">
                             <el-option
                                     v-for="item in selectValue"
+                                    :key="item.id"
                                    :label="item.value"
                                     :value="item.id">
                             </el-option>
@@ -221,6 +222,7 @@
                                                     <el-select v-model="operate.relationValue" placeholder="" filterable  clearable style="width: 100%">
                                                         <el-option
                                                                 v-for="_item in operate.relation"
+                                                                :key="_item.technology_NEEL_ID"
                                                                 :label="_item.technology_NEEL_ID"
                                                                 :value="_item.technology_NEEL_ID"
                                                         ></el-option>
@@ -248,6 +250,7 @@
                                                             <el-select v-model="operate.reasonValue" placeholder="" filterable  clearable style='width: 100%;'>
                                                                 <el-option
                                                                         v-for="_item in operate.reasonSelect"
+                                                                        :key="_item.ID"
                                                                         :label="_item.REASON_NAME"
                                                                         :value="_item.ID"
                                                                 ></el-option>
@@ -269,6 +272,7 @@
                                                         <el-select v-model="item.csty" placeholder="子系统" clearable style='width: 90%;'>
                                                             <el-option
                                                                 v-for="_item in operate.subSystem"
+                                                                :key="_item.SYSTEM_ID"
                                                                 :label="_item.SYSTEM_NAME"
                                                                 :value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
                                                                 ></el-option>
@@ -348,6 +352,7 @@
 	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
 	                                    <el-option
 	                                    	v-for="item in popup.priperty"
+                                        :key="item.value"
 		                                    :label="item.name"
 		                                    :value="item.value"
 	                                    	></el-option>
@@ -418,7 +423,7 @@
                             <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                                 <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
                                 <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                                    <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                                    <el-checkbox v-for="_item in item.users" :key="_item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                                         {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                                     </el-checkbox>
                                 </el-checkbox-group>
@@ -427,7 +432,7 @@
                         <!--搜索状态下不展示部门-->
                         <div v-if="assign.leftSearch">
                             <el-checkbox-group v-model="assign.checkList">
-                                <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                                <el-checkbox v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
                                              class="check-item">
                                     {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                                 </el-checkbox>

@@ -70,6 +70,7 @@
                                         v-for="item in dialog.systemSelect"
                                         :label="item.system_NAME"
                                         :value="item.system_ID"
+                                        :key="item.system_ID"
                                 ></el-option>
                             </el-select>
                             <el-input v-model="dialog.systemperson" v-if="dialog.systempvisibble" placeholder="维护人" style="width: 43%;"></el-input>

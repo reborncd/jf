@@ -202,7 +202,7 @@
         <div class="mainl">
             <div class="state">{{activeTitle}}</div>
             <ul class="aside-wrap">
-                <li v-for="item in subMenu" @click="subMenuAction(item)" :class="subActive == item.menu_id?'active':''">
+                <li v-for="item in subMenu" @click="subMenuAction(item)" :key="item.menu_id" :class="subActive == item.menu_id?'active':''">
                     <i class="el-input__icon  el-icon-tickets"></i>{{item.menu_name}}
                 </li>
             </ul>
