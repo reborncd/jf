@@ -25,11 +25,25 @@
     }
     .track{
         height: 200px;
+      margin-top:20px;
         overflow-y: auto;
     }
     .track li{
         line-height: 25px;
     }
+  .hasview{
+    text-align: center;
+    font-weight: 900;
+    font-size: 18px;
+    margin-top:10px;
+  }
+  .noview{
+    text-align: center;
+    color: #cacaca;
+    font-weight: 900;
+    font-size: 18px;
+    margin-top:10px;
+  }
 </style>
 <template>
     <div>
@@ -61,7 +75,7 @@
                             <div class="chart-wrap fl" style="width: 55%">
                                 <h2>完成状态</h2>
                                 <div style="text-align: right">
-                                    <el-select v-model="complete.select" placeholder="请选择组别" @change="changeComplete">
+                                    <el-select v-model="complete.select" placeholder="请选择组别" @change="changeComplete" filterable>
                                         <el-option
                                                 v-for="item in complete.selectArr"
                                                 :key="item.value"
@@ -75,7 +89,7 @@
                         </div>
                     </div>
                     <!--周期工时-->
-                    <div class="content" v-show="visible.needs" style="margin-top: 35px">
+                    <div class="content" v-show="visible.needs" style="margin-top: 50px">
                         <!--信息块-->
                         <el-form label-width="120px" label-position="left">
                             <el-row :gutter="20" >
@@ -111,18 +125,18 @@
                         <div class="track">
                             <ul>
                                 <li v-for="(item, index) in info" :key="item.record_ID">
-                                    {{index+1}}.
+                                    <span style="margin-right: 20px;">{{index+1}}.</span>
                                     <span style="margin-right: 5px;"></span>
                                     {{item.date_START}}&nbsp;&nbsp;{{item.record_DESC}}
                                 </li>
                             </ul>
                         </div>
                         <!--信息块-->
-                        <h1 v-show="!sstj.hidezqvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">周期信息</h1>
-                        <h1 v-show="sstj.hidezqvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">暂无周期信息</h1>
+                        <h1 v-show="!sstj.hidezqvisible" class="hasview">周期信息</h1>
+                        <h1 v-show="sstj.hidezqvisible" class="noview">暂无周期信息</h1>
                         <div v-show="!sstj.hidezqvisible" id="system" style="width:1000px;height: 200px;margin: 20px 0;"></div>
-                        <h1 v-show="!sstj.hidegsvisible" style="text-align: center; font-weight: 900;font-size: 20px">工时统计</h1>
-                        <h1 v-show="sstj.hidegsvisible" style="text-align: center;color: #cacaca; font-weight: 900;font-size: 20px">暂无工时信息</h1>
+                        <h1 v-show="!sstj.hidegsvisible" class="hasview">工时统计</h1>
+                        <h1 v-show="sstj.hidegsvisible" class="noview">暂无工时信息</h1>
                         <div v-show="!sstj.hidegsvisible" style="width: 1000px;" class="clear" id="hours-div"></div>
                         <div v-show="!sstj.hidegsvisible" style="width: 1000px;"  id="user-div" class="clear"></div>
                     </div>
@@ -137,18 +151,18 @@
                     <el-checkbox v-model="option.needs">需求看板</el-checkbox>
                 </el-form-item>
                 <el-form-item label="需求类型" v-if="option.needs" style="margin-bottom:10px;">
-                    <el-select v-model="option.needschoosen" clearable placeholder="请选择需求类型"
+                    <el-select v-model="option.needschoosen" clearable placeholder="请选择需求类型" filterable
                                @change="needsChange($event)">
                         <el-option v-for="item in option.needsArr" :key="item.value" :label="item.name"
                                    :value="item.id"></el-option>
                     </el-select>
-                    <el-select v-model="option.code" clearable placeholder="请选择需求">
+                    <el-select v-model="option.code" clearable placeholder="请选择需求" filterable>
                         <el-option v-for="item in option.codeArr" :key="item.state_ID" :label="item.state_NAME"
                                    :value="item.state_ID"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="切换频率" v-if="option.needs">
-                    <el-select v-model="option.time" placeholder="请选择切换频率">
+                    <el-select v-model="option.time" placeholder="请选择切换频率" filterable>
                         <el-option v-for="item in option.timeArr" :key="item.value" :label="item.key"
                                    :value="item.value"></el-option>
                     </el-select>
@@ -181,7 +195,7 @@
                     time: "",//切换频率选中的值
                     timeArr: [{
                         "key": "30秒",
-                        "value": 30
+                        "value": 10
                     }, {
                         "key": "60秒",
                         "value": 60
@@ -240,9 +254,6 @@
                     this.visible.global = true;
                     this.visible.needs = false;
                 }else if(!this.option.global && this.option.needs){
-                    //选择了需求看板未选择全局
-                    this.visible.global = false;
-                    this.visible.needs = true;
                     if(!this.option.needschoosen){
                         this.$warn("请选择需求类型");
                         return
@@ -255,6 +266,9 @@
                       this.$warn("请选择切换频率");
                       return;
                     }
+                  //选择了需求看板未选择全局
+                  this.visible.global = false;
+                  this.visible.needs = true;
                     this.loadNeedsInfo();
                   this.interval = setInterval(()=>{
                     if(this.needsIndex != this.allNeedsinfo.length){
@@ -262,19 +276,19 @@
                       this.loadNeedsByIndex();
                       this.needsIndex++
                     }else{
+                      this.visible.needs = true;
                       this.needsIndex = 0;
                       this.loadNeedsInfo();
-                      this.visible.needs = false;
                     }
                   },this.option.time*1000);
                 }else if (this.option.global && this.option.needs){
-                    //选择了全局未选择需求看板
-                    this.visible.global = true;
-                    this.visible.needs = false;
                     if(!this.option.time){
                         this.$warn("请选择切换频率");
                         return;
                     }
+                  //选择了全局未选择需求看板
+                  this.visible.global = true;
+                  this.visible.needs = false;
                     this.loadNeedsInfo();
                     this.interval = setInterval(()=>{
                         if(this.needsIndex != this.allNeedsinfo.length){
@@ -285,7 +299,6 @@
                         }else{
                             this.needsIndex = 0;
                             this.loadGlobal();
-                            this.loadNeedsInfo();
                             this.visible.needs = false;
                             this.visible.global = true;
                         }
@@ -519,8 +532,8 @@
                 this.workTime(deptName,leaveTime,requiredTime,allTime);
 
             },
-          //实时统计周期
-          realTime(yaxis, startTime, endTime, actualTime) {
+            //实时统计周期
+            realTime(yaxis, startTime, endTime, actualTime) {
             let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
             proBar.clear();
             let end_time = [];//放置结束如期
@@ -535,10 +548,10 @@
               }
             }
             let option = {
-              title: {
-                text: '周期统计',
-                x: 'center'
-              },
+//              title: {
+//                text: '周期统计',
+//                x: 'center'
+//              },
               legend: {
                 data: ['实时统计']
               },

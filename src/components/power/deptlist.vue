@@ -83,7 +83,7 @@
             <el-form label-width="100px">
                 <el-form-item label="上级部门">
                     <el-select style="width: 100%" clearable v-model="dialogData.deptData.fNewDeptId"
-                               placeholder="请选选择上级部门（可为空）" filterable>
+                              filterable  placeholder="请选选择上级部门（可为空）" filterable>
 
                         <!--@change="deptChangeEvent"-->
                         <el-option v-for="item in dialogData.deptData.roleDept" :label="item.dept_name"

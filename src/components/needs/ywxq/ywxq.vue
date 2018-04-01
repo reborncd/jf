@@ -2042,7 +2042,7 @@
             setTableData(data){
                 this.$set(this.table, "tableData", data.bases);
                 this.$set(this.table, "tableOriginData", data.bases);
-                //判断是否有search跳转到赌赢的操作台
+                //判断是否有search跳转到对应的操作台
                 if(this.$route.params.neelId){
                     let id = this.$route.params.neelId;
                     for(let i=0;i<data.bases.length;i++){
@@ -3046,7 +3046,6 @@
                 for(let i=0;i<data.length;i++){
                     if(data[i].work_NEET_ID == code){
                         setTimeout(()=>{
-                            console.log(i)
                         this.tabs.index= i;
                         this.$refs.ywxq_table.setCurrentRow(data[i])
                         this.handleCurrentChange(data[i]);

@@ -312,8 +312,8 @@
                 let card_body = document.querySelector(".box-card .el-card__body");
                 card_body.style.height = ( height - 34) - card_header_height + "px";
                 //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
-                leftTree.style.height = (height - 36) - card_header_height - 20 - 28 - 20 + "px";
-                this.tableHeight = (height - 36) - card_header_height - 20 - 28 - 20;
+                leftTree.style.height = (height - 36) - card_header_height - 20 - 28 - 25 + "px";
+                this.tableHeight = (height - 36) - card_header_height - 20 - 28 - 25;
             },
             closeDialog(){
               this.dialogOption.dialog_person_visible = false;

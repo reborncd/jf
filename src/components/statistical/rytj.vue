@@ -2,74 +2,74 @@
 	@import "../../static/css/table.css";
 	@import "../../static/css/console.css";
 	/*头部*/
-	
+
 	.report-header .name {
 		font-weight: bold;
 		font-size: 20px;
 	}
-	
+
 	.report-header .el-select {
 		float: right;
 	}
-	
+
 	.report-header .group {
 		color: #9f9f9f;
 		margin: 5px 0;
 		font-size: 15px;
 	}
 	/*统计部分*/
-	
+
 	.report-left {
 		width: 300px;
 		margin-top: 10px;
 	}
-	
+
 	.report-statistics h5 {
 		font-size: 16px;
 		font-weight: 400;
 		margin: 5px 0;
 	}
-	
+
 	.report-statistics .iconfont {
 		color: #5fccac;
 		font-size: 20px;
 		margin-right: 5px;
 	}
-	
+
 	.statistics-content {
 		padding-left: 24px;
 	}
-	
+
 	.statistics-content p {
 		float: left;
 		width: 50%;
 		line-height: 24px;
 	}
-	
+
 	.statistics-content p .key {
 		color: #626262;
 	}
-	
+
 	.statistics-content p .value {
 		color: #dd544e;
 	}
-	
+
 	.el-textarea textarea {
 		min-height: 80px!important;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}
-	
+
 	.el-form-item {
 		margin-bottom: 0;
 	}
-	
+
 	h5 {
 		padding-top: 20px;
 	}
-	
+
 	.search {
 		float: right;
 	}
@@ -82,11 +82,11 @@
 				<span class="card-title">人员统计</span>
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
-				<el-select v-model="select_value" clearable size="mini" @change="loadChange">
+				<el-select v-model="select_value" clearable size="mini" @change="loadChange" filterable>
 					<el-option v-for="(item, index) in select" :label="item.label" :value="item.value">
 					</el-option>
 				</el-select>
-				<el-select v-model="selectArr_value"  v-if="select_value=='personal'" clearable size="mini" @change="loadChange">
+				<el-select v-model="selectArr_value"  v-if="select_value=='personal'" clearable size="mini" @change="loadChange" filterable>
 					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
 					</el-option>
 				</el-select>
@@ -248,7 +248,7 @@
 		},
 		methods: {
 			loadDept(){
-				
+
 				let params = new URLSearchParams();
 //				params.append("TYPE", this.date_value);
 //				params.append("selectType", this.select_value);
@@ -284,7 +284,7 @@
 					} else {
 						this.$warn(data.message);
 					}
-					 
+
 				})
 			},
 			loadChartsData() {
@@ -301,7 +301,7 @@
 				}
 				params.append("TYPE", this.date_value);
 				params.append("selectType", this.select_value);
-				
+
 				if(this.select_value=="personal" && this.selectArr_value){
 					params.append("deptId", this.selectArr_value);
 				}
@@ -427,7 +427,7 @@
 					}]
 				};
 				proBar.setOption(option);
-				 
+
 
 			},
 			loadChart(legendArr, datas, ids) {
@@ -509,18 +509,18 @@
 									end.push(i.endTime)
 								}
 							}
-							
+
 							this.loadTimeChart(yaxis, start, end)
 						} else {
 							this.$warn(data.message);
 						}
-						 
+
 					})
 				}
 
 			},
 			loadTimeChart(yaxis, start, end) {
-				
+
 				var echarts = require('echarts');
 				let height = document.querySelector(".mainr").offsetHeight;
 				let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -551,7 +551,6 @@
 							// var res = params[0].name + "</br>"
 							// var date0 = params[0].data;
 							// var date1 = params[1].data;
-							// console.log(params[0])
 							// date0 = date0.getFullYear() + "-" + (date0.getMonth() + 1) + "-" + date0.getDate();
 							// date1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate();
 							// res += params[0].seriesName + ":" + date0 + "</br>"
@@ -605,7 +604,7 @@
 				if(val.st_RETURNTYPE == "DALIY") {
 					path = "日常任务"
 				}
-				
+
 				this.$go("", "", {
 					"neelId": val.st_NEELID
 				}, path);

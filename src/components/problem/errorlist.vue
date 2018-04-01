@@ -117,7 +117,7 @@
         <div class="content" v-if="!errorVisible">
           <div class="action clear">
             <el-button type="danger" @click="addPopup" size="mini">提交故障</el-button>
-            <el-select v-model="selectValues" clearable placeholder="请选择状态" @change="statusOpt" size="mini">
+            <el-select v-model="selectValues" clearable placeholder="请选择状态" @change="statusOpt" size="mini" filterable>
               <el-option
                 v-for="item in selectValue"
                 :label="item.value"
@@ -237,7 +237,7 @@
                       <div class="opt-show" v-if="operate.status=='待审核' && operate.permission">
                         <el-col :span="12" :sm="12">
                           <el-form-item label="成因">
-                              <el-select v-model="operate.operateTxt.reasonValue" placeholder=""  clearable style='width: 100%;'>
+                              <el-select v-model="operate.operateTxt.reasonValue" filterable clearable style='width: 100%;'>
                                 <el-option
                                         v-for="_item in operate.operateTxt.reasonSelect"
                                         :key="_item.ID"
@@ -260,7 +260,7 @@
                         </el-col>
                         <el-col :span="24" :sm="12">
                           <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
-                            <el-select v-model="item.csty" placeholder="子系统" clearable style="width:90%">
+                            <el-select v-model="item.csty" placeholder="子系统" clearable style="width:90%" filterable>
                               <el-option
                                 v-for="_item in operate.subSystem"
                                 :key="item.SYSTEM_ID"
@@ -331,7 +331,7 @@
               <el-col :span="12">
                 <el-form-item label="故障等级">
                   <!--<el-input v-model="popup.priperty"></el-input>-->
-                  <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
+                  <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
                     <el-option
                       v-for="item in popup.priperty"
                       :key="item.value"
@@ -792,7 +792,6 @@
         //-----------------------------------提交分配任务
         subAssign(){
             let result = this.assign.checkList;
-            console.log(result)
             if (result.length == 0) {
                 this.$warn("当前没有选择任何人员");
             } else {

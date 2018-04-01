@@ -82,11 +82,11 @@
 				<span class="card-title">积分统计</span>
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
-				<el-select v-model="selectArr_value"  placeholder="请选择部门" clearable size="mini" @change="loadCharData">
+				<el-select v-model="selectArr_value"  placeholder="请选择部门" clearable size="mini" @change="loadCharData" filterable>
 					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id" :key="item.dept_id">
 					</el-option>
 				</el-select>
-                <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData">
+                <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData" filterable>
                     <el-option v-for="(item, index) in select" :label="item.label" :value="item.value" :key="item.value">
                     </el-option>
                 </el-select>

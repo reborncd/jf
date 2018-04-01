@@ -2053,7 +2053,7 @@
             setTableData(data){
                 this.$set(this.table, "tableData", data.bases);
                 this.$set(this.table, "tableOriginData", data.bases);
-                //判断是否有search跳转到赌赢的操作台
+                //判断是否有search跳转到对应的操作台
                 if(this.$route.params.neelId){
                     let id = this.$route.params.neelId;
                     for(let i=0;i<data.bases.length;i++){
@@ -2421,7 +2421,6 @@
                 let table_body = this.$refs.jsxq_table.$el.querySelector(".el-table__body-wrapper");
                 if(!e){
                     let row = document.querySelector(".el-table__body-wrapper");
-                    console.log(row)
                     scrollTop = row.getElementsByTagName("tr")[this.tabs.index].offsetTop;
                 } else if(!e.target.classList.contains("el-table__row")){
                     for(let i of e.path){
@@ -2788,7 +2787,6 @@
                 //ALL_TIME  实际用时
                 if(workTime && workTime.length){
                     for(let j of workTime){
-                        console.log(j)
                         userName.push(j.USER_NAME)
                         userallTime.push(j.ALL_TIME)
                         userequiredTime.push(j.REAL_TIME)
@@ -3081,7 +3079,6 @@
                 for(let i=0;i<data.length;i++){
                     if(data[i].tech_NEET_ID == code){
                         setTimeout(()=>{
-                            console.log(i)
                         this.tabs.index= i;
                         this.$refs.jsxq_table.setCurrentRow(data[i])
                         this.handleCurrentChange(data[i]);

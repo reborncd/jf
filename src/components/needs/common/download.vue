@@ -41,7 +41,6 @@
             //大小过滤器
             sizeFormat(row){
                 let size = row.size;
-                console.log(size)
                 if(size<1024){
                     return size+"B"
                 }else

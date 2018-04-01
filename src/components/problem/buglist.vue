@@ -113,7 +113,7 @@
                 <div class="content" v-if="!bugVisible">
                     <div class="action clear">
                         <el-button type="danger" @click="shouBug" size="mini">提交BUG</el-button>
-                        <el-select v-model="selectValues" placeholder="请选择状态" @change="statusOpt"  clearable
+                        <el-select v-model="selectValues" placeholder="请选择状态" @change="statusOpt" filterable clearable
                                    size="mini">
                             <el-option
                                     v-for="item in selectValue"
@@ -269,7 +269,7 @@
                                                 </el-col>
                                                 <el-col :span="24" :sm="12" >
                                                     <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
-                                                        <el-select v-model="item.csty" placeholder="子系统" clearable style='width: 90%;'>
+                                                        <el-select v-model="item.csty" placeholder="子系统" clearable style='width: 90%;' filterable>
                                                             <el-option
                                                                 v-for="_item in operate.subSystem"
                                                                 :key="_item.SYSTEM_ID"
@@ -349,7 +349,7 @@
                         <el-row :gutter="24">
                         	  <el-col :span="24" :sm="24" >
 	                            <el-form-item label="故障等级">
-	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable>
+	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
 	                                    <el-option
 	                                    	v-for="item in popup.priperty"
                                         :key="item.value"
@@ -899,7 +899,6 @@
                           this.way.sender=data.result.fault.create_USER;
                           this.operate.relation=data.result.technologys;
                           this.operate.permission = data.result.permission;
-                          console.log(this.operate.permission )
                           let arr=[];
                           if(data.result.process.result.length>0){
                             for(let i of data.result.process.result){

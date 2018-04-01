@@ -286,7 +286,7 @@
                             <el-row>
                                 <el-col>
                                     <el-form-item label="系统">
-                                        <el-select v-model="dialog.systemValue" placeholder="请选择" @change="systemOpt">
+                                        <el-select v-model="dialog.systemValue" placeholder="请选择" @change="systemOpt" filterable>
                                             <el-option
                                                 v-for="item in dialog.systemSelect"
                                                 :key="item.system_ID"
@@ -297,7 +297,7 @@
                                 </el-col>
                                 <el-col>
                                     <el-form-item label="子系统">
-                                        <el-select v-model="dialog.subsystemValue" placeholder="请选择">
+                                        <el-select v-model="dialog.subsystemValue" placeholder="请选择" filterable>
                                             <el-option
                                                     v-for="item in dialog.subSystemSelect"
                                                     :key="item.system_ID"

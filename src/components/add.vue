@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="value" placeholder="请选择" filterable>
             <el-option
                     v-for="item in options"
                     :key = "item.menu_id"

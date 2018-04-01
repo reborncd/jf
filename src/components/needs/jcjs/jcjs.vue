@@ -2130,7 +2130,7 @@
       setTableData(data){
         this.$set(this.table, "tableData", data.bases);
         this.$set(this.table, "tableOriginData", data.bases);
-        //判断是否有search跳转到赌赢的操作台
+        //判断是否有search跳转到对应的操作台
         if (this.$route.params.neelId) {
           let id = this.$route.params.neelId;
           for (let i = 0; i < data.bases.length; i++) {

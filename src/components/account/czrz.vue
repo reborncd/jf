@@ -68,7 +68,6 @@
                 this.table.tableHeight = height -36-130;
             },
             data(val){
-                console.log(val);
                 let time = this.$format(val.record_START);
                 return `${time.year}-${time.mouth}-${time.day} ${time.hour}:${time.min}:${time.second}`
             },

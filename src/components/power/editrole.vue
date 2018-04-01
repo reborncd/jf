@@ -91,14 +91,14 @@
                     <div class="option-content">
                         <el-form label-width="100px" label-position="left">
                             <el-form-item label="所属部门">
-                                <el-select clearable v-model="role_dept" style="width: 100%" placeholder="请选择部门"
+                                <el-select clearable v-model="role_dept" style="width: 100%" placeholder="请选择部门" filterable
                                            @change="deptChange">
                                     <el-option v-for="item in role_arr" :label="item.dept_name" :key="item.dept_id"
                                                :value="item.dept_id"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="已存在角色">
-                                <el-select clearable v-model="a" style="width: 100%" placeholder="可查看已存在的角色">
+                                <el-select clearable v-model="a" style="width: 100%" placeholder="可查看已存在的角色" filterable>
                                     <el-option v-for="item in live_arr" :label="item.role_NAME" :key="item.role_ID"
                                                :value="item.role_ID"></el-option>
                                 </el-select>

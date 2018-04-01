@@ -354,7 +354,6 @@
                         break;
                     case "work":
                         //工作汇报
-                      console.log(1)
                         this.$go("/home/workreport");
                         break;
                 }

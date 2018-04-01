@@ -75,19 +75,19 @@
 			</div>
 			<div class="text item workreport-wrapper">
 				<div class="report-header clear" style="margin-bottom: 30px;">
-					<el-select v-model="selectValueUs" @change="loadData" clearable size="mini">
+					<el-select v-model="selectValueUs" @change="loadData" clearable size="mini" filterable>
 						<el-option v-for="(item, index) in optionsUs" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
-					<el-select v-model="selectValueOnI" v-if="selectValueUs=='group'" placeholder="请选择部门" @change="loadData" clearable size="mini">
+					<el-select v-model="selectValueOnI" v-if="selectValueUs=='group'" placeholder="请选择部门" @change="loadData" clearable size="mini" filterable>
 						<el-option v-for="(item, index) in optionsOn" :key="item.dept_id" :label="item.dept_name" :value="item.dept_id">
 						</el-option>
 					</el-select>
-					<el-select v-model="selectValueOn" v-if="selectValueUs=='personal'" placeholder="请选择部门" @change="getUser(selectValueOn)" clearable size="mini">
+					<el-select v-model="selectValueOn" v-if="selectValueUs=='personal'" filterable placeholder="请选择部门" @change="getUser(selectValueOn)" clearable size="mini">
 						<el-option v-for="(item, index) in optionsOn" :key="item.dept_id" :label="item.dept_name" :value="item.dept_id">
 						</el-option>
 					</el-select>
-					<el-select v-model="pValueOn" v-if="selectValueUs=='personal'" placeholder="请选择人员" @change="loadData" clearable size="mini">
+					<el-select v-model="pValueOn" v-if="selectValueUs=='personal'" placeholder="请选择人员" @change="loadData" clearable size="mini" filterable>
 						<el-option v-for="(item, index) in pArr" :key="item.user_ID" :label="item.user_NAME" :value="item.user_ID">
 						</el-option>
 					</el-select>

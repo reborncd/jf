@@ -26,7 +26,7 @@
                 <div class="content">
                     <div class="handle-bar action">
                         <el-button type="danger" size="mini" @click="addZL">新资料</el-button>
-                        <el-select v-model="selectValue" size="mini" @change="changeTree">
+                        <el-select v-model="selectValue" size="mini" @change="changeTree" filterable>
                             <el-option
                                     v-for="item in options"
                                     :label="item.key"
@@ -80,7 +80,7 @@
                     <el-col :span="24" :md="24">
                         <el-form-item label="文档编号" class="docedit">
                             <el-col :span="8" style="padding-left: 0">
-                                <el-select v-model="add.subform.company" placeholder="企业代号">
+                                <el-select v-model="add.subform.company" placeholder="企业代号" filterable>
                                     <el-option
                                             v-for="item in add.subform.companyArr"
                                             :key="item.no_ID"
@@ -90,7 +90,7 @@
                                 </el-select>
                             </el-col>
                             <el-col :span="8" style="padding-left: 0">
-                                <el-select v-model="add.subform.system" placeholder="系统代号">
+                                <el-select v-model="add.subform.system" placeholder="系统代号" filterable>
                                     <el-option
                                             v-for="item in add.subform.systemArr"
                                             :key="item.no_ID"
@@ -100,7 +100,7 @@
                                 </el-select>
                             </el-col>
                             <el-col :span="8" style="padding-left: 0">
-                                <el-select v-model="add.subform.doc" placeholder="文档类型">
+                                <el-select v-model="add.subform.doc" placeholder="文档类型" filterable>
                                     <el-option
                                             v-for="item in add.subform.docArr"
                                             :key="item.no_ID"
@@ -133,7 +133,7 @@
                     </el-col>
                     <el-col :span="24" :md="24">
                         <el-form-item label="关联系统" style="width: 100%">
-                            <el-select v-model="add.subform.sysF" placeholder="请选择关联系统"
+                            <el-select v-model="add.subform.sysF" placeholder="请选择关联系统" filterable
                                        @change="sysChange" style="width: 50%">
                                 <el-option
                                         v-for="item in add.subform.sysFather"
@@ -142,7 +142,7 @@
                                         :value="item.system_ID+','+item.system_NAME">
                                 </el-option>
                             </el-select>
-                            <el-select v-model="add.subform.sysC" style="width: 50%; float: right" placeholder="请选择关联系统">
+                            <el-select v-model="add.subform.sysC" style="width: 50%; float: right" filterable placeholder="请选择关联系统">
                                 <el-option
                                         v-for="item in add.subform.sysChild"
                                         :key="item.system_ID"
