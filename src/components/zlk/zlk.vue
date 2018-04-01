@@ -105,7 +105,7 @@
                                             v-for="item in add.subform.docArr"
                                             :key="item.no_ID"
                                             :label="item.no_REMARK+'（'+item.no_NAME+'）'"
-                                            :value="item.no_NAME">
+                                            :value="`${item.no_NAME}-${item.no_ID}`">
                                     </el-option>
                                 </el-select>
                             </el-col>
@@ -172,7 +172,7 @@
                         <el-form-item label="上传文档" :span="12" :md="12">
                             <div style="position: relative;overflow: hidden">
                                 <el-button type="primary" size="mini">上传附件</el-button>
-                                <input type="file" @change="getFile($event)" multiple="multiple" placeholder="上传附件"
+                                <input type="file" @change="getFile" ref="fileUp" multiple="multiple" placeholder="上传附件"
                                        style="width:78px;height: 28px;opacity: 0;position: absolute;left: 0;top: 6px;">
                             </div>
                             <p v-for="(item,index) in add.subform.uploadFiles">{{item.name}}
@@ -228,6 +228,7 @@ import cloneDeep from 'lodash/cloneDeep';
                 selectValue: "1",//选择的筛选的值
                 options: [{"key": "按目录检索", "value": "1"}, {"key": "按系统检索", "value": "2"}],
                 add: {
+                    clickDataCopy: {},
                     addvisible: false,
                     subform: {
                         company: "",//企业值
@@ -400,9 +401,11 @@ import cloneDeep from 'lodash/cloneDeep';
                     this.add.addvisible = false;
                     let dialogData = this.add.subform;
                     for (let i in dialogData) {
-                        if (dialogData.hasOwnProperty(i)) {
-                            dialogData[i] = "";
-                        }
+                      if(typeof(dialogData[i]) === typeof([])){
+                        dialogData[i] = [];
+                      }else if(typeof(dialogData[i]) === typeof('')){
+                        dialogData[i] = '';
+                      }
                     }
                 }
             },
@@ -410,7 +413,6 @@ import cloneDeep from 'lodash/cloneDeep';
             addZL(){
                 this.$maskin();
                 this.add.addvisible = true;
-                let that = this;
                 let params = new URLSearchParams();
                 this.$axios.post("/datum/getDatumnoList", params).then((res) => {
                     let data = res.data;
@@ -438,6 +440,7 @@ import cloneDeep from 'lodash/cloneDeep';
                         // this.$set(this.add.subform, "sysChildOrigin", carr);
                         this.add.subform.sysFather = cloneDeep(farr)
                         this.add.subform.sysChildOrigin = cloneDeep(carr)
+                        this.add.subform.write_user = this.username;// 录入人员
                         this.$maskoff();
                     }
                 })
@@ -494,7 +497,7 @@ import cloneDeep from 'lodash/cloneDeep';
                     return;
                 }
                 this.$maskin();
-                let code = `${subform.company}_${subform.system}_${subform.doc}_${subform.code}_${subform.year}`;//文档编号
+                let code = `${subform.company}_${subform.system}_${subform.doc.split('-')[0]}_${subform.code}_${subform.year}`;//文档编号
                 let name = subform.wordname;//文档名称
                 let version = subform.version;//版本
                 let intro = subform.intro;//描述
@@ -503,22 +506,31 @@ import cloneDeep from 'lodash/cloneDeep';
                 params.append("DATUM_NAME", name);// 文档名称
                 params.append("DATUM_VERSION", version);// 文本版本
                 params.append("WRITE_USER", subform.write_user);
-                params.append("INTERCONNECTED_SYSTEM",
-                    subform.sysF.split(",")[1] + '-' + subform.sysC.split(",")[1]);//关联系统
                 params.append("FILE_DESCRIPTIOON", intro);// 文档简介
                 params.append("uploadfileIds", subform.fileIds);//上传文件
+                params.append("CONDITION_FLAGM", subform.doc.split('-')[0]);// 目录位置
+
+                params.append("INTERCONNECTED_SYSTEM",
+                    subform.sysF.split(",")[1] + '-' + subform.sysC.split(",")[1]);//关联系统
+                params.append("CONDITION_FLAGF",
+                    `${subform.doc.split('-')[1]},${subform.sysF.split(",")[0]}`);//系统和目录的父级ID
+                params.append("CONDITION_FLAGC",
+                    `${subform.sysC.split(",")[0]}`);//系统和目录的子集ID
+
                 this.$axios.post("datum/addDatum", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.$success("操作成功");
                         this.$maskoff();
                         this.closeDialog();
-                        this.loadData();
+                        this.leftclick(this.add.clickDataCopy);
+                        this.$refs.fileUp.value='';
                     }
                 })
             },
             //左侧点击事件
             leftclick(val){
+              this.add.clickDataCopy = val;
                 this.$maskin();
                 let params = new URLSearchParams();
                 params.append("CONDITION_FLAG", this.selectValue);
@@ -528,6 +540,7 @@ import cloneDeep from 'lodash/cloneDeep';
                   if(!!val.children){
                     params.append("CONDITION_FLAGF", val.system_ID);
                   }else{
+                    params.append("CONDITION_FLAGF", val.system_FID);
                     params.append("CONDITION_FLAGC", val.system_ID);
                   }
                 }
