@@ -2818,8 +2818,8 @@
                 this.workTime(deptName,leaveTime,requiredTime,allTime);
 
             },
-            //实时统计周期
-            realTime(yaxis, startTime, endTime, actualTime) {
+          //实时统计周期
+          realTime(yaxis, startTime, endTime, actualTime) {
             let proBar = this.$echarts.init(document.getElementById("system")); //实时统计
             proBar.clear();
             let end_time = [];//放置结束如期
@@ -2850,55 +2850,61 @@
               tooltip: {
                 trigger: 'axis',
                 formatter: (params) => {
-                  let res = params[0].name + "</br>";
-                  let start = this.$format(new Date(params[0].data));
-                  let end = this.$format(new Date(params[1].data));
-                  let date0 = start.year + "-" + start.mouth + "-" + start.day;
-                  let date1 = end.year + "-" + end.mouth + "-" + end.day;
-                  res += params[0].seriesName + ":" + date0 + "</br>";
-                  res += params[1].seriesName + ":" + date1 + "</br>";
-                  return res;
-                }
-              },
-              series: [
-                {
-                  name: '开始时间',
-                  type: 'bar',
-                  stack: '开始时间',
-                  itemStyle: {
-                    normal: {
-                      color: '#778899',
-                      shadowColor: 'rgba(0, 0, 0, 0.3)',
-                    }
-                  },
-                  data: startTime
-                }, {
-                  name: '超出开始时间',
-                  type: 'bar',
-                  stack: '开始时间',
-                  itemStyle: {
-                    normal: {
-                      color: '#F4201B',
-                      shadowColor: 'rgba(255, 255, 255, 0.3)',
-                    }
-                  },
-                  data: actual_time
+                let res = params[0].name + "</br>";
+            let start = this.$format(new Date(params[0].data));
+            let act = this.$format(new Date(params[1].data));
+            let end = this.$format(new Date(params[2].data));
+            let date0 = start.year + "-" + start.mouth + "-" + start.day;//开始时间
+            let date1 = act.year + "-" + act.mouth + "-" + act.day;//实际时间
+            let date2 = end.year + "-" + end.mouth + "-" + end.day;//结束时间;
+            res += params[0].seriesName + ":" + date0 + "</br>";
+            res += params[2].seriesName + ":" + date2 + "</br>";
+            if(params[1].data>params[2].data){
+              //实际结束时间
+              res += params[1].seriesName + ":" + date1 + "</br>";
+            }
+            return res;
+          }
+          },
+            series: [
+              {
+                name: '预计开始时间',
+                type: 'bar',
+                stack: '开始时间',
+                itemStyle: {
+                  normal: {
+                    color: '#778899',
+                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                  }
                 },
-                {
-                  name: '结束时间',
-                  type: 'bar',
-                  stack: '开始时间',
-                  itemStyle: {
-                    normal: {
-                      color: '#2E91BD',
-                      barBorderRadius: 0,
-                      shadowColor: 'rgba(0, 0, 0, 0.3)',
-                    }
-                  },
-                  data: end_time
-                }
-              ]
-            };
+                data: startTime
+              }, {
+                name: '实际结束时间',
+                type: 'bar',
+                stack: '开始时间',
+                itemStyle: {
+                  normal: {
+                    color: '#F4201B',
+                    shadowColor: 'rgba(255, 255, 255, 0.3)',
+                  }
+                },
+                data: actual_time
+              },
+              {
+                name: '预计结束时间',
+                type: 'bar',
+                stack: '开始时间',
+                itemStyle: {
+                  normal: {
+                    color: '#2E91BD',
+                    barBorderRadius: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                  }
+                },
+                data: end_time
+              }
+            ]
+          };
             proBar.setOption(option);
           },
             //工时

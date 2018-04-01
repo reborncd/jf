@@ -113,7 +113,7 @@
                             data:data.endTime
                         },
                         {
-                            name: '超出开始时间',
+                            name: '结束时间',
                             type: 'bar',
                             stack: '开始时间',
                             itemStyle: {

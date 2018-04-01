@@ -2820,7 +2820,7 @@
 							data:endTime
 						},
 						{
-							name: '超出开始时间',
+							name: '结束时间',
 							type: 'bar',
 							stack: '总量',
 							itemStyle: {
