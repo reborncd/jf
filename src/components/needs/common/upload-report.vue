@@ -66,6 +66,9 @@
             },
             uploadTestReport(e){
                 let file = e.target.files[0];
+                if(!file){
+                	return;
+                }
                 let params = new FormData();
                 params.append("token",this.$getToken());
                 params.append("TYPE","");
@@ -75,6 +78,7 @@
                     if(data.code == 200){
                         this.report.fileIds.push(data.result.id);
                         this.report.uploadFile.push(file);
+                        document.querySelector(".upload-input").value = "";
                     }
                 });
             },

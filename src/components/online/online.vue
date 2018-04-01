@@ -4,7 +4,7 @@
 	.search .el-input {
 		width: auto;
 	}
-	
+
 	.back {
 		position: absolute;
 		left: 0;
@@ -13,29 +13,29 @@
 		cursor: pointer;
 		line-height: 21px;
 	}
-	
+
 	.back i.b {
 		color: #606266;
 		font-style: normal;
 	}
-	
+
 	.el-date-editor--datetimerange.el-input__inner {
 		width: 370px;
 	}
-	
+
 	.el-textarea textarea {
 		height: 100px;
 	}
-	
+
 	.el-table td,
 	.el-table th {
 		padding: 5px 0;
 	}
-	
+
 	.el-button {
 		padding: 6px 10px;
 	}
-	
+
 	.console-tab-content .add {
 		position: absolute;
 		font-size: 20px;
@@ -46,12 +46,12 @@
 		right: 5px;
 		margin: auto;
 	}
-	
+
 	.addCol {
 		position: relative;
 		padding: 0 30px 0 0!important;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}
@@ -328,7 +328,8 @@
 											<el-col :span="12">
 												<el-form-item label="上传附件" style="position: relative;">
 													<el-button type="primary">上传附件</el-button>
-													<input type="file" @change="getFile($event)" placeholder="上传附件" style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
+													<input type="file" @change="getFile($event)" placeholder="上传附件" class="input-upload"
+                                 style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
 													<p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
 														<i style="margin-left: 10px;cursor: pointer;color: red;"
 														@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
@@ -1239,6 +1240,9 @@
 						'Content-Type': 'multipart/form-data',
 					}
 				};
+				if(!e.target.files[0]){
+					return;
+        }
 				let params = new FormData();
 				params.append("token", localStorage.getItem("token"))
 				params.append("file", e.target.files[0]);
@@ -1256,9 +1260,8 @@
 						this.popup.popTxt.uploadFiles.push(data.name)
 						this.popup.popTxt.fileList.push(data.id)
 						this.popup.popTxt.down_id = data.DOWN_ID
-					} else {
-						this.$warn(data.message);
 					}
+        document.querySelector(".upload-input").value = "";
 				})
 			},
 			//下载附件

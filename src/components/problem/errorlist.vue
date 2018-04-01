@@ -355,7 +355,7 @@
               <el-form-item label="故障描述" style="position: relative;">
                 <el-input v-model="popup.popTxt.description" type="textarea"></el-input>
                 <el-button type="primary">上传附件</el-button>
-                <input type="file" @change="getFile($event)" placeholder="上传附件"
+                <input type="file" @change="getFile($event)" placeholder="上传附件" class="upload-input"
                        style="width:78px;opacity: 0;position: absolute;left: 0;top: 63px;">
                 <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
                   <i style="margin-left: 10px;cursor: pointer;color: red;"
@@ -1045,6 +1045,9 @@
             'Content-Type': 'multipart/form-data',
           }
         };
+        if(!e.target.files[0]){
+        	return;
+        }
          let params = new FormData();
          params.append("token",this.$getToken())
          params.append("file",e.target.files[0]);
@@ -1057,6 +1060,7 @@
          		}
          		this.popup.popTxt.uploadFiles.push(data.result.name)
          		this.popup.popTxt.fileList.push(data.result.id)
+            document.querySelector(".upload-input").value = "";
          	}
          })
       },

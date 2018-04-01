@@ -2223,6 +2223,9 @@
       uploadneeds(e){
         this.$maskin();
         let file = e.target.files[0];
+        if(!file){
+        	return;
+        }
         let params = new FormData();
         params.append("token", this.$getToken());
         params.append("file", file);
@@ -2232,6 +2235,7 @@
             this.$success("上传成功！");
             this.addneeds.uploadFiles.push(file);
             this.addneeds.fileIds.push(data.result.id);
+            document.querySelector(".upload-input").value = "";
             this.$maskoff();
           }
         })
@@ -4402,6 +4406,9 @@
       uploadBUG(e){
         this.$maskin()
         let file = e.target.files[0];//上传的文件
+        if(!file){
+        	return;
+        }
         let params = new FormData();
         params.append("token", this.$getToken());
         params.append("file", file);
@@ -4411,6 +4418,7 @@
             this.$success("上传成功");
             this.testTask.fileIds.push(data.result.id)
             this.testTask.uploadBugFiles.push(file);
+            document.querySelector(".upload-input").value = "";
             this.$maskoff();
 
           }

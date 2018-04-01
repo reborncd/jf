@@ -2684,6 +2684,9 @@
                         'Content-Type': 'multipart/form-data',
                     }
                 };
+                if(!e.target.files[0]){
+                	return;
+                }
                 let params = new FormData();
                 params.append("file", e.target.files[0]);
                 params.append("token", localStorage.getItem("token"));
