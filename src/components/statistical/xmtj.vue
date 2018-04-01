@@ -571,6 +571,7 @@
 				var self = this
 				proBar.on('click', function(params, event) {
 					let type = params.seriesId
+					console.log(params)
 					self.selectDate = params.name
 					if(type.indexOf("0") > 0) {
 						self.classType = "A"
@@ -580,14 +581,15 @@
 						self.classType = "B"
 						self.selectNew = "完成"
 					}
-					if(type.indexOf("2") > 0) {
+					if(params.seriesName =="延期") {
 						self.classType = "C"
-						self.selectNew = "留存"
+						self.selectNew = "延期"
 					}
-					if(type.indexOf("3") > 0) {
+					if(params.seriesName =="期内") {
 						self.classType = "D"
-						self.selectNew = "执行"
+						self.selectNew = "期内"
 					}
+
 					self.loadData()
 				});
 			},

@@ -58,7 +58,7 @@
         width: 96%;
         border-bottom: 3px solid #666;
         position: absolute;
-        top: 30%;
+        top: 18%;
         margin-top: -1px;
         left: 12px;
 
@@ -501,35 +501,42 @@
                         let arr = [];
                         let nowArr
                         let versionP = []
+                        let currentDate=[]
                         for (let i of data) {
                             if(i.start_DATE){
                                 versionP.push(i);
                             }
                             if (i.current_STATE == 1) {
                                 i.current_STATE = '是'
+                                currentDate.push(i.current_STATE)
                                 nowArr=i
                             }
                             else {
-                                i.current_STATE = '';
+                                i.current_STATE ='';
                             }
+
                             arr.push(i);
                         }
                         let versionNum = versionP.length;
-                        console.log(versionNum)
                         this.$set(this.table, "tableDetail", arr);
                         for (let i = 0; i < versionNum; i++) {
-                            this.tabs.versionLine.push();
+//                            this.tabs.versionLine.push();
                             let width = 100 / (versionNum + 1) + "%"
                             this.$set(this.tabs, "width", width);
                         }
 //                        最后一个不是当前版本
-
                         if(versionNum>=1){
                             if(versionP[versionNum-1].current_STATE==''){  //如果最后一个不是当前版本
                                 if(nowArr){
                                     versionP.push(nowArr);
                                 }
+                                if(!nowArr){
+                                  versionP=''
+                                }
                             }
+//                          if(currentDate.length==0){
+//                            versionP=''
+//                          }
                         }
 
                         this.$set(this.tabs, "versionLine", versionP);
@@ -675,6 +682,8 @@
             },
 //            点击左侧树
             leftTreeClick(val){
+              this.tabs.consoleWrapperVisible = false
+              this.calculateTableHeight(false)
                 let params = new URLSearchParams();
                 params.append('SYSTEM_ID', val.id);
                 this.$axios.post("/version/versionlist", params).then((res) => {

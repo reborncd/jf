@@ -125,8 +125,8 @@
 								<el-table-column prop="upType" label="统计方式" ></el-table-column>
 								<el-table-column prop="startDate" label="开始日期" width="110"></el-table-column>
 								<el-table-column prop="endDate" label="截止日期" width="110"></el-table-column>
-								<el-table-column prop="efficiency" label="工作饱和度" ></el-table-column>
-								<el-table-column prop="saturation" label="工作效率"></el-table-column>
+								<el-table-column prop="efficiency" label="工作效率" ></el-table-column>
+								<el-table-column prop="saturation" label="工作饱和度"></el-table-column>
 								<el-table-column prop="promptness" label="任务完成及时率"></el-table-column>
 								<el-table-column prop="integral" label="积分"></el-table-column>
 							</el-table>

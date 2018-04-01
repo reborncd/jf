@@ -147,7 +147,7 @@
                                    :value="item.state_ID"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="切换频率" v-if="option.needs && option.global">
+                <el-form-item label="切换频率" v-if="option.needs">
                     <el-select v-model="option.time" placeholder="请选择切换频率">
                         <el-option v-for="item in option.timeArr" :key="item.value" :label="item.key"
                                    :value="item.value"></el-option>
@@ -251,7 +251,22 @@
                         this.$warn("请选择需求编码");
                         return
                     }
+                    if(!this.option.time){
+                      this.$warn("请选择切换频率");
+                      return;
+                    }
                     this.loadNeedsInfo();
+                  this.interval = setInterval(()=>{
+                    if(this.needsIndex != this.allNeedsinfo.length){
+                      this.visible.needs = true;
+                      this.loadNeedsByIndex();
+                      this.needsIndex++
+                    }else{
+                      this.needsIndex = 0;
+                      this.loadNeedsInfo();
+                      this.visible.needs = false;
+                    }
+                  },this.option.time*1000);
                 }else if (this.option.global && this.option.needs){
                     //选择了全局未选择需求看板
                     this.visible.global = true;
@@ -382,9 +397,16 @@
                 this.$axios.post("/statistical/getneelmainba", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
+                    	if(!data.result.neellist.length){
+                    		this.$warn("暂无需求信息！");
+                    		this.$maskoff();
+                    		return
+                      }
                         this.allNeedsinfo = data.result.neellist.length > 0 && data.result.neellist;
+                    	setTimeout(()=>{
                         this.loadNeedsByIndex();
-                        this.$maskoff()
+                        this.$maskoff();
+                      },0)
                     }
                 })
             },
@@ -469,15 +491,13 @@
                 //ALL_TIME  实际用时
                 if(workTime && workTime.length){
                     for(let j of workTime){
-                        console.log(j)
                         userName.push(j.USER_NAME)
                         userallTime.push(j.ALL_TIME)
                         userequiredTime.push(j.REAL_TIME)
                         userleaveTime.push(j.REAL_TIME-j.ALL_TIME)
                     }
                 }
-                this.userworkTime(userName,userallTime,userequiredTime,userleaveTime)
-
+                this.userworkTime(userName,userallTime,userequiredTime,userleaveTime);
 //                let len=requiredTime.length;
 //                this.$set(this.sstj,"yaxis",yaxis);
 //                this.$set(this.sstj,"startTime",startTime);
@@ -497,7 +517,6 @@
                 }
                 this.realTime(yaxis,startTime,endTime,actualTime);
                 this.workTime(deptName,leaveTime,requiredTime,allTime);
-                console.log(1)
 
             },
             //实时统计周期

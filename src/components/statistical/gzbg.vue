@@ -168,7 +168,7 @@
 							</el-col>
 						</el-row>
 						<div class="table-list">
-							<el-table :data="showData.resuletMapList" border style="width: 100%">
+							<el-table :data="showData.resuletMapList" border style="width: 100%" @row-click="goneeds">
 								<el-table-column prop="ST_NEELID" label="需求编号" width="200"></el-table-column>
 								<el-table-column prop="ST_NEELNAME" label="需求名称" show-overflow-tooltip></el-table-column>
 								<el-table-column prop="name2" label="项目组" width="110"></el-table-column>
@@ -418,7 +418,27 @@
 			},
 			tabClick(val) {
 				this.calculateTabsHeight();
-			}
+			},//跳转到需求页面
+            goneeds(val) {
+                // e.cancelBubble = true;
+                let path = "";
+                if(val.st_RETURNTYPE == "TECH") {
+                    path = "技术需求"
+                }
+                if(val.st_RETURNTYPE == "WORK") {
+                    path = "业务需求"
+                }
+                if(val.st_RETURNTYPE == "BASE") {
+                    path = "基础建设"
+                }
+                if(val.st_RETURNTYPE == "DALIY") {
+                    path = "日常任务"
+                }
+
+                this.$go("", "", {
+                    "neelId": val.st_NEELID
+                }, path);
+            }
 
 		}
 	}

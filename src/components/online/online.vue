@@ -814,9 +814,9 @@
 					params.append('DESIRED_START_DATETIMES', this.screenKey.START_DATE);
 					params.append('END_DATE', this.screenKey.END_DATE);
 				}
-				if(this.keyword){
-					params.append('SOUSS', this.keyword);
-				}
+				// if(this.keyword){
+				// 	params.append('SOUSS', this.keyword);
+				// }
 				params.append('STATE', this.screenKey.STATE);
 				params.append('DATE', this.screenKey.DATE);
 				this.$axios.post("/golive/getgoliveprojectlist", params).then((res) => {

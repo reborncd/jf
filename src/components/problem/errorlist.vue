@@ -695,7 +695,7 @@
                 if(i.reason==2){
                     i.reason='硬件环境'
                 }
-                if(i.reason=3){
+                if(i.reason==3){
                     i.reason='网络故障'
                 }
                 if(i.reason==4){
