@@ -24,30 +24,6 @@
         margin-left: 3px;
     }
 
-    .left-tree {
-        width: 19%;
-        float: left;
-        border: 1px solid #ebeef5;
-        margin-right: 1%;
-        /*padding-top: 47px;*/
-        overflow: auto;
-    }
-    .role-tree-title{
-        height: 47px;
-        width: 100%;
-        display: -webkit-flex;
-        justify-content: center;
-        align-items: center;
-        background: #939da9;
-        color: #fff;
-        font-weight: bold;
-        word-spacing: 20;
-    }
-    .role-tree .el-tree-node, .el-tree-node__content{
-        min-height: 89px;
-        box-sizing: border-box;
-        background: red;
-    }
 </style>
 <style>
     .rolemanage .el-table--border tr td:last-child,
@@ -58,33 +34,25 @@
     .rolemanage .el-table td {
         padding: 6px 0!important;
     }
-    .el-table th{
-        background: #939da9;
-        color: white;
-    }
-    .el-tree-node{
-        min-height: 37px;
-        line-height: 37px;
-    }
-    .el-tree-node .el-tree-node__content{
-        min-height: 37px;
-    }
+</style>
+<style lang="less">
+@import '../commonless/tree_and_table.less';
 </style>
 <template>
     <div class="rolemanage common-card-wrap" style="height: 100%;">
         <el-card class="box-card">
             <div class="text item">
                 <div class="content">
-                    <div class="action">
+                    <div class="action handle-bar">
                         <el-button type="danger" @click="showdialog" size="mini">新建系统</el-button>
                     </div>
                     <div class="table-list">
-                        <div class="left-tree role-tree">
-                            <div class="role-tree-title">涉及系统</div>
+                        <div class="left-tree">
+                            <div class="left-tree-title">选择系统</div>
                             <el-tree :data="treeData" @node-click="leftTreeClick"></el-tree>
                         </div>
-                        <el-table :data="tableData" class="role-el-tablee" border style="width: 80%" :height="tableHeight"
-                                  empty-text="请选择部门或当前部门没有数据">
+                        <el-table class="right-table" :data="tableData" border :height="tableHeight"
+                                  empty-text="请选择系统或当前系统没有数据">
                             <el-table-column align="center" prop="system_NAME" label="子系统"></el-table-column>
                         </el-table>
                     </div>

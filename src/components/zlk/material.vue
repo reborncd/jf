@@ -31,9 +31,6 @@
                         <el-form-item label="文档版本">
                             {{version}}
                         </el-form-item>
-                        <el-form-item label="目录位置">
-                            {{dir}}
-                        </el-form-item>
                         <el-form-item label="关联系统">
                             {{system}}
                         </el-form-item>
