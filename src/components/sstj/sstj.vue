@@ -195,7 +195,7 @@
                     time: "",//切换频率选中的值
                     timeArr: [{
                         "key": "30秒",
-                        "value": 10
+                        "value": 30
                     }, {
                         "key": "60秒",
                         "value": 60
