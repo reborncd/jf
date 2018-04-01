@@ -28,13 +28,13 @@
                     <h4>用户名：{{username}}</h4>
                     <div class="table-list">
                         <el-table :data="tableData" border style="width: 100%">
-                            <el-table-column prop="page" label="项目组"></el-table-column>
-                            <el-table-column prop="power" label="需求名称"></el-table-column>
-                            <el-table-column prop="role" label="功能项"></el-table-column>
-                            <el-table-column prop="power" label="操作项"></el-table-column>
-                            <el-table-column prop="role" label="操作日期"></el-table-column>
-                            <el-table-column prop="power" label="操作时间"></el-table-column>
-                            <el-table-column prop="role" label="当前状态"></el-table-column>
+                            <el-table-column prop="page" label="项目组" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="power" label="需求名称" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="role" label="功能项" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="power" label="操作项" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="role" label="操作日期" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="power" label="操作时间" show-overflow-tooltip></el-table-column>
+                            <el-table-column prop="role" label="当前状态" show-overflow-tooltip></el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">
                                     <el-button type="danger" @click="editRow(scope.row,scope)" size="small">撤销</el-button>

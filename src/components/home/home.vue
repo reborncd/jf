@@ -189,7 +189,7 @@
                             <i class="el-icon-arrow-down el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="work" >工作汇报</el-dropdown-item>
+                            <el-dropdown-item command="work">工作汇报</el-dropdown-item>
                             <el-dropdown-item command="userInfo">个人资料</el-dropdown-item>
                             <el-dropdown-item command="resetPassword">修改密码</el-dropdown-item>
                             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
@@ -351,6 +351,11 @@
                     case "userInfo":
                         //个人资料
                         this.$go("/home/userCenter");
+                        break;
+                    case "work":
+                        //工作汇报
+                      console.log(1)
+                        this.$go("/home/workreport");
                         break;
                 }
             },

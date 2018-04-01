@@ -38,7 +38,7 @@
 </style>
 
 <template>
-    <el-card class="box-card">
+    <el-card class="box-card" style="margin-right: 17px;">
         <div class="text item">
             <div class="content">
                 <div class="form" v-if="userInfo">
@@ -87,7 +87,7 @@
                         <!--<input type="file" id="upload">-->
                         <!--</el-form-item>-->
                         <el-form-item>
-                            <!--<el-button type="primary" @click="">操作日志</el-button>-->
+                            <el-button type="primary" @click="goLog">操作日志</el-button>
                             <el-button>返回</el-button>
                         </el-form-item>
                     </el-form>
@@ -171,10 +171,9 @@
                 })
             },
             calculate(){
-                let width= document.querySelector(".mainr").offsetWidth;
                 let height = document.querySelector(".mainr").offsetHeight;
                 let card_body = document.querySelector(".box-card .el-card__body");
-                document.querySelector(".box-card").style.width = width - 224 - 30 + "px";
+//                document.querySelector(".box-card").style.width = width - 224 - 30 + "px";
                 card_body.style.height = height - 36 + "px";
             },
             changePhone(){
@@ -242,7 +241,11 @@
                         this.$warn(data.message);
                     }
                 })
-            }
+            },
+          //操作日志
+          goLog(){
+            	this.$go("/home/log")
+          }
         }
     }
 </script>
