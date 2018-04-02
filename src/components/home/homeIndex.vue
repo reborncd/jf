@@ -10,6 +10,9 @@
     width: 20px;
     height: calc(100% - 12px);
   }
+  .icon-box .icon-right {
+    font-size: 13px;
+  }
 
   .card-title {
     font-weight: bold;
