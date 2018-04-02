@@ -164,7 +164,7 @@
                         this.form.role = data.result.ROLE_NAME ? data.result.ROLE_NAME : "";
                         this.form.position = data.result.POSITION ? data.result.POSITION : "";
                         this.form.lan = data.result.LANGUAGE_NAME ? data.result.LANGUAGE_NAME : "";
-                        this.form.intime = data.result.Days + "天";
+                        this.form.intime = data.result.Days?data.result.Days + "天":"";
                         this.form.boss = `${boss_dept}——${boss_name}`;
                         this.$maskoff();
                     }
