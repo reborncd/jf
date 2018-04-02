@@ -132,14 +132,14 @@
                     <el-input v-model="dialogData.personData.sex" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="所属部门">
-                    <el-select v-model="dialogData.personData.chooseDept" clearable
+                    <el-select v-model="dialogData.personData.chooseDept" clearable filterable
                                :placeholder="dialogOption.infoShow?'':'请选择部门'" @change="chooseDeptEvent" :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.deptRoles" :label="item.dept_name" :key="item.dept_id"
                                    :value="item.dept_id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="角色">
-                    <el-select v-model="dialogData.personData.chooseRole" clearable
+                    <el-select v-model="dialogData.personData.chooseRole" clearable filterable
                                :placeholder="dialogOption.infoShow?'':'请根据部门选择职位'" :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.deptRoles_choosen" :label="item.role_NAME" :key="item.role_ID"
                                    :value="item.role_ID"></el-option>
@@ -149,7 +149,7 @@
                     <el-input v-model="dialogData.personData.position" :disabled="dialogOption.infoShow"></el-input>
                 </el-form-item>
                 <el-form-item label="开发语言">
-                    <el-select v-model="dialogData.personData.chooseLanguage" clearable
+                    <el-select v-model="dialogData.personData.chooseLanguage" clearable filterable
                                :placeholder="dialogOption.infoShow?'':'请选择开发语言'"
                                :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.languages" :label="item.LABEL_LANGUAGE_NAME" :key="item.LABEL_LANGUAGE_ID"

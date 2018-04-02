@@ -288,7 +288,7 @@
         bottomHeight: "",//底部的高度
         has_delay: [],//已经延期
         will_delay: [],//将要延期
-        todo: [],//代办事项
+        todo: [],//待办事项
         operLog: [],//操作日志
         srcRoute: {
           "1": "业务需求",
@@ -298,7 +298,7 @@
           "5": "故障列表",
           "6": "BUG列表",
           "7": "上线管理"
-        },//代办事项的标题数组
+        },//待办事项的标题数组
         hasdo: [],//经办事项
         show: {
           time: [],//时间
@@ -391,7 +391,7 @@
         this.$axios.post("/main/queryMatter", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-            //main代办事项
+            //main待办事项
             this.$set(this, "todo", data.result.main);
             //havaMain经办事项
             this.$set(this, "hasdo", data.result.havaMain);
@@ -603,12 +603,14 @@
       clearInt() {
         clearInterval(this.interval)
       },
-      //-----------------------点击代办事项跳转页面
+      //-----------------------点击待办事项跳转页面
       goPage(val) {
         let url = "";
+        let query = ""
         switch (val.neel_TYPE) {
           case 1://业务需求
             url = "业务需求";
+            query = "work/queryPage"
             break;
           case 2://技术需求
             url = "技术需求";
@@ -629,12 +631,19 @@
             url = "上线管理";
             break;
         }
-        //跳转页面
-        this.$go("", "", {"neelId": val.nell_ID}, url);
+        let params = new URLSearchParams();
+        params.append("ID",val.nell_ID);
+        this.$axios.post(query,params).then((res)=>{
+        	let data =res.data;
+        	if(data.code == 200){
+            //跳转页面
+            this.$go("", "", {"neelId":data.result.ID,"neelPage":data.result.page}, url);
+          }
+        });
       },
       focus() {
 
       }
-    },
+    }
   }
 </script>

@@ -64,3 +64,7 @@ table .action-wrap button {
 tr,td{
     cursor: pointer;
 }
+.table-list .el-pagination{
+  text-align: right;
+  margin-top:5px;
+}

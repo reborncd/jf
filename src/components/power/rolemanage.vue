@@ -161,10 +161,10 @@
                 this.tableData = val.roles
             },
             deleteRow(el, scope){
-                this.$maskin();
                 let params = new URLSearchParams();
                 params.append("ROLE_ID", el.role_ID)
                 this.confirm("确定删除该角色？", () => {
+                  this.$maskin();
                     this.$axios.post("/role/deleteRole", params).then((res) => {
                         let data = res.data;
                         if (data.code == 200) {
