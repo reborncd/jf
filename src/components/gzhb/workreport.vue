@@ -2,70 +2,70 @@
 	@import "../../static/css/table.css";
 	@import "../../static/css/console.css";
 	/*头部*/
-	
+
 	.report-header .name {
 		font-weight: bold;
 		font-size: 20px;
 	}
-	
+
 	.report-header .el-select {
 		float: right;
 	}
-	
+
 	.report-header .group {
 		color: #9f9f9f;
 		margin: 5px 0;
 		font-size: 15px;
 	}
 	/*统计部分*/
-	
+
 	.report-left {
 		width: 300px;
 		margin-top: 10px;
 	}
-	
+
 	.report-statistics h5 {
 		font-size: 16px;
 		font-weight: 400;
 		margin: 5px 0;
 	}
-	
+
 	.report-statistics .iconfont {
 		color: #5fccac;
 		font-size: 20px;
 		margin-right: 5px;
 	}
-	
+
 	.statistics-content {
 		padding-left: 24px;
 	}
-	
+
 	.statistics-content p {
 		float: left;
 		width: 50%;
 		line-height: 24px;
 	}
-	
+
 	.statistics-content p .key {
 		color: #626262;
 	}
-	
+
 	.statistics-content p .value {
 		color: #dd544e;
 	}
-	
+
 	.el-textarea textarea {
 		min-height: 80px!important;
 	}
-	
+
 	.el-form-item__label {
 		width: 120px !important;
 	}
-	
+
 	.el-form-item {
 		margin-bottom: 0;
 	}
-	
+
 	h5 {
 		padding-top: 20px;
 	}
@@ -93,7 +93,7 @@
 						<span>{{showData.DEPT}}</span>
 					</p>
 					<p class="group">
-						<span>职位：</span>
+						<span>角色：</span>
 						<span>{{showData.ROLE}}</span>
 					</p>
 				</div>
@@ -243,7 +243,7 @@
 					params.append("START_DATE", this.dateRange[0]);
 				    params.append("END_DATE", this.dateRange[1]);
 				}
-				
+
 				this.$axios.post("/user/userWorkReport", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
@@ -257,7 +257,7 @@
 			},
 			FormatDate(strTime) {
 				var date = new Date(strTime);
-				
+
 				return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 			},
 			loadChart() {
