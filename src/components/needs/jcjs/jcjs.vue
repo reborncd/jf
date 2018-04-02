@@ -2139,7 +2139,7 @@
                 this.tabs.index = i;
                 this.$refs.jcjs_table.setCurrentRow(data.bases[i]);
                 this.handleCurrentChange(data.bases[i]);
-              }, 0)
+              }, 0);
               break;
             }
           }

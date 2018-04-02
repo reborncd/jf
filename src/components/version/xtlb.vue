@@ -78,7 +78,7 @@
                     </el-col>
                     <el-col class="subsystem" :span='24' style='position: relative;'>
                         <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
-                            <el-input v-model="item.SYSTEM_NAME" placeholder="请填写子系统" style="width: 43%;"></el-input>
+                            <el-input v-model="item.SYSTEM_NAME" placeholder="请填写子系统" style="width: 43%;" ></el-input>
 
                             <el-input v-model="item.SYSTEM_USER" placeholder="维护人" style="width: 43%;"></el-input>
                             <i
@@ -254,9 +254,7 @@
                         let data=res.data.result;
                         this.loadData();
                         this.clearAddData();
-                    }
-                    else{
-                        this.$warn(message);
+                        this.dialog.systempvisibble=false
                     }
                 })
 
@@ -309,7 +307,9 @@
             clearAddData(){
                 let len=this.dialog.systemAll.length-1;
                 for (let i of this.dialog.systemAll) {
-                    i=''
+                    i.SYSTEM_USER=''
+                    i.SYSTEM_NAME=''
+
                 }
                 this.dialog.systemAll.splice(0,len)
                 this.dialog.system='';

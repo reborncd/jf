@@ -96,7 +96,6 @@
         cursor: pointer;
     }
 </style>
-
 <template>
     <div class="rolelist common-card-wrap" style="height: 100%;"
          @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -117,8 +116,7 @@
                                    size="mini">
                             <el-option
                                     v-for="item in selectValue"
-                                    :key="item.id"
-                                   :label="item.value"
+                                    :label="item.value"
                                     :value="item.id">
                             </el-option>
                         </el-select>
@@ -151,9 +149,7 @@
                     <div class="table-list">
                         <el-table :data="table.tableData" border style="width: 100%"
                               :height="table.tableHeight"
-                              highlight-current-row
-                                  ref="ywxq_table"
-                              @row-click="handleCurrentChange">
+                              highlight-current-row ref="bug_table" @row-click="handleCurrentChange">
                             <el-table-column prop="id" label="编号" width="200" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="description" label="描述" show-overflow-tooltip>
                                 <template slot-scope="scope">
@@ -222,7 +218,6 @@
                                                     <el-select v-model="operate.relationValue" placeholder="" filterable  clearable style="width: 100%">
                                                         <el-option
                                                                 v-for="_item in operate.relation"
-                                                                :key="_item.technology_NEEL_ID"
                                                                 :label="_item.technology_NEEL_ID"
                                                                 :value="_item.technology_NEEL_ID"
                                                         ></el-option>
@@ -250,7 +245,6 @@
                                                             <el-select v-model="operate.reasonValue" placeholder="" filterable  clearable style='width: 100%;'>
                                                                 <el-option
                                                                         v-for="_item in operate.reasonSelect"
-                                                                        :key="_item.ID"
                                                                         :label="_item.REASON_NAME"
                                                                         :value="_item.ID"
                                                                 ></el-option>
@@ -272,7 +266,6 @@
                                                         <el-select v-model="item.csty" placeholder="子系统" clearable style='width: 90%;' filterable>
                                                             <el-option
                                                                 v-for="_item in operate.subSystem"
-                                                                :key="_item.SYSTEM_ID"
                                                                 :label="_item.SYSTEM_NAME"
                                                                 :value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
                                                                 ></el-option>
@@ -352,7 +345,6 @@
 	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
 	                                    <el-option
 	                                    	v-for="item in popup.priperty"
-                                        :key="item.value"
 		                                    :label="item.name"
 		                                    :value="item.value"
 	                                    	></el-option>
@@ -402,53 +394,52 @@
                         <el-button type="danger" @click="subForm">确 定</el-button>
                     </div>
                 </div>
-                <!--分配-->
-                <el-dialog title="分配" :visible="assign.assignvisible" width="40%"
-                           append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
-                    <div slot="title">
-                        <h2>分配</h2>
-                        <el-input
-                                class="search-input"
-                                placeholder="请输入姓名"
-                                v-model="assign.keyword"
-                                @keyup.13="assignSearch($event)"
-                                @change="assignSearch" clearable>
-                            <i slot="prefix" class="el-input__icon el-icon-search"></i>
-                        </el-input>
-                    </div>
-                    <!--左侧选择全部部门-->
-                    <div class="assign-wrapper" v-if="assign.left">
-                        <!--正常状态下展示部门-->
-                        <ul v-if="!assign.leftSearch">
-                            <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
-                                <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
-                                <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                                    <el-checkbox v-for="_item in item.users" :key="_item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
-                                        {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
-                                    </el-checkbox>
-                                </el-checkbox-group>
-                            </li>
-                        </ul>
-                        <!--搜索状态下不展示部门-->
-                        <div v-if="assign.leftSearch">
-                            <el-checkbox-group v-model="assign.checkList">
-                                <el-checkbox v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
-                                             class="check-item">
-                                    {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </div>
-                    </div>
-                    <div slot="footer" class="dialog-footer">
-                        <el-button @click="assign.assignvisible = false" size="mini">取 消</el-button>
-                        <el-button type="primary" @click="subAssign" size="mini">提交</el-button>
-                    </div>
-                </el-dialog>
             </div>
         </el-card>
+        <!--分配-->
+        <el-dialog title="分配" :visible="assign.assignvisible" width="40%"
+                 append-to-body modal-append-to-body :before-close="closeDialog" class="assgin-dialog">
+        <div slot="title">
+          <h2>分配</h2>
+          <el-input
+            class="search-input"
+            placeholder="请输入姓名"
+            v-model="assign.keyword"
+            @keyup.13="assignSearch($event)"
+            @change="assignSearch" clearable>
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+        </div>
+        <!--左侧选择全部部门-->
+        <div class="assign-wrapper" v-if="assign.left">
+          <!--正常状态下展示部门-->
+          <ul v-if="!assign.leftSearch">
+            <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
+              <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
+              <el-radio-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
+                <el-radio v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                  {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
+                </el-radio>
+              </el-radio-group>
+            </li>
+          </ul>
+          <!--搜索状态下不展示部门-->
+          <div v-if="assign.leftSearch">
+            <el-radio-group v-model="assign.checkList">
+              <el-radio v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                           class="check-item">
+                {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="assign.assignvisible = false" size="mini">取 消</el-button>
+          <el-button type="primary" @click="subAssign" size="mini">提交</el-button>
+        </div>
+      </el-dialog>
     </div>
 </template>
-
 <script>
     export default {
         data(){
@@ -704,6 +695,20 @@
                     }
                     this.$set(this.table, "tableData", arr);
                     this.$set(this.table, "tableOriginData", arr);
+                     if (this.$route.params.neelId) {
+                       let id = this.$route.params.neelId;
+                       for (let i = 0; i < data.result.length; i++) {
+                         if (data.result[i].id == id) {
+                           setTimeout(() => {
+                             this.tabs.index = i;
+                             this.$refs.bug_table.setCurrentRow(data.result[i]);
+                             this.handleCurrentChange(data.result[i]);
+                           }, 0);
+                           break;
+                         }
+                       }
+                       return;
+                     }
                     this.$maskoff();
                 }
             },
@@ -771,7 +776,7 @@
 				this.$axios.post("/fault/query?type=2", params).then((res) => {
 					 let data = res.data;
 					if (data.code == 200) {
-						this.$warn('操作成功');
+						this.$success('操作成功');
 						let arr = [];
 			          for (let i of data.result) {
 			            if (i.update_TIME) {
@@ -816,7 +821,7 @@
 				})
             },
             // 搜索关键字
-           searchKeyword(e){
+            searchKeyword(e){
            	this.setConsoleVisible()
                 if (e.keyCode == 13) {
                 	this.keyword=this.keyword.replace(/(^\s*)|(\s*$)/g, "");
@@ -825,7 +830,7 @@
                     this.$axios.post("/fault/query?type=2", params).then((res) => {
                     	let data = res.data;
 						if (data.code == 200) {
-							this.$warn('操作成功');
+							this.$success('操作成功');
 							let arr = [];
 			          for (let i of data.result) {
 			            if (i.update_TIME) {
@@ -960,7 +965,7 @@
 ////                if (info.state_ID == 304) {
 //                    params.append("TASK_ID", info.work_NEET_ID);
 ////                }
-                this.$axios.post("/work/queryUserByDemand", params).then((res) => {
+                this.$axios.post("/fault/queryUserByDemand", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
                         this.$set(this.assign, "searchData", data.result.users);
@@ -1118,7 +1123,7 @@
                 this.assign.assignvisible = false;//分配任务的弹窗
                 this.split.splitaddvisible = false;//拆分任务添加人员的弹窗
             },
-           getFile(e){
+            getFile(e){
 	        //上传附件
 	        let config = {
 	          headers: {
@@ -1144,14 +1149,14 @@
 	         	}
 	         })
 	      },
-	      //下载附件
-	      downfile(val){
+            //下载附件
+            downfile(val){
 	      	let token=localStorage.getItem("token")
 //	      	window.open("http://192.168.43.216:8082/fault/download?token="+token+"&id="+val);
 			this.$axios.get("/fault/download?token="+token+"&id="+val+'&type=2')
 	      },
-	      //提交bug弹窗显示
-	      shouBug(){
+            //提交bug弹窗显示
+            shouBug(){
 	      	this.bugVisible=true
 	      /*	let params = new URLSearchParams();
 				params.append("status",2);
@@ -1167,7 +1172,7 @@
                   this.popup.popTxt.id=data.id;
               })
 	      },
-// 			提交bug表单
+            //提交bug表单
             subForm(){
 					if(!this.popup.popTxt.title){
 //						this.$warn('请填写标题');
@@ -1219,12 +1224,12 @@
 	              });
 	              this.bugVisible=false
             },
-//           控制台切换
+            //控制台切换
             tabClick(val){
                 this.calculateTabsHeight();
             },
             //清除新增新增的表单
-		    clearAddData(){
+		        clearAddData(){
 		        for (let i in this.popup.popTxt) {
 		            this.popup.popTxt[i] = "";
 		        }
@@ -1238,7 +1243,7 @@
                 this.operate.systemAll.splice(0,len)
                 this.operate.system='';
 		    },
-			//添加系统
+			      //添加系统
             addsubStystem(index,e){
             	let type = e.target.className
             	if(type == "el-icon-plus"){
@@ -1255,8 +1260,7 @@
                 this.tabs.consoleWrapperVisible = false;
                 this.calculateTableHeight(false)
             },
-
-           backPage(val){
+            backPage(val){
              	this.loadData();
              	this.clearAddData();
             	this.bugVisible=false

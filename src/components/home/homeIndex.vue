@@ -274,7 +274,6 @@
 </template>
 <script>
   import datePlug from "./datePlug.vue";
-
   export default {
     data() {
       return {
@@ -293,7 +292,9 @@
           "2": "技术需求",
           "3": "基础建设",
           "4": "日常任务",
-          "5": "问题管理"
+          "5": "故障列表",
+          "6": "BUG列表",
+          "7": "上线管理"
         },//代办事项的标题数组
         hasdo: [],//经办事项
         show: {
@@ -615,8 +616,14 @@
           case 4://日常任务
             url = "日常任务";
             break;
-          case 5://问题管理
-            url = "/home/ywxq";
+          case 5://故障列表
+            url = "故障列表";
+            break;
+          case 6://BUG列表
+            url = "BUG列表";
+            break;
+          case 7://BUG列表
+            url = "上线管理";
             break;
         }
         //跳转页面

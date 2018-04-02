@@ -29,7 +29,7 @@
     }
 
     .edition-line {
-        background: #EEEEEE;
+        /*background: #EEEEEE;*/
         /*padding: 0 20px;*/
         padding: 0 3%;
     }
@@ -39,9 +39,10 @@
         width: 96%;
         border-bottom: 3px solid #666;
         position: absolute;
-        top: 18%;
+        /*top: 18%;*/
+        top:8px;
         margin-top: -1px;
-        left: 12px;
+        left: 14px;
 
     }
 
@@ -82,8 +83,13 @@
     .edition-line li p.banP {
         position: absolute;
         top: 45%;
-        left: -8px;
-        width: 100%;
+        left: 0;
+        -webkit-transform: translate(-50%,0);
+        -moz-transform: translate(-50%,0);
+        -ms-transform: translate(-50%,0);
+        -o-transform: translate(-50%,0);
+        transform: translate(-50%,0);
+        /*width: 100%;*/
         text-align: left;
     }
 
@@ -254,9 +260,9 @@
                                 </el-col>
                                 <el-col class="" :span='24' style='position: relative;'>
                                     <el-form-item label="版本" class=''>
-                                        v&nbsp;
+                                      <span style="display: inline-block;width: 3%">v</span>&nbsp;
                                         <el-input v-model="dialog.banben" placeholder="请填写版本号,格式1.2.0"
-                                                  style="width: 88%;"></el-input>
+                                                  style="width: 95%;"></el-input>
 
                                     </el-form-item>
                                 </el-col>
@@ -415,9 +421,6 @@
                         this.treeData = sysArr;
                         this.$maskoff();
                     }
-//                    else {
-//                        this.warn(message);
-//                    }
                 })
             },
             setTableData(data){
@@ -574,9 +577,6 @@
 //                        this.loadData();
 //                        this.clearAddData();
                     }
-                    else {
-                        this.$warn(message);
-                    }
                 })
                 this.loadData();
                 this.clearAddData();
@@ -595,9 +595,6 @@
                             let data = res.data.result
                             this.setTableData(data);
 
-                        }
-                        else {
-                            this.warn(message);
                         }
                     })
                 }

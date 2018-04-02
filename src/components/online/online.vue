@@ -57,7 +57,8 @@
 	}
 </style>
 <template>
-	<div class="jcjs common-card-wrap" @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
+	<div class="jcjs common-card-wrap"
+       @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
 		<el-card class="box-card">
 			<div class="text item">
 				<div class="content">
@@ -84,18 +85,19 @@
 					</div>
 					<!--表格部分-->
 					<div class="table-list">
-						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row @row-click="handleCurrentChange">
+						<el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight"
+                      ref="online_table" highlight-current-row @row-click="handleCurrentChange">
 							<el-table-column prop="nell" label="需求编号" width="200"></el-table-column>
-                            <el-table-column prop="system_NAME" label="系统名称" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="golive_SYSTEM" label="子系统" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="ban" label="版本号" width="70"></el-table-column>
-                            <el-table-column prop="colive_TYPE_NAME" label="上线类型" width="110"></el-table-column>
-                            <el-table-column prop="release_HEAD" label="发布负责人" width="110"></el-table-column>
-							<el-table-column prop="desired_START_DATETIME" label="预计上线日期" width="110"></el-table-column>
-							<el-table-column prop="golive_DATE" label="上线日期" width="110"></el-table-column>
-							<el-table-column prop="desired_END_DATETIME" label="预期上线时间" width="110"></el-table-column>
-							<el-table-column prop="golive_TIME" label="上线时间" width="110"></el-table-column>
-							<el-table-column prop="state_NAME" label="状态"></el-table-column>
+              <el-table-column prop="system_NAME" label="系统名称" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="golive_SYSTEM" label="子系统" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="ban" label="版本号" width="70" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="colive_TYPE_NAME" label="上线类型" width="110" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="release_HEAD" label="发布负责人" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="desired_START_DATETIME" label="预计上线日期" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="golive_DATE" label="上线日期" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="desired_END_DATETIME" label="预期上线时间" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="golive_TIME" label="上线时间" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column prop="state_NAME" label="状态" show-overflow-tooltip></el-table-column>
 							<el-table-column label="操作" width="130">
 								<template slot-scope="scope" class="action-wrap">
 									<el-button v-if="scope.row.type=='check'" @click="agreeRow(scope.row,scope,$event)" size="small" type="primary">通过
@@ -423,7 +425,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="24" :md="24" v-if="onlineSure.addform.sxjg!=5">
-						<el-form-item>
+						<el-form-item label="操作说明">
 							<el-input type="textarea" v-model="onlineSure.addform.smk"></el-input>
 						</el-form-item>
 					</el-col>
@@ -436,7 +438,6 @@
 
 	</div>
 </template>
-
 <script>
 	export default {
 		data() {
@@ -832,6 +833,21 @@
 			setTableData(data) {
 				this.$set(this.table, "tableData", data);
 				this.$set(this.table, "tableOriginData", data);
+        //判断是否有search跳转到对应的操作台
+        if (this.$route.params.neelId) {
+          let id = this.$route.params.neelId;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].golive_ID == id) {
+              setTimeout(() => {
+                this.tabs.index = i;
+                this.$refs.online_table.setCurrentRow(data[i]);
+                this.handleCurrentChange(data[i]);
+              }, 0);
+              break;
+            }
+          }
+          return;
+        }
 				this.$maskoff();
 			},
 			//通过
@@ -1059,10 +1075,10 @@
                                 this.resetData(data.result.goliveProject)
 							}
 							let self=this
-                            var t=setTimeout(function(){
-                                self.setBrInfo(document.querySelector(".neel_DESCRIPTION"),data.result.DemandTechnology.neel_DESCRIPTION);
-                                self.setBrInfo(document.querySelector(".product_FUNCTION"),data.result.DemandTechnology.product_FUNCTION);
-                            },500)
+              var t=setTimeout(function(){
+                  self.setBrInfo(document.querySelector(".neel_DESCRIPTION"),data.result.DemandTechnology.neel_DESCRIPTION);
+                  self.setBrInfo(document.querySelector(".product_FUNCTION"),data.result.DemandTechnology.product_FUNCTION);
+              },500)
 						} else {
 							this.$warn(data.message);
 						}
@@ -1110,7 +1126,7 @@
 					this.$maskoff();
 				})
 			},
-            setBrInfo(dom,info){
+      setBrInfo(dom,info){
                 dom.innerHTML = "";
                 dom.insertAdjacentHTML("beforeend",info);
             },

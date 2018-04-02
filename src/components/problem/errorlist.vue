@@ -99,7 +99,6 @@
     cursor: pointer;
   }
 </style>
-
 <template>
   <div class="rolelist common-card-wrap" style="height: 100%;"
        @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -147,9 +146,8 @@
             </div>
           </div>
           <div class="table-list">
-            <el-table :data="table.tableData" border style="width: 100%"
-                      :height="table.tableHeight" highlight-current-row
-                      @row-click="handleCurrentChange">
+            <el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" highlight-current-row
+                      @row-click="handleCurrentChange" ref="err_table">
               <el-table-column prop="id" label="编号" width="180" show-overflow-tooltip></el-table-column>
               <el-table-column prop="description" label="描述" show-overflow-tooltip>
                 <template slot-scope="scope">
@@ -410,21 +408,21 @@
             <ul v-if="!assign.leftSearch">
               <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                 <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
-                <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                  <el-checkbox v-for="_item in item.users" :key="item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                <el-radio-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
+                  <el-radio v-for="_item in item.users" :key="item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                     {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
-                  </el-checkbox>
-                </el-checkbox-group>
+                  </el-radio>
+                </el-radio-group>
               </li>
             </ul>
             <!--搜索状态下不展示部门-->
             <div v-if="assign.leftSearch">
-              <el-checkbox-group v-model="assign.checkList">
-                <el-checkbox v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
+              <el-radio-group v-model="assign.checkList">
+                <el-radio v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
                              class="check-item">
                   {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
-                </el-checkbox>
-              </el-checkbox-group>
+                </el-radio>
+              </el-radio-group>
             </div>
           </div>
           <div slot="footer" class="dialog-footer">
@@ -437,7 +435,6 @@
 
   </div>
 </template>
-
 <script>
   export default {
     data(){
@@ -636,7 +633,6 @@
           i.style.height = (parseInt(card_body.style.height) - 20 ) - actionHeight - (this.table.tableHeight + 20) - (20 + 40) - 2 + "px";
         }
       },
-
       loadData(){
       	//清除新增新增的表单
         this.clearAddData();
@@ -710,31 +706,45 @@
           }
           this.$set(this.table, "tableData", arr);
           this.$set(this.table, "tableOriginData", arr);
+          if (this.$route.params.neelId) {
+            let id = this.$route.params.neelId;
+            for (let i = 0; i < data.result.length; i++) {
+              if (data.result[i].id == id) {
+                setTimeout(() => {
+                  this.tabs.index = i;
+                  this.$refs.err_table.setCurrentRow(data.result[i]);
+                  this.handleCurrentChange(data.result[i]);
+                }, 0);
+                break;
+              }
+            }
+            return;
+          }
           this.$maskoff();
         }
       },
-        tableAction(e){
+      tableAction(e){
 //            this.operate.fpvisible=true
 //                this.$refs.ywxq_table.setCurrentRow(row);
-            //阻止事件冒泡
-            e.stopPropagation();
-            this.getAssign();
-        },
-        getAssign(){
+          //阻止事件冒泡
+          e.stopPropagation();
+          this.getAssign();
+      },
+      getAssign(){
 //                let info = this.tabs.activeTableInfo;
-            this.assign.keyword = "";//初始化关键字
+          this.assign.keyword = "";//初始化关键字
 //            this.assign.checkList = [];//初始化选中的数据
-            this.assign.assignDeptIndex = "";//初始化选中的索引
-            this.assign.leftSearch = false;//关闭搜索结果的展示
-            this.assign.assignvisible = true;
-            let params = new URLSearchParams();
+          this.assign.assignDeptIndex = "";//初始化选中的索引
+          this.assign.leftSearch = false;//关闭搜索结果的展示
+          this.assign.assignvisible = true;
+          let params = new URLSearchParams();
 ////                if (info.state_ID == 304) {
 //                    params.append("TASK_ID", info.work_NEET_ID);
 ////                }
-            this.$axios.post("/work/queryUserByDemand", params).then((res) => {
-                let data = res.data;
-                if (data.code == 200) {
-                    this.$set(this.assign, "searchData", data.result.users);
+          this.$axios.post("/fault/queryUserByDemand", params).then((res) => {
+              let data = res.data;
+              if (data.code == 200) {
+                  this.$set(this.assign, "searchData", data.result.users);
 //                        let all = data.result.users;
 //                        let dept = [];
 //                        for(let i of all){
@@ -747,38 +757,38 @@
 //                                })
 //                            }
 //                        }
-                    this.$set(this.assign, "leftOriginData", data.result.users);
+                  this.$set(this.assign, "leftOriginData", data.result.users);
 //                        this.$set(this.assign, "rightlistdata", data.result.dept.users);
-                }
-            })
-        },
-        //-----------------------------------分配任务搜索功能
-        assignSearch(){
-            let keyword = this.assign.keyword;
+              }
+          })
+      },
+      //-----------------------------------分配任务搜索功能
+      assignSearch(){
+          let keyword = this.assign.keyword;
 //                let type;
 //                if (this.assign.left) {
 //                    type = "left"
 //                } else {
 //                    type = "right"
 //                }
-            //搜索关键字判断
-            if (keyword == "") {
-                //为空
-                this.assign.leftSearch = false;
+          //搜索关键字判断
+          if (keyword == "") {
+              //为空
+              this.assign.leftSearch = false;
 //                    this.$set(this.assign, "searchData", type == "left" ? this.assign.leftOriginData : this.assign.rightlistdata)
-                this.$set(this.assign, "searchData",this.assign.leftOriginData)
-            } else {
-                //不为空
-                let arr = [];
+              this.$set(this.assign, "searchData",this.assign.leftOriginData)
+          } else {
+              //不为空
+              let arr = [];
 //                    if (type == "left") {
-                for (let i of this.assign.leftOriginData) {
-                    for (let j of i.users) {
-                        if (j.user_NAME.indexOf(keyword) >= 0) {
-                            arr.push(j)
-                        }
-                    }
-                }
-                this.assign.leftSearch = true;
+              for (let i of this.assign.leftOriginData) {
+                  for (let j of i.users) {
+                      if (j.user_NAME.indexOf(keyword) >= 0) {
+                          arr.push(j)
+                      }
+                  }
+              }
+              this.assign.leftSearch = true;
 //                    } else {
 //                        for (let i of this.assign.rightlistdata) {
 //                            if (i.user_NAME.indexOf(keyword) >= 0) {
@@ -786,11 +796,11 @@
 //                            }
 //                        }
 //                    }
-                this.$set(this.assign, "searchData", arr);
-            }
-        },
-        //-----------------------------------提交分配任务
-        subAssign(){
+              this.$set(this.assign, "searchData", arr);
+          }
+      },
+      //-----------------------------------提交分配任务
+      subAssign(){
             let result = this.assign.checkList;
             if (result.length == 0) {
                 this.$warn("当前没有选择任何人员");
@@ -848,7 +858,7 @@
           }
         })
       },
-//          	时间搜索
+      //时间搜索
       timeChange(val){
       	this.setConsoleVisible()
         let startTime = val[0]
@@ -990,7 +1000,7 @@
 
           })
       },
-//         搜索
+      //搜索
       searchKeyword(e){
       	this.tabs.consoleActionVisible = false
         if (e.keyCode == 13) {
@@ -1084,7 +1094,7 @@
       	this.errorVisible=!this.errorVisible;
       	this.clearAddData();
       },
-//          提交故障单
+      //提交故障单
       subForm(){
         //提交故障提交单
         if (!this.popup.popTxt.priperty2) {
@@ -1134,16 +1144,16 @@
           }
         });
       },
-//            控制台切换
+      //控制台切换
       tabClick(val){
         this.calculateTabsHeight();
     },
-        closeDialog(){
+      closeDialog(){
             this.assign.assignvisible = false;//分配任务的弹窗
             this.split.splitaddvisible = false;//拆分任务添加人员的弹窗
         },
      //清除新增新增的表单
-    clearAddData(){
+      clearAddData(){
         for (let i in this.popup.popTxt) {
             this.popup.popTxt[i] = "";
         }

@@ -70,8 +70,8 @@ let option = {
                     name:"部门编辑",
                     component: resolve => require(['./components/power/deptlist.vue'], resolve)
                 },{
-                    path: 'log',
-                    component: resolve => require(['./components/account/log.vue'], resolve)
+                    path: 'czrz',
+                    component: resolve => require(['./components/account/czrz.vue'], resolve)
                 },{
                     path: 'ywxq',
                     name:"业务需求",

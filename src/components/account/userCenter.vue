@@ -244,7 +244,7 @@
             },
           //操作日志
           goLog(){
-            	this.$go("/home/log")
+            	this.$go("/home/czrz")
           }
         }
     }

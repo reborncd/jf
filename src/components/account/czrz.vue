@@ -21,10 +21,9 @@
                         <h2 class="title">操作日志</h2>
                         <el-table :data="table.tableData" border style="width: 100%"
                                   :height="table.tableHeight">
+                          <el-table-column prop="record_SUBJECT" label="操作类型" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="record_DESC" label="操作描述" show-overflow-tooltip></el-table-column>
                             <el-table-column prop="record_START" :formatter="data" label="操作时间" show-overflow-tooltip></el-table-column>
-                            <el-table-column prop="record_SUBJECT" label="操作类型" show-overflow-tooltip></el-table-column>
-
                         </el-table>
                     </div>
                 <div class="block" style="text-align: right;margin-top: 10px;">
