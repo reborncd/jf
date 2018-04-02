@@ -132,14 +132,14 @@
                     this.$warn("请选择性别");
                     return;
                 }
-                if (this.phone == "") {
+                if (this.email == "") {
                     this.$warn("请输入邮箱");
                     return;
                 }
-                if (this.phone == "") {
-                    this.$warn("请输入入职日期");
-                    return;
-                }
+//                if (this.date == "") {
+//                    this.$warn("请输入入职日期");
+//                    return;
+//                }
                 if (!reg.account.test(this.account)) {
                     this.$warn("用户名格式只支持英文和数字");
                     return;
@@ -174,7 +174,9 @@
                 params.append('USER_PHONE', this.phone);
                 params.append('USER_SEX', this.sex=="男"?"1":"0");
                 params.append('USER_MAIL', this.email);
-                params.append('USER_WORKER_TIME', this.date);
+                if(this.date){
+                  params.append('USER_WORKER_TIME', this.date);
+                }
                 this.$axios.post("/user/add", params).then( (res)=>{
                     let data = res.data;
                     if (data.code == 200) {
