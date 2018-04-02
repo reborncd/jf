@@ -329,7 +329,7 @@
               <el-col :span="12">
                 <el-form-item label="故障等级">
                   <!--<el-input v-model="popup.priperty"></el-input>-->
-                  <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
+                  <el-select v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable style="width: 100%">
                     <el-option
                       v-for="item in popup.priperty"
                       :key="item.value"
@@ -341,8 +341,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="故障分析人员">
-                  <el-input v-model="popup.popTxt.relationUser" style="width: 50%"></el-input>
-
+                  <el-input v-model="popup.popTxt.relationUser" style="width: 100%"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12" :sm="12">
@@ -382,7 +381,7 @@
             </el-row>
           </el-form>
           <div style="text-align: center">
-            <el-button style="margin-left: 100px"  type="primary"
+            <el-button type="primary"
                        @click="tableAction($event)">分配人员
             </el-button>
             <el-button type="danger" @click="subForm">确 定</el-button>

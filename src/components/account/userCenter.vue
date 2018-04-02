@@ -155,7 +155,7 @@
                     let data = res.data;
                     if (data.code == 200) {
                         let boss_dept = data.result.F_DEPT_NAME ? data.result.F_DEPT_NAME : "";
-                        let boss_name = data.result.F_USER_NAME ? data.result.F_USER_NAME : ""
+                        let boss_name = data.result.F_USER_NAME ? data.result.F_USER_NAME : "";
                         this.form.name = data.result.USER_NAME;//姓名
                         this.form.account = data.result.USER_ACCOUNT;//账号
                         this.form.phone = data.result.USER_PHONE;//

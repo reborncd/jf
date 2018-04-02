@@ -326,14 +326,14 @@
                 <div class="content" v-if="bugVisible">
                     <el-form :model="form" label-width="100px">
                         <el-row :gutter="24">
-                            <el-col>
+                            <el-col :span="12">
                                 <el-form-item label="BUG编号">
-                                    <el-input v-model="popup.popTxt.id" :disabled='error.disabled'></el-input>
+                                    <el-input v-model="popup.popTxt.id" :disabled='error.disabled' style="width: 100%"></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
-                        <el-row :gutter="24">
-                            <el-col>
+                        <!--</el-row>-->
+                        <!--<el-row :gutter="24">-->
+                            <el-col :span="12">
                                 <el-form-item label="标题">
                                     <el-input v-model="popup.popTxt.title" ></el-input>
                                 </el-form-item>
@@ -342,7 +342,7 @@
                         <el-row :gutter="24">
                         	  <el-col :span="24" :sm="24" >
 	                            <el-form-item label="故障等级">
-	                                <el-select style="width: 50%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
+	                                <el-select style="width: 100%" v-model="popup.popTxt.priperty2" placeholder="故障等级" clearable filterable>
 	                                    <el-option
 	                                    	v-for="item in popup.priperty"
 		                                    :label="item.name"
@@ -387,7 +387,7 @@
                         </el-row>
                     </el-form>
                     <div style="text-align: center">
-                        <el-button style="margin-left: 100px"  type="primary"
+                        <el-button type="primary"
                                    v-if="operate.fpvisible"
                                    @click="tableAction($event)">分配人员
                         </el-button>
