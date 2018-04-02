@@ -653,6 +653,10 @@
 					this.$warn("请填写影响时间");
 					firm = "0"
 				}
+        if(!this.consoleForm.effectTime.match(/^[0-9]*$/)) {
+          this.$warn("影响时间请填写纯数字");
+          firm = "0"
+        }
 				if(!this.consoleForm.ifStop) {
 					this.$warn("请选择是否停交易");
 					firm = "0"
@@ -661,6 +665,10 @@
 					this.$warn("请填写预计上线时间");
 					firm = "0"
 				}
+        if(this.consoleForm.expectTime.indexOf(":")<=0 && this.consoleForm.expectTime.indexOf("：")<=0) {
+          this.$warn("预计上线时间请填写具体时间点");
+          firm = "0"
+        }
 				if(!this.consoleForm.expectDate) {
 					this.$warn("请选择预计上线日期");
 					firm = "0"

@@ -307,9 +307,8 @@
             clearAddData(){
                 let len=this.dialog.systemAll.length-1;
                 for (let i of this.dialog.systemAll) {
-                    i.SYSTEM_USER=''
-                    i.SYSTEM_NAME=''
-
+                    i.SYSTEM_USER='';
+                    i.SYSTEM_NAME='';
                 }
                 this.dialog.systemAll.splice(0,len)
                 this.dialog.system='';

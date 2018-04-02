@@ -1218,9 +1218,6 @@
 	                  this.clearAddData();
 	                  this.loadData();
 	                }
-	                else{
-	                  this.wran(data.message);
-	                }
 	              });
 	              this.bugVisible=false
             },
