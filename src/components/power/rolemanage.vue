@@ -107,8 +107,8 @@
                 let card_body = document.querySelector(".box-card .el-card__body");
                 card_body.style.height = ( height - 34) - card_header_height + "px";
                 //                         总高度        -   卡片头高度     -card_body上下padding-操作栏高度28-margin-top的15px
-                leftTree.style.height = (height - 34) - card_header_height - 20 - 28 - 15 + "px";
-                this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 15;
+                leftTree.style.height = (height - 34) - card_header_height - 20 - 28 - 22 + "px";
+                this.tableHeight = (height - 34) - card_header_height - 20 - 28 - 22;
             },
             loadData(){
                 this.calculate();

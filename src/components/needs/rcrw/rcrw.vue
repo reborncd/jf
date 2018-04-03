@@ -1245,6 +1245,7 @@
           tableData: [],
           tableOriginData: [],
           tableHeight: "",
+          hasGo:false,
         },
         keyword: "",
         screenKey: {
@@ -1419,18 +1420,7 @@
               this.optionsOn.push(i)
             }
             //判断是否有search跳转到对应的操作台
-            if (this.$route.params.neelId) {
-//              let id = this.$route.params.neelId;
-//              for (let i of data.result.daliys) {
-//                if (i.daliy_NEET_ID == id) {
-//
-//                  this.handleCurrentChange(i);
-//                  // this.$refs.rcrw_table.setCurrentRow(i);
-//
-//                  break;
-//                }
-//              }
-//              return;
+            if (this.$route.params.neelId && !this.table.hasGo) {
               let id = this.$route.params.neelId;
               for (let i = 0; i < data.result.daliys.length; i++) {
                 if (data.result.daliys[i].daliy_NEET_ID == id) {
@@ -1438,6 +1428,7 @@
                     this.tabs.index = i;
                     this.$refs.rcrw_table.setCurrentRow(data.result.daliys[i]);
                     this.handleCurrentChange(data.result.daliys[i]);
+                    this.table.hasGo = true
                   }, 0)
                   break;
                 }

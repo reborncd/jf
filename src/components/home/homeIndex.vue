@@ -251,7 +251,7 @@
               </div>
 
               <ul class="text item">
-                <li v-for="(item, index) in operLog" @click="goPage(item)">
+                <li v-for="(item, index) in operLog" >
                   <div class="icon-box"><i class="anticon icon-right"></i></div>
                   <h4 class="content-title">{{item.record_SUBJECT}}
                     <span class="date fr">{{item.record_START | date}}</span>
@@ -610,7 +610,6 @@
         switch (val.neel_TYPE) {
           case 1://业务需求
             url = "业务需求";
-            query = "work/queryPage"
             break;
           case 2://技术需求
             url = "技术需求";
@@ -631,15 +630,19 @@
             url = "上线管理";
             break;
         }
-        let params = new URLSearchParams();
-        params.append("ID",val.nell_ID);
-        this.$axios.post(query,params).then((res)=>{
-        	let data =res.data;
-        	if(data.code == 200){
+//        let params = new URLSearchParams();
+//        params.append("ID",val.nell_ID);
+//        this.$axios.post(query,params).then((res)=>{
+//        	let data =res.data;
+//        	if(data.code == 200){
             //跳转页面
-            this.$go("", "", {"neelId":data.result.ID,"neelPage":data.result.page}, url);
-          }
-        });
+            console.log(val)
+            this.$go("", "", {
+            	"neelId":val.nell_ID,
+//              "neelPage":data.result.page
+            }, url);
+//          }
+//        <!--});-->
       },
       focus() {
 

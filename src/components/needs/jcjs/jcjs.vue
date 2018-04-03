@@ -1748,6 +1748,7 @@
           tableData: [],//表格展示的数据
           tableOriginData: [],//表格的源数据
           tableHeight: "",//表格高度
+          hasGo:false,
         },
         dateValue: "",
         keyword: "",
@@ -2131,7 +2132,7 @@
         this.$set(this.table, "tableData", data.bases);
         this.$set(this.table, "tableOriginData", data.bases);
         //判断是否有search跳转到对应的操作台
-        if (this.$route.params.neelId) {
+        if (this.$route.params.neelId && !this.table.hasGo) {
           let id = this.$route.params.neelId;
           for (let i = 0; i < data.bases.length; i++) {
             if (data.bases[i].base_NEET_ID == id) {
@@ -2139,6 +2140,7 @@
                 this.tabs.index = i;
                 this.$refs.jcjs_table.setCurrentRow(data.bases[i]);
                 this.handleCurrentChange(data.bases[i]);
+                this.table.hasGo = true
               }, 0);
               break;
             }

@@ -15,7 +15,7 @@
     }
 
     .el-button {
-        padding: 6px 10px;
+        /*padding: 6px 10px;*/
     }
 
     .console-tab-content .add {

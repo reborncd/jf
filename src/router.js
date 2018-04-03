@@ -148,7 +148,6 @@ let option = {
             path: '/test',
             component: resolve => require(['./components/test.vue'], resolve)
         }*/
-
     ]
 };
 let router = new Router(option);
