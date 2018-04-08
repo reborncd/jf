@@ -1,3 +1,6 @@
+<style lang="less">
+@import '../needs.less';
+</style>
 <style scoped>
     .search .el-input {
         width: auto;
@@ -379,7 +382,7 @@
                             </el-tab-pane>
                             <el-tab-pane label="操作台" name="console" v-if="split.hasSplitTaskDataByGroup">
                                 <div class="console-tab-content">
-                                    <div class="console-action-wrapper" v-if="tabs.consoleActionData.length">
+                                    <!--div class="console-action-wrapper" v-if="tabs.consoleActionData.length">
                                         <i class="icon-more iconfont"
                                            @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                                         <div class="console-action fr" v-if="tabs.consoleActionVisible">
@@ -387,7 +390,7 @@
                                                   @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
                                         </div>
-                                    </div>
+                                    </div-->
                                     <!--状态记录和发送人-->
                                     <el-form label-width="100px" label-position="left">
                                         <el-row :gutter="20">
@@ -458,10 +461,6 @@
                                                 </el-table-column>
                                             </el-table>
                                         </div>
-                                        <div class="clear">
-                                            <el-button style="float: none;margin: 10px auto;display: block" size="mini"
-                                                       type="primary" @click="splitSubmit">提交</el-button>
-                                        </div>
                                     </div>
                                     <!--技术管理部评审-->
                                     <el-form style="margin-top: 20px;" v-if="ifPing.visible" label-width="120px" label-position="left">
@@ -491,11 +490,6 @@
                                                 <el-form-item label="参会人">
                                                     <el-input v-model="ifPing.person"></el-input>
                                                 </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row :gutter="20">
-                                            <el-col :span="24">
-                                                <el-button style="display: block;margin: 10px auto;" @click="subPing" size="mini" type="primary">提交审批</el-button>
                                             </el-col>
                                         </el-row>
                                     </el-form>
@@ -603,10 +597,6 @@
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
-                                        <div style="text-align: center">
-                                            <el-button size="mini" type="primary" style="float: none"
-                                                       @click="reviewSub">提交分析结果</el-button>
-                                        </div>
                                     </el-form>
                                     <!--技术经理确认变更-->
                                     <div v-if="changeInset.visible">
@@ -642,10 +632,21 @@
                                                     </template>
                                                 </el-table-column>
                                             </el-table>
-                                            <div style="text-align: center;margin-top: 20px;">
-                                                <el-button style="float: none" type="primary" size="mini" @click="subChangeInset">确认变更</el-button>
-                                            </div>
                                         </div>
+                                    </div>
+                                    <!--操作按钮-->
+                                    <div class="tab-console-handler">
+                                        <el-button
+                                          v-for="(item, index) in tabs.consoleActionData"
+                                          :key="index"
+                                          @click="consoleActionEvent(item)"
+                                          size="mini"
+                                          type="primary"
+                                        >{{item.name}}</el-button>
+                                        <el-button v-if="changeInset.visible" type="primary" size="mini" @click="subChangeInset">确认变更</el-button>
+                                        <el-button size="mini" v-if="review.reviewvisible" type="primary" @click="reviewSub">提交分析结果</el-button>
+                                        <el-button v-if="ifPing.visible" @click="subPing" size="mini" type="primary">提交审批</el-button>
+                                        <el-button v-if="split.splitvisible" size="mini" type="primary" @click="splitSubmit">提交</el-button>
                                     </div>
                                 </div>
                             </el-tab-pane>

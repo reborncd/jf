@@ -54,6 +54,7 @@
                         <el-table class="right-table" :data="tableData" border :height="tableHeight"
                                   empty-text="请选择系统或当前系统没有数据">
                             <el-table-column align="center" prop="system_NAME" label="子系统"></el-table-column>
+                            <el-table-column align="center" prop="system_USER" label="维护人"></el-table-column>
                         </el-table>
                     </div>
                 </div>
@@ -65,7 +66,7 @@
                 <el-row>
                     <el-col>
                         <el-form-item label="系统">
-                            <el-select v-model="dialog.system" placeholder="请选择"  filterable allow-create @change="systemOpt" style="width:43%">
+                            <el-select v-model="dialog.system" placeholder="输入或选择"  filterable allow-create @change="systemOpt" style="width:43%">
                                 <el-option
                                         v-for="item in dialog.systemSelect"
                                         :label="item.system_NAME"

@@ -250,7 +250,7 @@
 												</el-form-item>
 											</el-col>
 
-											<el-col style="padding: 0;" v-for="(content, index) in onlineForm.onlineContent">
+											<el-col style="padding: 0;" v-for="(content, index) in onlineForm.onlineContent" :key="index">
 												<el-col :span="12">
 													<el-form-item label="涉及系统">
 														<el-select v-model="content.SYSTEM_ID" @change="systeMv(index,$event)" filterable>

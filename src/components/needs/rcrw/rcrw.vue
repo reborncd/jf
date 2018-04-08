@@ -1,3 +1,6 @@
+<style lang="less">
+@import '../needs.less';
+</style>
 <style scoped>
   .search .el-input {
     width: auto;
@@ -255,15 +258,14 @@
 
               <el-tab-pane label="操作台" name="console">
                 <div class="console-tab-content">
-                  <div class="console-action-wrapper"
+                  <!--div class="console-action-wrapper"
                        v-if="tabs.ifConsole || tabs.ifAssign || tabs.ifSplit || tabs.ifEdit">
                     <i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                     <div class="console-action fr" v-if="tabs.consoleActionVisible">
 											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
                     </div>
-                  </div>
-                  <!------------------->
+                  </div-->
 
                   <el-form label-width="60px" label-position="left">
                     <el-row :gutter="20">
@@ -307,13 +309,6 @@
                         <el-form-item label="参会人">
                           <el-input v-model="addneeds.addform.check_name"></el-input>
                         </el-form-item>
-                      </el-col>
-                    </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="24">
-                        <el-button style="display: block;margin: 0 auto;" @click="checkDaliy" size="medium"
-                                   type="primary">提交
-                        </el-button>
                       </el-col>
                     </el-row>
                   </el-form>
@@ -386,14 +381,19 @@
                       </el-table>
 
                     </div>
-                    <el-row :gutter="20">
-                      <el-col :span="24">
-                        <el-button style="display: block;margin: 20px auto;" @click="createNewN" size="medium"
-                                   type="primary">提交
-                        </el-button>
-                      </el-col>
-                    </el-row>
                   </el-form>
+                  <!--操作按钮-->
+                  <div class="tab-console-handler">
+                      <el-button
+                        v-for="(item, index) in tabs.consoleActionData"
+                        :key="index"
+                        @click="consoleActionEvent(item)"
+                        size="mini"
+                        type="primary"
+                      >{{item.name}}</el-button>
+                      <el-button v-if="tabs.ifSplit" @click="createNewN" size="medium" type="primary">提交 </el-button>
+                      <el-button v-if="tabs.ifPing" @click="checkDaliy" size="medium" type="primary">提交 </el-button>
+                  </div>
                 </div>
               </el-tab-pane>
               <el-tab-pane label="开发任务" name="console2" v-if="tabs.data_one.infos">

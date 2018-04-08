@@ -97,7 +97,7 @@
                             <el-table-column align="center" prop="dept_name" label="所处部门" show-overflow-tooltip></el-table-column>
                             <el-table-column align="center" prop="role_NAME" label="角色" show-overflow-tooltip></el-table-column>
                             <el-table-column align="center" prop="position" label="职位" show-overflow-tooltip></el-table-column>
-                            <el-table-column align="center" prop="label_LANGUAGE_NAME" label="开发语言" show-overflow-tooltip></el-table-column>
+                            <!--el-table-column align="center" prop="label_LANGUAGE_NAME" label="开发语言" show-overflow-tooltip></el-table-column-->
                             <el-table-column align="center" :formatter="formatter" label="职务状态" show-overflow-tooltip></el-table-column>
                             <!--:filter-method="filterTag"-->
                             <!--:filters="[{text:0,value:'离职'},{text:1,value:'在职'}]" -->
@@ -148,14 +148,14 @@
                 <el-form-item label="职位">
                     <el-input v-model="dialogData.personData.position" :disabled="dialogOption.infoShow"></el-input>
                 </el-form-item>
-                <el-form-item label="开发语言">
+                <!--el-form-item label="开发语言">
                     <el-select v-model="dialogData.personData.chooseLanguage" clearable filterable
                                :placeholder="dialogOption.infoShow?'':'请选择开发语言'"
                                :disabled="dialogOption.infoShow">
                         <el-option v-for="item in dialogData.personData.languages" :label="item.LABEL_LANGUAGE_NAME" :key="item.LABEL_LANGUAGE_ID"
                                    :value="item.LABEL_LANGUAGE_ID"></el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item-->
                 <el-form-item label="直属上级">
                     <el-select v-model="dialogData.personData.choosedeptUser" filterable clearable
                                :placeholder="dialogOption.infoShow?'':'请选择直属上级'"
@@ -337,6 +337,7 @@
                 this.dialogData.personData.position = el.position//回显职位
                 let params = new URLSearchParams();
                 params.append('USER_ID', el.user_ID);
+                let that = this;
                 this.$axios.post("/role/editRoleMessage", params).then((res) => {
                     let data = res.data;
                     if (data.code == 200) {
@@ -350,9 +351,9 @@
                         if (el.role_ID) {
                             this.dialogData.personData.chooseRole = el.role_ID;//回显职位
                         }
-                        if (el.label_LANGUAGE_ID) {
-                            this.dialogData.personData.chooseLanguage = el.label_LANGUAGE_ID;//回显语言
-                        }
+                        //if (el.label_LANGUAGE_ID) {
+                        //    this.dialogData.personData.chooseLanguage = el.label_LANGUAGE_ID;//回显语言
+                        //}
                         if (data.result.FUSER_DEPT_ID) {
                             this.dialogData.personData.choosedeptUser = data.result.FUSER_DEPT_ID;//回显直属上级
                             this.choosedeptUser(data.result.FUSER_DEPT_ID);
@@ -362,6 +363,7 @@
                         }
                         this.dialogData.personData.sex = data.result.USER_SEX==0?"女":"男";
                         this.dialogData.personData.Days = data.result.Days?data.result.Days+"天":"";
+                        console.log(that);
                         this.$maskoff();
                         this.dialogOption.dialog_person_visible = true;
                     }
@@ -402,7 +404,7 @@
                 params.append('ROLE_ID', personData.chooseRole);//所选角色
                 params.append('DEPT_ID', personData.chooseDept);//所选部门
                 params.append('USER_FID', personData.choosedeptUserId);//所选直属上级人员
-                params.append('LABEL_LANGUAGE_ID', personData.chooseLanguage);//所选部门
+                //params.append('LABEL_LANGUAGE_ID', personData.chooseLanguage);//所选部门
                 params.append("POSITION", personData.position);//所填 职位
                 this.$axios.post("/role/addUserRole", params).then((res) => {
                     let data = res.data;

@@ -11,8 +11,8 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '': {    //将www.exaple.com印射为
-        target: '',  // 接口域名
+      '/apis': {    //将www.exaple.com印射为
+        target: 'http://angela.jf.prd:8080/angela',  // 接口域名
         changeOrigin: true,  //是否跨域
         pathRewrite: {
             '^/apis': ''   //需要rewrite的,
@@ -58,7 +58,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/jfpal/',
+    assetsPublicPath: '/anliyang/',
 
     /**
      * Source Maps

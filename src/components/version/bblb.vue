@@ -637,6 +637,7 @@
                         let subsystems = [];
                         let data = res.data.result;
                         for (let i of data) {
+                            i.current_VERSION = i.current_VERSION || '未上线';
                             subsystems.push(i);
                         }
                         this.$set(this.table, "tableData", subsystems);//子系统

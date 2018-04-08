@@ -85,7 +85,20 @@
 						</el-option>
 					</el-select>-->
 					<div class="i-b" style="float: right;">
-						<el-date-picker format="yyyy-MM-dd" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']" @change="loadData" v-model="dateRange" type="datetimerange" :picker-options="pickerOptions2" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="mini" align="right">
+						<el-date-picker
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              :default-time="['00:00:00', '23:59:59']"
+              @change="loadData"
+              v-model="dateRange"
+              type="daterange"
+              :picker-options="pickerOptions2"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              size="mini"
+              align="right"
+            >
 						</el-date-picker>
 					</div>
 					<p class="group">
@@ -171,6 +184,7 @@
 </template>
 
 <script>
+  import moment from 'moment';
 	export default {
 		data() {
 			return {
@@ -188,7 +202,7 @@
 					label: "年报",
 					value: "year"
 				}],
-				dateRange: [], //时间区间
+				dateRange: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')], //时间区间
 				pickerOptions2: {
 					shortcuts: [{
 						text: '日报',
