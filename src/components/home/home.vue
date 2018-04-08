@@ -176,7 +176,7 @@
             </div>
             <div class="nav">
                 <ul class="clear fl">
-                    <li v-for="(item,index) in mainMenu"
+                    <li v-for="(item,index) in mainMenu" :key="index"
                         :class="menuActive == item.menu_id?'active':''"
                         @click="changeMainMenu(item)">{{item.menu_name}}
                     </li>

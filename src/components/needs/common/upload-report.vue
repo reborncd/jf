@@ -22,7 +22,7 @@
             <el-form-item label="报告类型">
                 <el-select v-model="report.type" filterable clearable  placeholder="请选择类型"
                            style="width: 100%" @change="changeReportType">
-                    <el-option v-for="item in report.typeArr" :label="item.name" :value="item.id"></el-option>
+                    <el-option :key="index" v-for="(item, index) in report.typeArr" :label="item.name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="上传文件">
@@ -30,7 +30,7 @@
                     <el-button type="primary" size="mini">上传测试报告</el-button>
                     <input type="file" @change="uploadTestReport($event)" class="upload-input" style="width: 104px;top: 8px;">
                 </div>
-                <p v-for ="(item,index) in report.uploadFile" style="margin-top: 10px;">{{item.name}}
+                <p :key="index" v-for ="(item,index) in report.uploadFile" style="margin-top: 10px;">{{item.name}}
                     <i style="margin-left: 10px;cursor: pointer;color: red;"
                     @click="report.uploadFile.splice(index,1);report.fileIds.splice(index,1)" class="el-icon-close"></i>
                 </p>

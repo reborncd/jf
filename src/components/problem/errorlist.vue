@@ -117,8 +117,8 @@
           <div class="action clear">
             <el-button type="danger" @click="addPopup" size="mini">提交故障</el-button>
             <el-select v-model="selectValues" clearable placeholder="请选择状态" @change="statusOpt" size="mini" filterable>
-              <el-option
-                v-for="item in selectValue"
+              <el-option :key="index"
+                v-for="(item, index) in selectValue"
                 :label="item.value"
                 :value="item.id">
               </el-option>
@@ -191,7 +191,7 @@
                         <el-form-item label="故障描述">
                           {{tabs.form.description}}
 			               <p>
-			               	<a style="margin-right: 20px;color: #66b1ff" v-for="(item,index) in tabs.downName" @click="downfile(item.id)" >{{item.name}}</a>
+			               	<a style="margin-right: 20px;color: #66b1ff" :key="index" v-for="(item,index) in tabs.downName" @click="downfile(item.id)" >{{item.name}}</a>
 			               </p>
                         </el-form-item>
 
@@ -215,7 +215,7 @@
                   <!--<i class="icon-more iconfont"-->
                      <!--@click="tabs.consoleActionVisible = !tabs.consoleActionVisible" v-if="operate.status=='待审核'"></i>-->
                   <!--<div class="console-action fr" v-if="tabs.consoleActionVisible">-->
-                        <!--<span v-for="item in tabs.consoleActionData.erract"-->
+                        <!--<span v-for="(item, index) in tabs.consoleActionData.erract"-->
                               <!--@click="consoleActionEvent(item.name,'erract')">{{item.name}}</span>-->
                   <!--</div>-->
                 </div>
@@ -257,10 +257,10 @@
 
                         </el-col>
                         <el-col :span="24" :sm="12">
-                          <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in operate.systemAll">
+                          <el-form-item label="子系统" class='sunSystem' :key="index" v-for="(item,index) in operate.systemAll">
                             <el-select v-model="item.csty" placeholder="子系统" clearable style="width:90%" filterable>
                               <el-option
-                                v-for="_item in operate.subSystem"
+                                v-for="item in operate.subSystem"
                                 :key="item.SYSTEM_ID"
                                 :label="_item.SYSTEM_NAME"
                                 :value="_item.SYSTEM_ID+','+_item.SYSTEM_NAME"
@@ -303,7 +303,7 @@
                       </el-col>
                       <el-col class="col-div" :span="24" :sm="24">
                         <div class="infoDiv" >
-                          <p v-for="(item,key) in way.information">
+                          <p :key="key" v-for="(item,key) in way.information">
                             {{key+1}}、
                             <span>{{item.record_START | date}}</span>
                             <em>{{item.record_DESC}}</em>
@@ -357,7 +357,7 @@
                 <el-button type="primary">上传附件</el-button>
                 <input type="file" @change="getFile($event)" placeholder="上传附件" class="upload-input"
                        style="width:78px;opacity: 0;position: absolute;left: 0;top: 63px;">
-                <p v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
+                <p :key="index" v-for ="(item,index) in popup.popTxt.uploadFiles">{{item}}
                   <i style="margin-left: 10px;cursor: pointer;color: red;"
                   	@click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)" class="el-icon-close"></i>
                 </p>
@@ -405,10 +405,10 @@
           <div class="assign-wrapper" v-if="assign.left">
             <!--正常状态下展示部门-->
             <ul v-if="!assign.leftSearch">
-              <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
+              <li :key="index" v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                 <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
                 <el-radio-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                  <el-radio v-for="_item in item.users" :key="item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                  <el-radio v-for="item in item.users" :key="item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                     {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                   </el-radio>
                 </el-radio-group>

@@ -386,7 +386,7 @@
                                         <i class="icon-more iconfont"
                                            @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                                         <div class="console-action fr" v-if="tabs.consoleActionVisible">
-                                            <span v-for="item in tabs.consoleActionData"
+                                            <span v-for="(item, index) in tabs.consoleActionData"
                                                   @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
                                         </div>
@@ -412,14 +412,14 @@
                                         <!--<el-form-item label="涉及系统">-->
                                         <!--<el-select v-model="item.name" placeholder="请选择系统" style="width:100%"-->
                                         <!--@change="splitSystemChange($event,index)">-->
-                                        <!--<el-option v-for="item in split.systemFarr"-->
+                                        <!--<el-option v-for="(item, index) in split.systemFarr"-->
                                         <!--:label="item.system_NAME" :value="item.systemson"></el-option>-->
                                         <!--</el-select>-->
                                         <!--</el-form-item>-->
                                         <!--</el-col>-->
                                         <!--<el-col :span="8">-->
                                         <!--<el-select v-model="item.version" placeholder="请选择系统" style="width:100%">-->
-                                        <!--<el-option v-for="item in split.systemCarr"-->
+                                        <!--<el-option v-for="(item, index) in split.systemCarr"-->
                                         <!--:label="item.system" :value="item.system_ID+','+item.system"></el-option>-->
                                         <!--</el-select>-->
                                         <!--</el-col>-->
@@ -468,7 +468,7 @@
                                             <el-col :span="12">
                                                 <el-form-item label="优先级评定">
                                                     <el-select v-model="ifPing.rriority" filterable clearable placeholder="请选择优先级评定" style="width: 100%">
-                                                        <el-option v-for="item in ifPing.rriorityArr" :label="item.RRIORITY_NAME"
+                                                        <el-option :key="index" v-for="(item, index) in ifPing.rriorityArr" :label="item.RRIORITY_NAME"
                                                                    :value="item.RRIORITY_ID"></el-option>
                                                     </el-select>
                                                 </el-form-item>
@@ -476,7 +476,7 @@
                                             <el-col :span="12">
                                                 <el-form-item label="需求评审结果">
                                                     <el-select v-model="ifPing.checks" filterable clearable placeholder="请选择需求评审结果" style="width: 100%">
-                                                        <el-option v-for="item in ifPing.checksArr" :label="item.CHECK_NAME"
+                                                        <el-option :key="index" v-for="(item, index) in ifPing.checksArr" :label="item.CHECK_NAME"
                                                                    :value="item.CHECK_ID+'-'+item.CHECK_NAME"></el-option>
                                                     </el-select>
                                                 </el-form-item>
@@ -587,7 +587,7 @@
                                             <el-col :span="12" :md="12">
                                                 <el-form-item label="需求分析结果">
                                                     <el-select v-model="review.result" filterable clearable placeholder="请选择需求分析结果" style="width: 100%;">
-                                                        <el-option v-for="item in review.resultArr" :label="item" :value="item"></el-option>
+                                                        <el-option :key="index" v-for="(item, index) in review.resultArr" :label="item" :value="item"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -709,8 +709,8 @@
                                                 <span style="margin-right: 10px;">用例类型</span>
                                                 <el-select v-model="testTask.type" filterable clearable placeholder="请选择用例类型"
                                                            v-if="!testTask.typevalue" size="mini" style="margin-right: 10px;">
-                                                    <el-option
-                                                            v-for="item in testTask.typeArr"
+                                                    <el-option :key="index"
+                                                            v-for="(item, index) in testTask.typeArr"
                                                             :label="item.TYPE_NAME"
                                                             :value="item.TYPE_NAME">
                                                     </el-option>
@@ -864,13 +864,13 @@
                                                 <el-form-item>
                                                     <el-select size="mini" v-model="tabs.genzongchoosen" filterable clearable placeholder="请选择筛选部门"
                                                                style="width: 100%" @change="genzongChange">
-                                                        <el-option v-for="item in tabs.genzongArr" :label="item.DEPT_NAME"
+                                                        <el-option :key="index" v-for="(item, index) in tabs.genzongArr" :label="item.DEPT_NAME"
                                                                    :value="item.DEPT_ID"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
                                             <el-col :span="24" :sm="24" v-show="!tracking.trackingvisiible">
-                                                <p v-for="(item,index) in tabs.genzong" class="genzong">
+                                                <p :key="index" v-for="(item,index) in tabs.genzong" class="genzong">
                                                     <span style="display: inline-block;width: 30px">{{index+1}}.</span> <span>{{item.record_START | date}}</span>{{item.record_DESC}}
                                                 </p>
                                             </el-col>
@@ -895,7 +895,7 @@
                                             <h1 v-if="sstj.hidegsvisible"
                                                 style="text-align: center;font-weight: bold; color: #b5b5b5;font-size: 22px">暂无工时进度</h1>
                                             <ul v-if="!sstj.hidegsvisible" style="margin-bottom: 10px">
-                                                <li v-for="item in sstj.info" style="width: 30%;display: inline-block">
+                                                <li :key="index" v-for="(item, index) in sstj.info" style="width: 30%;display: inline-block">
                                                     {{item.DEPT_NAME}}总工时:{{item.requiredTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
                                                 </li>
                                             </ul>
@@ -930,7 +930,7 @@
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.needstype" clearable
                                        placeholder="请选择需求类型"
                                        style="width: 100%" @change="changeNeedsType">
-                                <el-option v-for="item in addneeds.addform.needstypeArr" :label="item.neel_TYPE_NAME"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.needstypeArr" :label="item.neel_TYPE_NAME"
                                            :value="item.neel_TYPE_NAME+','+item.neel_TYPE_ID"></el-option>
                             </el-select>
                         </el-form-item>
@@ -942,7 +942,7 @@
                             <el-select :disabled="addneeds.notAllowChooseType" v-if="addneeds.addform.codeArr" v-model="addneeds.addform.code" clearable
                                        placeholder="请选择需求编号"
                                        style="width: 100%">
-                                <el-option v-for="item in addneeds.addform.codeArr" :label="item"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.codeArr" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </el-form-item>
@@ -956,7 +956,7 @@
                         <el-form-item label="成果类型">
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.resulttype"  filterable clearable  placeholder="请选择成果类型"
                                        style="width: 100%">
-                                <el-option v-for="item in addneeds.addform.resulttypeArr" :label="item"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.resulttypeArr" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </el-form-item>
@@ -965,7 +965,7 @@
                         <el-form-item label="需求影响面">
                             <el-select v-model="addneeds.addform.affect"  filterable clearable  placeholder="请选择影响面"
                                        :disabled="addneeds.addType == 'changeInset'" style="width: 100%">
-                                <el-option v-for="item in addneeds.addform.affectArr" :label="item"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.affectArr" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </el-form-item>
@@ -974,7 +974,7 @@
                         <el-form-item label="优先级评定">
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.level"  filterable clearable  placeholder="请选择优先级"
                                        style="width: 100%;">
-                                <el-option v-for="item in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
                                            :value="item.RRIORITY_ID"></el-option>
                             </el-select>
                         </el-form-item>
@@ -983,7 +983,7 @@
                         <el-form-item label="需求划分归属">
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.attribution"  filterable clearable  placeholder="请选择需求划分归属"
                                        style="width: 100%;">
-                                <el-option v-for="item in addneeds.addform.attributionArr" :label="item"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.attributionArr" :label="item"
                                            :value="item"></el-option>
                             </el-select>
                         </el-form-item>
@@ -992,7 +992,7 @@
                         <el-form-item label="重要程度">
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.zhongyaochegndu"  filterable clearable  placeholder="请选择重要程度"
                                        style="width: 100%;">
-                                <el-option v-for="item in addneeds.addform.zhongyaochegnduArr"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.zhongyaochegnduArr"
                                            :label="item.importance_NAME" :value="item.importance_ID"></el-option>
                             </el-select>
                         </el-form-item>
@@ -1014,7 +1014,7 @@
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.fromdeptId"
                                        filterable clearable  placeholder="请选择部门"
                                        style="width: 100%" @change="fromdeptchange">
-                                <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptArr" :label="item.dept_name"
                                            :value="item.dept_id"></el-option>
                             </el-select>
                         </el-form-item>
@@ -1023,7 +1023,7 @@
                         <el-form-item label="需求提出人">
                             <el-select :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.fromdeptroleId"  filterable clearable  placeholder="请选择人员"
                                        style="width: 100%;">
-                                <el-option v-for="item in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
+                                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
                                            :value="item.user_ID"></el-option>
                             </el-select>
                         </el-form-item>
@@ -1106,7 +1106,7 @@
                                 <el-button type="primary" size="mini">上传需求文档</el-button>
                                 <input type="file" @change="uploadneeds($event)" class="upload-input" style="width: 104px;top: 8px;">
                             </div>
-                            <p v-for ="(item,index) in addneeds.uploadFiles">{{item.name}}
+                            <p :key="index" v-for ="(item,index) in addneeds.uploadFiles">{{item.name}}
                                 <i style="margin-left: 10px;cursor: pointer;color: red;"
                                    @click="addneeds.fileIds.splice(index,1);addneeds.uploadFiles.splice(index,1)" class="el-icon-close"></i>
                             </p>
@@ -1144,10 +1144,10 @@
             <div class="assign-wrapper" v-if="assign.left">
                 <!--正常状态下展示部门-->
                 <ul v-if="!assign.leftSearch">
-                    <li v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
+                    <li :key="index" v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                         <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
                         <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                            <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                            <el-checkbox :key="index" v-for="(_item, index) in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                                 {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
                             </el-checkbox>
                         </el-checkbox-group>
@@ -1156,7 +1156,7 @@
                 <!--搜索状态下不展示部门-->
                 <div v-if="assign.leftSearch">
                     <el-checkbox-group v-model="assign.checkList">
-                        <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
+                        <el-checkbox :key="index" v-for="(item, index) in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"
                                      class="check-item">
                             {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
                         </el-checkbox>
@@ -1166,7 +1166,7 @@
             <!--右侧选择当前部门-->
             <!--<div class="assign-wrapper" v-if="assign.right">-->
             <!--<el-checkbox-group v-model="assign.checkList">-->
-            <!--<el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"-->
+            <!--<el-checkbox v-for="(item, index) in assign.searchData" :label="item.user_ID+'-'+item.user_NAME"-->
             <!--class="check-item">-->
             <!--{{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}-->
             <!--</el-checkbox>-->
@@ -1190,7 +1190,7 @@
                         <el-radio v-model="split.splitradio" label="2" @change="split.choosesystem = '';split.levelchoosen = '';">开发任务</el-radio>
                         <el-select style="margin-left: 20px;" filterable clearable  v-model="split.choosesystem"
                                    placeholder="请选择" v-if="split.splitradio == 2">
-                            <el-option v-for="item in split.choosesystemArr" :label="item.SYSTEM_NAME"
+                            <el-option :key="index" v-for="(item, index) in split.choosesystemArr" :label="item.SYSTEM_NAME"
                                        :value="item.SYSTEM_ID+','+item.SYSTEM_NAME" clearable></el-option>
                         </el-select>
                     </el-col>
@@ -1198,7 +1198,7 @@
                 <el-form-item label="人员">
                     <el-select v-model="split.person"  filterable clearable placeholder="请选择人员"
                                style="width: 100%" @change="splitPersonChangeEvent($event)">
-                        <el-option v-for="item in split.personlist" :label="item.user_NAME"
+                        <el-option :key="index" v-for="(item, index) in split.personlist" :label="item.user_NAME"
                                    :value="item.user_ID+'-'+item.user_NAME"></el-option>
                     </el-select>
                 </el-form-item>
@@ -1212,7 +1212,7 @@
                 <el-form-item label="难易度" v-if="split.splitradio == 2">
                     <el-select v-model="split.levelchoosen" filterable clearable  placeholder="请选择难易度"
                                style="width: 100%">
-                        <el-option v-for="item in split.level" :label="item.FACILITY_NAME"
+                        <el-option :key="index" v-for="(item, index) in split.level" :label="item.FACILITY_NAME"
                                    :value="item.FACILITY_ID+'-'+item.FACILITY_NAME"></el-option>
                     </el-select>
                 </el-form-item>
@@ -1317,8 +1317,8 @@
             <el-dialog title="请选择转接人员" :visible="testTask.assignvisible_code" width="40%"
                        append-to-body modal-append-to-body :before-close="closeAssign_code">
                 <el-select v-model="testTask.assignPerson_code" filterable clearable  placeholder="请选择" style="float: none;display: block;">
-                    <el-option
-                            v-for="item in testTask.assignArr_code"
+                    <el-option :key="index"
+                            v-for="(item, index) in testTask.assignArr_code"
                             :label="item.user_NAME"
                             :value="item.user_ID+','+item.user_NAME">
                     </el-option>
@@ -1355,7 +1355,7 @@
                 <el-form-item label="请选择转接人员">
                     <el-select v-model="transfer.person" filterable clearable  placeholder="请选择人员"
                                style="width: 100%">
-                        <el-option v-for="item in transfer.personArr" :label="item.user_NAME"
+                        <el-option :key="index" v-for="(item, index) in transfer.personArr" :label="item.user_NAME"
                                    :value="item.user_ID+'-'+item.user_NAME"></el-option>
                     </el-select>
                 </el-form-item>
@@ -1383,7 +1383,7 @@
                         {{changeInset.system_NAME?'开发任务':'测试任务'}}
                         <el-select style="margin-left: 20px;" filterable clearable  v-model="changeInset.choosesystem"
                                    placeholder="请选择" >
-                            <el-option v-for="item in changeInset.allsystem" :label="item.SYSTEM_NAME"
+                            <el-option :key="index" v-for="(item, index) in changeInset.allsystem" :label="item.SYSTEM_NAME"
                                        clearable :value="item.value"></el-option>
                         </el-select>
                     </el-col>
@@ -1401,7 +1401,7 @@
                 <el-form-item label="难易度" v-if="changeInset.system_NAME">
                     <el-select v-model="changeInset.levelchoosen" filterable clearable  placeholder="请选择难易度"
                                style="width: 100%">
-                        <el-option v-for="item in changeInset.level" :label="item.FACILITY_NAME"
+                        <el-option :key="index" v-for="(item, index) in changeInset.level" :label="item.FACILITY_NAME"
                                    :value="item.FACILITY_ID+'-'+item.FACILITY_NAME"></el-option>
                     </el-select>
                 </el-form-item>
@@ -1436,9 +1436,9 @@
                 </el-form-item>
                 <el-form-item label="分配人员">
                     <el-select v-model="testTask.assignPerson" filterable clearable  placeholder="请选择" style="width: 100%">
-                        <el-option-group v-for="group in testTask.assignArr" :label="group.dept_name">
-                            <el-option
-                                    v-for="item in group.users"
+                        <el-option-group :key="index" v-for="(group, index) in testTask.assignArr" :label="group.dept_name">
+                            <el-option :key="index"
+                                    v-for="(item, index) in group.users"
                                     :label="item.user_NAME+'——'+(item.role_NAME?item.role_NAME:'')"
                                     :value="item.user_ID+','+item.user_NAME">
                             </el-option>
@@ -1450,7 +1450,7 @@
                         <el-button type="primary" size="mini">上传附件</el-button>
                         <input type="file" @change="uploadBUG($event)" class="upload-input" style="width: 104px;top: 8px;">
                     </div>
-                    <p v-for ="(item,index) in testTask.uploadBugFiles">{{item.name}}
+                    <p :key="index" v-for ="(item,index) in testTask.uploadBugFiles">{{item.name}}
                         <i style="margin-left: 10px;cursor: pointer;color: red;"
                            @click="testTask.uploadBugFiles.splice(index,1);testTask.fileIds.splice(index,1)" class="el-icon-close"></i>
                     </p>
@@ -1466,7 +1466,7 @@
                    append-to-body modal-append-to-body :before-close="closeDialog">
             <el-select v-model="testTask.bugid" placeholder="可选择任务ID"
                        @change="chooseBUgID"  filterable clearable >
-                <el-option v-for="item in testTask.bugidArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in testTask.bugidArr" :label="item" :value="item"></el-option>
             </el-select>
             <div class="table-list">
                 <el-table :data="testTask.allbuglist" border style="width: 100%">

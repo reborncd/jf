@@ -15,7 +15,7 @@
                     {{changeInset.system_NAME?'开发任务':'测试任务'}}
                     <el-select style="margin-left: 20px;" v-model="changeInset.choosesystem" filterable
                                placeholder="请选择" >
-                        <el-option v-for="item in changeInset.allsystem" :label="item.system_NAME"
+                        <el-option v-for="(item, index) in changeInset.allsystem" :label="item.system_NAME" :key="index"
                                    clearable :value="item.value"></el-option>
                     </el-select>
                 </el-col>
@@ -33,7 +33,7 @@
             <el-form-item label="难易度" v-if="changeInset.system_NAME">
                 <el-select v-model="changeInset.levelchoosen" placeholder="请选择难易度" filterable
                            style="width: 100%">
-                    <el-option v-for="item in changeInset.level" :label="item.FACILITY_NAME"
+                    <el-option v-for="(item, index) in changeInset.level" :label="item.FACILITY_NAME" :key="index"
                                :value="item.FACILITY_ID+'-'+item.FACILITY_NAME"></el-option>
                 </el-select>
             </el-form-item>

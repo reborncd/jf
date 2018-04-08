@@ -111,7 +111,7 @@
             <el-button type="danger" v-if='ifMANAGER_SAVE' size="mini" @click="newneeds">技术经理提需求</el-button>
             <el-button type="danger" v-if='ifPRODUCT_SAVE' size="mini" @click="newneedsP">产品经理提需求</el-button>
             <el-select v-model="selectValueOn" placeholder="请选择状态" @change="selectStatOn" clearable size="mini">
-              <el-option v-for="(item, index) in optionsOn" :label="item.STATE_NAME" :value="item.STATE_ID">
+              <el-option :key="index" v-for="(item, index) in optionsOn" :label="item.STATE_NAME" :value="item.STATE_ID">
               </el-option>
             </el-select>
             <div class="fr">
@@ -262,7 +262,7 @@
                        v-if="tabs.ifConsole || tabs.ifAssign || tabs.ifSplit || tabs.ifEdit">
                     <i class="icon-more iconfont" @click="tabs.consoleActionVisible = !tabs.consoleActionVisible"></i>
                     <div class="console-action fr" v-if="tabs.consoleActionVisible">
-											<span v-for="item in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}
+											<span v-for="(item, index) in tabs.consoleActionData" @click="consoleActionEvent(item)">{{item.name}}
                                             </span>
                     </div>
                   </div-->
@@ -286,7 +286,7 @@
                       <el-col :span="12">
                         <el-form-item label="优先级评定">
                           <el-select v-model="tabs.rriority" clearable placeholder="请选择优先级评定">
-                            <el-option v-for="item in tabs.rriorityArr" :label="item.RRIORITY_NAME"
+                            <el-option :key="index" v-for="(item, index) in tabs.rriorityArr" :label="item.RRIORITY_NAME"
                                        :value="item.RRIORITY_ID"></el-option>
                           </el-select>
                         </el-form-item>
@@ -294,7 +294,7 @@
                       <el-col :span="12">
                         <el-form-item label="需求评审结果">
                           <el-select v-model="tabs.checks" clearable placeholder="请选择需求评审结果">
-                            <el-option v-for="item in tabs.checksArr" :label="item.CHECK_NAME"
+                            <el-option :key="index" v-for="(item, index) in tabs.checksArr" :label="item.CHECK_NAME"
                                        :value="item.CHECK_ID+'-'+item.CHECK_NAME"></el-option>
                           </el-select>
                         </el-form-item>
@@ -318,7 +318,7 @@
                         <el-form-item label="涉及系统">
                           <el-select v-model="addneeds.addform.sjxt" multiple clearable placeholder="请选择涉及系统"
                                      style="width: 100%;">
-                            <el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME"
+                            <el-option :key="index" v-for="(item, index) in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME"
                                        :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
                           </el-select>
                         </el-form-item>
@@ -358,7 +358,7 @@
                       <el-form-item label="需求分析结果">
                         <el-select v-model="addneeds.addform.analysis" clearable placeholder="请选择需求分析结果"
                                    style="width: 100%;">
-                          <el-option v-for="item in addneeds.addform.analysisArr" :label="item"
+                          <el-option :key="index" v-for="(item, index) in addneeds.addform.analysisArr" :label="item"
                                      :value="item"></el-option>
                         </el-select>
                       </el-form-item>
@@ -478,14 +478,14 @@
                         <el-form-item label-width="100px">
                           <el-select v-model="tabs.chooseDept" @change="chooseDeptF" clearable placeholder="请选择部门"
                                      style="float: right;">
-                            <el-option v-for="item in tabs.chooseDeptArr" :label="item.DEPT_NAME"
+                            <el-option :key="index" v-for="(item, index) in tabs.chooseDeptArr" :label="item.DEPT_NAME"
                                        :value="item.DEPT_ID"></el-option>
                           </el-select>
                         </el-form-item>
                       </el-col>
 
                       <el-col :span="24" :sm="24" v-show="!tracking.trackingvisiible">
-                        <p v-for="(item,index) in tabs.genzong" class="genzong">
+                        <p :key="index" v-for="(item,index) in tabs.genzong" class="genzong">
                           <span style="width: 30px;display: inline-block;">{{index+1}}.</span> <span
                           style="width: 150px;display: inline-block;">{{item.record_START | time}}</span>{{item.record_DESC}}
                         </p>
@@ -511,7 +511,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="涉及系统">
               <el-select v-model="addneeds.addform.sjxt" multiple clearable placeholder="请选择涉及系统" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.sjxtArr" :label="item.SYSTEM_NAME"
                            :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -536,7 +536,7 @@
             <el-form-item label="需求提出部门">
               <el-select v-model="addneeds.addform.fromdeptId" style="width: 100%;" clearable placeholder="请选择需求提出部门"
                          @change="fromdeptchange">
-                <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptArr" :label="item.dept_name"
                            :value="item.dept_id+'-'+item.dept_name"></el-option>
               </el-select>
             </el-form-item>
@@ -544,7 +544,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="提出人">
               <el-select v-model="addneeds.addform.fromdeptroleId" style="width: 100%;" clearable placeholder="请选择提出人">
-                <el-option v-for="item in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
                            :value="item.user_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -576,28 +576,28 @@
           <el-col :span="12" :md="12">
             <el-form-item label="需求划分归属">
               <el-select v-model="addneeds.addform.ascription" clearable placeholder="请选择需求划分归属" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.ascriptionArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.ascriptionArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="需求影响面">
               <el-select v-model="addneeds.addform.influece" clearable placeholder="请选择需求影响面" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.influeceArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.influeceArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="成果类型">
               <el-select v-model="addneeds.addform.result" clearable placeholder="请选择成果类型" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.resultArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.resultArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="需求类型">
               <el-select v-model="addneeds.addform.daliyTypeName" clearable placeholder="请选择需求类型" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.daliyTypeNameArr" :label="item.NEEL_TYPE_NAME+'-'+item.TYPE"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.daliyTypeNameArr" :label="item.NEEL_TYPE_NAME+'-'+item.TYPE"
                            :value="item.NEEL_TYPE_NAME+'-'+item.TYPE"></el-option>
               </el-select>
             </el-form-item>
@@ -618,7 +618,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="优先级">
               <el-select v-model="addneeds.addform.level" clearable placeholder="请选择优先级" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
                            :value="item.RRIORITY_ID"></el-option>
               </el-select>
             </el-form-item>
@@ -641,7 +641,7 @@
             <el-form-item label="重要程度">
               <el-select v-model="addneeds.addform.zhongyaochegndu" clearable placeholder="请选择重要程度"
                          style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.zhongyaochegnduArr" :label="item.IMPORTANCE_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.zhongyaochegnduArr" :label="item.IMPORTANCE_NAME"
                            :value="item.IMPORTANCE_ID"></el-option>
               </el-select>
             </el-form-item>
@@ -651,7 +651,7 @@
         <!--<el-col :span="12">-->
         <!--<el-form-item label="系统名">-->
         <!--<el-select v-model="content.xtname" clearable placeholder="请选择系统名" style="width: 100%;">-->
-        <!--<el-option v-for="item in addneeds.addform.systemArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>-->
+        <!--<el-option v-for="(item, index) in addneeds.addform.systemArr" :label="item.SYSTEM_NAME" :value="item.SYSTEM_ID+','+item.SYSTEM_NAME"></el-option>-->
         <!--</el-select>-->
         <!--</el-form-item>-->
         <!--</el-col>-->
@@ -672,7 +672,7 @@
               <el-button type="primary">上传需求文档</el-button>
               <input type="file" @change="getFile2($event)" placeholder="上传需求文档"
                      style="width:90px;position: absolute;left: 0;top: 9px;opacity: 0;">
-              <p v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
+              <p :key="index" v-for="(item,index) in popup.popTxt.uploadFiles">{{item}}
                 <i style="margin-left: 10px;cursor: pointer;color: red;"
                    @click="popup.popTxt.fileList.splice(index,1);popup.popTxt.uploadFiles.splice(index,1)"
                    class="el-icon-close"></i>
@@ -712,7 +712,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="需求分析结果">
               <el-select v-model="addneeds.addform.analysis" clearable placeholder="请选择需求分析结果" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.analysisArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.analysisArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -765,7 +765,7 @@
             <el-form-item label="需求提出部门">
               <el-select v-model="addneeds.addform.fromdeptId" style="width: 100%;" clearable placeholder="请选择需求提出部门"
                          @change="fromdeptchange">
-                <el-option v-for="item in addneeds.addform.fromdeptArr" :label="item.dept_name"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptArr" :label="item.dept_name"
                            :value="item.dept_id+'-'+item.dept_name"></el-option>
               </el-select>
             </el-form-item>
@@ -773,7 +773,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="提出人">
               <el-select v-model="addneeds.addform.fromdeptroleId" style="width: 100%;" clearable placeholder="请选择提出人">
-                <el-option v-for="item in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.fromdeptroleArr" :label="item.user_NAME"
                            :value="item.user_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -805,28 +805,28 @@
           <el-col :span="12" :md="12">
             <el-form-item label="需求划分归属">
               <el-select v-model="addneeds.addform.ascription" clearable placeholder="请选择需求划分归属" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.ascriptionArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.ascriptionArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="需求影响面">
               <el-select v-model="addneeds.addform.influece" clearable placeholder="请选择需求影响面" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.influeceArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.influeceArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="成果类型">
               <el-select v-model="addneeds.addform.result" clearable placeholder="请选择成果类型" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.resultArr" :label="item" :value="item"></el-option>
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.resultArr" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
             <el-form-item label="需求类型">
               <el-select v-model="addneeds.addform.daliyTypeName" clearable placeholder="请选择需求类型" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.daliyTypeNameArr" :label="item.NEEL_TYPE_NAME+'-'+item.TYPE"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.daliyTypeNameArr" :label="item.NEEL_TYPE_NAME+'-'+item.TYPE"
                            :value="item.NEEL_TYPE_NAME+'-'+item.TYPE"></el-option>
               </el-select>
             </el-form-item>
@@ -847,7 +847,7 @@
           <el-col :span="12" :md="12">
             <el-form-item label="优先级">
               <el-select v-model="addneeds.addform.level" clearable placeholder="请选择优先级" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.levelArr" :label="item.RRIORITY_NAME"
                            :value="item.RRIORITY_ID"></el-option>
               </el-select>
             </el-form-item>
@@ -857,7 +857,7 @@
             <el-form-item label="重要程度">
               <el-select v-model="addneeds.addform.zhongyaochegndu" clearable placeholder="请选择重要程度"
                          style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.zhongyaochegnduArr" :label="item.IMPORTANCE_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.zhongyaochegnduArr" :label="item.IMPORTANCE_NAME"
                            :value="item.IMPORTANCE_ID"></el-option>
               </el-select>
             </el-form-item>
@@ -892,8 +892,8 @@
           <el-col :span="12">
             <el-form-item label="人员">
               <el-select v-model="addneeds.addform.splitForm.name" placeholder="请选择人员">
-                <el-option-group v-for="group in addneeds.addform.frompeopleArr" :label="group.dept_name">
-                  <el-option v-for="item in group.users" :label="item.user_NAME"
+                <el-option-group :key="index" v-for="(group, index) in addneeds.addform.frompeopleArr" :label="group.dept_name">
+                  <el-option :key="`${index}h`" v-for="(item, index) in group.users" :label="item.user_NAME"
                              :value="item.user_ID+','+item.user_NAME">
                   </el-option>
                 </el-option-group>
@@ -904,7 +904,7 @@
             <el-form-item label="子系统名">
               <el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择子系统"
                          style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME"
                            :value="item.SYSTEM_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -917,7 +917,7 @@
           <el-col :span="12">
             <el-form-item label="难易程度">
               <el-select v-model="addneeds.addform.splitForm.easy" clearable placeholder="请选择难易程度" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.easyArr" :label="item.FACILITY_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.easyArr" :label="item.FACILITY_NAME"
                            :value="item.FACILITY_ID+','+item.FACILITY_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -953,8 +953,8 @@
           <el-col :span="12">
             <el-form-item label="人员">
               <el-select v-model="addneeds.addform.splitForm.name" placeholder="请选择人员">
-                <el-option-group v-for="group in addneeds.addform.frompeopleArr" :label="group.dept_name">
-                  <el-option v-for="item in group.users" :label="item.user_NAME"
+                <el-option-group :key="index" v-for="(group, index) in addneeds.addform.frompeopleArr" :label="group.dept_name">
+                  <el-option :key="`${index}hh`" v-for="(item, index) in group.users" :label="item.user_NAME"
                              :value="item.user_ID+','+item.user_NAME">
                   </el-option>
                 </el-option-group>
@@ -965,7 +965,7 @@
             <el-form-item label="子系统名">
               <el-select v-model="addneeds.addform.splitForm.xtname" clearable placeholder="请选择子系统"
                          style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.splitForm.fzmoduleArr" :label="item.SYSTEM_NAME"
                            :value="item.SYSTEM_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -978,7 +978,7 @@
           <el-col :span="12">
             <el-form-item label="难易程度">
               <el-select v-model="addneeds.addform.splitForm.easy" clearable placeholder="请选择难易程度" style="width: 100%;">
-                <el-option v-for="item in addneeds.addform.easyArr" :label="item.FACILITY_NAME"
+                <el-option :key="index" v-for="(item, index) in addneeds.addform.easyArr" :label="item.FACILITY_NAME"
                            :value="item.FACILITY_ID+','+item.FACILITY_NAME"></el-option>
               </el-select>
             </el-form-item>
@@ -1011,7 +1011,7 @@
     <el-dialog title="拆分任务详情" :visible="addneeds.hasSplitvisible" width="80%" append-to-body modal-append-to-body
                :before-close="closeDialog">
       <el-form label-width="100px">
-        <el-row :span="24" v-if="split.hasSplitTaskData" v-for="(item, index) in split.hasSplitTaskData">
+        <el-row :span="24" v-if="split.hasSplitTaskData" :key="index" v-for="(item, index) in split.hasSplitTaskData">
           <el-col :span="12" v-if="index==0">
             <el-form-item label="需求分析结果">{{item.analysis_RESULT}}</el-form-item>
           </el-col>
@@ -1057,10 +1057,10 @@
       </div>
       <div class="assign-wrapper" v-if="assign.left">
         <ul v-if="!assign.leftSearch">
-          <li v-for="item in assign.searchData" v-if="item.users.length>0">
+          <li :key="index" v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
             <span class="deptTitle">{{item.dept_name}}</span>
             <el-checkbox-group v-model="assign.checkList">
-              <el-checkbox v-for="_item in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+              <el-checkbox :key="index" v-for="(_item, index) in item.users" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                 {{_item.user_NAME}}
               </el-checkbox>
             </el-checkbox-group>
@@ -1068,7 +1068,7 @@
         </ul>
         <div v-if="assign.leftSearch">
           <el-checkbox-group v-model="assign.checkList">
-            <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
+            <el-checkbox :key="index" v-for="(item, index) in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
               {{item.user_NAME}}
             </el-checkbox>
           </el-checkbox-group>
@@ -1076,7 +1076,7 @@
       </div>
       <div class="assign-wrapper" v-if="assign.right">
         <el-checkbox-group v-model="assign.checkList">
-          <el-checkbox v-for="item in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
+          <el-checkbox :key="index" v-for="(item, index) in assign.searchData" :label="item.user_ID+'-'+item.user_NAME" class="check-item">
             {{item.user_NAME}}
           </el-checkbox>
         </el-checkbox-group>

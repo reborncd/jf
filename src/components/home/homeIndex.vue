@@ -156,11 +156,11 @@
           <i class="iconfont icon-laba"></i>
           <ul class="scrollContent">
             <li v-if="will_delay.length"><strong>临限项目时间节点</strong></li>
-            <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in will_delay">
+            <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in will_delay" :key="index">
               <p>{{item.failtask}}</p>
             </li>
             <li v-if="has_delay.length"><strong>超过项目时间节点</strong></li>
-            <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in has_delay">
+            <li @mouseover="scrollMouseover" @mouseleave="setInterval" v-for="(item, index) in has_delay" :key="index">
               <p>{{item.failtask}}</p>
             </li>
           </ul>
@@ -174,7 +174,7 @@
                 <span class="card-title">待办事项</span>
               </div>
               <ul class="text item">
-                <li v-for="(item, index) in todo" @click="goPage(item)">
+                <li v-for="(item, index) in todo" @click="goPage(item)" :key="index">
                   <div class="icon-box"><i class="anticon icon-right"></i></div>
                   <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
                     <span class="date fr">{{item.work_TIME | date}}</span>
@@ -193,7 +193,7 @@
                 <span class="card-title">经办事项</span>
               </div>
               <ul class="text item">
-                <li v-for="(item, index) in hasdo" @click="goPage(item)">
+                <li v-for="(item, index) in hasdo" @click="goPage(item)" :key="index">
                   <div class="icon-box"><i class="anticon icon-right"></i></div>
                   <h4 class="content-title">{{srcRoute[item.neel_TYPE]}}
                     <span class="date fr">{{item.work_TIME | date}}</span>
@@ -251,7 +251,7 @@
               </div>
 
               <ul class="text item">
-                <li v-for="(item, index) in operLog" >
+                <li v-for="(item, index) in operLog"  :key="index">
                   <div class="icon-box"><i class="anticon icon-right"></i></div>
                   <h4 class="content-title">{{item.record_SUBJECT}}
                     <span class="date fr">{{item.record_START | date}}</span>

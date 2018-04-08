@@ -78,7 +78,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col class="subsystem" :span='24' style='position: relative;'>
-                        <el-form-item label="子系统" class='sunSystem' v-for="(item,index) in dialog.systemAll">
+                        <el-form-item label="子系统" class='sunSystem' :key="index" v-for="(item,index) in dialog.systemAll">
                             <el-input v-model="item.SYSTEM_NAME" placeholder="请填写子系统" style="width: 43%;" ></el-input>
 
                             <el-input v-model="item.SYSTEM_USER" placeholder="维护人" style="width: 43%;"></el-input>

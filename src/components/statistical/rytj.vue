@@ -83,11 +83,11 @@
 			</div>
 			<div class="action clear" style="margin-bottom: 30px;">
 				<el-select v-model="select_value" clearable size="mini" @change="loadChange" filterable>
-					<el-option v-for="(item, index) in select" :label="item.label" :value="item.value">
+					<el-option :key="index" v-for="(item, index) in select" :label="item.label" :value="item.value">
 					</el-option>
 				</el-select>
 				<el-select v-model="selectArr_value"  v-if="select_value=='personal'" clearable size="mini" @change="loadChange" filterable>
-					<el-option v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
+					<el-option :key="index" v-for="(item, index) in selectArr" :label="item.dept_name" :value="item.dept_id">
 					</el-option>
 				</el-select>
 				<div class="fr" style="margin-left: 20px;">

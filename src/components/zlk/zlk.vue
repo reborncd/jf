@@ -28,8 +28,9 @@
                         <el-button type="danger" size="mini" @click="addZL">新资料</el-button>
                         <el-select v-model="selectValue" size="mini" @change="changeTree" filterable>
                             <el-option
-                                    v-for="item in options"
+                                    v-for="(item, index) in options"
                                     :label="item.key"
+                                    :key="index"
                                     :value="item.value">
                             </el-option>
                         </el-select>
@@ -175,7 +176,7 @@
                                 <input type="file" @change="getFile" ref="fileUp" multiple="multiple" placeholder="上传附件"
                                        style="width:78px;height: 28px;opacity: 0;position: absolute;left: 0;top: 6px;">
                             </div>
-                            <p v-for="(item,index) in add.subform.uploadFiles">{{item.name}}
+                            <p v-for="(item,index) in add.subform.uploadFiles" :key="index">{{item.name}}
                                 <i style="margin-left: 10px;cursor: pointer;color: red;"
                                    @click="add.subform.uploadFiles.splice(index,1);add.subform.fileIds.splice(index,1)"
                                    class="el-icon-close"></i>

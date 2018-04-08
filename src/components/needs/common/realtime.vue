@@ -30,7 +30,7 @@
                     <el-row :gutter="20">
                         <el-col :span="24" :md="24" >
                             <ul style="margin-bottom: 10px">
-                                <li v-for="item in sstj.info" style="width: 30%;display: inline-block">
+                                <li v-for="(item, index) in sstj.info" style="width: 30%;display: inline-block" :key="index">
                                     {{item.DEPT_NAME}}总工时:{{item.allTime}}&nbsp;&nbsp;Bug数:{{item.bugCount}}
                                 </li>
                             </ul>

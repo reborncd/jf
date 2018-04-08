@@ -71,7 +71,7 @@
                     <p class="tip">注：拖下去某个部门节点即可删除流程节点</p>
                     <div class="activeWrap"
                          @dragenter="a_dragenterEvent">
-                        <div class="flowWarp" v-for="(item, index) in ywxq_flow">
+                        <div class="flowWarp" v-for="(item, index) in ywxq_flow" :key="index">
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
@@ -88,7 +88,7 @@
                     </div>
                     <div class="static">
                         <p class="tip">注：把部门拖到上面两个流程中间即可添加进入流程节点</p>
-                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true"
+                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true" :key="index"
                               @dragstart="s_dragstartEvent($event,index)"
                               @dragend="dragendEvent"
                         >{{item.name}}</span>
@@ -100,7 +100,7 @@
                     <p class="tip">注：拖下去某个部门节点即可删除流程节点</p>
                     <div class="activeWrap"
                          @dragenter="a_dragenterEvent">
-                        <div class="flowWarp" v-for="(item, index) in jsxq_flow">
+                        <div class="flowWarp" v-for="(item, index) in jsxq_flow" :key="index">
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
@@ -117,7 +117,7 @@
                     </div>
                     <div class="static">
                         <p class="tip">注：把部门拖到上面两个流程中间即可添加进入流程节点</p>
-                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true"
+                        <span v-for="(item, index) in flow_static" :key="index" class="flow-btn" draggable="true"
                               @dragstart="s_dragstartEvent($event,index)"
                               @dragend="dragendEvent"
                         >{{item.name}}</span>
@@ -129,7 +129,7 @@
                     <p class="tip">注：拖下去某个部门节点即可删除流程节点</p>
                     <div class="activeWrap"
                          @dragenter="a_dragenterEvent">
-                        <div class="flowWarp" v-for="(item, index) in rcrw_cpjl_flow">
+                        <div class="flowWarp" v-for="(item, index) in rcrw_cpjl_flow" :key="index">
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
@@ -146,7 +146,7 @@
                     </div>
                     <div class="static">
                         <p class="tip">注：把部门拖到上面两个流程中间即可添加进入流程节点</p>
-                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true"
+                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true" :key="index"
                               @dragstart="s_dragstartEvent($event,index)"
                               @dragend="dragendEvent"
                         >{{item.name}}</span>
@@ -158,7 +158,7 @@
                     <p class="tip">注：拖下去某个部门节点即可删除流程节点</p>
                     <div class="activeWrap"
                          @dragenter="a_dragenterEvent">
-                        <div class="flowWarp" v-for="(item, index) in rcrw_jsjl_flow">
+                        <div class="flowWarp" v-for="(item, index) in rcrw_jsjl_flow" :key="index">
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
@@ -175,7 +175,7 @@
                     </div>
                     <div class="static">
                         <p class="tip">注：把部门拖到上面两个流程中间即可添加进入流程节点</p>
-                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true"
+                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true" :key="index"
                               @dragstart="s_dragstartEvent($event,index)"
                               @dragend="dragendEvent"
                         >{{item.name}}</span>
@@ -187,7 +187,7 @@
                     <p class="tip">注：拖下去某个部门节点即可删除流程节点</p>
                     <div class="activeWrap"
                          @dragenter="a_dragenterEvent">
-                        <div class="flowWarp" v-for="(item, index) in jcjs_flow">
+                        <div class="flowWarp" v-for="(item, index) in jcjs_flow" :key="index">
                         <span class="flow-btn" draggable="true"
                               @dragstart="dragstartEvent($event,index)"
                               @dragend="dragendEvent"
@@ -204,7 +204,7 @@
                     </div>
                     <div class="static">
                         <p class="tip">注：把部门拖到上面两个流程中间即可添加进入流程节点</p>
-                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true"
+                        <span v-for="(item, index) in flow_static" class="flow-btn" draggable="true" :key="index"
                               @dragstart="s_dragstartEvent($event,index)"
                               @dragend="dragendEvent"
                         >{{item.name}}</span>

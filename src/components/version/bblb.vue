@@ -213,7 +213,7 @@
                                   </el-table>
                                   <div class="edition-line clearfix" v-if="tabs.consoleWrapperVisible">
                                     <ul class="edition-line-ul clearfix">
-                                      <li v-for='(item,index) in tabs.versionLine'
+                                      <li :key="index" v-for='(item,index) in tabs.versionLine'
                                           :style="{ width: tabs.width}" v-model="item.version"
                                           :class="index==tabs.versionLine.length-1?'last_li':'line_li'">
                                         <em @mouseover="showInfo(index)" @mouseleave="hiddenInfo(index)"></em>

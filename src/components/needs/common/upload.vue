@@ -20,7 +20,7 @@
             <el-button type="primary" size="mini">上传附件</el-button>
             <input type="file" @change="uploadModel($event)" class="upload-input" style="width: 80px;">
         </div>
-        <p v-for ="(item,index) in data.uploadFiles" style="margin-top: 10px;">{{item.name}}
+        <p :key="index" v-for ="(item,index) in data.uploadFiles" style="margin-top: 10px;">{{item.name}}
             <i style="margin-left: 10px;cursor: pointer;color: red;"
                @click="data.fileIds.splice(index,1);data.uploadFiles.splice(index,1)" class="el-icon-close"></i>
         </p>
