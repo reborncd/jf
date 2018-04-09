@@ -103,7 +103,7 @@
                       filterable
                       placeholder="请选择部门负责人"
                       filterable>
-                        <el-option v-for="item in dialogData.deptUserData" :label="item.user_NAME"
+                        <el-option v-for="item in deptUserData" :label="item.user_NAME"
                                    :value="item.user_ID" :key="item.user_ID"></el-option>
                     </el-select>
                 </el-form-item>
@@ -126,13 +126,28 @@
                     <el-input v-model="dialogData.systemData.project" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="请选择系统">
-                    <el-select style="width: 100%" multiple clearable v-model="dialogData.systemData.choosensystem_ID"
+                    <el-select style="width: 100%" clearable v-model="dialogData.systemData.choosensystem_ID"
                                placeholder="请选选择涉及系统" filterable>
-                        <!--@change="deptChangeEvent"-->
+                        <!--@change="deptChangeEvent"--><!--multiple-->
                         <el-option v-for="item in dialogData.systemData.systemArr" :label="item.system_NAME"
                                    :key="item.system_ID"
                                    :value="item.system_ID"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="负责人">
+                    <el-select
+                      style="width: 100%"
+                      v-model="dialogData.deptData.newDeptManageId"
+                      @change="selectManage"
+                      filterable
+                      placeholder="请选择部门负责人"
+                      filterable>
+                        <el-option v-for="item in deptUserData" :label="item.user_NAME"
+                                   :value="item.user_ID" :key="item.user_ID"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="联系方式">
+                    <el-input v-model="dialogData.deptData.newDeptPhone"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -149,6 +164,7 @@
     export default {
         data(){
             return {
+              deptUserData: [],
                 dialogOption: {
                     lockScroll: false,
                     appendToBody: false,
@@ -166,6 +182,9 @@
                 treeData: [],
                 dialogData: {
                     deptData: {
+                      newDeptManageId: "",
+                      newDeptManage: '',
+                      newDeptPhone: '',
                         roleDept: [],//根部门数组
 //                        subDept:[],//二级部门的数组
 //                        subDeptID:"",//已存在的二级部门的值，没意义只做展示
@@ -188,7 +207,7 @@
         methods: {
           selectManage(userid){
             // 新建部门->选择负责人后联动显示手机号
-            this.dialogData.deptUserData.forEach(item => {
+            this.deptUserData.forEach(item => {
               if(item.user_ID === userid){
                 this.dialogData.deptData.newDeptManage = item.user_NAME;
                 this.dialogData.deptData.newDeptPhone = item.user_PHONE;
@@ -254,10 +273,13 @@
               this.dialogOption.dialog_dep_visible = false;
             },
             leftTreeClick(val){
-                this.tableData = val.depts;
+              this.tableData = typeof(val.depts) == typeof({})?[val.depts]:val.depts;
             },
             //编辑部门
             editRow(el, scope){
+                this.dialogData.deptData.newDeptPhone = scope.row.manager_PHONE;
+                this.dialogData.deptData.newDeptManageId = scope.row.manager_ID;
+                this.dialogData.deptData.newDeptManage = scope.row.manager_NAME;
                 let params = new URLSearchParams();
                 params.append("dept_id", scope.row.dept_id);
                 this.$axios.post("/role/editDeptSystemFront", params).then((res) => {
@@ -278,13 +300,17 @@
                         this.dialogData.systemData.choosensystem_ID = data.result.dept.system_ID?data.result.dept.system_ID:"";
                     }
                 })
+                this.getAllUser();
             },
             //编辑系统确定操作
             changeSystem(){
                 let params = new URLSearchParams();
                 params.append("dept_id",this.dialogData.systemData.choosenDeptId);
                 params.append("PROJECT",this.dialogData.systemData.project);
-                params.append("system_ID",this.dialogData.systemData.choosensystem_ID);
+                params.append("system_ID",this.dialogData.systemData.choosensystem_ID);//.join(','));
+                params.append("manager_PHONE", this.dialogData.deptData.newDeptPhone);
+                params.append("manager_ID", this.dialogData.deptData.newDeptManageId);
+                params.append("manager_NAME", this.dialogData.deptData.newDeptManage);
                 this.$axios.post("/role/updateDeptSystem ", params).then((res) => {
                     let data = res.data;
                     if(data.code == 200){
@@ -295,6 +321,9 @@
             },
             createDept(){
                 this.$maskin();
+                this.dialogData.deptData.newDeptPhone = "";
+                this.dialogData.deptData.newDeptManageId = "";
+                this.dialogData.deptData.newDeptManage = "";
                 this.dialogData.deptData.roleDept = [];
                 this.dialogData.deptData.newDeptName = "";
                 this.dialogData.deptData.fNewDeptId = "";
@@ -316,12 +345,15 @@
                         this.dialogOption.dialog_dep_visible = true;
                     }
                 })
-                this.$axios.post("/role/queryDept", new URLSearchParams()).then((res) => {
-                  let data = res.data;
-                  if(data.code == 200){
-                    this.dialogData.deptUserData = cloneDeep(data.result.allUser)
-                  }
-                });
+                this.getAllUser();
+            },
+            getAllUser(){
+              this.$axios.post("/role/queryDept", new URLSearchParams()).then((res) => {
+                let data = res.data;
+                if(data.code == 200){
+                  this.deptUserData = cloneDeep(data.result.allUser)
+                }
+              });
             },
 //            deptChangeEvent(value){
 //                this.dialogData.deptData.subDept = "";
