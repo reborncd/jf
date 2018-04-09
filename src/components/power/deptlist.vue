@@ -65,6 +65,8 @@
                             <el-table-column align="center" prop="dept_name" label="部门名称"></el-table-column>
                             <el-table-column align="center" prop="project" label="项目编码"></el-table-column>
                             <el-table-column align="center" prop="system_NAME" label="涉及系统"></el-table-column>
+                            <el-table-column align="center" prop="manager_NAME" label="负责人"></el-table-column>
+                            <el-table-column align="center" prop="manager_PHONE" label="联系方式"></el-table-column>
                             <el-table-column align="center" label="操作">
                                 <template slot-scope="scope">
                                     <el-button @click="editRow(scope.row,scope)" size="small" type="primary">
@@ -93,6 +95,21 @@
                 <el-form-item label="新增部门">
                     <el-input v-model="dialogData.deptData.newDeptName"></el-input>
                 </el-form-item>
+                <el-form-item label="负责人">
+                    <el-select
+                      style="width: 100%"
+                      v-model="dialogData.deptData.newDeptManageId"
+                      @change="selectManage"
+                      filterable
+                      placeholder="请选择部门负责人"
+                      filterable>
+                        <el-option v-for="item in dialogData.deptUserData" :label="item.user_NAME"
+                                   :value="item.user_ID" :key="item.user_ID"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="联系方式">
+                    <el-input v-model="dialogData.deptData.newDeptPhone"></el-input>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button size="mini" type="primary" @click="addDept">创建</el-button>
@@ -100,7 +117,7 @@
             </div>
         </el-dialog>
         <el-dialog title="编辑涉及系统" :visible="dialogOption.dialog_system_visible" center
-                   label-position="left" width="30%" append-to-body modal-append-to-body :before-close="closeDialog">
+                   label-position="left" width="50%" append-to-body modal-append-to-body :before-close="closeDialog">
             <el-form label-width="100px">
                 <el-form-item label="所选部门">
                     <el-input v-model="dialogData.systemData.dept_name" disabled></el-input>
@@ -109,7 +126,7 @@
                     <el-input v-model="dialogData.systemData.project" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="请选择系统">
-                    <el-select style="width: 100%" clearable v-model="dialogData.systemData.choosensystem_ID"
+                    <el-select style="width: 100%" multiple clearable v-model="dialogData.systemData.choosensystem_ID"
                                placeholder="请选选择涉及系统" filterable>
                         <!--@change="deptChangeEvent"-->
                         <el-option v-for="item in dialogData.systemData.systemArr" :label="item.system_NAME"
@@ -127,7 +144,8 @@
 </template>
 
 <script>
-    import axios from  "axios"
+    import axios from  "axios";
+    import cloneDeep from 'lodash/cloneDeep';
     export default {
         data(){
             return {
@@ -168,6 +186,15 @@
             this.loadData();
         },
         methods: {
+          selectManage(userid){
+            // 新建部门->选择负责人后联动显示手机号
+            this.dialogData.deptUserData.forEach(item => {
+              if(item.user_ID === userid){
+                this.dialogData.deptData.newDeptManage = item.user_NAME;
+                this.dialogData.deptData.newDeptPhone = item.user_PHONE;
+              }
+            })
+          },
             calculate(){
                 let height = document.querySelector(".mainr").offsetHeight;
                 let leftTree = document.querySelector(".left-tree");
@@ -192,23 +219,23 @@
                             let roleobj = {
                                 "label": i.dept_name,
                                 "children": [],
-                                "depts":[this.SetDeptInfo(i)]
+                                "depts": cloneDeep(i)
                             };
-                            arr[0].depts.push(this.SetDeptInfo(i))
+                            arr[0].depts.push(cloneDeep(i))
                             for(let j of i.depts){
                                 let obj = {
                                     "label":j.dept_name,
-                                    "depts":[this.SetDeptInfo(j)],
+                                    "depts": cloneDeep(j),
                                     "children":[]
                                 };
-                                arr[0].depts.push(this.SetDeptInfo(j));
+                                arr[0].depts.push(cloneDeep(j))
                                 if(j.depts.length){
                                     for(let n of j.depts){
                                         obj.children.push({
                                             "label":n.dept_name,
-                                            "depts":[this.SetDeptInfo(n)]
+                                            "depts": cloneDeep(n)
                                         })
-                                        arr[0].depts.push(this.SetDeptInfo(n));
+                                        arr[0].depts.push(cloneDeep(n));
                                     }
                                 }
                                 roleobj.children.push(obj);
@@ -222,14 +249,6 @@
                     this.$maskoff()
                 })
             },
-            SetDeptInfo(data){
-                let obj = {};
-                obj.dept_name = data.dept_name;
-                obj.id = data.dept_id;
-                obj.project = data.project;
-                obj.system_NAME = data.system_NAME;
-                return obj
-            },
             closeDialog(){
               this.dialogOption.dialog_system_visible = false;
               this.dialogOption.dialog_dep_visible = false;
@@ -240,7 +259,7 @@
             //编辑部门
             editRow(el, scope){
                 let params = new URLSearchParams();
-                params.append("dept_id",el.id);
+                params.append("dept_id", scope.row.dept_id);
                 this.$axios.post("/role/editDeptSystemFront", params).then((res) => {
                     let data = res.data;
                     if(data.code == 200){
@@ -297,6 +316,12 @@
                         this.dialogOption.dialog_dep_visible = true;
                     }
                 })
+                this.$axios.post("/role/queryDept", new URLSearchParams()).then((res) => {
+                  let data = res.data;
+                  if(data.code == 200){
+                    this.dialogData.deptUserData = cloneDeep(data.result.allUser)
+                  }
+                });
             },
 //            deptChangeEvent(value){
 //                this.dialogData.deptData.subDept = "";
@@ -312,9 +337,22 @@
                     this.$warn("请填写部门名称");
                     return;
                 }
+                if (!this.dialogData.deptData.newDeptManageId) {
+                    this.$warn("部门负责人不能为空");
+                    return;
+                }
+                if (!this.dialogData.deptData.newDeptPhone) {
+                    this.$warn("部门负责人联系方式不能为空");
+                    return;
+                }
                 let params = new URLSearchParams();
                 params.append("DEPT_NAME", this.dialogData.deptData.newDeptName);
                 params.append("DEPT_FID", this.dialogData.deptData.fNewDeptId);
+                // 部门负责人id
+                params.append("MANAGER_NAME", this.dialogData.deptData.newDeptManage);
+                params.append("MANAGER_ID", this.dialogData.deptData.newDeptManageId);
+                // 部门负责人联系电话
+                params.append("MANAGER_PHONE", this.dialogData.deptData.newDeptPhone);
                 this.$axios.post("/role/addDept", params).then((res) => {
                     let data = res.data;
                     if (data.message) {

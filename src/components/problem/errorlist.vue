@@ -972,7 +972,7 @@
                 this.$set(this.way, "information", arr);
               }
               //操作台涉及系统
-              this.operate.system = data.result.systemDept.SYSTEM_NAME
+              this.operate.system = data.result.systemDept && data.result.systemDept.SYSTEM_NAME || '';
 //           操作台子系统显示
               let subSystems = [];
               for (let i of data.result.systems.result) {
