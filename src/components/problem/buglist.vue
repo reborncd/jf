@@ -105,7 +105,7 @@
                     <span class="back fl clear" @click="backPage" v-if="bugVisible">
                         <i class="el-icon-arrow-left"></i>
                         <i class="b">返回</i></span>
-                    {{!bugVisible?'故障清单':'提交BUG'}}
+                    BUG列表
                 </p>
             </div>
             <div class="text item">

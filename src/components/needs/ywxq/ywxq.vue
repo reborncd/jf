@@ -2376,6 +2376,7 @@
             },
             //-----------------------------------表格点击事件
             handleCurrentChange(val,e){
+              debugger;
                 //点击时初始化操作
                 this.$maskin();
                 this.resetAllStatus();
@@ -3031,7 +3032,6 @@
                 //测试类型 （测试类型也是string，除去这项）
                 //关联项目 （dept_id是当前部门ID）
                 let arr= [];
-                debugger;
                 for(let i in base){
                     if(base.hasOwnProperty(i)){
                         if(typeof base[i] == "string" &&

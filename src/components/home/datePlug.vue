@@ -82,186 +82,156 @@
         color: #ffffff;
     }
 
+    .schedule-box .task-style {
+        background: #f15b34;
+        color: #ffffff;
+    }
+
     .schedule-box #h3Ele {
         text-align: center;
         padding: 10px;
+    }
+    .anticon{
+      color: #777;
     }
 </style>
 
 <template>
     <div id='schedule-box' class="schedule-box">
-
+      <div class="schedule-hd">
+          <i title="上一年" class="anticon icon-doubleleft" @click="prevYearFun"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <i title="上一月" class="anticon icon-left" @click="prevMonthFun"></i>
+        <div class="today">{{nowDate}}</div>
+          <i title="下一月" class="anticon icon-right" @click="nextMonthFun"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <i title="下一年" class="anticon icon-doubleright" @click="nextYearFun"></i>
+      </div>
+      <ul class="week-ul ul-box"><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ul>
+      <ul class="schedule-bd ul-box">
+        <li :class="item.liclass" v-for="(item, index) in showData" :key="index" @click="selectDate(item.fullValue)">
+          <span :title="item.fullValue" :class="item.spanclass">{{item.value}}</span>
+        </li>
+      </ul>
     </div>
 </template>
 
 <script>
+    import moment from 'moment';
     export default {
-        date(){
-            return {}
+        data(){
+            return {
+              year: '',
+              month: '',
+              day: '',
+              currentYear: '',
+              currentDay: '',
+              currentMonth: '',
+              nowDate: '',
+              showData: [] // liclass, spanclass, value
+            }
         },
-        methods: {},
-        mounted(){
-            (function (undefined) {
-                let _global;
-                //工具函数
-                //配置合并
-                function extend(def, opt, override) {
-                    for (let k in opt) {
-                        if (opt.hasOwnProperty(k) && (!def.hasOwnProperty(k) || override)) {
-                            def[k] = opt[k]
-                        }
-                    }
-                    return def;
-                }
-
-                //日期格式化
-                function formartDate(y, m, d, symbol) {
-                    symbol = symbol || '-';
-                    m = (m.toString())[1] ? m : '0' + m;
-                    d = (d.toString())[1] ? d : '0' + d;
-                    return y + symbol + m + symbol + d
-                }
-
-                function Schedule(opt) {
-                    var def = {},
-                        opt = extend(def, opt, true),
-                        curDate = opt.date ? new Date(opt.date) : new Date(),
-                        year = curDate.getFullYear(),
-                        month = curDate.getMonth(),
-                        day = curDate.getDate(),
-                        currentYear = curDate.getFullYear(),
-                        currentMonth = curDate.getMonth(),
-                        currentDay = curDate.getDate(),
-                        selectedDate = '',
-                        el = document.querySelector(opt.el) || document.querySelector('body'),
-                        _this = this;
-                    let bindEvent = function () {
-                        el.addEventListener('click', function (e) {
-                            switch (e.target.id) {
-                                case 'nextMonth':
-                                    _this.nextMonthFun();
-                                    break;
-                                case 'nextYear':
-                                    _this.nextYearFun();
-                                    break;
-                                case 'prevMonth':
-                                    _this.prevMonthFun();
-                                    break;
-                                case 'prevYear':
-                                    _this.prevYearFun();
-                                    break;
-                                default:
-                                    break;
-                            }
-                            ;
-                            if (e.target.className.indexOf('currentDate') > -1) {
-                                opt.clickCb && opt.clickCb(year, month + 1, e.target.innerHTML);
-                                selectedDate = e.target.title;
-                                day = e.target.innerHTML;
-                                render();
-                            }
-                        }, false)
-                    }
-                    let init = function () {
-                        let scheduleHd = '<div class="schedule-hd">' +
-                            '<div>' +
-                            '<span class="el-icon-arrow-left" id="prevYear" ></span>' +
-                            '<span class="el-icon-arrow-left" id="prevMonth"></span>' +
-                            '</div>' +
-                            '<div class="today">' + formartDate(year, month + 1, day, '-') + '</div>' +
-                            '<div>' +
-                            '<span class="el-icon-arrow-right" id="nextMonth"></span>' +
-                            '<span class="el-icon-arrow-right" id="nextYear"></span>' +
-                            '</div>' +
-                            '</div>'
-                        let scheduleWeek = '<ul class="week-ul ul-box">' +
-                            '<li>日</li>' +
-                            '<li>一</li>' +
-                            '<li>二</li>' +
-                            '<li>三</li>' +
-                            '<li>四</li>' +
-                            '<li>五</li>' +
-                            '<li>六</li>' +
-                            '</ul>'
-                        let scheduleBd = '<ul class="schedule-bd ul-box" ></ul>';
-                        el.innerHTML = scheduleHd + scheduleWeek + scheduleBd;
-                        bindEvent();
-                        render();
-                    }
-                    let render = function () {
-                        let fullDay = new Date(year, month + 1, 0).getDate(), //当月总天数
-                            startWeek = new Date(year, month, 1).getDay(), //当月第一天是周几
-                            total = (fullDay + startWeek) % 7 == 0 ? (fullDay + startWeek) : fullDay + startWeek + (7 - (fullDay + startWeek) % 7),//元素总个数
-                            lastMonthDay = new Date(year, month, 0).getDate(), //上月最后一天
-                            eleTemp = [];
-                        for (let i = 0; i < total; i++) {
-                            if (i < startWeek) {
-                                eleTemp.push('<li class="other-month"><span class="dayStyle">' + (lastMonthDay - startWeek + 1 + i) + '</span></li>')
-                            } else if (i < (startWeek + fullDay)) {
-                                let nowDate = formartDate(year, month + 1, (i + 1 - startWeek), '-');
-                                let addClass = '';
-                                selectedDate == nowDate && (addClass = 'selected-style');
-                                formartDate(currentYear, currentMonth + 1, currentDay, '-') == nowDate && (addClass = 'today-flag');
-                                eleTemp.push('<li class="current-month" ><span title=' + nowDate + ' class="currentDate dayStyle ' + addClass + '">' + (i + 1 - startWeek) + '</span></li>')
-                            } else {
-                                eleTemp.push('<li class="other-month"><span class="dayStyle">' + (i + 1 - (startWeek + fullDay)) + '</span></li>')
-                            }
-                        }
-                        el.querySelector('.schedule-bd').innerHTML = eleTemp.join('');
-                        el.querySelector('.today').innerHTML = formartDate(year, month + 1, day, '-');
-                    };
-                    this.nextMonthFun = function () {
-                        if (month + 1 > 11) {
-                            year += 1;
-                            month = 0;
-                        } else {
-                            month += 1;
-                        }
-                        render();
-                        opt.nextMonthCb && opt.nextMonthCb(year, month + 1, day);
-                    },
-                        this.nextYearFun = function () {
-                            year += 1;
-                            render();
-                            opt.nextYeayCb && opt.nextYeayCb(year, month + 1, day);
-                        },
-                        this.prevMonthFun = function () {
-                            if (month - 1 < 0) {
-                                year -= 1;
-                                month = 11;
-                            } else {
-                                month -= 1;
-                            }
-                            render();
-                            opt.prevMonthCb && opt.prevMonthCb(year, month + 1, day);
-                        },
-                        this.prevYearFun = function () {
-                            year -= 1;
-                            render();
-                            opt.prevYearCb && opt.prevYearCb(year, month + 1, day);
-                        }
-                    init();
-                }
-
-                //将插件暴露给全局对象
-                _global = (function () {
-                    return this || (0, eval)('this')
-                }());
-                if (typeof module !== 'undefined' && module.exports) {
-                    module.exports = Schedule;
-                } else if (typeof define === "function" && define.amd) {
-                    define(function () {
-                        return Schedule;
-                    })
+        props: {
+          todoTaskDateList: []
+        },
+        mounted() {
+          this.init();
+          this.initData();
+        },
+        watch: {
+          todoTaskDateList: function(){
+            this.initData();
+          }
+        },
+        methods: {
+          init(){
+            let nowdate = moment();
+            this.year = this.currentYear = nowdate.year();
+            this.month = this.currentMonth = nowdate.month();
+            this.day = this.currentDay = nowdate.date();
+          },
+          initData(){
+            this.nowDate = moment((new Date(this.year, this.month, this.day)).getTime()).format('YYYY-MM-DD');
+            let fullDay = new Date(this.year, this.month + 1, 0).getDate(), //当月总天数
+                startWeek = new Date(this.year, this.month, 1).getDay(), //当月第一天是周几
+                total = (fullDay + startWeek) % 7 == 0 ? (fullDay + startWeek) : fullDay + startWeek + (7 - (fullDay + startWeek) % 7),//元素总个数
+                lastMonthDay = new Date(this.year, this.month, 0).getDate(), //上月最后一天
+                eleData = [];
+            for (let i = 0; i < total; i++) {
+                if (i < startWeek) {
+                  eleData.push({
+                    liclass: 'other-month',
+                    spanclass: 'dayStyle',
+                    value: lastMonthDay - startWeek + 1 + i,
+                    fullValue: this.month === 0?
+                      this.formartDate(this.year - 1, 12, lastMonthDay - startWeek + 1 + i, '-')
+                      :this.formartDate(this.year, this.month, lastMonthDay - startWeek + 1 + i, '-')
+                  });
+                } else if (i < (startWeek + fullDay)) {
+                    let addClass = '', selectedDate;
+                    let fullValue = this.formartDate(this.year, this.month + 1, (i + 1 - startWeek), '-')
+                    this.year == this.currentYear && this.month == this.currentMonth && i + 1 - startWeek == this.currentDay && (addClass = 'today-flag');
+                    i + 1 - startWeek == this.day && (addClass = 'selected-style');
+                    this.todoTaskDateList.indexOf(fullValue) > -1 && (addClass = 'task-style');
+                    eleData.push({
+                      liclass: 'current-month',
+                      spanclass: `currentDate dayStyle ${addClass}`,
+                      value: i + 1 - startWeek,
+                      fullValue
+                    });
                 } else {
-                    !('Schedule' in _global) && (_global.Schedule = Schedule);
+                  eleData.push({
+                    liclass: 'other-month',
+                    spanclass: 'dayStyle',
+                    value: (i + 1 - (startWeek + fullDay)),
+                    fullValue: this.month === 11?
+                      this.formartDate(this.year + 1, 1, (i + 1 - (startWeek + fullDay)), '-')
+                      :this.formartDate(this.year, this.month + 2, (i + 1 - (startWeek + fullDay)), '-')
+                  });
                 }
-
-            }());
-            let mySchedule = new Schedule({
-                el: '#schedule-box',
-                //date: '2018-9-20',
-            });
+            }
+            console.log(eleData)
+            this.showData = eleData;
+          },
+          formartDate(y, m, d, symbol) {
+              symbol = symbol || '-';
+              m = (m.toString())[1] ? m : '0' + m;
+              d = (d.toString())[1] ? d : '0' + d;
+              return y + symbol + m + symbol + d
+          },
+          nextMonthFun() {
+              if (this.month + 1 > 11) {
+                  this.year += 1;
+                  this.month = 0;
+              } else {
+                  this.month += 1;
+              }
+              this.initData();
+          },
+          nextYearFun() {
+              this.year += 1;
+              this.initData();
+          },
+          prevMonthFun() {
+              if (this.month - 1 < 0) {
+                  this.year -= 1;
+                  this.month = 11;
+              } else {
+                  this.month -= 1;
+              }
+              this.initData();
+          },
+          prevYearFun() {
+              this.year -= 1;
+              this.initData();
+          },
+          selectDate(data){
+            let selectData = moment(data, 'YYYY-MM-DD');
+            this.year = selectData.year();
+            this.month = selectData.month();
+            this.day = selectData.date();
+            this.initData();
+          }
         }
     }
 </script>

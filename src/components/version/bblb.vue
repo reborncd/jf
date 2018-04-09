@@ -176,15 +176,13 @@
                               <el-table-column prop="current_VERSION" label="当前版本" show-overflow-tooltip></el-table-column>
                               <el-table-column prop="start_DATE" label="启用日期" show-overflow-tooltip></el-table-column>
                               <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
-                              <el-table-column label="需求名称" show-overflow-tooltip>
+                              <!--el-table-column label="需求名称" show-overflow-tooltip>
                                 <template slot-scope="scope">
                                   <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
                                        class="tab-opt neel_DESCRIPTION" style="line-height:1;"
                                        :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
-                                  <!--:title=scope.row.neel_DESCRIPTION-->
-                                  <!--{{scope.row.neel_DESCRIPTION}}-->
                                 </template>
-                              </el-table-column>
+                              </el-table-column-->
                             </el-table>
                           </div>
                           <!--详情表格-->
@@ -205,9 +203,14 @@
                                     <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
                                     <el-table-column prop="neel_DESCRIPTION" label="需求名称" show-overflow-tooltip>
                                       <template slot-scope="scope">
-                                        <div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
+                                        <a href="javascript:void(0)"
+                                          @click="showSelect(scope)" >
+                                          查看相关需求
+                                        </a>
+                                        <!--div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
                                              class="tab-opt neel_DESCRIPTION" style="line-height:1;"
-                                             :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}</div>
+                                             :data-text="scope.row.neel_DESCRIPTION">{{scope.row.neel_DESCRIPTION}}
+                                        </div-->
                                       </template>
                                     </el-table-column>
                                   </el-table>
@@ -277,6 +280,23 @@
                         </el-form>
 
                     </el-dialog>
+                    <el-dialog title="点击跳转" :visible.sync="selectDialog.selectVisible"
+                               append-to-body modal-append-to-body >
+                      <el-table
+                        :data="selectDialog.selectTableData"
+                        style="width: 100%">
+                        <el-table-column
+                          prop="neel_NAME"
+                          label="需求名称" >
+                        </el-table-column>
+                        <el-table-column
+                          label="需求id" >
+                           <template slot-scope="scope">
+                             <span style="color: #923535" @click="goneeds($event,scope.row)">{{scope.row.neel_ID}}</span>
+                           </template>
+                        </el-table-column>
+                      </el-table>
+                    </el-dialog>
                 </div>
             </div>
         </el-card>
@@ -285,6 +305,7 @@
 </template>
 
 <script>
+  import cloneDeep from 'lodash/cloneDeep';
     export default {
         data(){
             return {
@@ -298,6 +319,10 @@
                     systemSelect: [],
                     subSystemSelect: [],
                     banben: '',
+                },
+                selectDialog: {
+                  selectVisible: false,
+                  selectTableData: []
                 },
                 errorVisible: false,
                 table: {
@@ -364,6 +389,10 @@
             this.loadData();
         },
         methods: {
+          showSelect(scope){
+            this.selectDialog.selectTableData = cloneDeep(this.tabs.versionLine[scope.$index].needs);
+            this.selectDialog.selectVisible = true;
+          },
             calculate(){
               let height = document.querySelector(".mainr").offsetHeight;
 //                let card_header_height = document.querySelector(".el-card__header").offsetHeight;
@@ -654,11 +683,16 @@
             goneeds(e, val){
                 e.stopPropagation();
                 let path = "";
-                if (val.bs == "TECH") {
-                    path = "技术需求"
-                }
-                if (val.bs == "PROD") {
+                switch(val.type){
+                  case "TECH":
+                    path = "技术需求";
+                    break;
+                  case "PROD":
                     path = "业务需求"
+                    break;
+                  case "BASE":
+                    path = "基础建设"
+                    break;
                 }
                 this.$go("", "", {"neelId": val.neel_ID}, path);
             }

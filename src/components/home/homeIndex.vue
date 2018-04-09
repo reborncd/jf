@@ -209,7 +209,9 @@
       <!--日期插件-->
       <el-col :span="8">
         <div class="grid-content bg-purple box-wrap  mr" style="box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);">
-          <date-plug></date-plug>
+          <date-plug
+            :todoTaskDateList="todoTaskDateList"
+          ></date-plug>
         </div>
       </el-col>
     </div>
@@ -277,6 +279,7 @@
 </template>
 <script>
   import datePlug from "./datePlug.vue";
+  import moment from "moment";
   export default {
     data() {
       return {
@@ -289,6 +292,7 @@
         has_delay: [],//已经延期
         will_delay: [],//将要延期
         todo: [],//待办事项
+        todoTaskDateList: [],
         operLog: [],//操作日志
         srcRoute: {
           "1": "业务需求",
@@ -393,6 +397,8 @@
           if (data.code == 200) {
             //main待办事项
             this.$set(this, "todo", data.result.main);
+            //main待办事项日期列表
+            this.$set(this, "todoTaskDateList", [...new Set(Array.from(data.result.main, item => moment(item.work_TIME).format('YYYY-MM-DD')))]);
             //havaMain经办事项
             this.$set(this, "hasdo", data.result.havaMain);
             //操作日志
