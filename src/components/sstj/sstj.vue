@@ -207,7 +207,6 @@
       //保存设置
       saveOption(){
         clearInterval(this.interval);
-        debugger;
         if(this.option.global && !this.option.needs){
           //选择了全局未选择需求看板
           this.visible.global = true;
@@ -284,7 +283,6 @@
       },
       //加载全局看板设置
       loadGlobal(){
-        debugger;
         let params = new URLSearchParams();
         this.$axios.post("/statistical/getstatistics", params).then((res) => {
           let data = res.data;
@@ -368,7 +366,6 @@
         params.append("NEEL_TYPE", this.option.needschoosen.join(','));//需求类型ID
         //params.append("STATE_ID", this.option.code);//需求ID
         this.$axios.post("/statistical/getneelmainba", params).then((res) => {
-          debugger;
           let data = res.data;
           if (data.code == 200) {
           	if(!Object.keys(data.result).length){
@@ -385,7 +382,6 @@
         })
       },
       loadNeedsByIndex(){
-        debugger;
         let info = this.allNeedsinfo;
         let info_index = info[this.needsIndex];
         this.realtimeInfo = info_index;

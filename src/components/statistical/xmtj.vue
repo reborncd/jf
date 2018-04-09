@@ -1,80 +1,3 @@
-<style scoped>
-	@import "../../static/css/table.css";
-	@import "../../static/css/console.css";
-	/*头部*/
-
-	.report-header .name {
-		font-weight: bold;
-		font-size: 20px;
-	}
-
-	.report-header .el-select {
-		float: right;
-	}
-
-	.report-header .group {
-		color: #9f9f9f;
-		margin: 5px 0;
-		font-size: 15px;
-	}
-	/*统计部分*/
-
-	.report-left {
-		width: 300px;
-		margin-top: 10px;
-	}
-
-	.report-statistics h5 {
-		font-size: 16px;
-		font-weight: 400;
-		margin: 5px 0;
-	}
-
-	.report-statistics .iconfont {
-		color: #5fccac;
-		font-size: 20px;
-		margin-right: 5px;
-	}
-
-	.statistics-content {
-		padding-left: 24px;
-	}
-
-	.statistics-content p {
-		float: left;
-		width: 50%;
-		line-height: 24px;
-	}
-
-	.statistics-content p .key {
-		color: #626262;
-	}
-
-	.statistics-content p .value {
-		color: #dd544e;
-	}
-
-	.el-textarea textarea {
-		min-height: 80px!important;
-	}
-
-	.el-form-item__label {
-		width: 120px !important;
-	}
-
-	.el-form-item {
-		margin-bottom: 0;
-	}
-
-	h5 {
-		padding-top: 20px;
-	}
-
-	.search {
-		float: right;
-	}
-</style>
-
 <template>
 	<div class="workreport common-card-wrap" style="height: 100%;">
 		<el-card class="box-card">
@@ -84,7 +7,7 @@
 			<div class="action clear" style="margin-bottom: 30px;">
 				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
-						<el-button size="mini" type="primary" @click="getPdf('项目统计')">生成报告
+						<el-button size="mini" type="primary" @click="getExls">生成报告
 						</el-button>
 					</div>
 				</div>
@@ -160,6 +83,7 @@
 </template>
 
 <script>
+  import moment from 'moment';
 	export default {
 		data() {
 			return {
@@ -240,6 +164,37 @@
 			this.loadChartsData()
 		},
 		methods: {
+      getExls() {
+				let params = new URLSearchParams();
+        if(this.dateRange.length == 0) {
+            params.append("startDate", moment().format('YYYY-MM-DD'));
+            params.append("endDate", moment().format('YYYY-MM-DD'));
+            this.select_value = "day"
+        } else {
+            let startDate=this.dateRange[0]
+            let endDate=this.dateRange[1]
+            this.select_value = "orther"
+            if(this.pickerOptions2.shortcuts[3].year=="year"){
+                this.pickerOptions2.shortcuts[3].year=""
+                this.select_value="year"
+                startDate=""
+                endDate=""
+            }
+            params.append("startDate", startDate);
+            params.append("endDate", endDate);
+        }
+
+				params.append("TYPE", this.select_value);
+				params.append("classType", this.classType);
+				params.append("SELECTDATE", this.selectDate);
+        this.$axios.get(`/statistical/exportFile?${params.toString()}&token=${this.$getToken()}`);
+				//this.$axios.get("/statistical/exportFile", params).then((res) => {
+				//	let data = res.data;
+				//	if(data.code != 200) {
+				//		this.$warn(data.message);
+        //  }
+        //});
+      },
 			changeLoad() {
 				this.classType = "", // 传值（分别对应 A 新增 B 完成 C留存 D执行）
 					this.selectDate = "", //传值 （点击对象对应的时间）
@@ -632,3 +587,79 @@
 		}
 	}
 </script>
+<style scoped>
+	@import "../../static/css/table.css";
+	@import "../../static/css/console.css";
+	/*头部*/
+
+	.report-header .name {
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+	.report-header .el-select {
+		float: right;
+	}
+
+	.report-header .group {
+		color: #9f9f9f;
+		margin: 5px 0;
+		font-size: 15px;
+	}
+	/*统计部分*/
+
+	.report-left {
+		width: 300px;
+		margin-top: 10px;
+	}
+
+	.report-statistics h5 {
+		font-size: 16px;
+		font-weight: 400;
+		margin: 5px 0;
+	}
+
+	.report-statistics .iconfont {
+		color: #5fccac;
+		font-size: 20px;
+		margin-right: 5px;
+	}
+
+	.statistics-content {
+		padding-left: 24px;
+	}
+
+	.statistics-content p {
+		float: left;
+		width: 50%;
+		line-height: 24px;
+	}
+
+	.statistics-content p .key {
+		color: #626262;
+	}
+
+	.statistics-content p .value {
+		color: #dd544e;
+	}
+
+	.el-textarea textarea {
+		min-height: 80px!important;
+	}
+
+	.el-form-item__label {
+		width: 120px !important;
+	}
+
+	.el-form-item {
+		margin-bottom: 0;
+	}
+
+	h5 {
+		padding-top: 20px;
+	}
+
+	.search {
+		float: right;
+	}
+</style>

@@ -203,10 +203,11 @@ Vue.prototype.$format = (time) => {
 // axios配置------------------------------------------
 //window._options = {baseUrl: 'http://172.16.2.8:8989/JiFu_Project'};
 //window._options = {baseUrl: 'http://angela.jf.prd:8080'};
-//window._options = {baseUrl: 'http://192.168.1.207:61080/angela'};
+window._options = {baseUrl: 'http://192.168.1.207:61080/angela'};
 //window._options = {baseUrl: 'http://192.168.1.106:8080'};
 //window._options = {baseUrl: 'http://192.180.4.200:8080/JiFu_Project'};
-window._options = {baseUrl: 'http://172.16.3.185:8083'};
+//window._options = {baseUrl: 'http://172.16.3.185:8083'};
+//window._options = {baseUrl: 'http://192.180.4.200:8080'};
 
 let instance = axios.create({
     // baseURL: "http://172.16.3.95:8080/JiFu_Project",//薛
@@ -224,6 +225,10 @@ let instance = axios.create({
 instance.defaults.withCredentials = true;
 //请求拦截器
 instance.interceptors.request.use(function (config) {
+  if(config.url.split('?')[0] === "/statistical/exportFile"){
+    window.open(config.baseURL + config.url);
+    return;
+  }
     config.baseURL = window._options.baseUrl;
     // 每次请求都添加一个token
     if (config.method == "post" && Vue.prototype.$getToken() &&
