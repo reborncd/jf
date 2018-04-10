@@ -187,7 +187,7 @@
 				params.append("TYPE", this.select_value);
 				params.append("classType", this.classType);
 				params.append("SELECTDATE", this.selectDate);
-        this.$axios.get(`/statistical/exportFile?${params.toString()}&token=${this.$getToken()}`);
+        window.open(`${window._options.baseUrl}/statistical/exportFile?${params.toString()}&token=${this.$getToken()}`)
 				//this.$axios.get("/statistical/exportFile", params).then((res) => {
 				//	let data = res.data;
 				//	if(data.code != 200) {
