@@ -1,5 +1,5 @@
 api-path:
-http://angela.jf.prd:8080
+http://192.168.1.106:8080/angela
 
 file-path:
 /angela/jfpal/

@@ -1,91 +1,3 @@
-<style lang="less">
-@import '../needs.less';
-</style>
-<style scoped>
-  .search .el-input {
-    width: auto;
-  }
-
-  .el-table .cell button {
-    display: inline-block;
-    margin: 0;
-  }
-
-  .el-form-item {
-    margin-bottom: 10px;
-  }
-
-  .genzong span {
-    color: #4f4f4f;
-    margin: 0 8px;
-  }
-
-  .assgin-dialog h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
-
-  .assgin-dialog .tab span {
-    float: left;
-    width: 50%;
-    text-align: center;
-    height: 30px;
-    line-height: 30px;
-    cursor: pointer;
-  }
-
-  .assgin-dialog .tab span.active {
-    color: dodgerblue;
-  }
-
-  /*.assign-wrapper {*/
-  /*height: 300px;*/
-  /*overflow-y: auto;*/
-  /*}*/
-  .assign-wrapper li {
-    margin-bottom: 6px;
-    padding: 0 10px;
-    min-height: 70px;
-  }
-
-  .assign-wrapper li .deptTitle {
-    display: block;
-    width: 100%;
-    line-height: 34px;
-    border: 1px solid #ccc;
-    text-align: center;
-    font-size: 14px;
-    margin: 5px auto;
-  }
-
-  .assign-wrapper .check-item {
-    margin: 5px 0;
-    display: block;
-  }
-
-  .testTask_bugtable table.el-table__header th {
-    background: white !important;
-  }
-
-  .upload-wrapper {
-    float: right;
-    overflow: hidden;
-    position: relative
-  }
-
-  .upload-input {
-    position: absolute;
-    height: 28px;
-    opacity: 0;
-    left: 0;
-    top: 0;
-  }
-</style>
-<style>
-  .jcjs .el-table td, .jcjs .el-table th {
-    padding: 10px 0 !important;
-  }
-</style>
 <template>
   <div class="jcjs common-card-wrap"
        @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -151,6 +63,7 @@
               <!--</template>-->
               <!--<el-table-column prop="aa" label="涉及系统"></el-table-column>-->
               <el-table-column prop="rriority_NAME" label="优先级" width="80" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="isFast" label="是否加急" show-overflow-tooltip></el-table-column>
               <el-table-column prop="state_NAME" label="状态" show-overflow-tooltip></el-table-column>
               <el-table-column label="操作" width="180">
                 <template slot-scope="scope">
@@ -2125,6 +2038,7 @@
       },
       //-----------------------------------加载表格数据
       setTableData(data){
+        data.bases.map(item => item.isFast = item.urgent || "否");
         this.$set(this.table, "tableData", data.bases);
         this.$set(this.table, "tableOriginData", data.bases);
         //判断是否有search跳转到对应的操作台
@@ -2165,6 +2079,7 @@
         this.$axios.post("/base/queryAll", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
+            data.result.bases.map(item => item.isFast = item.urgent || "否");
             this.$set(this.table, "tableData", data.result.bases);
             this.$maskoff();
           }
@@ -4827,3 +4742,91 @@
     }
   }
 </script>
+<style lang="less">
+@import '../needs.less';
+</style>
+<style scoped>
+  .search .el-input {
+    width: auto;
+  }
+
+  .el-table .cell button {
+    display: inline-block;
+    margin: 0;
+  }
+
+  .el-form-item {
+    margin-bottom: 10px;
+  }
+
+  .genzong span {
+    color: #4f4f4f;
+    margin: 0 8px;
+  }
+
+  .assgin-dialog h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  .assgin-dialog .tab span {
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .assgin-dialog .tab span.active {
+    color: dodgerblue;
+  }
+
+  /*.assign-wrapper {*/
+  /*height: 300px;*/
+  /*overflow-y: auto;*/
+  /*}*/
+  .assign-wrapper li {
+    margin-bottom: 6px;
+    padding: 0 10px;
+    min-height: 70px;
+  }
+
+  .assign-wrapper li .deptTitle {
+    display: block;
+    width: 100%;
+    line-height: 34px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
+    margin: 5px auto;
+  }
+
+  .assign-wrapper .check-item {
+    margin: 5px 0;
+    display: block;
+  }
+
+  .testTask_bugtable table.el-table__header th {
+    background: white !important;
+  }
+
+  .upload-wrapper {
+    float: right;
+    overflow: hidden;
+    position: relative
+  }
+
+  .upload-input {
+    position: absolute;
+    height: 28px;
+    opacity: 0;
+    left: 0;
+    top: 0;
+  }
+</style>
+<style>
+  .jcjs .el-table td, .jcjs .el-table th {
+    padding: 10px 0 !important;
+  }
+</style>

@@ -1,106 +1,3 @@
-<style lang="less">
-@import '../needs.less';
-</style>
-<style scoped>
-  .search .el-input {
-    width: auto;
-  }
-
-  .back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: 13px;
-    cursor: pointer;
-    line-height: 21px;
-  }
-
-  .back i.b {
-    color: #606266;
-    font-style: normal;
-  }
-
-  .el-date-editor--datetimerange.el-input__inner {
-    width: 370px;
-  }
-
-  .el-textarea textarea {
-    height: 100px;
-  }
-
-  .el-table td,
-  .el-table th {
-    padding: 5px 0;
-  }
-
-  .el-button {
-    padding: 6px 10px;
-  }
-
-  .console-tab-content .add {
-    position: absolute;
-    font-size: 20px;
-    height: 20px;
-    cursor: pointer;
-    top: 0;
-    bottom: 0;
-    right: 5px;
-    margin: auto;
-  }
-
-  .addCol {
-    position: relative;
-    padding: 0 30px 0 0 !important;
-  }
-
-  .assgin-dialog h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
-
-  .assgin-dialog .tab span {
-    float: left;
-    width: 50%;
-    text-align: center;
-    height: 30px;
-    line-height: 30px;
-    cursor: pointer;
-  }
-
-  .assgin-dialog .tab span.active {
-    color: dodgerblue;
-  }
-
-  /*.assign-wrapper {*/
-  /*height: 300px;*/
-  /*overflow-y: auto;*/
-  /*}*/
-
-  .assign-wrapper li {
-    margin-bottom: 6px;
-    padding: 0 10px;
-    min-height: 70px;
-  }
-
-  .assign-wrapper li .deptTitle {
-    display: block;
-    width: 100%;
-    line-height: 34px;
-    border: 1px solid #ccc;
-    text-align: center;
-    font-size: 14px;
-    margin: 5px auto;
-  }
-
-  .assign-wrapper .check-item {
-    margin: 5px 0;
-    display: block;
-  }
-
-  .el-form-item__label {
-    width: 120px !important;
-  }
-</style>
 <template>
   <div class="jcjs common-card-wrap"
        @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -139,6 +36,7 @@
               <el-table-column prop="end_DATE_STRING" label="期望上线时间" width="110"></el-table-column>
               <el-table-column prop="user_NAME" label="申请人" width="110"></el-table-column>
               <el-table-column prop="rriority_NAME" label="优先级" width="70"></el-table-column>
+              <el-table-column prop="isFast" label="是否加急" show-overflow-tooltip></el-table-column>
               <el-table-column prop="state_NAME" label="状态" width="130"></el-table-column>
               <el-table-column label="操作" width="130">
                 <template slot-scope="scope" class="action-wrap">
@@ -1734,6 +1632,7 @@
         this.$set(this.split, "hasSplitTaskData", val.tasks)
       },
       setTableData(data) {
+        data.map(item => item.isFast = item.ugent || "否");
         this.$set(this.table, "tableData", data);
         this.$set(this.table, "tableOriginData", data);
       },
@@ -2938,3 +2837,106 @@
     }
   }
 </script>
+<style lang="less">
+@import '../needs.less';
+</style>
+<style scoped>
+  .search .el-input {
+    width: auto;
+  }
+
+  .back {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 13px;
+    cursor: pointer;
+    line-height: 21px;
+  }
+
+  .back i.b {
+    color: #606266;
+    font-style: normal;
+  }
+
+  .el-date-editor--datetimerange.el-input__inner {
+    width: 370px;
+  }
+
+  .el-textarea textarea {
+    height: 100px;
+  }
+
+  .el-table td,
+  .el-table th {
+    padding: 5px 0;
+  }
+
+  .el-button {
+    padding: 6px 10px;
+  }
+
+  .console-tab-content .add {
+    position: absolute;
+    font-size: 20px;
+    height: 20px;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    right: 5px;
+    margin: auto;
+  }
+
+  .addCol {
+    position: relative;
+    padding: 0 30px 0 0 !important;
+  }
+
+  .assgin-dialog h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  .assgin-dialog .tab span {
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .assgin-dialog .tab span.active {
+    color: dodgerblue;
+  }
+
+  /*.assign-wrapper {*/
+  /*height: 300px;*/
+  /*overflow-y: auto;*/
+  /*}*/
+
+  .assign-wrapper li {
+    margin-bottom: 6px;
+    padding: 0 10px;
+    min-height: 70px;
+  }
+
+  .assign-wrapper li .deptTitle {
+    display: block;
+    width: 100%;
+    line-height: 34px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
+    margin: 5px auto;
+  }
+
+  .assign-wrapper .check-item {
+    margin: 5px 0;
+    display: block;
+  }
+
+  .el-form-item__label {
+    width: 120px !important;
+  }
+</style>

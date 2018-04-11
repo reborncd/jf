@@ -203,8 +203,9 @@
                                     <el-table-column prop="start_TIME" label="启用时间" show-overflow-tooltip></el-table-column>
                                     <el-table-column prop="neel_DESCRIPTION" label="需求名称" show-overflow-tooltip>
                                       <template slot-scope="scope">
+                                        <span v-if="tabs.versionLine[scope.$index].needs.length === 0">暂无需求</span>
                                         <a href="javascript:void(0)"
-                                          @click="showSelect(scope)" >
+                                          @click="showSelect(scope)" v-else>
                                           查看相关需求
                                         </a>
                                         <!--div @click="goneeds($event,scope.row)" :title=scope.row.neel_DESCRIPTION
@@ -390,6 +391,7 @@
         },
         methods: {
           showSelect(scope){
+            if(this.tabs.versionLine[scope.$index].needs.length === 0)return;
             this.selectDialog.selectTableData = cloneDeep(this.tabs.versionLine[scope.$index].needs);
             this.selectDialog.selectVisible = true;
           },
@@ -484,9 +486,7 @@
                         let versionP = []
                         let currentDate=[]
                         for (let i of data) {
-                            if(i.start_DATE){
-                                versionP.push(i);
-                            }
+                            versionP.push(i);
                             if (i.current_STATE == 1) {
                                 i.current_STATE = '是'
                                 currentDate.push(i.current_STATE)
