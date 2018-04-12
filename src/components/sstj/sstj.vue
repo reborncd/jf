@@ -106,18 +106,40 @@
         <el-form-item label="需求类型" v-if="option.needs" style="margin-bottom:10px;">
           <el-select
             v-model="option.needschoosen"
-            clearable
             placeholder="请选择需求类型"
+            clearable
+            filterable
             multiple
-            filterable>
-            <!--@change="needsChange"-->
-            <el-option v-for="item in option.needsArr" :key="item.value" :label="item.name"
-                   :value="item.id"></el-option>
+            style="width: 49%"
+            @change="needsChange($event)"
+          >
+            <el-option
+              v-for="item in option.needsArr"
+              :key="item.value"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
-          <!--el-select v-model="option.code" multiple clearable placeholder="请选择需求" filterable>
-            <el-option v-for="item in option.codeArr" :key="item.state_ID" :label="item.state_NAME"
-                   :value="item.state_ID"></el-option>
-          </el-select-->
+          <el-select
+            v-model="option.coded"
+            clearable
+            placeholder="请选择需求"
+            filterable
+            style="width: 50%"
+            multiple
+          >
+            <el-option-group
+              v-for="(group, index) in option.codeArr"
+              :key="group.neelName"
+              :label="`${index + 1}. ${group.neelName}`" >
+              <el-option
+                v-for="item in group.options"
+                :key="item.state_ID"
+                :label="`${item.state_NAME}`"
+                :value="`${index}-${item.state_ID}`" >
+              </el-option>
+            </el-option-group>
+          </el-select>
         </el-form-item>
         <el-form-item label="切换频率" v-if="option.needs">
           <el-select v-model="option.time" placeholder="请选择切换频率" filterable>
@@ -136,6 +158,7 @@
   export default {
     data(){
       return {
+        hehe: '',
         fullStatus:false,
         visible:{
           global:true,
@@ -146,9 +169,9 @@
           global: true,//全局看板
           needs: false,//需求看板
           needsArr: [],//需求类型数组
-          needschoosen: "",//需求类型选择的值
+          needschoosen: [],//需求类型选择的值
           codeArr: [],//需求编号数组
-          code: "",//需求选中值
+          coded: [],//需求选中值
           activeCode: "",//确定后需要请求的需求ID
           time: "",//切换频率选中的值
           timeArr: [{
@@ -216,10 +239,10 @@
             this.$warn("请选择需求类型");
             return
           }
-          //if(!this.option.code){
-          //  this.$warn("请选择需求编码");
-          //  return
-          //}
+          if(!this.option.coded){
+            this.$warn("请选择需求编码");
+            return
+          }
           if(!this.option.time){
             this.$warn("请选择切换频率");
             return;
@@ -363,17 +386,19 @@
       loadNeedsInfo(){
         this.$maskin();
         let params = new URLSearchParams();
-        params.append("NEEL_TYPE", this.option.needschoosen.join(','));//需求类型ID
-        //params.append("STATE_ID", this.option.code);//需求ID
+        let reqData = [];
+        this.option.needschoosen.forEach(item => reqData.push({neelType: item, status: []}));
+        this.option.coded.forEach(item => reqData[parseInt(item.split('-')[0])].status.push(parseInt(item.split('-')[1])));
+        params.append("json", JSON.stringify(reqData));//需求类型ID
         this.$axios.post("/statistical/getneelmainba", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-          	if(!Object.keys(data.result).length){
+          	if(!data.result.neellist.length){
           		this.$warn("暂无需求信息！");
           		this.$maskoff();
           		return
             }
-            this.allNeedsinfo = data.result;
+            this.allNeedsinfo = data.result.neellist.length > 0 && data.result.neellist;
           	setTimeout(()=>{
             this.loadNeedsByIndex();
             this.$maskoff();
@@ -418,7 +443,6 @@
         let allTime=[];//部门实际工时
         let requiredTime=[];//部门总工时
         let leaveTime=[];//部门剩余工时
-
         let userName=[];//人员
         let userallTime=[];//个人实际工时
         let userequiredTime=[];//个人总工时
@@ -488,7 +512,6 @@
         }
         this.realTime(yaxis,startTime,endTime,actualTime);
         this.workTime(deptName,leaveTime,requiredTime,allTime);
-
       },
       //实时统计周期
       realTime(yaxis, startTime, endTime, actualTime) {
@@ -500,9 +523,9 @@
       for(let i=0;i<yaxis.length;i++){
         end_time.push(endTime[i])
         if(endTime[i]>=actualTime[i]){
-        actual_time.push(null)
+          actual_time.push(null)
         }else{
-        actual_time.push(actualTime[i])
+          actual_time.push(actualTime[i])
         }
       }
       let option = {
@@ -511,32 +534,32 @@
 //        x: 'center'
 //        },
         legend: {
-        data: ['实时统计']
+          data: ['实时统计']
         },
         xAxis: {
-        type: 'time'
+          type: 'time'
         },
         yAxis: {
-        data: yaxis
+          data: yaxis
         },
         tooltip: {
-        trigger: 'axis',
-        formatter: (params) => {
-          let res = params[0].name + "</br>";
-          let start = this.$format(new Date(params[0].data));
-          let act = this.$format(new Date(params[1].data));
-          let end = this.$format(new Date(params[2].data));
-          let date0 = start.year + "-" + start.mouth + "-" + start.day;//开始时间
-          let date1 = act.year + "-" + act.mouth + "-" + act.day;//实际时间
-          let date2 = end.year + "-" + end.mouth + "-" + end.day;//结束时间;
-          res += params[0].seriesName + ":" + date0 + "</br>";
-          res += params[2].seriesName + ":" + date2 + "</br>";
-          if(params[1].data>params[2].data){
-          //实际结束时间
-          res += params[1].seriesName + ":" + date1 + "</br>";
+          trigger: 'axis',
+          formatter: (params) => {
+            let res = params[0].name + "</br>";
+            let start = this.$format(new Date(params[0].data));
+            let act = this.$format(new Date(params[1].data));
+            let end = this.$format(new Date(params[2].data));
+            let date0 = start.year + "-" + start.mouth + "-" + start.day;//开始时间
+            let date1 = act.year + "-" + act.mouth + "-" + act.day;//实际时间
+            let date2 = end.year + "-" + end.mouth + "-" + end.day;//结束时间;
+            res += params[0].seriesName + ":" + date0 + "</br>";
+            res += params[2].seriesName + ":" + date2 + "</br>";
+            if(params[1].data>params[2].data){
+              //实际结束时间
+              res += params[1].seriesName + ":" + date1 + "</br>";
+            }
+            return res;
           }
-          return res;
-        }
         },
         series: [
         {
@@ -544,10 +567,10 @@
           type: 'bar',
           stack: '开始时间',
           itemStyle: {
-          normal: {
-            color: '#778899',
-            shadowColor: 'rgba(0, 0, 0, 0.3)',
-          }
+            normal: {
+              color: '#778899',
+              shadowColor: 'rgba(0, 0, 0, 0.3)',
+            }
           },
           data: startTime
         }, {
@@ -555,27 +578,27 @@
           type: 'bar',
           stack: '开始时间',
           itemStyle: {
-          normal: {
-            color: '#F4201B',
-            shadowColor: 'rgba(255, 255, 255, 0.3)',
-          }
+            normal: {
+              color: '#F4201B',
+              shadowColor: 'rgba(255, 255, 255, 0.3)',
+            }
           },
           data: actual_time
         },
-        {
-          name: '预计结束时间',
-          type: 'bar',
-          stack: '开始时间',
-          itemStyle: {
-          normal: {
-            color: '#2E91BD',
-            barBorderRadius: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.3)',
+          {
+            name: '预计结束时间',
+            type: 'bar',
+            stack: '开始时间',
+            itemStyle: {
+              normal: {
+                color: '#2E91BD',
+                barBorderRadius: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.3)',
+              }
+            },
+            data: end_time
           }
-          },
-          data: end_time
-        }
-        ]
+          ]
       };
       proBar.setOption(option);
       },
@@ -590,13 +613,13 @@
           setTimeout(()=>{
             for(let i=0;i<deptName.length;i++){
               let txtName
-              if(leaveTime[i]>=0){
-                txtName='剩余工时'
-              }
-              else{
-                txtName='超出工时'
-                leaveTime[i]=-leaveTime[i]
-              }
+                if(leaveTime[i]>=0){
+                  txtName='剩余工时'
+                }
+                else{
+                  txtName='超出工时'
+                    leaveTime[i]=-leaveTime[i]
+                }
               let div = '<div id="workHours'+i+'" class="hour-child" style="height: 150px;width: 300px;float: left;"></div>';
               father.insertAdjacentHTML("beforeend",div);
               let option = {
@@ -613,12 +636,12 @@
                   formatter: "{a} <br/>{b} : {c} ({d}%)"
                 },
                 series : [
-                  {
-                    name: deptName[i],
-                    type: 'pie',
-                    radius : "60%",
-                    center: ['60%', '50%'],
-                    data:[
+                {
+                  name: deptName[i],
+                  type: 'pie',
+                  radius : "60%",
+                  center: ['60%', '50%'],
+                  data:[
                       {value:leaveTime[i], name:txtName},
                       {value:allTime[i], name:'实际工时'}
                     ],
@@ -636,7 +659,6 @@
               proBar.setOption(option);
             }
           },0)
-
         }
       },
       //人员工时
@@ -699,12 +721,12 @@
       }
       },
       //选择需求类型change事件
-      needsChange(){
+      needsChange(e){
         this.$maskin();
         this.interval = "";//清除定时器
-        this.option.code = "";//清除上次选中的值
+        this.option.coded = [];//清除上次选中的值
         let params = new URLSearchParams();
-        params.append("NEEL_TYPE", this.option.needschoosen.join(','));
+        params.append("NEEL_TYPE", this.option.needschoosen);
         this.$axios.post("/statistical/getneelnamelist", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
@@ -718,15 +740,12 @@
         let task1 = this.$echarts.init(document.getElementById("task1"));
         task1.clear();
         task1.setOption(this.statusOption("紧急+重要", Sarr));
-
         let task2 = this.$echarts.init(document.getElementById("task2"));
         task2.clear();
         task2.setOption(this.statusOption("不紧急+重要", Aarr));
-
         let task3 = this.$echarts.init(document.getElementById("task3"));
         task3.clear();
         task3.setOption(this.statusOption("紧急+不重要", Barr));
-
         let task4 = this.$echarts.init(document.getElementById("task4"));
         task4.clear();
         task4.setOption(this.statusOption("不紧急+不重要", Carr));

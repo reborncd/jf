@@ -1467,6 +1467,7 @@
   import vueQuillEditor_changepoint from '../common/vueQuillEditor_changepoint.vue';//产品改造点
   import vueQuillEditor_needsname from '../common/vueQuillEditor_needsname.vue';//需求描述
   //-----------------加载静态组件
+  import moment from "moment";
   import oldTaskCode from "../common/old-task-code.vue";//开发的原任务
   import oldTaskTest from "../common/old-task-test.vue";//测试的原任务
   import splitTask from "../common/splitTask.vue";//拆分项目里的所有拆分任务
@@ -2170,9 +2171,11 @@
           this.$warn("请填写期望上线日期");
           return;
         }
-        let start = (new Date(this.addneeds.addform.shenqingdate)).getTime();
-        let end = (new Date(this.addneeds.addform.designdate)).getTime();
-        if(start>end){
+        //let start = (new Date(this.addneeds.addform.shenqingdate)).getTime();
+        //let end = (new Date(this.addneeds.addform.designdate)).getTime();
+        let start = moment(moment(this.addneeds.addform.shenqingdate).format().slice(0, 10), "YYYY-MM-DD").toDate();
+        let end =   moment(moment(this.addneeds.addform.designdate).format().slice(0, 10), "YYYY-MM-DD").toDate();
+        if(start > end){
           this.$warn("申请日期必须小于期望上线日期");
           return;
         }

@@ -208,6 +208,7 @@ Vue.prototype.$format = (time) => {
 //window._options = {baseUrl: 'http://0.0.0.0:8888/angela'};
 //window._options = {baseUrl: 'http://192.180.4.200:8080/JiFu_Project'};
 window._options = {baseUrl: 'http://172.16.3.185:8083'};
+//window._options = {baseUrl: 'http://127.0.0.1:8080'};
 //window._options = {baseUrl: 'http://192.180.4.200:8080/JiFu_Project'};
 
 let instance = axios.create({

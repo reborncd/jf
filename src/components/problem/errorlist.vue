@@ -1,104 +1,3 @@
-<style scoped>
-  @import "../../static/css/table.css";
-  @import "../../static/css/console.css";
-
-  .search .el-input {
-    width: auto;
-  }
-
-  .back {
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: 13px;
-    cursor: pointer;
-    line-height: 21px;
-  }
-
-  .back i.b {
-    color: #606266;
-    font-style: normal;
-  }
-
-  .el-date-editor--datetimerange.el-input__inner {
-    width: 370px;
-  }
-
-  .el-textarea textarea {
-    height: 100px;
-  }
-
-  .el-table td, .el-table th {
-    padding: 5px 0;
-  }
-
-  .el-button {
-    padding: 6px 10px;
-  }
-
-  .console-tab-content .add {
-    display: inline-block;
-    height: 40px;
-    line-height: 40px;
-    font-size: 20px;
-    cursor: pointer;
-    vertical-align: middle;
-    /*margin-left:10px;*/
-  }
-
-  .col-div {
-    position: relative;
-  }
-
-  .infoDiv {
-    position: absolute;
-    top: 1px;
-    left: 10px;
-
-  }
-  .tab-opt{
-    display: inline-block;
-    width: 90px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .assign-wrapper li {
-    margin-bottom: 6px;
-    padding: 0 10px;
-    min-height: 70px;
-  }
-  .assign-wrapper li .deptTitle {
-    display: block;
-    width: 100%;
-    line-height: 34px;
-    border: 1px solid #ccc;
-    text-align: center;
-    font-size: 14px;
-    margin: 5px auto;
-  }
-  .assign-wrapper .check-item {
-    margin: 5px 0;
-    display: block;
-  }
-  .genzong span {
-    color: #4f4f4f;
-    margin: 0 8px;
-  }
-  .assgin-dialog h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
-  .assgin-dialog .tab span {
-    float: left;
-    width: 50%;
-    text-align: center;
-    height: 30px;
-    line-height: 30px;
-    cursor: pointer;
-  }
-</style>
 <template>
   <div class="rolelist common-card-wrap" style="height: 100%;"
        @click="$event.target.className == 'icon-more iconfont'?'':tabs.consoleActionVisible = false">
@@ -407,21 +306,21 @@
             <ul v-if="!assign.leftSearch">
               <li :key="index" v-for="(item, index) in assign.searchData" v-if="item.users.length>0">
                 <span class="deptTitle" @click="assign.assignDeptIndex = index" style="cursor: pointer">{{item.dept_name}}</span>
-                <el-radio-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
-                  <el-radio v-for="item in item.users" :key="item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
+                <el-checkbox-group v-model="assign.checkList" v-show="index == assign.assignDeptIndex">
+                  <el-checkbox v-for="_item in item.users" :key="_item.user_ID" :label="_item.user_ID+'-'+_item.user_NAME" class="check-item">
                     {{_item.user_NAME}}&nbsp;-&nbsp;{{_item.role_NAME}}
-                  </el-radio>
-                </el-radio-group>
+                  </el-checkbox>
+                </el-checkbox-group>
               </li>
             </ul>
             <!--搜索状态下不展示部门-->
             <div v-if="assign.leftSearch">
-              <el-radio-group v-model="assign.checkList">
-                <el-radio v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
+              <el-checkbox-group v-model="assign.checkList">
+                <el-checkbox v-for="item in assign.searchData" :key="item.user_ID" :label="item.user_ID+'-'+item.user_NAME"
                              class="check-item">
                   {{item.user_NAME}}&nbsp;-&nbsp;{{item.role_NAME}}
-                </el-radio>
-              </el-radio-group>
+                </el-checkbox>
+              </el-checkbox-group>
             </div>
           </div>
           <div slot="footer" class="dialog-footer">
@@ -636,25 +535,12 @@
       	//清除新增新增的表单
         this.clearAddData();
         let params = new URLSearchParams();
-          this.$maskin();
+        this.$maskin();
         this.$axios.post("/fault/query?type=1", params).then((res) => {
-          let data = res.data
-          this.setTableData(data)
-            this.$maskoff();
+          let data = res.data;
+          this.setTableData(data);
+          this.$maskoff();
         })
-//              this.$axios.get("/fault/status?token=abm", params).then((res) => {
-//          	 	let data=res.data;
-//          	 	let statusArr=[]
-//          	 	if(data.code==200){
-//          	 		for(let i of data.result.status){
-//							statusArr.push(i);
-//          	 		}
-//          	 		this.$set(this, "selectValue", statusArr);
-//          	 	}
-//          	 	else{
-//          	 		this.$warn(message);
-//          	 	}
-//          	 })
       },
       setTableData(data){
         if (data.code == 200) {
@@ -723,63 +609,35 @@
         }
       },
       tableAction(e){
-//            this.operate.fpvisible=true
-//                this.$refs.ywxq_table.setCurrentRow(row);
           //阻止事件冒泡
           e.stopPropagation();
           this.getAssign();
       },
       getAssign(){
-//                let info = this.tabs.activeTableInfo;
           this.assign.keyword = "";//初始化关键字
-//            this.assign.checkList = [];//初始化选中的数据
           this.assign.assignDeptIndex = "";//初始化选中的索引
           this.assign.leftSearch = false;//关闭搜索结果的展示
           this.assign.assignvisible = true;
           let params = new URLSearchParams();
-////                if (info.state_ID == 304) {
-//                    params.append("TASK_ID", info.work_NEET_ID);
-////                }
           this.$axios.post("/fault/queryUserByDemand", params).then((res) => {
               let data = res.data;
               if (data.code == 200) {
                   this.$set(this.assign, "searchData", data.result.users);
-//                        let all = data.result.users;
-//                        let dept = [];
-//                        for(let i of all){
-//                            for(let j of i.DEPT_ID){
-//                              if(j.DEPT_ID == i.DEPT_ID)
-//                                dept.push({
-//                                    "DEPT_NAME":i.DEPT_NAME,
-//                                    "DEPT_ID":i.DEPT_ID,
-//                                    "USER_NAME":j.USER_NAME
-//                                })
-//                            }
-//                        }
                   this.$set(this.assign, "leftOriginData", data.result.users);
-//                        this.$set(this.assign, "rightlistdata", data.result.dept.users);
               }
           })
       },
       //-----------------------------------分配任务搜索功能
       assignSearch(){
           let keyword = this.assign.keyword;
-//                let type;
-//                if (this.assign.left) {
-//                    type = "left"
-//                } else {
-//                    type = "right"
-//                }
           //搜索关键字判断
           if (keyword == "") {
               //为空
               this.assign.leftSearch = false;
-//                    this.$set(this.assign, "searchData", type == "left" ? this.assign.leftOriginData : this.assign.rightlistdata)
               this.$set(this.assign, "searchData",this.assign.leftOriginData)
           } else {
               //不为空
               let arr = [];
-//                    if (type == "left") {
               for (let i of this.assign.leftOriginData) {
                   for (let j of i.users) {
                       if (j.user_NAME.indexOf(keyword) >= 0) {
@@ -788,19 +646,13 @@
                   }
               }
               this.assign.leftSearch = true;
-//                    } else {
-//                        for (let i of this.assign.rightlistdata) {
-//                            if (i.user_NAME.indexOf(keyword) >= 0) {
-//                                arr.push(i)
-//                            }
-//                        }
-//                    }
               this.$set(this.assign, "searchData", arr);
           }
       },
       //-----------------------------------提交分配任务
       subAssign(){
             let result = this.assign.checkList;
+            debugger;
             if (result.length == 0) {
                 this.$warn("当前没有选择任何人员");
             } else {
@@ -1129,8 +981,8 @@
         params.append("descriptionEx", this.popup.popTxt.descriptionEx);//故障复盘分析
         params.append("sumEffect", this.popup.popTxt.sumEffect);//交易量影响
         params.append("type", 1);//类型
-          params.append("id",this.popup.popTxt.id);//问题ID
-          params.append("userId", this.popup.fppeople);//分配人id
+        params.append("id",this.popup.popTxt.id);//问题ID
+        params.append("userId", this.popup.fppeople);//分配人id
 		params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
         this.$axios.post("/fault/submit", params).then((res) => {
           let data = res.data;
@@ -1271,3 +1123,104 @@
     }
   }
 </script>
+<style scoped>
+  @import "../../static/css/table.css";
+  @import "../../static/css/console.css";
+
+  .search .el-input {
+    width: auto;
+  }
+
+  .back {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 13px;
+    cursor: pointer;
+    line-height: 21px;
+  }
+
+  .back i.b {
+    color: #606266;
+    font-style: normal;
+  }
+
+  .el-date-editor--datetimerange.el-input__inner {
+    width: 370px;
+  }
+
+  .el-textarea textarea {
+    height: 100px;
+  }
+
+  .el-table td, .el-table th {
+    padding: 5px 0;
+  }
+
+  .el-button {
+    padding: 6px 10px;
+  }
+
+  .console-tab-content .add {
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    vertical-align: middle;
+    /*margin-left:10px;*/
+  }
+
+  .col-div {
+    position: relative;
+  }
+
+  .infoDiv {
+    position: absolute;
+    top: 1px;
+    left: 10px;
+
+  }
+  .tab-opt{
+    display: inline-block;
+    width: 90px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .assign-wrapper li {
+    margin-bottom: 6px;
+    padding: 0 10px;
+    min-height: 70px;
+  }
+  .assign-wrapper li .deptTitle {
+    display: block;
+    width: 100%;
+    line-height: 34px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
+    margin: 5px auto;
+  }
+  .assign-wrapper .check-item {
+    margin: 5px 0;
+    display: block;
+  }
+  .genzong span {
+    color: #4f4f4f;
+    margin: 0 8px;
+  }
+  .assgin-dialog h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+  .assgin-dialog .tab span {
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+</style>
