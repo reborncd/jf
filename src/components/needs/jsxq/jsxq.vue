@@ -390,8 +390,8 @@
                   <el-form style="margin-top: 20px;" v-if="ifPing.visible" label-width="120px" label-position="left">
                     <el-row :gutter="20">
                       <el-col :span="12">
-                        <el-form-item label="优先级评定">
-                          <el-select v-model="ifPing.rriority" filterable clearable placeholder="请选择优先级评定" style="width: 100%">
+                        <el-form-item label="评审等级">
+                          <el-select v-model="ifPing.rriority" filterable clearable placeholder="请选择评审等级" style="width: 100%">
                             <el-option :key="index" v-for="(item, index) in ifPing.rriorityArr" :label="item.RRIORITY_NAME"
                                    :value="item.RRIORITY_ID"></el-option>
                           </el-select>

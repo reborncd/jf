@@ -182,8 +182,8 @@
                   <el-form label-width="120px" label-position="left" v-if="tabs.ifPing">
                     <el-row :gutter="20">
                       <el-col :span="12">
-                        <el-form-item label="优先级评定">
-                          <el-select v-model="tabs.rriority" clearable placeholder="请选择优先级评定">
+                        <el-form-item label="评审等级">
+                          <el-select v-model="tabs.rriority" clearable placeholder="请选择评审等级">
                             <el-option :key="index" v-for="(item, index) in tabs.rriorityArr" :label="item.RRIORITY_NAME"
                                        :value="item.RRIORITY_ID"></el-option>
                           </el-select>

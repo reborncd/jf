@@ -190,17 +190,23 @@
                 <div class="console-tab-content">
                   <el-form :model="form" label-width="100px" label-position="left">
                     <el-row :gutter="20">
-                      <el-col :span="12" :sm="8">
+                      <el-col :span="8" :sm="8">
                         <el-form-item label="状态">
                           <el-form-item label="">{{operate.status}}</el-form-item>
                         </el-form-item>
                       </el-col>
-                      <el-col :span="12" :sm="8">
+                      <el-col :span="8" :sm="8">
                         <el-form-item label="发送人" label-width="100px">
                           <el-form-item label="">{{way.relation_USER}}</el-form-item>
                         </el-form-item>
                       </el-col>
-                      <el-col class="col-div" :span="24" :sm="24">
+                      <el-col :span="8" :sm="8">
+                        <el-form-item>
+                        <el-button size="mini" type="primary" @click="loadtrack('click')">
+                          {{tracking.trackingvisiible?'列表模式':'视图模式'}}</el-button>
+                        </el-form-item>
+                      </el-col>
+                      <el-col class="col-div" :span="24" :sm="24" v-show="!tracking.trackingvisiible">
                         <div class="infoDiv" >
                           <p :key="key" v-for="(item,key) in way.information">
                             {{key+1}}、
@@ -208,6 +214,9 @@
                             <em>{{item.record_DESC}}</em>
                           </p>
                         </div>
+                      </el-col>
+                      <el-col :span="24" :sm="24" v-show="tracking.trackingvisiible">
+                        <tracking :tracking="tracking"></tracking>
                       </el-col>
                     </el-row>
                   </el-form>
@@ -278,6 +287,18 @@
               </el-form-item>
               </el-col>
             </el-row>
+            <el-row :gutter="24" v-if="assign.checkList.length > 0">
+              <el-form-item label="人员列表">
+                <el-button
+                  type="text"
+                  v-for="(item, index) in assign.checkList"
+                  :key="item"
+                  >
+                  {{item.split('-')[1]}}
+                  <i class="el-icon-close el-icon--right" @click="assign.checkList.splice(index, 1)"> </i>
+                </el-button>
+              </el-form-item>
+            </el-row>
           </el-form>
           <div style="text-align: center">
             <el-button type="primary"
@@ -334,10 +355,17 @@
   </div>
 </template>
 <script>
+  import tracking from "../needs/common/tracking.vue";//全程跟踪视图模式
   export default {
     data(){
       return {
         errorVisible: false,
+        tracking: {
+          trackingvisiible: false,
+          data:[],//数据
+          hoverIndex:"",//移动上去的索引
+          hoverData:[],//鼠标悬浮的信息
+        },
         table: {
           tableData: [],
           tableOriginData: [],
@@ -437,7 +465,6 @@
 
         },
         popup: {
-            fppeople:'',//分配人员
           priperty: [
             {
               'name': '紧急',
@@ -460,6 +487,7 @@
 	          'sumEffect': "",				//交易量影响
 	          'uploadFiles':[],              // 上传成功的文件数组
 	          'fileList':[],                //上传附件
+            fppeople:'',//分配人员
          }
 
         },
@@ -498,7 +526,32 @@
       this.calculate();
       this.loadData();
     },
+    components:{
+      "tracking":tracking,//全程跟踪视图模式
+    },
     methods: {
+      //-----------------------------------加载视图模式数据
+      loadtrack(type){
+        if(type === 'click') this.tracking.trackingvisiible  = !this.tracking.trackingvisiible;
+        if(!this.tracking.trackingvisiible)return;
+        let params = new URLSearchParams();
+        params.append("BASE_ID",this.tabs.form.id);
+        this.$axios.post("/fault/queryView",params).then((res)=>{
+          let data = res.data;
+          if(data.code == 200){
+            let res = data.result;
+            let arr = [];
+            let infos = [];
+            for(let i of res){
+              if(i.view_DESC){
+                i.view_DESC = i.view_DESC.split(",");
+              }
+              arr.push(i)
+            }
+            this.$set(this.tracking, "data",arr);
+          }
+        });
+      },
       calculate(){
         let height = document.querySelector(".mainr").offsetHeight;
         let card_body = document.querySelector(".box-card .el-card__body");
@@ -652,7 +705,6 @@
       //-----------------------------------提交分配任务
       subAssign(){
             let result = this.assign.checkList;
-            debugger;
             if (result.length == 0) {
                 this.$warn("当前没有选择任何人员");
             } else {
@@ -660,7 +712,7 @@
                 for(let i of result){
                     arr.push(i.split("-")[0])
                 }
-                this.$set(this.popup,"fppeople",arr);
+                this.$set(this.popup.popTxt,"fppeople",arr);
                 this.assign.assignvisible = false;
             }
         },
@@ -846,7 +898,8 @@
               		 this.$set(this.tabs, "downName", down);
               	}
               }
-                this.$maskoff();
+              this.loadtrack('getData');
+              this.$maskoff();
             }
 
           })
@@ -948,31 +1001,21 @@
       //提交故障单
       subForm(){
         //提交故障提交单
-        if (!this.popup.popTxt.priperty2) {
-//        this.$warn('请选择故障等级');
-					this.$warn('请填写完整信息');
-          return;
-        }
-        if (!this.popup.popTxt.relationUser) {
-//        this.$warn('请填写故障分析人员');
-					this.$warn('请填写完整信息');
-          return;
-        }
-        if (!this.popup.popTxt.description) {
-//        this.$warn('请填写故障描述');
-					this.$warn('请填写完整信息');
-          return;
-        }
-          if (!this.popup.popTxt.descriptionEx) {
-//        this.$warn('请填写故障描述');
-              this.$warn('请填写完整信息');
-              return;
+        this.popup.popTxt.fppeople = Array.from(this.assign.checkList, item => item.split('-')[0]).join(',');
+        let tipList = {
+          priperty2: '请选择故障等级',
+          relationUser: '请填写故障分析人员',
+          description: '请填写故障描述',
+          descriptionEx: '请填写故障复盘信息',
+          sumEffect: '请填写交易交易量影响',
+          //fppeople: '请分配人员'
+        };
+        for(let item of Object.entries(tipList)){
+          if(!this.popup.popTxt[item[0]]){
+            this.$warn(item[1]);
+            return;
           }
-          if (!this.popup.popTxt.sumEffect) {
-//        this.$warn('请填写故障描述');
-              this.$warn('请填写完整信息');
-              return;
-          }
+        }
         let params = new FormData();
         params.append("token",this.$getToken())
         params.append("priperty", this.popup.popTxt.priperty2);	//故障等级
@@ -982,7 +1025,7 @@
         params.append("sumEffect", this.popup.popTxt.sumEffect);//交易量影响
         params.append("type", 1);//类型
         params.append("id",this.popup.popTxt.id);//问题ID
-        params.append("userId", this.popup.fppeople);//分配人id
+        params.append("userId", this.popup.popTxt.fppeople);//分配人id
 		params.append("attachmentId", JSON.stringify(this.popup.popTxt.fileList));
         this.$axios.post("/fault/submit", params).then((res) => {
           let data = res.data;
