@@ -282,6 +282,8 @@
                   </el-form>
                   <!--操作按钮-->
                   <div class="tab-console-handler">
+                      <el-button v-if="tabs.ifSplit" @click="createNewN" size="medium" type="primary">提交 </el-button>
+                      <el-button v-if="tabs.ifPing" @click="checkDaliy" size="medium" type="primary">提交 </el-button>
                       <el-button
                         v-for="(item, index) in tabs.consoleActionData"
                         :key="index"
@@ -289,8 +291,6 @@
                         size="mini"
                         type="primary"
                       >{{item.name}}</el-button>
-                      <el-button v-if="tabs.ifSplit" @click="createNewN" size="medium" type="primary">提交 </el-button>
-                      <el-button v-if="tabs.ifPing" @click="checkDaliy" size="medium" type="primary">提交 </el-button>
                   </div>
                 </div>
               </el-tab-pane>

@@ -560,6 +560,10 @@
                   </div>
                   <!--操作按钮-->
                   <div class="tab-console-handler">
+                    <el-button v-if="changeInset.visible" style="float: none" type="primary" size="mini" @click="subChangeInset">确认变更</el-button>
+                    <el-button size="mini" type="primary" style="float: none" v-if="review.reviewvisible" @click="reviewSub">提交分析结果</el-button>
+                    <el-button @click="subPing" v-if="ifPing.visible" size="mini" type="primary">提交审批</el-button>
+                    <el-button v-if="split.splitvisible" size="mini" type="primary" @click="splitSubmit">提交</el-button>
                     <el-button
                       v-for="(item, index) in tabs.consoleActionData"
                       :key="index"
@@ -567,10 +571,6 @@
                       size="mini"
                       type="primary"
                     >{{item.name}}</el-button>
-                    <el-button v-if="changeInset.visible" style="float: none" type="primary" size="mini" @click="subChangeInset">确认变更</el-button>
-                    <el-button size="mini" type="primary" style="float: none" v-if="review.reviewvisible" @click="reviewSub">提交分析结果</el-button>
-                    <el-button @click="subPing" v-if="ifPing.visible" size="mini" type="primary">提交审批</el-button>
-                    <el-button v-if="split.splitvisible" size="mini" type="primary" @click="splitSubmit">提交</el-button>
                   </div>
                 </div>
               </el-tab-pane>
