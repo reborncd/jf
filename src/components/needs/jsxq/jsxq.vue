@@ -88,6 +88,10 @@
                          v-if="scope.row.check_TYPE == 'accept'"
                          @click="tableAction(scope.$index, scope.row,$event,'accept')">验收
                   </el-button>
+                  <el-button size="mini" type="primary"
+                         v-if="scope.row.state_ID == 305"
+                         @click="tableAction(scope.$index, scope.row, $event, 305)">需求分析
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -957,8 +961,19 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" :md="12">
-            <el-form-item label="产品负责人">
+            <!--el-form-item label="产品负责人">
               <el-input :disabled="addneeds.addType == 'changeInset'" v-model="addneeds.addform.sxname"></el-input>
+            </el-form-item-->
+            <el-form-item label="产品负责人">
+              <el-select
+                style="width: 100%"
+                v-model="addneeds.addform.sxname"
+                filterable
+                placeholder="请选择产品负责人"
+                filterable>
+                <el-option v-for="item in userData" :label="item.user_NAME"
+                  :value="item.user_NAME" :key="item.user_ID"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24" :md="24">
@@ -1472,6 +1487,7 @@
   import vueQuillEditor_needsname from '../common/vueQuillEditor_needsname.vue';//需求描述
   //-----------------加载静态组件
   import moment from "moment";
+  import cloneDeep from 'lodash/cloneDeep';
   import oldTaskCode from "../common/old-task-code.vue";//开发的原任务
   import oldTaskTest from "../common/old-task-test.vue";//测试的原任务
   import splitTask from "../common/splitTask.vue";//拆分项目里的所有拆分任务
@@ -1485,6 +1501,7 @@
   export default {
     data(){
       return {
+        userData: [],
         //新增需求
         addneeds: {
           filevisible:false,//需求文档的弹窗
@@ -2069,6 +2086,7 @@
             this.$set(this.addneeds.addform, "affectArr", data.result.influece);//影响面
             this.$set(this.addneeds.addform, "resulttypeArr", data.result.result);//成果类型
             this.$set(this.addneeds.addform, "attributionArr", data.result.ascription);//需求归属划分
+            this.userData = cloneDeep(data.result.allUser);
             this.addneeds.addform.shenqingdate = new Date();
             this.addneeds.addform.title = "新增";
             this.addneeds.addvisible = true;
@@ -2192,7 +2210,7 @@
           return;
         }
         if(!this.addneeds.addform.sxname){
-          this.$warn("请填写负责人");
+          this.$warn("请选择负责人");
           return;
         }
         if(this.addneeds.addform.jiaji == ""){
@@ -2232,6 +2250,7 @@
         params.append("IMPORTANCE", this.addneeds.addform.zhongyaochegndu);//重要程度ID 201：普通  202：重要
         params.append("NEEL_DESCRIPTION", this.addneeds.addform.needsname);//需求描述
         params.append("APPLY_NAME", this.addneeds.addform.sxname);//申请人名
+        params.append("PROD_MANAGER", this.userData.filter(item => item.user_NAME === this.addneeds.addform.sxname)[0].user_ID);//申请人名id
         //------------------新增
         params.append("INFLUECE", this.addneeds.addform.affect);//需求影响面
         params.append("RESULT", this.addneeds.addform.resulttype);//成果类型
@@ -2405,6 +2424,12 @@
             //验收
             this.acceptance();
             break;
+          case 305:
+            //需求分析
+            this.handleCurrentChange(row);
+            this.tabs.activeName = "console";
+            this.consoleActionEvent({type: 'PERSONCHECK'})
+            break;
         }
       },
       //-----------------------------------请求点击的数据信息-----------------------------------
@@ -2440,7 +2465,7 @@
             this.tabs.tabsData.result = base.result;//成果类型
             this.tabs.tabsData.influece = base.influece;//需求影响面
             this.tabs.tabsData.rriority_NAME = base.rriority_NAME;//优先级评定
-            this.tabs.tabsData.review_GRADE = base.review_GRADE_NAME;//优先级评定
+            this.tabs.tabsData.review_GRADE = base.review_GRADE_NAME;//评审等级
             this.tabs.tabsData.ascription = base.ascription;//需求划分归属
             this.tabs.tabsData.prduct_LINE = base.prduct_LINE;//涉及产品线
             let start_date = this.$format(base.start_DATE);
@@ -3179,6 +3204,9 @@
             this.resetConsoleVisible();
             this.doChangeInset();
             break;
+          case "PROD_CHECK":
+            this.acceptance();
+            break;
         }
       },
       //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<操作台的事件判断>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -3196,15 +3224,16 @@
             let info = data.result.base;
             //--初始化
             this.clearAddData();
+            this.userData = cloneDeep(data.result.allUser);
 
             //加载数据
             this.addneeds.notAllowChooseType = true;
             this.addneeds.addform.code = info.tech_NEET_ID;//需求编号
             this.addneeds.addform.name = info.neel_NAME;//需求名称
-            this.addneeds.addform.needstypeArr = data.baseTypeName;//需求类型
+            this.addneeds.addform.needstypeArr = data.result.baseTypeName;//需求类型
             this.addneeds.addform.needstype = info.type;//需求类型
             this.addneeds.addform.resulttypeArr = info.result;//成果类型
-            this.addneeds.addform.resulttype = info.result;//成果类型
+            this.addneeds.addform.resulttypeArr = data.result.result;//成果类型
             this.addneeds.addform.affectArr =  data.result.influece;//需求影响面
             this.addneeds.addform.affect = info.influece;//需求影响面
             this.addneeds.addform.levelArr = data.result.priority;//优先级评定
@@ -3510,6 +3539,7 @@
       accept_allow(){
         let reason =  this.tabs.tabsData.fail;
         let info = this.tabs.activeTableInfo;
+        let params = new URLSearchParams();
         if(reason){
           //曾经验收不通过过
           this.prompt("验收通过","请填写验收通过理由",(value)=> {
@@ -3518,20 +3548,19 @@
               return;
             }
             this.$maskin();
-            let params = new URLSearchParams();
-            params.append("TECH_NEEL_ID", info.tech_NEET_ID);
-            params.append("OPER", "OK");
             params.append("REJECT_RESON", value.value);
-            this.acceptSub(params);
           });
         }else{
           //y验收通过
           this.$maskin();
-          let params = new URLSearchParams();
-          params.append("TECH_NEEL_ID", info.tech_NEET_ID);
-          params.append("OPER","OK");
-          this.acceptSub(params);
         }
+        params.append("TECH_NEEL_ID", info.tech_NEET_ID);
+        if(this.tabs.activeTableInfo.state_ID === 329){
+          params.append("oper","OK");
+        }else{
+          params.append("OPER","OK");
+        }
+        this.acceptSub(params);
       },
       //验收不通过实践
       accept_not(){
@@ -3544,14 +3573,24 @@
           this.$maskin();
           let params = new URLSearchParams();
           params.append("TECH_NEEL_ID", info.tech_NEET_ID);
-          params.append("OPER","FAIL");
+          if(this.tabs.activeTableInfo.state_ID === 329){
+            params.append("oper","FAIL");
+          }else{
+            params.append("OPER","FAIL");
+          }
           params.append("REJECT_RESON",value.value);
           this.acceptSub(params);
         })
       },
       //请求接口
       acceptSub(params){
-        this.$axios.post("/tech/baseAccept", params).then((res) => {
+        let apiPath = '';
+        if(this.tabs.activeTableInfo.state_ID === 329){
+          apiPath = '/tech/prodCheck';
+        }else{
+          apiPath = '/tech/baseAccept';
+        }
+        this.$axios.post(apiPath, params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
             this.$success("操作成功！");

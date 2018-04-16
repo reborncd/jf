@@ -3190,6 +3190,7 @@
             let info = data.result.base;
             //--初始化
             this.clearAddData();
+            this.userData = cloneDeep(data.result.allUser)
 
             //加载数据
             this.addneeds.notAllowChooseType = true;

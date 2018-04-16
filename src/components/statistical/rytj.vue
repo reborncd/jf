@@ -1,80 +1,3 @@
-<style scoped>
-	@import "../../static/css/table.css";
-	@import "../../static/css/console.css";
-	/*头部*/
-
-	.report-header .name {
-		font-weight: bold;
-		font-size: 20px;
-	}
-
-	.report-header .el-select {
-		float: right;
-	}
-
-	.report-header .group {
-		color: #9f9f9f;
-		margin: 5px 0;
-		font-size: 15px;
-	}
-	/*统计部分*/
-
-	.report-left {
-		width: 300px;
-		margin-top: 10px;
-	}
-
-	.report-statistics h5 {
-		font-size: 16px;
-		font-weight: 400;
-		margin: 5px 0;
-	}
-
-	.report-statistics .iconfont {
-		color: #5fccac;
-		font-size: 20px;
-		margin-right: 5px;
-	}
-
-	.statistics-content {
-		padding-left: 24px;
-	}
-
-	.statistics-content p {
-		float: left;
-		width: 50%;
-		line-height: 24px;
-	}
-
-	.statistics-content p .key {
-		color: #626262;
-	}
-
-	.statistics-content p .value {
-		color: #dd544e;
-	}
-
-	.el-textarea textarea {
-		min-height: 80px!important;
-	}
-
-	.el-form-item__label {
-		width: 120px !important;
-	}
-
-	.el-form-item {
-		margin-bottom: 0;
-	}
-
-	h5 {
-		padding-top: 20px;
-	}
-
-	.search {
-		float: right;
-	}
-</style>
-
 <template>
 	<div class="workreport common-card-wrap" style="height: 100%;">
 		<el-card class="box-card" >
@@ -179,7 +102,7 @@
 				}],
 				selectArr: [{
 					dept_name:"全体",
-					dept_id:"personal"
+					dept_id:"all"
 				}], //部门
 				selectArr_value: "",
 				date_value: "orther",
@@ -255,9 +178,8 @@
 				this.$axios.post("/statistical/getdeptsList", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-						for (let i of data.result){
-							this.selectArr.push(i)
-						}
+            this.selectArr = [...this.selectArr, ...data.result];
+            this.selectArr_value = data.result[0].dept_id;
 					} else {
 						this.$warn(data.message);
 					}
@@ -613,3 +535,79 @@
 		}
 	}
 </script>
+<style scoped>
+	@import "../../static/css/table.css";
+	@import "../../static/css/console.css";
+	/*头部*/
+
+	.report-header .name {
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+	.report-header .el-select {
+		float: right;
+	}
+
+	.report-header .group {
+		color: #9f9f9f;
+		margin: 5px 0;
+		font-size: 15px;
+	}
+	/*统计部分*/
+
+	.report-left {
+		width: 300px;
+		margin-top: 10px;
+	}
+
+	.report-statistics h5 {
+		font-size: 16px;
+		font-weight: 400;
+		margin: 5px 0;
+	}
+
+	.report-statistics .iconfont {
+		color: #5fccac;
+		font-size: 20px;
+		margin-right: 5px;
+	}
+
+	.statistics-content {
+		padding-left: 24px;
+	}
+
+	.statistics-content p {
+		float: left;
+		width: 50%;
+		line-height: 24px;
+	}
+
+	.statistics-content p .key {
+		color: #626262;
+	}
+
+	.statistics-content p .value {
+		color: #dd544e;
+	}
+
+	.el-textarea textarea {
+		min-height: 80px!important;
+	}
+
+	.el-form-item__label {
+		width: 120px !important;
+	}
+
+	.el-form-item {
+		margin-bottom: 0;
+	}
+
+	h5 {
+		padding-top: 20px;
+	}
+
+	.search {
+		float: right;
+	}
+</style>
