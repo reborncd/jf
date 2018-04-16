@@ -58,9 +58,9 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    //assetsPublicPath: '/angela/jfpal/',
+    assetsPublicPath: '/angela/jfpal/',
     //assetsPublicPath: '/anliyang/',
-    assetsPublicPath: '/aly/',
+    //assetsPublicPath: '/aly/',
 
     /**
      * Source Maps

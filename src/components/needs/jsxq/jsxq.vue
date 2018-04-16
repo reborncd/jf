@@ -3232,7 +3232,7 @@
             this.addneeds.addform.name = info.neel_NAME;//需求名称
             this.addneeds.addform.needstypeArr = data.result.baseTypeName;//需求类型
             this.addneeds.addform.needstype = info.type;//需求类型
-            this.addneeds.addform.resulttypeArr = info.result;//成果类型
+            this.addneeds.addform.resulttype = info.result;//成果类型
             this.addneeds.addform.resulttypeArr = data.result.result;//成果类型
             this.addneeds.addform.affectArr =  data.result.influece;//需求影响面
             this.addneeds.addform.affect = info.influece;//需求影响面
