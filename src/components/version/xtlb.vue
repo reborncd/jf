@@ -15,6 +15,11 @@
                   empty-text="请选择系统或当前系统没有数据">
               <el-table-column align="center" prop="system_NAME" label="当前系统及子系统"></el-table-column>
               <el-table-column align="center" prop="system_USER" label="维护人"></el-table-column>
+              <el-table-column align="center" label="最新版本号">
+                <template slot-scope="scope">
+                  <span>{{scope.row.new_VERSION && scope.row.new_VERSION || '无'}}</span>
+                </template>
+              </el-table-column>
               <el-table-column align="center" label="操作" width='200'>
                 <template slot-scope="scope">
                   <!--el-button @click="editRow(scope.row,scope,'read')" size="small">查看</el-button-->

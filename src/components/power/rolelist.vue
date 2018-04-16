@@ -29,6 +29,7 @@
               <el-tree class="select-tree" :data="treeDate" @node-click="leftTreeClick"></el-tree>
             </div>
             <el-table stripe class="right-table role-el-table table_role fr" :data="tableData" border :highlight-current="true"
+                  :default-sort = "{prop: 'dept_name', order: 'descending'}"
                   :height="tableHeight">
               <el-table-column align="center" prop="user_ACCOUNT" label="用户名" show-overflow-tooltip></el-table-column>
               <el-table-column align="center" prop="user_NAME" label="姓名" show-overflow-tooltip></el-table-column>
@@ -123,9 +124,12 @@
 
 </template>
 <script>
+  import cloneDeep from 'lodash/cloneDeep';
   export default {
     data(){
       return {
+        deptMap: {},
+        oneAllUsers: [],
         dialogOption: {
           lockScroll: false,
           appendToBody: false,
@@ -179,6 +183,41 @@
       this.loadData();
     },
     methods: {
+      parseData(data){
+        // 格式化数据, 数组数据转换成树结构数据
+        let deptArr = [], ans = [];
+        data.forEach(item => {
+          if(item.dept_fid != null){
+            if(!this.deptMap[item.dept_fid]){
+              this.deptMap[item.dept_fid] = []
+            }
+            this.deptMap[item.dept_fid].push(cloneDeep(item));
+          }else{
+            deptArr.push(cloneDeep(item));
+          }
+        });
+        deptArr.forEach(item => ans.push({
+          label: item.dept_name,
+          children: this.parseTree(item.dept_id),
+          users: item.users
+        }));
+        return ans;
+      },
+      parseTree(dept_id){
+        // 递归处理数据生成树结构
+        let deptArr = this.deptMap[dept_id];
+        let data = [];
+        if(deptArr && deptArr.length > 0){
+          for(let item of deptArr){
+            data.push({
+              label: item.dept_name,
+              children: this.parseTree(item.dept_id),
+              users: item.users
+            })
+          }
+        }
+        return data;
+      },
       //加载数据
       loadData(){
         this.$maskin();
@@ -186,60 +225,11 @@
         this.$axios.post("role/queryDept", params).then((res) => {
           let data = res.data;
           if (data.code == 200) {
-//          树形菜单格式
-//            [{
-//              label: '一级 1',
-//              children: [{
-//                label: '二级 1-1',
-//                children: [{
-//                  label: '三级 1-1-1'
-//                }]
-//              }]
-//            }]
-            this.tableData = [];
-            this.tempTableData = [];
-            let treeArr = [{"label": "全部", "users": data.result.allUser}];
-            for (let i of data.result.deptUsers) {
-              if(!i.dept_fid){
-                let treeObj = {
-                  "label": i.dept_name,
-                  "children": [],
-                  "users":i.users
-                };
-                treeObj.users = i.users;//父级显示成员
-                for(let j of data.result.deptUsers){
-                  if (j.dept_fid && j.dept_fid == i.dept_id) {
-                    //当前不是父级，则把当前的信息添加到对应fID的父级进去
-                    let obj ={
-                      'label':j.dept_name,
-                      'id':j.dept_id,
-                      'users':j.users,
-                      "children":[]
-                    };
-                    for(let n of data.result.deptUsers){
-                      if(n.dept_fid && n.dept_fid == j.dept_id){
-                        let cobj = {
-                          'label':n.dept_name,
-                          'id':n.dept_id,
-                          'users':n.users,
-                        };
-                        obj.children.push(cobj)
-                      }
-                    }
-                    treeObj.children.push(obj)
-                  }
-                }
-                treeArr.push(treeObj)
-              }
-            }
-            this.treeDate = treeArr;
-            for (let i of data.result.allUser) {
-              this.tableData.push(i);
-              this.tempTableData.push(i);
-            }
+            this.treeDate = [{label: '全部', children: [], users: cloneDeep(data.result.allUser)}, ...this.parseData(data.result.deptUsers)];
+            this.tableData = cloneDeep(data.result.allUser);
+            this.tempTableData = cloneDeep(data.result.allUser);
             this.$maskoff()
           }
-//
         })
       },
       //计算高度
@@ -356,8 +346,20 @@
       cancelForm(){
         this.dialogOption.dialog_person_visible = false;
       },
+      getDeepUser(data){
+        data.users && data.users.forEach(user => this.oneAllUsers.push(user))
+        for(let child of data.children){
+          this.getDeepUser(child);
+        }
+      },
       leftTreeClick(val){
-        this.$set(this, "tableData", val.users)
+        if(val.label == "全部"){
+          this.tableData = cloneDeep(val.users);
+        }else{
+          this.oneAllUsers = [];
+          this.getDeepUser(val);
+          this.tableData = this.oneAllUsers;
+        }
       },
 //      filterTag(value,row){
 //        return row.tag === value;

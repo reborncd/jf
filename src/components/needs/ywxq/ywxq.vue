@@ -90,7 +90,7 @@
                   </el-button>
                   <el-button size="mini" type="primary"
                          v-if="scope.row.state_ID == 305"
-                         @click="tableAction(scope.$index, scope.row,$event, 305)">需求分析
+                         @click="tableAction(scope.$index, scope.row, $event, 305)">需求分析
                   </el-button>
                 </template>
               </el-table-column>
@@ -2327,7 +2327,6 @@
       },
       //-----------------------------------表格点击事件
       handleCurrentChange(val,e){
-        debugger;
         //点击时初始化操作
         this.$maskin();
         this.resetAllStatus();
@@ -2394,7 +2393,7 @@
             break;
           case 305:
             //需求分析
-            this.handleCurrentChange();
+            this.handleCurrentChange(row);
             this.tabs.activeName = "console";
             this.consoleActionEvent({type: 'PERSONCHECK'})
             break;

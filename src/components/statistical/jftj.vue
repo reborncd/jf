@@ -1,80 +1,3 @@
-<style scoped>
-	@import "../../static/css/table.css";
-	@import "../../static/css/console.css";
-	/*头部*/
-
-	.report-header .name {
-		font-weight: bold;
-		font-size: 20px;
-	}
-
-	.report-header .el-select {
-		float: right;
-	}
-
-	.report-header .group {
-		color: #9f9f9f;
-		margin: 5px 0;
-		font-size: 15px;
-	}
-	/*统计部分*/
-
-	.report-left {
-		width: 300px;
-		margin-top: 10px;
-	}
-
-	.report-statistics h5 {
-		font-size: 16px;
-		font-weight: 400;
-		margin: 5px 0;
-	}
-
-	.report-statistics .iconfont {
-		color: #5fccac;
-		font-size: 20px;
-		margin-right: 5px;
-	}
-
-	.statistics-content {
-		padding-left: 24px;
-	}
-
-	.statistics-content p {
-		float: left;
-		width: 50%;
-		line-height: 24px;
-	}
-
-	.statistics-content p .key {
-		color: #626262;
-	}
-
-	.statistics-content p .value {
-		color: #dd544e;
-	}
-
-	.el-textarea textarea {
-		min-height: 80px!important;
-	}
-
-	.el-form-item__label {
-		width: 120px !important;
-	}
-
-	.el-form-item {
-		margin-bottom: 0;
-	}
-
-	h5 {
-		padding-top: 20px;
-	}
-
-	.search {
-		float: right;
-	}
-</style>
-
 <template>
 	<div class="workreport common-card-wrap" style="height: 100%;">
 		<el-card class="box-card" >
@@ -86,10 +9,10 @@
 					<el-option v-for="item in selectArr" :label="item.dept_name" :value="item.dept_id" :key="item.dept_id">
 					</el-option>
 				</el-select>
-                <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData" filterable>
-                    <el-option v-for="item in select" :label="item.label" :value="item.value" :key="item.value">
-                    </el-option>
-                </el-select>
+        <el-select v-model="select_value"  placeholder="请选择统计方式" clearable size="mini" @change="loadCharData" filterable>
+          <el-option v-for="item in select" :label="item.label" :value="item.value" :key="item.value">
+          </el-option>
+        </el-select>
 				<div class="fr" style="margin-left: 20px;">
 					<div class="search i-b">
 						<el-button size="mini" type="primary" @click="getPdf('积分统计')">生成报告
@@ -119,7 +42,7 @@
 							</el-row>
 						</el-form>
 						<div class="table-list">
-							<el-table :data="showData" style="width: 100%">
+							<el-table :data="showData" style="width: 100%" :default-sort = "{prop: 'deptName', order: 'ascending'}">
 								<el-table-column prop="deptName" label="组别" ></el-table-column>
 								<el-table-column prop="userName" label="人员" ></el-table-column>
 								<el-table-column prop="upType" label="统计方式" ></el-table-column>
@@ -131,7 +54,6 @@
 								<el-table-column prop="integral" label="积分"></el-table-column>
 							</el-table>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -140,6 +62,7 @@
 </template>
 
 <script>
+  import cloneDeep from "lodash/cloneDeep";
 	export default {
 		data() {
 			return {
@@ -213,9 +136,8 @@
 				this.$axios.post("/statistical/getdeptsList", params).then((res) => {
 					let data = res.data;
 					if(data.code == 200) {
-						for (let i of data.result){
-							this.selectArr.push(i)
-						}
+            this.selectArr = cloneDeep(data.result);
+            this.selectArr_value = data.result[0].dept_id;
 					} else {
 						this.$warn(data.message);
 					}
@@ -390,3 +312,79 @@
 		}
 	}
 </script>
+<style scoped>
+	@import "../../static/css/table.css";
+	@import "../../static/css/console.css";
+	/*头部*/
+
+	.report-header .name {
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+	.report-header .el-select {
+		float: right;
+	}
+
+	.report-header .group {
+		color: #9f9f9f;
+		margin: 5px 0;
+		font-size: 15px;
+	}
+	/*统计部分*/
+
+	.report-left {
+		width: 300px;
+		margin-top: 10px;
+	}
+
+	.report-statistics h5 {
+		font-size: 16px;
+		font-weight: 400;
+		margin: 5px 0;
+	}
+
+	.report-statistics .iconfont {
+		color: #5fccac;
+		font-size: 20px;
+		margin-right: 5px;
+	}
+
+	.statistics-content {
+		padding-left: 24px;
+	}
+
+	.statistics-content p {
+		float: left;
+		width: 50%;
+		line-height: 24px;
+	}
+
+	.statistics-content p .key {
+		color: #626262;
+	}
+
+	.statistics-content p .value {
+		color: #dd544e;
+	}
+
+	.el-textarea textarea {
+		min-height: 80px!important;
+	}
+
+	.el-form-item__label {
+		width: 120px !important;
+	}
+
+	.el-form-item {
+		margin-bottom: 0;
+	}
+
+	h5 {
+		padding-top: 20px;
+	}
+
+	.search {
+		float: right;
+	}
+</style>
