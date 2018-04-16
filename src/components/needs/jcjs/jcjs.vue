@@ -50,6 +50,7 @@
             <el-table :data="table.tableData" border style="width: 100%"
                       :height="table.tableHeight"
                       highlight-current-row
+                      :default-sort = "{prop: 'start_DATE', order: 'descending'}"
                       ref="jcjs_table"
                       @row-click="handleCurrentChange">
               <el-table-column prop="base_NEET_ID" label="需求编号" width="200" show-overflow-tooltip></el-table-column>
@@ -140,6 +141,9 @@
                       </el-col>
                       <el-col :span="12">
                         <el-form-item label="需求划分归属">{{tabs.tabsData.ascription}}</el-form-item>
+                      </el-col>
+                      <el-col :span="12" v-show="tabs.tabsData.review_GRADE">
+                        <el-form-item label="评审等级">{{tabs.tabsData.review_GRADE}}</el-form-item>
                       </el-col>
                       <el-col :span="24">
                         <el-form-item label="涉及产品线">{{tabs.tabsData.prduct_LINE}}</el-form-item>
@@ -2478,6 +2482,7 @@
             this.tabs.tabsData.result = base.result;//成果类型
             this.tabs.tabsData.influece = base.influece;//需求影响面
             this.tabs.tabsData.rriority_NAME = base.rriority_NAME;//优先级评定
+            this.tabs.tabsData.review_GRADE = base.review_GRADE_NAME;//评审等级
             this.tabs.tabsData.ascription = base.ascription;//需求划分归属
             this.tabs.tabsData.prduct_LINE = base.prduct_LINE;//涉及产品线
             let start_date = this.$format(base.start_DATE);

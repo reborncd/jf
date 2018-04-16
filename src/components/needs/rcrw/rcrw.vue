@@ -28,6 +28,7 @@
           <!--表格部分-->
           <div class="table-list">
             <el-table :data="table.tableData" border style="width: 100%" :height="table.tableHeight" ref="rcrw_table"
+                      :default-sort = "{prop: 'start_DATE', order: 'descending'}"
                       highlight-current-row :row-class-name="tableRowClassName" @row-click="handleCurrentChange">
               <el-table-column prop="daliy_NEET_ID" label="任务编号" width="200"></el-table-column>
               <el-table-column prop="task_NAME" label="任务名称" show-overflow-tooltip></el-table-column>
@@ -118,10 +119,13 @@
                         <el-form-item label="加急说明" v-if="tabs.data_one.daliy.ugent">{{tabs.data_one.daliy.ugent}}
                         </el-form-item>
                       </el-col>
-                      <el-col :span="24">
+                      <el-col :span="12">
                         <el-form-item label="需求描述">
                           <div class="task_DESCRIPTION"></div>
                         </el-form-item>
+                      </el-col>
+                      <el-col :span="12" v-show="tabs.review_GRADE">
+                        <el-form-item label="评审等级">{{tabs.review_GRADE}}</el-form-item>
                       </el-col>
                       <el-col :span="24">
                         <el-form-item label="产品改造点">
@@ -1398,6 +1402,7 @@
             this.tabs.ifSplit = data.result.split
             this.tabs.ifEdit = data.result.EDIT
             this.tabs.ifPing = data.result.checkDaliy
+            this.tabs.review_GRADE = data.result.daliy.review_GRADE_NAME;//评审等级
             this.$set(this.tabs, "rriorityArr", data.result.rriority);
             this.$set(this.tabs, "checksArr", data.result.checks);
             this.$set(this.tabs, "genzong", data.result.records);
@@ -1501,6 +1506,7 @@
             this.tabs.ifSplit = data.result.split
             this.tabs.ifEdit = data.result.EDIT
             this.tabs.ifPing = data.result.checkDaliy
+            this.tabs.review_GRADE = data.result.daliy.review_GRADE_NAME;//评审等级
             this.$set(this.tabs, "genzong", data.result.records);
             this.$set(this.tabs, "genzongs", data.result.records);
             this.$set(this.tabs, "chooseDeptArr", data.result.deptRecord);

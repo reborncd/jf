@@ -1,9 +1,8 @@
 api-path:
-//http://192.168.1.207:61080/angela
-http://127.0.0.1:8080
+http://172.16.1.6:8080/JiFu_Project
 
 file-path:
-/angela/jfpal/
+/aly/
 
 website-url:
-http://host:port/angela/jfpal/
+http://172.16.3.211/aly/
